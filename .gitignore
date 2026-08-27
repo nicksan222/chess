@@ -1,0 +1,11 @@
+/target/
+**/target/
+.env
+.env.*
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.tmp
+*.blend1
+*.blend2

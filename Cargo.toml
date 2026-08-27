@@ -1,0 +1,16 @@
+[workspace]
+members = [
+    "apps/bridge",
+    "apps/simulator",
+    "crates/board-model",
+    "crates/chess",
+    "crates/protocol",
+    "tools/xtask",
+]
+resolver = "3"
+
+[workspace.package]
+edition = "2024"
+license = "MIT"
+rust-version = "1.85"
+version = "0.0.0"
