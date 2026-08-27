@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repository_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "${repository_root}"
+
+run_check() {
+    local label="$1"
+    shift
+
+    printf '\n==> %s\n' "${label}"
+    "$@"
+}
+
+run_check "Format host workspace" cargo fmt --check
+run_check "Format firmware application" \
+    cargo fmt --manifest-path apps/firmware/Cargo.toml --check
+run_check "Type-check host workspace" cargo check --workspace --all-targets
+run_check "Lint host workspace" \
+    cargo clippy --workspace --all-targets -- -D warnings
+run_check "Test host workspace" cargo test --workspace --all-targets

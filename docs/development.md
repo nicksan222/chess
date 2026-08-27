@@ -14,21 +14,29 @@ The image provides:
 - native build, USB, and udev development libraries;
 - Rust, TOML, LLDB, Markdown, and GitHub Actions editor integration.
 
-Container creation runs the host workspace checks automatically. The portable
-configuration does not expose host USB devices or install a flashing utility;
-those choices depend on the firmware tooling and host operating system.
+Container creation configures the repository's pre-commit hook and runs the
+quality checks automatically. The portable configuration does not expose host
+USB devices or install a flashing utility; those choices depend on the firmware
+tooling and host operating system.
 
 ## Host workflow
 
-The root Cargo workspace contains host-side crates, apps, and `xtask`. Run:
+Enable the version-controlled pre-commit hook when developing outside the
+container:
 
 ```sh
-cargo fmt --check
-cargo check --workspace
-cargo test --workspace
+git config --local core.hooksPath .githooks
 ```
 
-The firmware application at `apps/firmware` is an independent embedded project
-and is not part of these checks.
+Run the complete quality gate directly with:
 
-GitHub Actions runs the same commands in the **CI** workflow.
+```sh
+./tools/check
+```
+
+The gate checks host and firmware formatting, type-checks all host workspace
+targets, runs Clippy with warnings denied, and runs all host tests. The firmware
+application at `apps/firmware` is an independent embedded project, so embedded
+type-checking remains deferred until its runtime and linker setup exist.
+
+The pre-commit hook and GitHub **CI** workflow both invoke this same gate.
