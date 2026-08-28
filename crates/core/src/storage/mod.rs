@@ -4,6 +4,7 @@
 //! and persistence policy. This module only defines byte-storage mechanics.
 
 mod memory;
+pub mod record;
 
 pub use memory::MemoryStore;
 
