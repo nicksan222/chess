@@ -9,6 +9,7 @@
 extern crate alloc;
 
 pub mod collections;
+pub mod storage;
 
 /// Creates an owned [`LinkedList`](crate::collections::LinkedList).
 ///
