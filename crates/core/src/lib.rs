@@ -71,3 +71,34 @@ macro_rules! queue {
         $crate::collections::Queue::from_array([$($element),+])
     }};
 }
+
+/// Creates a last-in, first-out [`Stack`](crate::collections::Stack).
+///
+/// Elements are evaluated and pushed once, from left to right. The rightmost
+/// element becomes the top and is popped first.
+///
+/// # Examples
+///
+/// ```
+/// use chess_core::{collections::Stack, stack};
+///
+/// let empty: Stack<i32> = stack![];
+/// let mut moves = stack!["e2e4", "e7e5"];
+/// let repeated = stack![0; 3];
+///
+/// assert!(empty.is_empty());
+/// assert_eq!(moves.pop(), Some("e7e5"));
+/// assert_eq!(repeated.len(), 3);
+/// ```
+#[macro_export]
+macro_rules! stack {
+    () => {
+        $crate::collections::Stack::new()
+    };
+    ($element:expr; $count:expr) => {{
+        $crate::collections::Stack::from_repeated($element, $count)
+    }};
+    ($($element:expr),+ $(,)?) => {{
+        $crate::collections::Stack::from_array([$($element),+])
+    }};
+}
