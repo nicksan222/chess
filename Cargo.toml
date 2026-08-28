@@ -4,6 +4,7 @@ members = [
     "apps/simulator",
     "crates/board-model",
     "crates/chess",
+    "crates/core",
     "crates/protocol",
     "tools/xtask",
 ]
