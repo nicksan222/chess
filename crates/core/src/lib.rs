@@ -133,3 +133,35 @@ macro_rules! ring_buffer {
         $crate::collections::RingBuffer::from_array([$($element),+])
     }};
 }
+
+/// Creates a fixed-capacity [`ArrayStack`](crate::collections::ArrayStack).
+///
+/// The generated capacity exactly matches the number of supplied elements.
+/// Elements are evaluated and pushed once, from left to right; the rightmost
+/// element becomes the top.
+///
+/// # Examples
+///
+/// ```
+/// use chess_core::{array_stack, collections::ArrayStack};
+///
+/// let empty: ArrayStack<i32, 0> = array_stack![];
+/// let mut moves = array_stack!["e2e4", "e7e5"];
+/// let repeated = array_stack![0; 3];
+///
+/// assert!(empty.is_empty());
+/// assert_eq!(moves.pop(), Some("e7e5"));
+/// assert_eq!(repeated.capacity(), 3);
+/// ```
+#[macro_export]
+macro_rules! array_stack {
+    () => {
+        $crate::collections::ArrayStack::new()
+    };
+    ($element:expr; $count:expr) => {{
+        $crate::collections::ArrayStack::<_, { $count }>::from_repeated($element)
+    }};
+    ($($element:expr),+ $(,)?) => {{
+        $crate::collections::ArrayStack::from_array([$($element),+])
+    }};
+}
