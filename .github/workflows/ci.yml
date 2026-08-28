@@ -8,6 +8,17 @@ permissions:
   contents: read
 
 jobs:
+  cad-relationships:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate shared CAD dimensions
+        run: python3 hardware/cad/blender/dimensions.py
+      - name: Test CAD dimension relationships
+        run: python3 -m unittest discover -s hardware/cad/blender/tests
+      - name: Discover CAD generators
+        run: ./tools/generate-cad --list
+
   host-workspace:
     runs-on: ubuntu-latest
     steps:

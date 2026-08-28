@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+readonly blender_version="4.5.13"
+readonly blender_archive="blender-${blender_version}-linux-x64.tar.xz"
+readonly blender_sha256="da4e69b06b75b9e642d106496c50e7e240218b411d2f6e18271c1d1d819cef91"
+readonly blender_url="https://download.blender.org/release/Blender4.5/${blender_archive}"
+readonly repository_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+readonly cache_root="${repository_root}/.cache/blender"
+readonly archive_path="${cache_root}/${blender_archive}"
+readonly cached_blender="${cache_root}/blender-${blender_version}-linux-x64/blender"
+
+resolve_blender() {
+    if [[ -n "${BLENDER_BIN:-}" ]]; then
+        if [[ ! -x "${BLENDER_BIN}" ]]; then
+            printf 'BLENDER_BIN is not executable: %s\n' "${BLENDER_BIN}" >&2
+            return 1
+        fi
+        printf '%s\n' "${BLENDER_BIN}"
+        return
+    fi
+
+    if [[ "$(uname -m)" != "x86_64" ]]; then
+        printf 'Automatic Blender setup supports Linux x86_64 only. Set BLENDER_BIN.\n' >&2
+        return 1
+    fi
+
+    mkdir -p "${cache_root}"
+    if [[ ! -x "${cached_blender}" ]]; then
+        if [[ ! -f "${archive_path}" ]]; then
+            printf 'Downloading Blender %s LTS...\n' "${blender_version}" >&2
+            curl --fail --location --retry 3 --show-error \
+                --output "${archive_path}" "${blender_url}"
+        fi
+
+        printf '%s  %s\n' "${blender_sha256}" "${archive_path}" \
+            | sha256sum --check --status
+        tar -xf "${archive_path}" -C "${cache_root}"
+    fi
+
+    printf '%s\n' "${cached_blender}"
+}
+
+discover_generators() {
+    local generator
+    local order
+    local order_file
+
+    while IFS= read -r -d '' generator; do
+        order_file="$(dirname -- "${generator}")/generation-order"
+        order=100
+        if [[ -f "${order_file}" ]]; then
+            IFS= read -r order < "${order_file}"
+        fi
+        if [[ ! "${order}" =~ ^[0-9]+$ ]]; then
+            printf 'Invalid generation order in %s: %s\n' \
+                "${order_file}" "${order}" >&2
+            return 1
+        fi
+        printf '%09d\t%s\n' "${order}" "${generator}"
+    done < <(
+        find hardware/cad/blender -type f -name generate.py -print0
+    )
+}
+
+main() {
+    local blender_bin
+    local generator
+    local manifest
+    local order
+
+    cd "${repository_root}"
+
+    if (($# > 1)) || (($# == 1)) && [[ "$1" != "--list" ]]; then
+        printf 'Usage: %s [--list]\n' "$0" >&2
+        return 2
+    fi
+
+    manifest="$(mktemp)"
+    trap "rm -f -- '${manifest}'" EXIT
+    discover_generators | LC_ALL=C sort > "${manifest}"
+
+    if [[ ! -s "${manifest}" ]]; then
+        printf 'No Blender project generators found.\n' >&2
+        return 1
+    fi
+
+    if [[ "${1:-}" == "--list" ]]; then
+        cat "${manifest}"
+        return
+    fi
+
+    blender_bin="$(resolve_blender)"
+    while IFS=$'\t' read -r order generator; do
+        printf '\n==> Generate %s\n' "$(dirname -- "${generator}")"
+        "${blender_bin}" --background --factory-startup --python "${generator}"
+    done < "${manifest}"
+}
+
+main "$@"

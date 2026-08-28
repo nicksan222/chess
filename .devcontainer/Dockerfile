@@ -12,8 +12,10 @@ RUN apt-get update \
         git \
         libudev-dev \
         libusb-1.0-0-dev \
+        make \
         pkg-config \
         usbutils \
+        xz-utils \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 

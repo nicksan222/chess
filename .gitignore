@@ -9,3 +9,6 @@
 *.tmp
 *.blend1
 *.blend2
+__pycache__/
+*.py[cod]
+.cache/
