@@ -40,3 +40,34 @@ macro_rules! linked_list {
         $crate::collections::LinkedList::from_array([$($element),+])
     }};
 }
+
+/// Creates a first-in, first-out [`Queue`](crate::collections::Queue).
+///
+/// Elements are evaluated once, from left to right. The leftmost element is
+/// dequeued first.
+///
+/// # Examples
+///
+/// ```
+/// use chess_core::{collections::Queue, queue};
+///
+/// let empty: Queue<i32> = queue![];
+/// let mut turns = queue!["white", "black"];
+/// let repeated = queue![0; 3];
+///
+/// assert!(empty.is_empty());
+/// assert_eq!(turns.dequeue(), Some("white"));
+/// assert_eq!(repeated.len(), 3);
+/// ```
+#[macro_export]
+macro_rules! queue {
+    () => {
+        $crate::collections::Queue::new()
+    };
+    ($element:expr; $count:expr) => {{
+        $crate::collections::Queue::from_repeated($element, $count)
+    }};
+    ($($element:expr),+ $(,)?) => {{
+        $crate::collections::Queue::from_array([$($element),+])
+    }};
+}
