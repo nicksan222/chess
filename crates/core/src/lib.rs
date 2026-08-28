@@ -102,3 +102,34 @@ macro_rules! stack {
         $crate::collections::Stack::from_array([$($element),+])
     }};
 }
+
+/// Creates a fixed-capacity [`RingBuffer`](crate::collections::RingBuffer).
+///
+/// The generated capacity exactly matches the number of supplied elements.
+/// Elements are evaluated once, from left to right, and popped in that order.
+///
+/// # Examples
+///
+/// ```
+/// use chess_core::{collections::RingBuffer, ring_buffer};
+///
+/// let empty: RingBuffer<i32, 0> = ring_buffer![];
+/// let mut events = ring_buffer!["pressed", "released"];
+/// let repeated = ring_buffer![0; 3];
+///
+/// assert!(empty.is_empty());
+/// assert_eq!(events.pop(), Some("pressed"));
+/// assert_eq!(repeated.capacity(), 3);
+/// ```
+#[macro_export]
+macro_rules! ring_buffer {
+    () => {
+        $crate::collections::RingBuffer::new()
+    };
+    ($element:expr; $count:expr) => {{
+        $crate::collections::RingBuffer::<_, { $count }>::from_repeated($element)
+    }};
+    ($($element:expr),+ $(,)?) => {{
+        $crate::collections::RingBuffer::from_array([$($element),+])
+    }};
+}
