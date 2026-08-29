@@ -2,6 +2,7 @@
 
 mod application;
 mod calculators;
+mod chess_move;
 mod error;
 mod forced;
 mod generation;

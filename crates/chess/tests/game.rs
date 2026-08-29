@@ -22,7 +22,7 @@ fn perft(game: &Game, depth: u8) -> u64 {
         .into_iter()
         .map(|chess_move| {
             let mut next = game.clone();
-            next.play(chess_move).unwrap();
+            chess_move.play(&mut next).unwrap();
             perft(&next, depth - 1)
         })
         .sum()
@@ -76,7 +76,7 @@ fn stale_wrong_side_and_unreachable_moves_are_rejected_without_history() {
     let pawn = game.piece_at(Square::E2).unwrap();
 
     assert!(matches!(
-        game.play(ChessMove::new(Square::E7, Square::E5)),
+        ChessMove::new(Square::E7, Square::E5).play(&mut game),
         Err(MoveError::WrongSide { .. })
     ));
     assert!(matches!(
