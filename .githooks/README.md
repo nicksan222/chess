@@ -1,4 +1,5 @@
 # Git hooks
 
 This directory owns version-controlled Git hooks. Hooks should call shared
-repository tooling so local validation and CI use the same quality policy.
+repository tooling so a local commit and `devcontainer exec ./tools/check` in
+CI enforce the same quality policy.

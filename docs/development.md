@@ -23,8 +23,8 @@ The image provides:
 
 - stable Rust with `rustfmt` and Clippy;
 - Python 3, pip, and venv for CAD dimension checks and Schemdraw schematics;
-- `curl`, `xz-utils`, and the X11 and GL libraries Blender links against even
-  in background mode;
+- `curl`, `xz-utils`, X11/GL/EGL, Mesa, and Xvfb so headless Blender can
+  render;
 - the `thumbv8m.main-none-eabihf` compilation target;
 - native build, USB, and udev development libraries;
 - Rust, Python, TOML, LLDB, Markdown, and GitHub Actions editor integration.
@@ -88,4 +88,16 @@ application at
 `apps/firmware` is an independent embedded project, so embedded type-checking
 remains deferred until its runtime and linker setup exist.
 
-The pre-commit hook and GitHub **CI** workflow both invoke this same gate.
+The pre-commit hook invokes this same gate on the developer machine. GitHub
+**CI** does not install a second copy of those dependencies: it runs the
+Dev Container CLI against this repository, then the same gate inside that
+container.
+
+```sh
+devcontainer up --workspace-folder .
+devcontainer exec --workspace-folder . ./tools/check
+```
+
+The workflow caches the built image on GHCR and the workspace `.cache` and
+`target` directories so later runs skip the Blender download, Python venv,
+image rebuild, and Rust crate rebuilds.

@@ -109,6 +109,8 @@ class ElectronicsToolingTest(unittest.TestCase):
         self.assertIn(".cache/blender", tool)
         self.assertIn("BLENDER_BIN", tool)
         self.assertIn("sha256sum", tool)
+        self.assertIn("xvfb-run", tool)
+        self.assertIn("--gpu-backend opengl", tool)
 
     def test_devcontainer_does_not_dispatch_hardware_verbs(self) -> None:
         post = (REPO / ".devcontainer" / "post-create.sh").read_text()
@@ -128,7 +130,10 @@ class ElectronicsToolingTest(unittest.TestCase):
         dockerfile = (REPO / ".devcontainer" / "Dockerfile").read_text()
         for package in (
             "curl",
+            "libegl1",
             "libgl1",
+            "libgl1-mesa-dri",
+            "libgles2",
             "libice6",
             "libsm6",
             "libx11-6",
@@ -138,6 +143,7 @@ class ElectronicsToolingTest(unittest.TestCase):
             "libxkbcommon0",
             "libxrender1",
             "python3-venv",
+            "xvfb",
             "xz-utils",
         ):
             self.assertIn(package, dockerfile, package)
@@ -146,14 +152,22 @@ class ElectronicsToolingTest(unittest.TestCase):
 class ContinuousIntegrationTest(unittest.TestCase):
     def test_ci_runs_the_same_full_job_as_a_developer(self) -> None:
         workflow = (REPO / ".github" / "workflows" / "ci.yml").read_text()
-        self.assertIn("run: ./tools/cad\n", workflow)
-        self.assertIn("run: ./tools/electronics\n", workflow)
-        self.assertIn("runCmd: ./tools/electronics && ./tools/cad\n", workflow)
+        self.assertIn("@devcontainers/cli", workflow)
+        self.assertIn("devcontainer up --workspace-folder .", workflow)
+        self.assertIn(
+            "devcontainer exec --workspace-folder . ./tools/check", workflow
+        )
+        self.assertIn("ghcr.io", workflow)
+        self.assertIn(".cache\n", workflow)
+        self.assertIn("target\n", workflow)
+        self.assertNotIn("sudo apt-get", workflow)
+        self.assertNotIn("devcontainers/ci", workflow)
+        self.assertNotIn("run: ./tools/cad\n", workflow)
+        self.assertNotIn("run: ./tools/electronics\n", workflow)
         self.assertNotIn("./tools/cad check", workflow)
         self.assertNotIn("./tools/electronics check", workflow)
         for name in RUNNERS:
             self.assertIn(f"hardware/{name}/generated", workflow, name)
-        self.assertIn("devcontainers/ci", workflow)
 
         check = (REPO / "tools" / "check").read_text()
         self.assertIn("./tools/cad\n", check)

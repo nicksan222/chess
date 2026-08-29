@@ -60,10 +60,14 @@ run_tests() {
 generate() {
     mkdir -p "${domain_dir}/generated"
     find "${domain_dir}/generated" -maxdepth 1 -type f ! -name README.md -delete
-    local generator
+    local blender generator
+    blender=("${blender_bin}" --background --factory-startup --gpu-backend opengl)
+    if [[ -z "${DISPLAY:-}" ]] && command -v xvfb-run >/dev/null 2>&1; then
+        blender=(xvfb-run --auto-servernum "${blender[@]}")
+    fi
     while IFS= read -r generator; do
         printf '\n==> Generate %s\n' "$(dirname -- "${generator}")"
-        "${blender_bin}" --background --factory-startup --python "${generator}"
+        "${blender[@]}" --python "${generator}"
     done < <(list_projects)
 }
 

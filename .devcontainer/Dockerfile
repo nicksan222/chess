@@ -11,7 +11,10 @@ RUN apt-get update \
         curl \
         git \
         libdecor-0-0 \
+        libegl1 \
         libgl1 \
+        libgl1-mesa-dri \
+        libgles2 \
         libice6 \
         libsm6 \
         libudev-dev \
@@ -28,6 +31,7 @@ RUN apt-get update \
         python3-pip \
         python3-venv \
         usbutils \
+        xvfb \
         xz-utils \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*

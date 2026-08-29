@@ -29,3 +29,6 @@ The toolchains install into the ignored `.cache` directory rather than onto the
 host: `electronics` creates a virtual environment and installs
 `hardware/electronics/requirements.txt`, and `cad` downloads a checksum-verified
 Blender build unless `BLENDER_BIN` points at an existing one.
+
+CI runs those scripts the same way a developer does, through the Dev Container
+CLI, so the Dockerfile is the only place runtime packages are declared.
