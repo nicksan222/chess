@@ -2,7 +2,7 @@ use core::iter::FusedIterator;
 
 use crate::Square;
 
-/// An iterator over a [`SquareSet`].
+/// An iterator over a [`SquareSet`](crate::SquareSet).
 #[derive(Clone, Debug)]
 pub struct Squares {
     bits: u64,
