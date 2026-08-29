@@ -1,8 +1,10 @@
+mod castling;
+mod clocks;
 mod pieces;
-mod state;
 
+pub use castling::CastlingRights;
+pub use clocks::{FullmoveNumber, HalfmoveClock, InvalidFullmoveNumber};
 pub use pieces::BoardPieces;
-pub use state::{CastlingRights, FullmoveNumber, HalfmoveClock, InvalidFullmoveNumber};
 
 use super::{Color, Piece, PieceKind, Square, SquareSet};
 use pieces::initial_pieces;
