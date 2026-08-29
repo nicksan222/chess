@@ -50,6 +50,7 @@ fn initial_legal_move_tree_matches_standard_perft_counts() {
     assert_eq!(perft(&game, 1), 20);
     assert_eq!(perft(&game, 2), 400);
     assert_eq!(perft(&game, 3), 8_902);
+    assert_eq!(perft(&game, 4), 197_281);
 }
 
 #[test]
