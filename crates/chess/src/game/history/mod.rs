@@ -1,11 +1,13 @@
 mod error;
 mod hashing;
 mod iter;
-mod values;
+mod sequence;
+mod step;
 
 pub use error::HistoryError;
 pub use iter::MoveHistoryIter;
-pub use values::{InvalidPly, MoveCount, MoveHash, MoveStep, Ply};
+pub use sequence::{InvalidPly, MoveCount, Ply};
+pub use step::{MoveHash, MoveStep};
 
 use chess_core::collections::LinkedList;
 
