@@ -1,6 +1,6 @@
 use chess::{
-    Board, CastlingRights, ChessMove, Color, FullmoveNumber, Game, HalfmoveClock, MoveError, Piece,
-    PieceKind, Square,
+    Board, CastlingRights, ChessMove, Color, FullmoveNumber, Game, GameStatus, HalfmoveClock,
+    MoveError, Piece, PieceKind, Square,
 };
 
 fn board_with(pieces: impl IntoIterator<Item = Piece>) -> Board {
@@ -202,6 +202,9 @@ fn game_reports_pieces_side_to_move_and_check() {
 
     assert_eq!(checked.side_to_move(), Color::Black);
     assert!(checked.is_in_check());
+    assert_eq!(checked.status(), GameStatus::InProgress);
+    assert!(!checked.is_checkmate());
+    assert!(!checked.is_stalemate());
     assert_eq!(
         checked.pieces().collect::<Vec<_>>(),
         [
@@ -210,4 +213,44 @@ fn game_reports_pieces_side_to_move_and_check() {
             Piece::new(Color::Black, PieceKind::King, Square::E8),
         ]
     );
+}
+
+#[test]
+fn game_reports_checkmate_and_stalemate() {
+    let game = Game::new();
+    assert_eq!(game.status(), GameStatus::InProgress);
+    assert!(!game.is_checkmate());
+    assert!(!game.is_stalemate());
+
+    let mut mate = board_with([
+        Piece::new(Color::White, PieceKind::King, Square::E1),
+        Piece::new(Color::White, PieceKind::Rook, Square::A8),
+        Piece::new(Color::Black, PieceKind::King, Square::E8),
+        Piece::new(Color::Black, PieceKind::Pawn, Square::D7),
+        Piece::new(Color::Black, PieceKind::Pawn, Square::E7),
+        Piece::new(Color::Black, PieceKind::Pawn, Square::F7),
+    ]);
+    mate.set_side_to_move(Color::Black);
+    let mated = Game::from_board(mate);
+    assert!(mated.is_in_check());
+    assert_eq!(
+        mated.status(),
+        GameStatus::Checkmate {
+            winner: Color::White
+        }
+    );
+    assert!(mated.is_checkmate());
+    assert!(!mated.is_stalemate());
+
+    let mut stale = board_with([
+        Piece::new(Color::White, PieceKind::King, Square::A6),
+        Piece::new(Color::White, PieceKind::Queen, Square::C7),
+        Piece::new(Color::Black, PieceKind::King, Square::A8),
+    ]);
+    stale.set_side_to_move(Color::Black);
+    let stalemated = Game::from_board(stale);
+    assert!(!stalemated.is_in_check());
+    assert_eq!(stalemated.status(), GameStatus::Stalemate);
+    assert!(!stalemated.is_checkmate());
+    assert!(stalemated.is_stalemate());
 }

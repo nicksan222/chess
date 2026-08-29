@@ -7,8 +7,8 @@ mod game;
 mod model;
 
 pub use game::{
-    ForceMoveError, ForcedMove, Game, GameSyncError, HistoryError, InvalidPly, MoveCount,
-    MoveError, MoveHash, MoveHistory, MoveHistoryIter, MoveStep, Ply,
+    ForceMoveError, ForcedMove, Game, GameStatus, GameSyncError, HistoryError, InvalidPly,
+    MoveCount, MoveError, MoveHash, MoveHistory, MoveHistoryIter, MoveStep, Ply,
 };
 pub use model::{
     AllSquares, Board, BoardDirection, BoardEdge, BoardPieces, CastlingRights, ChessMove, Color,
