@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use chess::{Color, Piece, PieceKind};
+use chess::{Color, Piece, PieceKind, Square};
 
 fn assert_value_traits<T>()
 where
@@ -11,7 +11,12 @@ where
 fn all_pieces() -> impl Iterator<Item = Piece> {
     Color::ALL
         .into_iter()
-        .flat_map(|color| PieceKind::ALL.map(|kind| Piece::new(color, kind)))
+        .flat_map(|color| PieceKind::ALL.map(move |kind| (color, kind)))
+        .enumerate()
+        .map(|(index, (color, kind))| {
+            let square = Square::from_index(index as u8).expect("sample square is valid");
+            Piece::new(color, kind, square)
+        })
 }
 
 #[test]
@@ -49,7 +54,7 @@ fn piece_kinds_have_stable_order_and_names() {
 }
 
 #[test]
-fn pieces_are_the_cartesian_product_of_color_and_kind() {
+fn pieces_include_color_kind_and_their_own_square() {
     let pieces = all_pieces().collect::<Vec<_>>();
 
     assert_eq!(pieces.len(), Color::ALL.len() * PieceKind::ALL.len());
@@ -59,16 +64,31 @@ fn pieces_are_the_cartesian_product_of_color_and_kind() {
     for piece in pieces {
         assert!(Color::ALL.contains(&piece.color()));
         assert!(PieceKind::ALL.contains(&piece.kind()));
+        assert_eq!(
+            piece.square(),
+            Square::from_index(piece.square().index()).unwrap()
+        );
     }
 }
 
 #[test]
+fn otherwise_equal_pieces_on_different_squares_are_distinct() {
+    let first = Piece::new(Color::White, PieceKind::Knight, Square::B1);
+    let second = Piece::new(Color::White, PieceKind::Knight, Square::C3);
+
+    assert_ne!(first, second);
+    assert_ne!(first.square(), second.square());
+}
+
+#[test]
 fn constructor_and_accessors_are_const_compatible() {
-    const PIECE: Piece = Piece::new(Color::Black, PieceKind::Queen);
+    const PIECE: Piece = Piece::new(Color::Black, PieceKind::Queen, Square::D5);
     const COLOR: Color = PIECE.color();
     const KIND: PieceKind = PIECE.kind();
+    const SQUARE: Square = PIECE.square();
 
     assert_eq!(COLOR, Color::Black);
     assert_eq!(KIND, PieceKind::Queen);
-    assert_eq!(PIECE, Piece::new(COLOR, KIND));
+    assert_eq!(SQUARE, Square::D5);
+    assert_eq!(PIECE, Piece::new(COLOR, KIND, SQUARE));
 }

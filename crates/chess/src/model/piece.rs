@@ -1,6 +1,6 @@
 use core::fmt;
 
-use super::Color;
+use super::{Color, Square};
 
 /// The movement category of a chess piece, independent of color.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -44,21 +44,26 @@ impl fmt::Display for PieceKind {
     }
 }
 
-/// A chess piece identified by color and movement kind.
+/// A chess piece with its color, movement kind, and current square.
 ///
-/// A piece is an immutable domain value. Its notation and movement behavior
-/// belong to notation and position-level modules respectively.
+/// Pieces are self-locating domain objects. A position owns the set of pieces
+/// and preserves the invariant that no two pieces share a square.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Piece {
     color: Color,
     kind: PieceKind,
+    square: Square,
 }
 
 impl Piece {
-    /// Creates a piece.
+    /// Creates a piece at `square`.
     #[must_use]
-    pub const fn new(color: Color, kind: PieceKind) -> Self {
-        Self { color, kind }
+    pub const fn new(color: Color, kind: PieceKind, square: Square) -> Self {
+        Self {
+            color,
+            kind,
+            square,
+        }
     }
 
     /// Returns the piece's color.
@@ -71,5 +76,11 @@ impl Piece {
     #[must_use]
     pub const fn kind(self) -> PieceKind {
         self.kind
+    }
+
+    /// Returns the piece's current square.
+    #[must_use]
+    pub const fn square(self) -> Square {
+        self.square
     }
 }
