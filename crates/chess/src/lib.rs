@@ -6,7 +6,10 @@
 mod game;
 mod model;
 
-pub use game::{ForceMoveError, ForcedMove};
+pub use game::{
+    ForceMoveError, ForcedMove, HistoryError, InvalidPly, MoveCount, MoveHash, MoveHistory,
+    MoveHistoryIter, MoveStep, Ply,
+};
 pub use model::{
     AllSquares, Board, BoardDirection, BoardEdge, BoardPieces, CastlingRights, ChessMove, Color,
     File, FullmoveNumber, HalfmoveClock, InvalidFullmoveNumber, InvalidPromotion, InvalidSquare,
