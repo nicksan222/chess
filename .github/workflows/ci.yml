@@ -8,12 +8,11 @@ permissions:
   contents: read
   packages: write
 
-env:
-  DEVCONTAINER_IMAGE: ghcr.io/${{ github.repository }}/devcontainer:latest
-
 jobs:
-  check:
+  prebuild:
     runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.image.outputs.image }}
     steps:
       - uses: actions/checkout@v4
 
@@ -23,42 +22,86 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Cache workspace toolchains
-        uses: actions/cache@v4
-        with:
-          path: |
-            .cache
-            target
-          key: ${{ runner.os }}-${{ hashFiles('tools/cad', 'hardware/electronics/requirements.txt', '**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-
-
       - name: Install Dev Container CLI
         run: npm install --global @devcontainers/cli
 
-      - name: Start development container
+      - id: image
+        name: Image names
         run: |
-          image="$(printf '%s' "${DEVCONTAINER_IMAGE}" | tr '[:upper:]' '[:lower:]')"
-          docker pull "${image}" || true
+          image="$(printf 'ghcr.io/%s/devcontainer:%s' \
+            '${{ github.repository }}' '${{ github.sha }}' \
+            | tr '[:upper:]' '[:lower:]')"
+          latest="$(printf 'ghcr.io/%s/devcontainer:latest' \
+            '${{ github.repository }}' \
+            | tr '[:upper:]' '[:lower:]')"
+          echo "image=${image}" >> "${GITHUB_OUTPUT}"
+          echo "latest=${latest}" >> "${GITHUB_OUTPUT}"
+
+      - name: Build development container
+        env:
+          IMAGE: ${{ steps.image.outputs.image }}
+          LATEST: ${{ steps.image.outputs.latest }}
+        run: |
+          docker pull "${LATEST}" || true
           devcontainer build \
             --workspace-folder . \
-            --image-name "${image}" \
-            --cache-from "${image}"
-          devcontainer up --workspace-folder .
+            --image-name "${IMAGE}" \
+            --cache-from "${LATEST}"
 
       - name: Push development container
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          IMAGE: ${{ steps.image.outputs.image }}
+          LATEST: ${{ steps.image.outputs.latest }}
         run: |
-          image="$(printf '%s' "${DEVCONTAINER_IMAGE}" | tr '[:upper:]' '[:lower:]')"
-          docker push "${image}"
+          docker push "${IMAGE}"
+          if [[ "${{ github.event_name }}" == "push" \
+             && "${{ github.ref }}" == "refs/heads/main" ]]; then
+            docker tag "${IMAGE}" "${LATEST}"
+            docker push "${LATEST}"
+          fi
 
-      - name: Check
-        run: devcontainer exec --workspace-folder . ./tools/check
-
+  cad:
+    needs: prebuild
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/run-in-devcontainer
+        with:
+          image: ${{ needs.prebuild.outputs.image }}
+          command: ./tools/cad
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
-          name: generated
-          path: |
-            hardware/cad/generated
-            hardware/electronics/generated
+          name: cad-generated
+          path: hardware/cad/generated
+
+  electronics:
+    needs: prebuild
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/run-in-devcontainer
+        with:
+          image: ${{ needs.prebuild.outputs.image }}
+          command: ./tools/electronics
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: electronics-generated
+          path: hardware/electronics/generated
+
+  rust:
+    needs: prebuild
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+      - uses: ./.github/actions/run-in-devcontainer
+        with:
+          image: ${{ needs.prebuild.outputs.image }}
+          command: ./tools/rust

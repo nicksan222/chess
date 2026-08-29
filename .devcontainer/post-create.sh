@@ -10,9 +10,10 @@ fi
 
 cat <<'EOF'
 
-The container is ready. Hardware toolchains install on first run.
+The container is ready. Hardware toolchains are already in the image.
 
-  ./tools/electronics         install if needed, test, then generate
-  ./tools/cad                 install if needed, test, then generate
-  make check                  the full gate, including the Rust workspace
+  ./tools/electronics         test, then generate
+  ./tools/cad                 test, then generate
+  ./tools/rust                fmt, clippy, and tests
+  make check                  all three, sequentially
 EOF

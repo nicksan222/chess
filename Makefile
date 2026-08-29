@@ -1,4 +1,4 @@
-.PHONY: all cad check electronics gen regen-all
+.PHONY: all cad check electronics gen regen-all rust
 
 all: check
 
@@ -10,6 +10,9 @@ cad:
 
 electronics:
 	./tools/electronics
+
+rust:
+	./tools/rust
 
 gen: cad electronics
 

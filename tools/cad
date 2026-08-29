@@ -23,6 +23,10 @@ blender_bin=""
 source tools/lib/pipeline.sh
 
 setup() {
+    if [[ -z "${BLENDER_BIN:-}" && -x /opt/blender/blender ]]; then
+        BLENDER_BIN=/opt/blender/blender
+    fi
+
     if [[ -n "${BLENDER_BIN:-}" ]]; then
         if [[ ! -x "${BLENDER_BIN}" ]]; then
             printf 'BLENDER_BIN is not executable: %s\n' "${BLENDER_BIN}" >&2

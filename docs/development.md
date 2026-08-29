@@ -22,17 +22,16 @@ See [`.devcontainer/README.md`](../.devcontainer/README.md).
 The image provides:
 
 - stable Rust with `rustfmt` and Clippy;
-- Python 3, pip, and venv for CAD dimension checks and Schemdraw schematics;
-- `curl`, `xz-utils`, X11/GL/EGL, Mesa, and Xvfb so headless Blender can
-  render;
+- Schemdraw and matplotlib in `/opt/electronics`;
+- a checksum-verified Blender at `/opt/blender`;
+- X11/GL/EGL, Mesa, Xvfb, and `xauth` so headless Blender can render;
 - the `thumbv8m.main-none-eabihf` compilation target;
 - native build, USB, and udev development libraries;
 - Rust, Python, TOML, LLDB, Markdown, and GitHub Actions editor integration.
 
-Container creation configures the repository's pre-commit hook. The first
-`./tools/electronics` or `./tools/cad` installs that domain's toolchain into
-`.cache`. Creation deliberately stops there rather than running the full gate;
-`make check` is one command away.
+Container creation configures the repository's pre-commit hook. The image
+already contains the hardware toolchains, so the first `./tools/cad` or
+`./tools/electronics` inside the container does not download them.
 The portable configuration does not expose host USB devices or install a
 flashing utility; those choices depend on the firmware tooling and host
 operating system.
@@ -62,9 +61,10 @@ CAD writes `<project>.blend` plus one PNG per view. Electronics writes
 `ELECTRONICS_PNG_DPI` changes the screenshot resolution from its 150 DPI
 default.
 
-The toolchains install into the ignored `.cache` directory: a virtual
-environment for Schemdraw, and a checksum-verified Blender build unless
-`BLENDER_BIN` points at an existing one.
+The toolchains ship in the development container (`/opt/blender`,
+`/opt/electronics`). Outside it they install into the ignored `.cache`
+directory: a virtual environment for Schemdraw, and a checksum-verified Blender
+build unless `BLENDER_BIN` already points at one.
 
 ## Host workflow
 
@@ -81,23 +81,18 @@ Run the complete quality gate directly with:
 ./tools/check
 ```
 
-The gate checks host and firmware formatting, runs the full CAD and electronics
-jobs (install if needed, test, generate), type-checks all host workspace
-targets, runs Clippy with warnings denied, and runs all host tests. The firmware
-application at
-`apps/firmware` is an independent embedded project, so embedded type-checking
-remains deferred until its runtime and linker setup exist.
+The gate runs `./tools/rust` (format, Clippy, tests), then the full CAD and
+electronics jobs, sequentially. The firmware application at `apps/firmware` is
+an independent embedded project, so embedded type-checking remains deferred
+until its runtime and linker setup exist.
 
 The pre-commit hook invokes this same gate on the developer machine. GitHub
-**CI** does not install a second copy of those dependencies: it runs the
-Dev Container CLI against this repository, then the same gate inside that
-container.
+**CI** prebuilds the development container, then runs `./tools/cad`,
+`./tools/electronics`, and `./tools/rust` in parallel through the Dev
+Container CLI so later workflows reuse the image instead of downloading
+Blender and Python packages on every job.
 
 ```sh
 devcontainer up --workspace-folder .
 devcontainer exec --workspace-folder . ./tools/check
 ```
-
-The workflow caches the built image on GHCR and the workspace `.cache` and
-`target` directories so later runs skip the Blender download, Python venv,
-image rebuild, and Rust crate rebuilds.

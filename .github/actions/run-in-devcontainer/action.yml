@@ -1,0 +1,27 @@
+name: Run in development container
+description: Pull the prebuilt image and run one command through the Dev Container CLI
+
+inputs:
+  image:
+    description: Prebuilt development container image
+    required: true
+  command:
+    description: Command to run inside the container
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Install Dev Container CLI
+      shell: bash
+      run: npm install --global @devcontainers/cli
+    - name: Run
+      shell: bash
+      env:
+        DEVCONTAINER_IMAGE: ${{ inputs.image }}
+      run: .github/scripts/with-devcontainer.sh ${{ inputs.command }}

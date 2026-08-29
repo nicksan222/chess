@@ -1,37 +1,44 @@
 # Development container
 
 This directory owns the reproducible VS Code / Cursor development environment.
-Open the repository and run **Dev Containers: Reopen in Container**, or drive it
-from the [`devcontainer` CLI](https://github.com/devcontainers/cli):
+The Dockerfile downloads every toolchain the jobs need: Blender, the Schemdraw
+venv, and the Rust components. Open the repository and run **Dev Containers:
+Reopen in Container**, or drive it from the
+[`devcontainer` CLI](https://github.com/devcontainers/cli):
 
 ```sh
 devcontainer up --workspace-folder .
 devcontainer exec --workspace-folder . ./tools/electronics
 devcontainer exec --workspace-folder . ./tools/cad
+devcontainer exec --workspace-folder . ./tools/rust
 devcontainer exec --workspace-folder . make check
 ```
 
 The image provides:
 
 - stable Rust with `rustfmt` and Clippy;
-- Python 3, pip, and venv for Schemdraw schematics and CAD dimension checks;
-- `curl`, `xz-utils`, X11/GL/EGL, Mesa, and Xvfb so headless Blender can
-  render, and `./tools/cad` needs nothing from the host;
+- Schemdraw and matplotlib in `/opt/electronics`;
+- a checksum-verified Blender at `/opt/blender`;
+- X11/GL/EGL, Mesa, Xvfb, and `xauth` so headless Blender can render;
 - the `thumbv8m.main-none-eabihf` compilation target;
 - native build, USB, and udev development libraries;
 - Rust, Python, TOML, LLDB, Markdown, and GitHub Actions editor integration.
 
-Container creation configures the repository pre-commit hook. The first
-`./tools/electronics` or `./tools/cad` installs that domain's toolchain into
-`.cache/electronics` or `.cache/blender`. Both live in the workspace, so they
-survive a rebuild and never touch the host.
+CI prebuilds this image, pushes it to GHCR, then runs CAD, electronics, and
+Rust as parallel `devcontainer exec` jobs against that digest. Subsequent
+prebuilds reuse the image layers when the Dockerfile is unchanged.
+
+Container creation configures the repository pre-commit hook. Host-only
+fallback downloads (`.cache/blender`, `.cache/electronics`) exist for people
+who run the tools outside the container.
 
 After create:
 
 ```sh
-./tools/electronics         # install if needed, test, then generate
-./tools/cad                 # install if needed, test, then generate
-make check                  # the full gate, including the Rust workspace
+./tools/electronics         # test, then generate (toolchain is already in the image)
+./tools/cad                 # test, then generate
+./tools/rust                # fmt, clippy, and tests
+make check                  # all three, sequentially
 ```
 
 Host-specific device access and hardware flashing policy do not belong in the

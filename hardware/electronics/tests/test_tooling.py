@@ -40,7 +40,7 @@ class SharedPipelineTest(unittest.TestCase):
                 self.assertIn(f"Usage: ./tools/{name}", source)
 
     def test_extra_arguments_are_an_error(self) -> None:
-        for name in RUNNERS:
+        for name in (*RUNNERS, "rust"):
             with self.subTest(runner=name):
                 result = subprocess.run(
                     [f"./tools/{name}", "check"],
@@ -98,6 +98,7 @@ class ElectronicsToolingTest(unittest.TestCase):
     def test_runner_bootstraps_a_local_venv(self) -> None:
         tool = runner_source("electronics")
         self.assertIn(".cache/electronics", tool)
+        self.assertIn("/opt/electronics", tool)
         self.assertIn("requirements.txt", tool)
         requirements = REPO / "hardware" / "electronics" / "requirements.txt"
         self.assertIn("schemdraw", requirements.read_text())
@@ -107,6 +108,7 @@ class ElectronicsToolingTest(unittest.TestCase):
     def test_cad_runner_caches_blender_instead_of_installing_it(self) -> None:
         tool = runner_source("cad")
         self.assertIn(".cache/blender", tool)
+        self.assertIn("/opt/blender/blender", tool)
         self.assertIn("BLENDER_BIN", tool)
         self.assertIn("sha256sum", tool)
         self.assertIn("xvfb-run", tool)
@@ -122,12 +124,14 @@ class ElectronicsToolingTest(unittest.TestCase):
         self.assertNotIn("kicad", post.lower())
         spec = json.loads((REPO / ".devcontainer" / "devcontainer.json").read_text())
         self.assertIn("post-create.sh", spec["postCreateCommand"])
+        self.assertEqual(spec["build"]["context"], "..")
         self.assertNotIn("KICAD_IMAGE", spec.get("containerEnv", {}))
         self.assertNotIn("initializeCommand", spec)
 
-    def test_devcontainer_image_can_run_both_toolchains(self) -> None:
-        """The image must ship every package the hardware jobs need."""
+    def test_devcontainer_image_ships_the_hardware_toolchains(self) -> None:
+        """The image must ship every package and download the jobs need."""
         dockerfile = (REPO / ".devcontainer" / "Dockerfile").read_text()
+        cad = runner_source("cad")
         for package in (
             "curl",
             "libegl1",
@@ -148,33 +152,48 @@ class ElectronicsToolingTest(unittest.TestCase):
             "xz-utils",
         ):
             self.assertIn(package, dockerfile, package)
+        self.assertIn("/opt/blender", dockerfile)
+        self.assertIn("/opt/electronics", dockerfile)
+        self.assertIn("hardware/electronics/requirements.txt", dockerfile)
+        self.assertIn("BLENDER_SHA256", dockerfile)
+        sha = "da4e69b06b75b9e642d106496c50e7e240218b411d2f6e18271c1d1d819cef91"
+        self.assertIn(sha, dockerfile)
+        self.assertIn(sha, cad)
+
+    def test_rust_runner_is_the_cargo_gate(self) -> None:
+        tool = runner_source("rust")
+        self.assertIn("cargo fmt --check", tool)
+        self.assertIn("cargo clippy", tool)
+        self.assertIn("cargo test --workspace --all-targets", tool)
+        self.assertNotIn("case ", tool)
 
 
 class ContinuousIntegrationTest(unittest.TestCase):
-    def test_ci_runs_the_same_full_job_as_a_developer(self) -> None:
+    def test_ci_prebuilds_then_runs_jobs_in_parallel(self) -> None:
         workflow = (REPO / ".github" / "workflows" / "ci.yml").read_text()
+        self.assertIn("prebuild:", workflow)
+        self.assertIn("devcontainer build", workflow)
         self.assertIn("@devcontainers/cli", workflow)
-        self.assertIn("devcontainer up --workspace-folder .", workflow)
-        self.assertIn(
-            "devcontainer exec --workspace-folder . ./tools/check", workflow
-        )
+        self.assertIn("command: ./tools/cad", workflow)
+        self.assertIn("command: ./tools/electronics", workflow)
+        self.assertIn("command: ./tools/rust", workflow)
+        self.assertIn("./.github/actions/run-in-devcontainer", workflow)
         self.assertIn("ghcr.io", workflow)
-        self.assertIn(".cache\n", workflow)
-        self.assertIn("target\n", workflow)
+        action = (REPO / ".github" / "actions" / "run-in-devcontainer" / "action.yml").read_text()
+        self.assertIn("with-devcontainer.sh", action)
+        self.assertIn("@devcontainers/cli", action)
         self.assertNotIn("sudo apt-get", workflow)
         self.assertNotIn("devcontainers/ci", workflow)
-        self.assertNotIn("run: ./tools/cad\n", workflow)
-        self.assertNotIn("run: ./tools/electronics\n", workflow)
+        self.assertNotIn("./tools/check", workflow)
         self.assertNotIn("./tools/cad check", workflow)
         self.assertNotIn("./tools/electronics check", workflow)
         for name in RUNNERS:
             self.assertIn(f"hardware/{name}/generated", workflow, name)
 
         check = (REPO / "tools" / "check").read_text()
-        self.assertIn("./tools/cad\n", check)
-        self.assertIn("./tools/electronics\n", check)
-        self.assertNotIn("./tools/cad check", check)
-        self.assertNotIn("./tools/electronics check", check)
+        self.assertIn("./tools/rust", check)
+        self.assertIn("./tools/cad", check)
+        self.assertIn("./tools/electronics", check)
 
         makefile = (REPO / "Makefile").read_text()
         self.assertNotIn("cad-check", makefile)

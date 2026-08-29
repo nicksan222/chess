@@ -2,6 +2,7 @@
   "name": "Chess",
   "build": {
     "dockerfile": "Dockerfile",
+    "context": "..",
     "args": {
       "VARIANT": "1-bookworm"
     }
@@ -39,7 +40,7 @@
         "files.watcherExclude": {
           "**/target/**": true
         },
-        "python.defaultInterpreterPath": "/usr/bin/python3",
+        "python.defaultInterpreterPath": "/opt/electronics/bin/python",
         "rust-analyzer.check.command": "check",
         "terminal.integrated.defaultProfile.linux": "bash"
       }

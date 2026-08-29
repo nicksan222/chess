@@ -19,6 +19,15 @@ setup() {
     mkdir -p "${repository_root}/.cache/matplotlib"
     export MPLBACKEND=Agg
     export MPLCONFIGDIR="${repository_root}/.cache/matplotlib"
+    if python3 -c "import schemdraw, matplotlib" >/dev/null 2>&1; then
+        return 0
+    fi
+    if [[ -x /opt/electronics/bin/python ]] \
+        && /opt/electronics/bin/python -c "import schemdraw, matplotlib" \
+            >/dev/null 2>&1; then
+        export PATH="/opt/electronics/bin:${PATH}"
+        return 0
+    fi
     if [[ ! -x "${venv_dir}/bin/python" ]]; then
         printf 'creating %s\n' "${venv_dir}" >&2
         python3 -m venv "${venv_dir}"
