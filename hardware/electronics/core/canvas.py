@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import re
 import uuid
 from collections.abc import Iterator
 from contextlib import contextmanager
@@ -17,6 +18,9 @@ os.environ.setdefault("MPLBACKEND", "Agg")
 import matplotlib
 
 matplotlib.use("Agg")
+# Element ids are hashed from this salt. Without a fixed one they change every
+# run, and a committed drawing would show as modified after every build.
+matplotlib.rcParams["svg.hashsalt"] = "chess-electronics"
 
 import schemdraw
 from schemdraw import elements as elm
@@ -403,15 +407,22 @@ class Schematic:
         svg = directory / f"{stem}.svg"
         png = directory / f"{stem}.png"
         self.drawing.save(str(svg))
-        # Matplotlib breaks path data across lines and leaves a trailing space on
-        # each; the repository rejects trailing whitespace, so normalise it here
-        # rather than exempting generated files from the rule.
-        svg.write_text(
-            "\n".join(line.rstrip() for line in svg.read_text().splitlines()) + "\n"
-        )
+        svg.write_text(self._normalise(svg.read_text()))
         self.drawing.save(str(png), transparent=False, dpi=self._png_dpi())
         print(f"wrote {svg} and {png}")
         return svg
+
+    def _normalise(self, svg: str) -> str:
+        """Make a rebuilt drawing byte-identical when nothing has changed.
+
+        Matplotlib stamps the current time into the metadata, and it breaks path
+        data across lines with a trailing space on each, which the repository's
+        whitespace check rejects.
+        """
+        svg = re.sub(
+            r"<dc:date>[^<]*</dc:date>", f"<dc:date>{self.info.date}</dc:date>", svg
+        )
+        return "\n".join(line.rstrip() for line in svg.splitlines()) + "\n"
 
     def _png_dpi(self) -> float:
         """Keep the screenshot openable; the SVG is the zoomable master."""

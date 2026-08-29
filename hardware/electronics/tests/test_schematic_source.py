@@ -108,6 +108,12 @@ class SchematicSourceTest(unittest.TestCase):
             ]
             self.assertEqual(offenders[:5], [], path.name)
 
+    def test_rebuilding_a_drawing_changes_nothing(self) -> None:
+        """A committed artefact must not churn on every build."""
+        before = SQUARE_SVG.read_text()
+        load_generator("square").build()
+        self.assertEqual(SQUARE_SVG.read_text(), before)
+
     def test_component_list_is_generated_with_quantities(self) -> None:
         text = BOM.read_text()
         self.assertIn("do not edit by hand", text)
