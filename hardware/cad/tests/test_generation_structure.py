@@ -1,7 +1,6 @@
 """Tests for CAD generator ownership, reuse, and main-runner ordering."""
 
 from pathlib import Path
-import subprocess
 import unittest
 
 
@@ -12,16 +11,17 @@ GENERATED = CAD_ROOT / "generated"
 
 
 class GeneratorStructureTest(unittest.TestCase):
-    def test_main_runner_discovers_every_project_in_dependency_order(self) -> None:
-        result = subprocess.run(
-            ["./tools/cad", "list"],
-            cwd=REPOSITORY_ROOT,
-            check=True,
-            text=True,
-            capture_output=True,
-        )
+    def test_projects_declare_dependency_order(self) -> None:
+        ranked = []
+        for generate in PROJECTS.glob("*/generate.py"):
+            order_file = generate.parent / "generation-order"
+            order = 100
+            if order_file.is_file():
+                order = int(order_file.read_text().splitlines()[0])
+            ranked.append((order, str(generate.relative_to(REPOSITORY_ROOT))))
+        ranked.sort()
         self.assertEqual(
-            result.stdout.splitlines(),
+            [path for _, path in ranked],
             [
                 "hardware/cad/projects/single-tile-top/generate.py",
                 "hardware/cad/projects/single-tile-bottom/generate.py",

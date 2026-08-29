@@ -30,8 +30,7 @@ Never edit anything in `generated/`; rerun the build instead.
 Add a directory under `projects/` with a `generate.py` that defines `build()`.
 The runner discovers it. A project may include a `generation-order` file
 containing a non-negative integer when it depends on another project's output;
-projects without one default to 100. Run `./tools/cad list` to inspect the
-execution order without starting Blender.
+projects without one default to 100. Lower numbers run first.
 
 A generator writes `GENERATED / f"{NAME}.blend"` plus one PNG per view, named
 `<project>.png` or `<project>-<view>.png`.
@@ -42,8 +41,8 @@ A generator writes `GENERATED / f"{NAME}.blend"` plus one PNG per view, named
 projects. It derives the playing span from square size and grid count, derives
 the physical tile size from fit clearance, and validates the printable
 enclosure, Velcro pockets, optional screw mounts, and board envelope. Project
-READMEs describe intent rather than duplicating those values, and the quality
-gate runs the same validation without invoking Blender.
+READMEs describe intent rather than duplicating those values. Dimension tests
+run the same validation without Blender; `./tools/cad` then generates with it.
 
 `core/materials.py` owns procedural presentation materials. They make review
 renders readable but do not specify purchased material, finish, or process.
@@ -62,7 +61,7 @@ exact generated objects rather than redefining printable geometry.
 
 ## Toolchain
 
-`./tools/cad setup` downloads a checksum-verified Blender build into the
-ignored `.cache` directory. Set `BLENDER_BIN` to use an existing install
-instead, which is required on platforms without a published Linux x86_64 build.
-Manufacturing exports remain deliberately separate.
+`./tools/cad` downloads a checksum-verified Blender build into the ignored
+`.cache` directory if one is not already there. Set `BLENDER_BIN` to use an
+existing install instead, which is required on platforms without a published
+Linux x86_64 build. Manufacturing exports remain deliberately separate.

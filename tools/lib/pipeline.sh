@@ -1,8 +1,7 @@
-# Shared project listing for the hardware tools.
+# Shared project listing for the hardware generators.
 #
-# Both runners keep their own setup / test / generate steps so a person can
-# read them top to bottom. This file only answers "which generate.py files,
-# and in what order?" so the two domains cannot drift.
+# Not a user-facing command. Both runners source this so generate walks
+# projects/*/generate.py in the same generation-order.
 
 list_projects() {
     local generator order order_file lines

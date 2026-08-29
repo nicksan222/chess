@@ -50,12 +50,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # The container is the documented way in. Electronics is the full
-      # sequential job; CAD check is setup and tests so the long render
-      # stays in the dedicated CAD job.
+      # The container is the documented way in. Both hardware tools run
+      # the same sequential job a developer would.
       - uses: devcontainers/ci@v0.3
         with:
-          runCmd: ./tools/electronics && ./tools/cad check
+          runCmd: ./tools/electronics && ./tools/cad
 
   host-workspace:
     runs-on: ubuntu-latest
@@ -64,4 +63,16 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
+      - name: Install hardware runtime libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends \
+            libdecor-0-0 libgl1 libice6 libsm6 libx11-6 libxext6 libxfixes3 \
+            libxi6 libxkbcommon0 libxrender1 python3 python3-pip python3-venv \
+            xz-utils
+      - name: Cache Blender
+        uses: actions/cache@v4
+        with:
+          path: .cache/blender
+          key: blender-4.5.13-linux-x64
       - run: .githooks/pre-commit

@@ -10,8 +10,8 @@ shrinkage, bridging, layer adhesion, supports, or printer calibration. Generated
 mesh topology, volume, and measured bounding boxes are checked separately by
 `../validation.py` whenever Blender regeneration runs.
 
-Generator-structure tests also require the main CAD runner to discover the lid,
-tray, merged tile, empty board, and board assembly in dependency order. They
+Generator-structure tests also check `generation-order` so the lid, tray,
+merged tile, empty board, and board assembly run in dependency order. They
 ensure every printable object has one owning generator and that view generators
 import those outputs instead of recreating geometry.
 

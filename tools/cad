@@ -4,6 +4,11 @@ set -euo pipefail
 repository_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "${repository_root}"
 
+if [[ $# -ne 0 ]]; then
+    printf 'Usage: ./tools/cad\n' >&2
+    exit 2
+fi
+
 domain_dir=hardware/cad
 blender_version="4.5.13"
 blender_archive="blender-${blender_version}-linux-x64.tar.xz"
@@ -62,41 +67,6 @@ generate() {
     done < <(list_projects)
 }
 
-if [[ $# -eq 0 ]]; then
-    setup
-    run_tests
-    generate
-    exit 0
-fi
-
-case "$1" in
-    list) list_projects ;;
-    setup) setup ;;
-    check)
-        setup
-        run_tests
-        ;;
-    build | generate)
-        setup
-        generate
-        ;;
-    help | -h | --help)
-        cat <<EOF
-Usage: ./tools/cad [command]
-
-With no command, does the full job: install Blender if needed, test, generate.
-
-Commands:
-  (default)  Setup, test, then generate
-  list       Show project generate.py files in dependency order
-  setup      Install Blender only
-  check      Setup and run tests
-  build      Setup and generate
-  help       Show this message
-EOF
-        ;;
-    *)
-        printf 'error: unknown cad command: %s\n' "$1" >&2
-        exit 2
-        ;;
-esac
+setup
+run_tests
+generate

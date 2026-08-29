@@ -64,7 +64,7 @@ Add a directory under `projects/` with a `generate.py` exposing `assemble()`
 and `build()`. The runner discovers it; so does the bill of materials. A
 project may include a `generation-order` file containing a non-negative integer
 when it depends on another project's output; projects without one default to
-100. Run `./tools/electronics list` to inspect the execution order.
+100. Lower numbers run first.
 
 ## Drawing scale
 

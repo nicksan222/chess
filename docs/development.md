@@ -29,10 +29,10 @@ The image provides:
 - native build, USB, and udev development libraries;
 - Rust, Python, TOML, LLDB, Markdown, and GitHub Actions editor integration.
 
-Container creation configures the repository's pre-commit hook and prepares
-both hardware toolchains with `./tools/electronics setup` and `./tools/cad
-setup`, so the first build is not also the first download. Creation deliberately
-stops there rather than running the full gate; `make check` is one command away.
+Container creation configures the repository's pre-commit hook. The first
+`./tools/electronics` or `./tools/cad` installs that domain's toolchain into
+`.cache`. Creation deliberately stops there rather than running the full gate;
+`make check` is one command away.
 The portable configuration does not expose host USB devices or install a
 flashing utility; those choices depend on the firmware tooling and host
 operating system.
@@ -40,18 +40,15 @@ operating system.
 ## Hardware pipelines
 
 `hardware/cad` and `hardware/electronics` are the same shape, and
-`./tools/cad` and `./tools/electronics` do the same sequential job:
+`./tools/cad` and `./tools/electronics` do the same sequential job with no
+subcommands:
 
 ```sh
 ./tools/<domain>           # install if needed, test, then generate
-./tools/<domain> list      # project generators in dependency order
-./tools/<domain> setup     # install the toolchain only
-./tools/<domain> check     # install if needed, then test
-./tools/<domain> build     # install if needed, then generate
 ```
 
-Both scripts source `tools/lib/pipeline.sh` only to list projects in
-`generation-order`. Setup, tests and generate stay in the runner.
+Extra arguments are an error. Both scripts source `tools/lib/pipeline.sh` only
+so generate can list projects in `generation-order`.
 
 Each domain keeps its source in `core/`, `blocks/`, `projects/` and `tests/`,
 and writes everything it produces to `generated/`. Electronics additionally has
@@ -84,9 +81,10 @@ Run the complete quality gate directly with:
 ./tools/check
 ```
 
-The gate checks host and firmware formatting, validates and tests the generated
-CAD and electronics schematic, type-checks all host workspace targets, runs Clippy
-with warnings denied, and runs all host tests. The firmware application at
+The gate checks host and firmware formatting, runs the full CAD and electronics
+jobs (install if needed, test, generate), type-checks all host workspace
+targets, runs Clippy with warnings denied, and runs all host tests. The firmware
+application at
 `apps/firmware` is an independent embedded project, so embedded type-checking
 remains deferred until its runtime and linker setup exist.
 

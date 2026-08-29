@@ -15,8 +15,8 @@ run_check() {
 run_check "Format host workspace" cargo fmt --check
 run_check "Format firmware application" \
     cargo fmt --manifest-path apps/firmware/Cargo.toml --check
-run_check "Check CAD" ./tools/cad check
-run_check "Check electronics" ./tools/electronics check
+run_check "CAD" ./tools/cad
+run_check "Electronics" ./tools/electronics
 run_check "Type-check host workspace" cargo check --workspace --all-targets
 run_check "Lint host workspace" \
     cargo clippy --workspace --all-targets -- -D warnings

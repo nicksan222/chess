@@ -16,15 +16,15 @@ The image provides:
 - stable Rust with `rustfmt` and Clippy;
 - Python 3, pip, and venv for Schemdraw schematics and CAD dimension checks;
 - `curl`, `xz-utils`, and the X11 and GL libraries Blender links against even in
-  background mode, so `./tools/cad setup` needs nothing from the host;
+  background mode, so `./tools/cad` needs nothing from the host;
 - the `thumbv8m.main-none-eabihf` compilation target;
 - native build, USB, and udev development libraries;
 - Rust, Python, TOML, LLDB, Markdown, and GitHub Actions editor integration.
 
-Container creation configures the repository pre-commit hook and runs
-`./tools/electronics setup` and `./tools/cad setup`, which install Schemdraw
-into `.cache/electronics` and Blender into `.cache/blender`. Both live in the
-workspace, so they survive a rebuild and never touch the host.
+Container creation configures the repository pre-commit hook. The first
+`./tools/electronics` or `./tools/cad` installs that domain's toolchain into
+`.cache/electronics` or `.cache/blender`. Both live in the workspace, so they
+survive a rebuild and never touch the host.
 
 After create:
 

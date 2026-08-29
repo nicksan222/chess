@@ -1,25 +1,15 @@
-.PHONY: all cad cad-check check electronics electronics-check gen regen-all setup
+.PHONY: all cad check electronics gen regen-all
 
 all: check
 
 check:
 	./tools/check
 
-setup:
-	./tools/cad setup
-	./tools/electronics setup
-
 cad:
 	./tools/cad
 
-cad-check:
-	./tools/cad check
-
 electronics:
 	./tools/electronics
-
-electronics-check:
-	./tools/electronics check
 
 gen: cad electronics
 
