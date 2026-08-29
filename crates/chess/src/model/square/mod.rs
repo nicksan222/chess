@@ -10,8 +10,8 @@ use core::fmt;
 
 /// A validated square on an 8×8 chessboard.
 ///
-/// Indices use the conventional bitboard mapping: `a1` is first, files
-/// increase toward `h`, ranks increase toward rank 8, and `h8` is last.
+/// Board indices start at `a1`, advance through each file toward `h`, then
+/// continue rank by rank until `h8`.
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(transparent)]
 pub struct Square(SquareIndex);
@@ -43,7 +43,7 @@ impl Square {
         Self(SquareIndex(index))
     }
 
-    /// Returns the square's validated bitboard index.
+    /// Returns the square's validated board index.
     #[must_use]
     pub const fn index(self) -> SquareIndex {
         self.0

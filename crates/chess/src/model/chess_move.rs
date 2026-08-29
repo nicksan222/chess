@@ -5,7 +5,7 @@ use super::{PieceKind, Square};
 /// A chess move's origin, destination, and optional promotion.
 ///
 /// This value records move intent. Whether a move is legal in a particular
-/// position belongs to move generation and game-state validation.
+/// board belongs to move generation and game-state validation.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct ChessMove {
     from: Square,
