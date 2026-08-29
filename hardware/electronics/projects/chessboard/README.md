@@ -2,12 +2,12 @@
 
 `generate.py` owns the full revision-A schematic: battery power, Pico 2 W,
 level shifter, 8×8 reed matrix, and serpentine LED chain. It places sixty-four
-copies of the shared square cells from `../cells.py` plus the controller and
+copies of the shared square cells from `blocks/` plus the controller and
 power subsystems.
 
-Published output is `chessboard.svg` and `chessboard.png` at the top of
-`hardware/electronics`, plus this project's section of
-[`bom.md`](../../bom.md).
+Published output is `chessboard.svg` and `chessboard.png` in
+`hardware/electronics/generated`, plus this project's section of
+[`bom.md`](../../generated/bom.md).
 
 ## Controller assignment
 

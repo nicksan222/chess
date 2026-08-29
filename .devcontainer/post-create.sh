@@ -17,8 +17,7 @@ cat <<'EOF'
 
 The container is ready. Both hardware toolchains are installed under .cache.
 
-  ./tools/electronics check   generate schematics, BOM, and run the tests
-  ./tools/cad check           validate dimensions and run the tests
-  ./tools/cad build           re-render every Blender model
+  ./tools/electronics         install if needed, test, then generate
+  ./tools/cad                 install if needed, test, then generate
   make check                  the full gate, including the Rust workspace
 EOF

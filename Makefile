@@ -10,13 +10,13 @@ setup:
 	./tools/electronics setup
 
 cad:
-	./tools/cad build
+	./tools/cad
 
 cad-check:
 	./tools/cad check
 
 electronics:
-	./tools/electronics build
+	./tools/electronics
 
 electronics-check:
 	./tools/electronics check

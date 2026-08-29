@@ -6,7 +6,7 @@ from Python; derived manufacturing files are not source models.
 Regenerate everything from the repository root with:
 
 ```sh
-make cad
+./tools/cad
 ```
 
 ## Layout

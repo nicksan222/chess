@@ -6,14 +6,14 @@ Record mechanical source conventions and reviewed design decisions.
 
 ## Known direction
 
-Editable Blender files under `hardware/cad` are source; manufacturing
+Python generators under `hardware/cad/projects` are source; the `.blend`
+models they produce live in `hardware/cad/generated`. Manufacturing
 exports will be derived later.
 
 Each Blender design owns a directory under `hardware/cad/projects` containing
 its generator and documentation; the models and renders it produces are written
-to `hardware/cad/generated`. Run `make cad` from the repository root to
-regenerate all of them locally, or `make regen-all` for CAD and electronics
-together.
+to `hardware/cad/generated`. Run `./tools/cad` from the repository root to
+regenerate all of them locally, or `./tools/electronics` for the drawings.
 
 Shared CAD measurements live in `hardware/cad/core/dimensions.py`. Derived
 relationships are checked during generation, including playing span, overall

@@ -6,8 +6,8 @@ from the [`devcontainer` CLI](https://github.com/devcontainers/cli):
 
 ```sh
 devcontainer up --workspace-folder .
-devcontainer exec --workspace-folder . ./tools/electronics check
-devcontainer exec --workspace-folder . ./tools/cad check
+devcontainer exec --workspace-folder . ./tools/electronics
+devcontainer exec --workspace-folder . ./tools/cad
 devcontainer exec --workspace-folder . make check
 ```
 
@@ -29,9 +29,8 @@ workspace, so they survive a rebuild and never touch the host.
 After create:
 
 ```sh
-./tools/electronics check   # generate schematics, BOM, and run the tests
-./tools/cad check           # validate dimensions and run the tests
-./tools/cad build           # re-render every Blender model
+./tools/electronics         # install if needed, test, then generate
+./tools/cad                 # install if needed, test, then generate
 make check                  # the full gate, including the Rust workspace
 ```
 

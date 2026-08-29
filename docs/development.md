@@ -12,8 +12,8 @@ Container**, or use the
 
 ```sh
 devcontainer up --workspace-folder .
-devcontainer exec --workspace-folder . ./tools/electronics check
-devcontainer exec --workspace-folder . ./tools/cad check
+devcontainer exec --workspace-folder . ./tools/electronics
+devcontainer exec --workspace-folder . ./tools/cad
 devcontainer exec --workspace-folder . make check
 ```
 
@@ -40,17 +40,18 @@ operating system.
 ## Hardware pipelines
 
 `hardware/cad` and `hardware/electronics` are the same shape, and
-`./tools/cad` and `./tools/electronics` accept the same commands:
+`./tools/cad` and `./tools/electronics` do the same sequential job:
 
 ```sh
+./tools/<domain>           # install if needed, test, then generate
 ./tools/<domain> list      # project generators in dependency order
 ./tools/<domain> setup     # install the toolchain only
-./tools/<domain> build     # run every project generator
-./tools/<domain> check     # run that domain's checks
+./tools/<domain> check     # install if needed, then test
+./tools/<domain> build     # install if needed, then generate
 ```
 
-Both runners source `tools/lib/pipeline.sh`, which owns discovery, ordering and
-dispatch, so the two stay identical by construction.
+Both scripts source `tools/lib/pipeline.sh` only to list projects in
+`generation-order`. Setup, tests and generate stay in the runner.
 
 Each domain keeps its source in `core/`, `blocks/`, `projects/` and `tests/`,
 and writes everything it produces to `generated/`. Electronics additionally has

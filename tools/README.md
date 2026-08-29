@@ -5,25 +5,34 @@ runtime behavior does not belong here.
 
 `check` is the canonical local and CI quality gate.
 
-`cad` and `electronics` are the two hardware entry points. They are deliberately
-identical: both source `lib/pipeline.sh`, which owns project discovery,
-`generation-order` sorting and command dispatch, so each runner only supplies
-the parts that genuinely differ — its toolchain, how one generator is executed,
-and its own checks.
+`cad` and `electronics` are the two hardware entry points. Invoking either
+with no arguments does the full job, in order:
 
-Both accept the same commands:
+1. Install the toolchain if it is not already there.
+2. Run that domain's tests.
+3. Run every project generator.
+
+```sh
+./tools/cad
+./tools/electronics
+```
+
+Optional commands stay available when you only want one of those steps:
 
 | Command | Effect |
 |---|---|
 | `list` | Show project generators in dependency order |
-| `setup` | Install the toolchain only, without generating |
-| `build` | Run every project generator |
-| `generate` | Same as `build` |
-| `check` | Run that domain's checks |
+| `setup` | Install the toolchain only |
+| `check` | Setup, then run tests |
+| `build` | Setup, then generate |
 | `help` | Show usage |
 
+Both scripts source `lib/pipeline.sh` only to list `projects/*/generate.py`
+in `generation-order`. Setup, tests and generate stay in the runner so each
+file reads top to bottom.
+
 Each domain writes all of its output to `hardware/<domain>/generated`, and
-`build` clears that folder first so a removed project cannot leave a stale
+generate clears that folder first so a removed project cannot leave a stale
 artefact behind.
 
 The toolchains install into the ignored `.cache` directory rather than onto the

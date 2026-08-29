@@ -4,24 +4,20 @@ set -euo pipefail
 repository_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "${repository_root}"
 
-readonly domain=cad
-readonly domain_dir=hardware/cad
-readonly blender_version="4.5.13"
-readonly blender_archive="blender-${blender_version}-linux-x64.tar.xz"
-readonly blender_sha256="da4e69b06b75b9e642d106496c50e7e240218b411d2f6e18271c1d1d819cef91"
-readonly blender_url="https://download.blender.org/release/Blender4.5/${blender_archive}"
-readonly cache_root="${repository_root}/.cache/blender"
-readonly archive_path="${cache_root}/${blender_archive}"
-readonly cached_blender="${cache_root}/blender-${blender_version}-linux-x64/blender"
+domain_dir=hardware/cad
+blender_version="4.5.13"
+blender_archive="blender-${blender_version}-linux-x64.tar.xz"
+blender_sha256="da4e69b06b75b9e642d106496c50e7e240218b411d2f6e18271c1d1d819cef91"
+blender_url="https://download.blender.org/release/Blender4.5/${blender_archive}"
+cache_root="${repository_root}/.cache/blender"
+archive_path="${cache_root}/${blender_archive}"
+cached_blender="${cache_root}/blender-${blender_version}-linux-x64/blender"
+blender_bin=""
 
 # shellcheck source=tools/lib/pipeline.sh
 source tools/lib/pipeline.sh
 
-blender_bin=""
-
-# Blender is downloaded into .cache rather than installed, so the host stays
-# untouched. BLENDER_BIN overrides it on platforms without a published build.
-setup_toolchain() {
+setup() {
     if [[ -n "${BLENDER_BIN:-}" ]]; then
         if [[ ! -x "${BLENDER_BIN}" ]]; then
             printf 'BLENDER_BIN is not executable: %s\n' "${BLENDER_BIN}" >&2
@@ -49,22 +45,58 @@ setup_toolchain() {
     blender_bin="${cached_blender}"
 }
 
-clean_artefacts() {
+run_tests() {
+    printf '\n==> Validate cad dimensions\n'
+    python3 "${domain_dir}/core/dimensions.py"
+    printf '\n==> Test cad\n'
+    python3 -m unittest discover -s "${domain_dir}/tests"
+}
+
+generate() {
     mkdir -p "${domain_dir}/generated"
     find "${domain_dir}/generated" -maxdepth 1 -type f ! -name README.md -delete
+    local generator
+    while IFS= read -r generator; do
+        printf '\n==> Generate %s\n' "$(dirname -- "${generator}")"
+        "${blender_bin}" --background --factory-startup --python "${generator}"
+    done < <(list_projects)
 }
 
-run_generator() {
-    "${blender_bin}" --background --factory-startup --python "$1"
-}
+if [[ $# -eq 0 ]]; then
+    setup
+    run_tests
+    generate
+    exit 0
+fi
 
-run_checks() {
-    printf '\n==> Validate %s dimensions\n' "${domain}"
-    python3 "${domain_dir}/core/dimensions.py"
-    printf '\n==> Test %s\n' "${domain}"
-    python3 -m unittest discover -s "${domain_dir}/tests"
-    printf '\n==> Discover %s generators\n' "${domain}"
-    pipeline_list
-}
+case "$1" in
+    list) list_projects ;;
+    setup) setup ;;
+    check)
+        setup
+        run_tests
+        ;;
+    build | generate)
+        setup
+        generate
+        ;;
+    help | -h | --help)
+        cat <<EOF
+Usage: ./tools/cad [command]
 
-pipeline_main "$@"
+With no command, does the full job: install Blender if needed, test, generate.
+
+Commands:
+  (default)  Setup, test, then generate
+  list       Show project generate.py files in dependency order
+  setup      Install Blender only
+  check      Setup and run tests
+  build      Setup and generate
+  help       Show this message
+EOF
+        ;;
+    *)
+        printf 'error: unknown cad command: %s\n' "$1" >&2
+        exit 2
+        ;;
+esac

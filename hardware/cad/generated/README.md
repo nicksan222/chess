@@ -1,11 +1,11 @@
 # Generated CAD artefacts
 
-Build output. Do not edit anything here by hand; rerun the build instead:
+Build output. Do not edit anything here by hand; rerun the tool instead:
 
 ```sh
-./tools/cad build
+./tools/cad
 ```
 
 Every project writes `<project>.blend` plus one PNG per view, named
-`<project>.png` or `<project>-<view>.png`. `./tools/cad build` clears this
-folder first, so a removed project cannot leave a stale model behind.
+`<project>.png` or `<project>-<view>.png`. `./tools/cad` clears this
+folder first so a removed project cannot leave a stale model behind.

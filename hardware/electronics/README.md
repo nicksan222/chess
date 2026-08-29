@@ -8,7 +8,7 @@ project.
 Regenerate everything from the repository root with:
 
 ```sh
-make electronics
+./tools/electronics
 ```
 
 ## Layout

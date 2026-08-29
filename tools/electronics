@@ -4,16 +4,13 @@ set -euo pipefail
 repository_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "${repository_root}"
 
-readonly domain=electronics
-readonly domain_dir=hardware/electronics
-readonly venv_dir="${repository_root}/.cache/electronics"
+domain_dir=hardware/electronics
+venv_dir="${repository_root}/.cache/electronics"
 
 # shellcheck source=tools/lib/pipeline.sh
 source tools/lib/pipeline.sh
 
-# Schemdraw and Matplotlib come from a virtual environment under .cache so the
-# host Python stays untouched.
-setup_toolchain() {
+setup() {
     mkdir -p "${repository_root}/.cache/matplotlib"
     export MPLBACKEND=Agg
     export MPLCONFIGDIR="${repository_root}/.cache/matplotlib"
@@ -27,24 +24,58 @@ setup_toolchain() {
     export PATH="${venv_dir}/bin:${PATH}"
 }
 
-clean_artefacts() {
+run_tests() {
+    printf '\n==> Test electronics\n'
+    python3 -m unittest discover -s "${domain_dir}/tests"
+}
+
+generate() {
     mkdir -p "${domain_dir}/generated"
     find "${domain_dir}/generated" -maxdepth 1 -type f ! -name README.md -delete
-}
-
-run_generator() {
-    python3 "$1"
-}
-
-post_build() {
+    local generator
+    while IFS= read -r generator; do
+        printf '\n==> Generate %s\n' "$(dirname -- "${generator}")"
+        python3 "${generator}"
+    done < <(list_projects)
     printf '\n==> Bill of materials\n'
     python3 "${domain_dir}/core/bom.py"
 }
 
-run_checks() {
-    pipeline_build
-    printf '\n==> Test %s\n' "${domain}"
-    python3 -m unittest discover -s "${domain_dir}/tests"
-}
+if [[ $# -eq 0 ]]; then
+    setup
+    run_tests
+    generate
+    exit 0
+fi
 
-pipeline_main "$@"
+case "$1" in
+    list) list_projects ;;
+    setup) setup ;;
+    check)
+        setup
+        run_tests
+        ;;
+    build | generate)
+        setup
+        generate
+        ;;
+    help | -h | --help)
+        cat <<EOF
+Usage: ./tools/electronics [command]
+
+With no command, does the full job: install Schemdraw if needed, test, generate.
+
+Commands:
+  (default)  Setup, test, then generate
+  list       Show project generate.py files in dependency order
+  setup      Install the toolchain only
+  check      Setup and run tests
+  build      Setup and generate
+  help       Show this message
+EOF
+        ;;
+    *)
+        printf 'error: unknown electronics command: %s\n' "$1" >&2
+        exit 2
+        ;;
+esac

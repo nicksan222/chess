@@ -89,6 +89,24 @@ class GeneratorStructureTest(unittest.TestCase):
             },
         )
 
+    def test_legacy_layout_is_removed(self) -> None:
+        self.assertFalse((ELECTRONICS_ROOT / "chessboard").exists())
+        self.assertFalse((ELECTRONICS_ROOT / "square").exists())
+        self.assertFalse((ELECTRONICS_ROOT / "renders").exists())
+        self.assertFalse((ELECTRONICS_ROOT / "kicad").exists())
+        square = (PROJECTS / "square" / "generate.py").read_text()
+        chessboard = (PROJECTS / "chessboard" / "generate.py").read_text()
+        self.assertIn(
+            "hardware/electronics/projects/square/generate.py", square
+        )
+        self.assertIn(
+            "hardware/electronics/projects/chessboard/generate.py", chessboard
+        )
+        self.assertNotIn("hardware/electronics/square/generate.py", square)
+        self.assertNotIn(
+            "hardware/electronics/chessboard/generate.py", chessboard
+        )
+
     def test_runner_rebuilds_the_bill_of_materials_after_generating(self) -> None:
         runner = (REPOSITORY_ROOT / "tools" / "electronics").read_text()
         self.assertIn("core/bom.py", runner)
