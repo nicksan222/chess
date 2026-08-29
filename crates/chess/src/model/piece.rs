@@ -83,4 +83,18 @@ impl Piece {
     pub const fn square(self) -> Square {
         self.square
     }
+
+    /// Returns every currently legal destination for this piece.
+    #[must_use]
+    pub fn where_can_move(self, board: &crate::Board) -> crate::SquareSet {
+        board.destinations(self)
+    }
+
+    pub(crate) const fn at(self, square: Square) -> Self {
+        Self { square, ..self }
+    }
+
+    pub(crate) const fn promoted(self, kind: PieceKind) -> Self {
+        Self { kind, ..self }
+    }
 }

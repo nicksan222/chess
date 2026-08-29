@@ -1,6 +1,6 @@
 use core::{fmt, iter::FusedIterator, num::NonZeroU32};
 
-use super::{Color, Piece, PieceKind, Square, SquareSet};
+use super::{Color, Piece, PieceKind, Rank, Square, SquareSet};
 
 const fn initial_pieces() -> [Option<Piece>; Square::COUNT] {
     let mut pieces = [None; Square::COUNT];
@@ -139,6 +139,10 @@ impl HalfmoveClock {
     pub const fn value(self) -> u32 {
         self.0
     }
+
+    pub(crate) fn increment(&mut self) {
+        self.0 = self.0.saturating_add(1);
+    }
 }
 
 impl fmt::Display for HalfmoveClock {
@@ -168,6 +172,12 @@ impl FullmoveNumber {
     #[must_use]
     pub const fn value(self) -> u32 {
         self.0.get()
+    }
+
+    pub(crate) fn increment(&mut self) {
+        if let Some(next) = self.0.get().checked_add(1).and_then(NonZeroU32::new) {
+            self.0 = next;
+        }
     }
 }
 
@@ -332,6 +342,37 @@ impl Board {
     /// Replaces the validated fullmove number.
     pub fn set_fullmove_number(&mut self, number: FullmoveNumber) {
         self.fullmove_number = number;
+    }
+
+    pub(crate) fn finish_move(&mut self, moved: Piece, captured: Option<Piece>, double_push: bool) {
+        if moved.kind() == PieceKind::Pawn || captured.is_some() {
+            self.halfmove_clock = HalfmoveClock::ZERO;
+        } else {
+            self.halfmove_clock.increment();
+        }
+        self.en_passant_target = if double_push {
+            let rank_delta = match moved.color() {
+                Color::White => 1,
+                Color::Black => -1,
+            };
+            moved
+                .square()
+                .offset(super::SquareOffset::new(0, rank_delta))
+        } else {
+            None
+        };
+        if moved.color() == Color::Black {
+            self.fullmove_number.increment();
+        }
+        self.side_to_move = moved.color().opposite();
+    }
+
+    pub(crate) fn is_back_rank(square: Square, color: Color) -> bool {
+        square.rank()
+            == match color {
+                Color::White => Rank::Eight,
+                Color::Black => Rank::One,
+            }
     }
 }
 
