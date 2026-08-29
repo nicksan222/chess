@@ -5,6 +5,7 @@ mod calculators;
 mod error;
 mod forced;
 mod generation;
+mod piece;
 mod transition;
 
 pub use error::MoveError;
