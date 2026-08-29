@@ -265,6 +265,10 @@ impl Square {
         }
     }
 
+    pub(crate) const fn from_raw_index_unchecked(index: u8) -> Self {
+        Self(SquareIndex(index))
+    }
+
     /// Returns the square's validated bitboard index.
     #[must_use]
     pub const fn index(self) -> SquareIndex {

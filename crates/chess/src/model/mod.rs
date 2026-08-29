@@ -1,11 +1,15 @@
 //! Foundational, notation-independent chess values.
 
+mod board;
 mod chess_move;
 mod color;
 mod piece;
 mod square;
 mod square_set;
 
+pub use board::{
+    Board, BoardPieces, CastlingRights, FullmoveNumber, HalfmoveClock, InvalidFullmoveNumber,
+};
 pub use chess_move::{ChessMove, InvalidPromotion};
 pub use color::Color;
 pub use piece::{Piece, PieceKind};
