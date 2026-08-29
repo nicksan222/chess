@@ -12,7 +12,7 @@ pub use game::{
 };
 pub use model::{
     AllSquares, Board, BoardDirection, BoardEdge, BoardPieces, CastlingRights, ChessMove, Color,
-    File, FullmoveNumber, HalfmoveClock, InvalidFullmoveNumber, InvalidPromotion, InvalidSquare,
-    ParseMoveError, ParseSquareError, Piece, PieceKind, Rank, Square, SquareCount, SquareIndex,
-    SquareOffset, SquareRay, SquareSet, SquareSetSquares,
+    File, FileOffset, FullmoveNumber, HalfmoveClock, InvalidFullmoveNumber, InvalidPromotion,
+    InvalidSquare, ParseMoveError, ParseSquareError, Piece, PieceKind, Rank, RankOffset, Square,
+    SquareCount, SquareIndex, SquareOffset, SquareRay, SquareSet, SquareSetSquares,
 };

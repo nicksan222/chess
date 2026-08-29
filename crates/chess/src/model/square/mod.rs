@@ -3,12 +3,14 @@ mod coordinate;
 mod geometry;
 mod index;
 mod iter;
+mod offset;
 mod parse;
 
 pub use coordinate::{File, Rank};
-pub use geometry::{BoardDirection, BoardEdge, SquareOffset};
+pub use geometry::{BoardDirection, BoardEdge};
 pub use index::{InvalidSquare, SquareIndex};
 pub use iter::{AllSquares, SquareRay};
+pub use offset::{FileOffset, RankOffset, SquareOffset};
 pub use parse::ParseSquareError;
 
 use core::fmt;
@@ -94,8 +96,8 @@ impl Square {
     /// Returns the square at `offset`, if it remains on-board.
     #[must_use]
     pub const fn offset(self, offset: SquareOffset) -> Option<Self> {
-        let file = self.file().index() as i16 + offset.files() as i16;
-        let rank = self.rank().index() as i16 + offset.ranks() as i16;
+        let file = self.file().index() as i16 + offset.files().value() as i16;
+        let rank = self.rank().index() as i16 + offset.ranks().value() as i16;
         if file >= 0 && file < 8 && rank >= 0 && rank < 8 {
             Some(Self(SquareIndex((rank * 8 + file) as u8)))
         } else {

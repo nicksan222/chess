@@ -1,4 +1,4 @@
-use crate::{Board, BoardDirection, Piece, SquareOffset, SquareSet};
+use crate::{Board, BoardDirection, FileOffset, Piece, RankOffset, SquareOffset, SquareSet};
 
 pub(super) const DIAGONALS: [BoardDirection; 4] = [
     BoardDirection::TowardRank8FileH,
@@ -15,14 +15,14 @@ pub(super) const ORTHOGONALS: [BoardDirection; 4] = [
 ];
 
 pub(super) const KING_OFFSETS: [SquareOffset; 8] = [
-    SquareOffset::new(1, 0),
-    SquareOffset::new(1, 1),
-    SquareOffset::new(0, 1),
-    SquareOffset::new(-1, 1),
-    SquareOffset::new(-1, 0),
-    SquareOffset::new(-1, -1),
-    SquareOffset::new(0, -1),
-    SquareOffset::new(1, -1),
+    SquareOffset::new(FileOffset::TOWARD_H, RankOffset::ZERO),
+    SquareOffset::new(FileOffset::TOWARD_H, RankOffset::TOWARD_RANK_8),
+    SquareOffset::new(FileOffset::ZERO, RankOffset::TOWARD_RANK_8),
+    SquareOffset::new(FileOffset::TOWARD_A, RankOffset::TOWARD_RANK_8),
+    SquareOffset::new(FileOffset::TOWARD_A, RankOffset::ZERO),
+    SquareOffset::new(FileOffset::TOWARD_A, RankOffset::TOWARD_RANK_1),
+    SquareOffset::new(FileOffset::ZERO, RankOffset::TOWARD_RANK_1),
+    SquareOffset::new(FileOffset::TOWARD_H, RankOffset::TOWARD_RANK_1),
 ];
 
 pub(super) fn offset_destinations(

@@ -1,4 +1,7 @@
-use crate::{Board, Color, HalfmoveClock, Piece, PieceKind, Rank, Square, SquareOffset};
+use crate::{
+    Board, Color, FileOffset, HalfmoveClock, Piece, PieceKind, Rank, RankOffset, Square,
+    SquareOffset,
+};
 
 impl Board {
     pub(super) fn apply_unchecked(
@@ -12,10 +15,10 @@ impl Board {
             && self.en_passant_target() == Some(destination)
             && captured.is_none()
         {
-            let behind = match piece.color() {
-                Color::White => SquareOffset::new(0, -1),
-                Color::Black => SquareOffset::new(0, 1),
-            };
+            let behind = SquareOffset::new(
+                FileOffset::ZERO,
+                RankOffset::pawn_push(piece.color()).reversed(),
+            );
             captured = destination
                 .offset(behind)
                 .and_then(|square| self.remove_piece(square));
@@ -83,11 +86,10 @@ fn finish_move(board: &mut Board, moved: Piece, captured: Option<Piece>, double_
     board.set_halfmove_clock(halfmove_clock);
 
     let en_passant_target = if double_push {
-        let rank_delta = match moved.color() {
-            Color::White => 1,
-            Color::Black => -1,
-        };
-        moved.square().offset(SquareOffset::new(0, rank_delta))
+        moved.square().offset(SquareOffset::new(
+            FileOffset::ZERO,
+            RankOffset::pawn_push(moved.color()),
+        ))
     } else {
         None
     };

@@ -1,4 +1,4 @@
-use super::{File, Rank, Square};
+use super::{File, FileOffset, Rank, RankOffset, Square, SquareOffset};
 
 /// One of the four objective chessboard edges.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -56,37 +56,22 @@ pub enum BoardDirection {
 impl BoardDirection {
     pub(super) const fn offset(self) -> SquareOffset {
         match self {
-            Self::TowardRank8 => SquareOffset::new(0, 1),
-            Self::TowardRank1 => SquareOffset::new(0, -1),
-            Self::TowardFileH => SquareOffset::new(1, 0),
-            Self::TowardFileA => SquareOffset::new(-1, 0),
-            Self::TowardRank8FileH => SquareOffset::new(1, 1),
-            Self::TowardRank8FileA => SquareOffset::new(-1, 1),
-            Self::TowardRank1FileH => SquareOffset::new(1, -1),
-            Self::TowardRank1FileA => SquareOffset::new(-1, -1),
+            Self::TowardRank8 => SquareOffset::new(FileOffset::ZERO, RankOffset::TOWARD_RANK_8),
+            Self::TowardRank1 => SquareOffset::new(FileOffset::ZERO, RankOffset::TOWARD_RANK_1),
+            Self::TowardFileH => SquareOffset::new(FileOffset::TOWARD_H, RankOffset::ZERO),
+            Self::TowardFileA => SquareOffset::new(FileOffset::TOWARD_A, RankOffset::ZERO),
+            Self::TowardRank8FileH => {
+                SquareOffset::new(FileOffset::TOWARD_H, RankOffset::TOWARD_RANK_8)
+            }
+            Self::TowardRank8FileA => {
+                SquareOffset::new(FileOffset::TOWARD_A, RankOffset::TOWARD_RANK_8)
+            }
+            Self::TowardRank1FileH => {
+                SquareOffset::new(FileOffset::TOWARD_H, RankOffset::TOWARD_RANK_1)
+            }
+            Self::TowardRank1FileA => {
+                SquareOffset::new(FileOffset::TOWARD_A, RankOffset::TOWARD_RANK_1)
+            }
         }
-    }
-}
-
-/// A signed file-and-rank displacement on a chessboard.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
-pub struct SquareOffset {
-    files: i8,
-    ranks: i8,
-}
-
-impl SquareOffset {
-    /// Creates a displacement from signed file and rank components.
-    #[must_use]
-    pub const fn new(files: i8, ranks: i8) -> Self {
-        Self { files, ranks }
-    }
-
-    pub(crate) const fn files(self) -> i8 {
-        self.files
-    }
-
-    pub(crate) const fn ranks(self) -> i8 {
-        self.ranks
     }
 }

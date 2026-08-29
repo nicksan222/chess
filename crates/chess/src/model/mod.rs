@@ -14,7 +14,7 @@ pub use chess_move::{ChessMove, InvalidPromotion, ParseMoveError};
 pub use color::Color;
 pub use piece::{Piece, PieceKind};
 pub use square::{
-    AllSquares, BoardDirection, BoardEdge, File, InvalidSquare, ParseSquareError, Rank, Square,
-    SquareIndex, SquareOffset, SquareRay,
+    AllSquares, BoardDirection, BoardEdge, File, FileOffset, InvalidSquare, ParseSquareError, Rank,
+    RankOffset, Square, SquareIndex, SquareOffset, SquareRay,
 };
 pub use square_set::{SquareCount, SquareSet, Squares as SquareSetSquares};

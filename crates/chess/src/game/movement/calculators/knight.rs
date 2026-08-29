@@ -1,16 +1,16 @@
-use crate::{Board, Piece, SquareOffset, SquareSet};
+use crate::{Board, FileOffset, Piece, RankOffset, SquareOffset, SquareSet};
 
 use super::shared;
 
 const OFFSETS: [SquareOffset; 8] = [
-    SquareOffset::new(1, 2),
-    SquareOffset::new(2, 1),
-    SquareOffset::new(2, -1),
-    SquareOffset::new(1, -2),
-    SquareOffset::new(-1, -2),
-    SquareOffset::new(-2, -1),
-    SquareOffset::new(-2, 1),
-    SquareOffset::new(-1, 2),
+    SquareOffset::new(FileOffset::TOWARD_H, RankOffset::TOWARD_RANK_8.doubled()),
+    SquareOffset::new(FileOffset::TOWARD_H.doubled(), RankOffset::TOWARD_RANK_8),
+    SquareOffset::new(FileOffset::TOWARD_H.doubled(), RankOffset::TOWARD_RANK_1),
+    SquareOffset::new(FileOffset::TOWARD_H, RankOffset::TOWARD_RANK_1.doubled()),
+    SquareOffset::new(FileOffset::TOWARD_A, RankOffset::TOWARD_RANK_1.doubled()),
+    SquareOffset::new(FileOffset::TOWARD_A.doubled(), RankOffset::TOWARD_RANK_1),
+    SquareOffset::new(FileOffset::TOWARD_A.doubled(), RankOffset::TOWARD_RANK_8),
+    SquareOffset::new(FileOffset::TOWARD_A, RankOffset::TOWARD_RANK_8.doubled()),
 ];
 
 pub(super) fn destinations(board: &Board, piece: Piece) -> SquareSet {

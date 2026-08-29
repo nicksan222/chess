@@ -1,5 +1,6 @@
 use chess::{
-    BoardDirection, BoardEdge, File, ParseSquareError, Rank, Square, SquareIndex, SquareOffset,
+    BoardDirection, BoardEdge, File, FileOffset, ParseSquareError, Rank, RankOffset, Square,
+    SquareIndex, SquareOffset,
 };
 
 #[test]
@@ -44,11 +45,35 @@ fn algebraic_squares_parse_without_notation_boilerplate() {
 
 #[test]
 fn square_offsets_respect_board_edges() {
-    assert_eq!(Square::E4.offset(SquareOffset::new(1, 2)), Some(Square::F6));
-    assert_eq!(Square::A1.offset(SquareOffset::new(-1, 0)), None);
-    assert_eq!(Square::A1.offset(SquareOffset::new(0, -1)), None);
-    assert_eq!(Square::H8.offset(SquareOffset::new(1, 0)), None);
-    assert_eq!(Square::H8.offset(SquareOffset::new(0, 1)), None);
+    assert_eq!(
+        Square::E4.offset(SquareOffset::new(
+            FileOffset::TOWARD_H,
+            RankOffset::TOWARD_RANK_8.doubled()
+        )),
+        Some(Square::F6)
+    );
+    assert_eq!(
+        Square::A1.offset(SquareOffset::new(FileOffset::TOWARD_A, RankOffset::ZERO)),
+        None
+    );
+    assert_eq!(
+        Square::A1.offset(SquareOffset::new(
+            FileOffset::ZERO,
+            RankOffset::TOWARD_RANK_1
+        )),
+        None
+    );
+    assert_eq!(
+        Square::H8.offset(SquareOffset::new(FileOffset::TOWARD_H, RankOffset::ZERO)),
+        None
+    );
+    assert_eq!(
+        Square::H8.offset(SquareOffset::new(
+            FileOffset::ZERO,
+            RankOffset::TOWARD_RANK_8
+        )),
+        None
+    );
 }
 
 #[test]
