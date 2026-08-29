@@ -66,10 +66,10 @@ impl Board {
         }
         let mut rights = self.castling_rights();
         match (piece.color(), piece.square()) {
-            (Color::White, Square::H1) => rights.set_kingside(Color::White, false),
-            (Color::White, Square::A1) => rights.set_queenside(Color::White, false),
-            (Color::Black, Square::H8) => rights.set_kingside(Color::Black, false),
-            (Color::Black, Square::A8) => rights.set_queenside(Color::Black, false),
+            (Color::White, Square::H1) => rights.revoke_kingside(Color::White),
+            (Color::White, Square::A1) => rights.revoke_queenside(Color::White),
+            (Color::Black, Square::H8) => rights.revoke_kingside(Color::Black),
+            (Color::Black, Square::A8) => rights.revoke_queenside(Color::Black),
             _ => return,
         }
         self.set_castling_rights(rights);

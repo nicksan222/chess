@@ -102,7 +102,7 @@ fn board_state_uses_domain_values() {
     let occupied = board.occupied();
     let mut rights = board.castling_rights();
     rights.clear(Color::White);
-    rights.set_queenside(Color::Black, false);
+    rights.revoke_queenside(Color::Black);
 
     board.set_side_to_move(Color::Black);
     board.set_castling_rights(rights);

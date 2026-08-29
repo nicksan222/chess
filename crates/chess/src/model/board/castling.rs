@@ -42,20 +42,30 @@ impl CastlingRights {
         self.0 & Self::mask(color, false) != 0
     }
 
-    /// Adds or removes the king-side right for `color`.
-    pub fn set_kingside(&mut self, color: Color, allowed: bool) {
-        self.set(Self::mask(color, true), allowed);
+    /// Grants the king-side right for `color`.
+    pub fn grant_kingside(&mut self, color: Color) {
+        self.set(Self::mask(color, true), true);
     }
 
-    /// Adds or removes the queen-side right for `color`.
-    pub fn set_queenside(&mut self, color: Color, allowed: bool) {
-        self.set(Self::mask(color, false), allowed);
+    /// Revokes the king-side right for `color`.
+    pub fn revoke_kingside(&mut self, color: Color) {
+        self.set(Self::mask(color, true), false);
+    }
+
+    /// Grants the queen-side right for `color`.
+    pub fn grant_queenside(&mut self, color: Color) {
+        self.set(Self::mask(color, false), true);
+    }
+
+    /// Revokes the queen-side right for `color`.
+    pub fn revoke_queenside(&mut self, color: Color) {
+        self.set(Self::mask(color, false), false);
     }
 
     /// Removes both castling rights for `color`.
     pub fn clear(&mut self, color: Color) {
-        self.set_kingside(color, false);
-        self.set_queenside(color, false);
+        self.revoke_kingside(color);
+        self.revoke_queenside(color);
     }
 
     fn set(&mut self, mask: u8, enabled: bool) {
