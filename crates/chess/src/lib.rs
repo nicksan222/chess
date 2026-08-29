@@ -7,5 +7,6 @@ mod model;
 pub mod notation;
 
 pub use model::{
-    AllSquares, BitBoard, BitBoardSquares, Color, InvalidSquare, Piece, PieceKind, Square,
+    AllSquares, BitBoard, BitBoardSquares, ChessMove, Color, InvalidPromotion, InvalidSquare,
+    Piece, PieceKind, Square,
 };
