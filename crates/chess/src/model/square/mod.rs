@@ -1,9 +1,11 @@
 mod coordinate;
 mod geometry;
+mod index;
 mod iter;
 
-pub use coordinate::{File, InvalidSquare, Rank, SquareIndex};
+pub use coordinate::{File, Rank};
 pub use geometry::{BoardDirection, BoardEdge, SquareOffset};
+pub use index::{InvalidSquare, SquareIndex};
 pub use iter::{AllSquares, SquareRay};
 
 use core::fmt;
