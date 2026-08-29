@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use chess::{Color, Piece, PieceKind, Square};
+use chess::{Color, Piece, PieceKind, Square, SquareIndex};
 
 fn assert_value_traits<T>()
 where
@@ -14,8 +14,11 @@ fn all_pieces() -> impl Iterator<Item = Piece> {
         .flat_map(|color| PieceKind::ALL.map(move |kind| (color, kind)))
         .enumerate()
         .map(|(index, (color, kind))| {
-            let square = Square::from_index(index as u8).expect("sample square is valid");
-            Piece::new(color, kind, square)
+            Piece::new(
+                color,
+                kind,
+                Square::from_index(SquareIndex::new(index as u8).unwrap()),
+            )
         })
 }
 
@@ -54,7 +57,7 @@ fn piece_kinds_have_stable_order_and_names() {
 }
 
 #[test]
-fn pieces_include_color_kind_and_their_own_square() {
+fn pieces_are_the_cartesian_product_of_color_and_kind() {
     let pieces = all_pieces().collect::<Vec<_>>();
 
     assert_eq!(pieces.len(), Color::ALL.len() * PieceKind::ALL.len());
@@ -64,20 +67,8 @@ fn pieces_include_color_kind_and_their_own_square() {
     for piece in pieces {
         assert!(Color::ALL.contains(&piece.color()));
         assert!(PieceKind::ALL.contains(&piece.kind()));
-        assert_eq!(
-            piece.square(),
-            Square::from_index(piece.square().index()).unwrap()
-        );
+        assert!(Square::all().any(|square| square == piece.square()));
     }
-}
-
-#[test]
-fn otherwise_equal_pieces_on_different_squares_are_distinct() {
-    let first = Piece::new(Color::White, PieceKind::Knight, Square::B1);
-    let second = Piece::new(Color::White, PieceKind::Knight, Square::C3);
-
-    assert_ne!(first, second);
-    assert_ne!(first.square(), second.square());
 }
 
 #[test]

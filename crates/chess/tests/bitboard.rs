@@ -1,6 +1,6 @@
 use std::mem::size_of;
 
-use chess::{BitBoard, BoardDirection, BoardEdge, Square};
+use chess::{BitBoard, BoardDirection, BoardEdge, File, Rank, Square, SquareIndex, SquareOffset};
 
 #[test]
 fn square_coordinates_and_indices_round_trip_exhaustively() {
@@ -10,20 +10,20 @@ fn square_coordinates_and_indices_round_trip_exhaustively() {
     assert_eq!(squares.first(), Some(&Square::A1));
     assert_eq!(squares.last(), Some(&Square::H8));
 
-    for index in 0_u8..64 {
-        let square = Square::from_index(index).expect("index is valid");
+    for value in 0_u8..64 {
+        let index = SquareIndex::new(value).expect("index is valid");
+        let square = Square::from_index(index);
         assert_eq!(square.index(), index);
-        assert_eq!(Square::new(square.file(), square.rank()), Some(square));
-        assert_eq!(u8::from(square), index);
-        assert_eq!(usize::from(square), usize::from(index));
+        assert_eq!(Square::new(square.file(), square.rank()), square);
+        assert_eq!(index.value(), value);
     }
 }
 
 #[test]
 fn square_rejects_invalid_coordinates_and_formats_algebraically() {
-    assert_eq!(Square::new(8, 0), None);
-    assert_eq!(Square::new(0, 8), None);
-    assert_eq!(Square::from_index(64), None);
+    assert_eq!(Square::new(File::E, Rank::Four), Square::E4);
+    let index_error = SquareIndex::new(64).expect_err("index is invalid");
+    assert_eq!(index_error.index(), 64);
 
     let error = Square::try_from(255).expect_err("index is invalid");
     assert_eq!(error.index(), 255);
@@ -34,11 +34,11 @@ fn square_rejects_invalid_coordinates_and_formats_algebraically() {
 
 #[test]
 fn square_offsets_respect_board_edges() {
-    assert_eq!(Square::E4.offset(1, 2), Some(Square::F6));
-    assert_eq!(Square::A1.offset(-1, 0), None);
-    assert_eq!(Square::A1.offset(0, -1), None);
-    assert_eq!(Square::H8.offset(1, 0), None);
-    assert_eq!(Square::H8.offset(0, 1), None);
+    assert_eq!(Square::E4.offset(SquareOffset::new(1, 2)), Some(Square::F6));
+    assert_eq!(Square::A1.offset(SquareOffset::new(-1, 0)), None);
+    assert_eq!(Square::A1.offset(SquareOffset::new(0, -1)), None);
+    assert_eq!(Square::H8.offset(SquareOffset::new(1, 0)), None);
+    assert_eq!(Square::H8.offset(SquareOffset::new(0, 1)), None);
 }
 
 #[test]

@@ -36,7 +36,7 @@ impl BitBoard {
     /// Creates a bitboard containing one square.
     #[must_use]
     pub const fn from_square(square: Square) -> Self {
-        Self(1_u64 << square.index())
+        Self(1_u64 << square.index().value())
     }
 
     /// Returns the raw 64-bit representation.
@@ -114,7 +114,7 @@ impl BitBoard {
         if self.is_empty() {
             None
         } else {
-            Square::from_index(self.0.trailing_zeros() as u8)
+            Square::from_raw_index(self.0.trailing_zeros() as u8)
         }
     }
 
@@ -124,7 +124,7 @@ impl BitBoard {
         if self.is_empty() {
             None
         } else {
-            Square::from_index((63 - self.0.leading_zeros()) as u8)
+            Square::from_raw_index((63 - self.0.leading_zeros()) as u8)
         }
     }
 
@@ -362,7 +362,7 @@ impl Iterator for Squares {
         }
         let index = self.bits.trailing_zeros() as u8;
         self.bits &= self.bits - 1;
-        Square::from_index(index)
+        Square::from_raw_index(index)
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
@@ -378,7 +378,7 @@ impl DoubleEndedIterator for Squares {
         }
         let index = (63 - self.bits.leading_zeros()) as u8;
         self.bits &= !(1_u64 << index);
-        Square::from_index(index)
+        Square::from_raw_index(index)
     }
 }
 

@@ -6,6 +6,7 @@
 mod model;
 
 pub use model::{
-    AllSquares, BitBoard, BitBoardSquares, BoardDirection, BoardEdge, ChessMove, Color,
-    InvalidPromotion, InvalidSquare, Piece, PieceKind, Square, SquareRay,
+    AllSquares, BitBoard, BitBoardSquares, BoardDirection, BoardEdge, ChessMove, Color, File,
+    InvalidPromotion, InvalidSquare, Piece, PieceKind, Rank, Square, SquareIndex, SquareOffset,
+    SquareRay,
 };
