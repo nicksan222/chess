@@ -1,11 +1,7 @@
 use chess::{Board, Color, Piece, PieceKind, Square};
 
 fn board_with(pieces: impl IntoIterator<Item = Piece>) -> Board {
-    let mut board = Board::empty();
-    for piece in pieces {
-        board.set_piece(piece);
-    }
-    board
+    Board::from_pieces(pieces)
 }
 
 fn destinations(board: &Board, square: Square) -> Vec<Square> {

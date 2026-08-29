@@ -66,6 +66,11 @@ fn setting_a_piece_uses_its_square_and_replaces_the_occupant() {
     assert_eq!(board.occupied().len().value(), 1);
     assert_eq!(board.remove_piece(Square::E4), Some(black_queen));
     assert!(board.occupied().is_empty());
+
+    let collected = Board::from_pieces([white_rook, black_queen]);
+    assert_eq!(collected.piece_at(Square::E4), Some(black_queen));
+    let collected: Board = [white_rook].into_iter().collect();
+    assert_eq!(collected.piece_at(Square::E4), Some(white_rook));
 }
 
 #[test]

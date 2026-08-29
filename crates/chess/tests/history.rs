@@ -4,15 +4,11 @@ use chess::{
 };
 
 fn synchronization_board(pawn_square: Square) -> Board {
-    let mut board = Board::empty();
-    for piece in [
+    Board::from_pieces([
         Piece::new(Color::White, PieceKind::King, Square::H1),
         Piece::new(Color::White, PieceKind::Pawn, pawn_square),
         Piece::new(Color::Black, PieceKind::King, Square::H8),
-    ] {
-        board.set_piece(piece);
-    }
-    board
+    ])
 }
 
 #[test]

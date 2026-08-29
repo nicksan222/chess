@@ -4,11 +4,7 @@ use chess::{
 };
 
 fn board_with(pieces: impl IntoIterator<Item = Piece>) -> Board {
-    let mut board = Board::empty();
-    for piece in pieces {
-        board.set_piece(piece);
-    }
-    board
+    Board::from_pieces(pieces)
 }
 
 fn play(game: &mut Game, from: Square, to: Square) {

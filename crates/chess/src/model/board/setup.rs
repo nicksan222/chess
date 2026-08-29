@@ -1,5 +1,39 @@
 use crate::{Color, Piece, PieceKind, Square};
 
+use super::Board;
+
+impl Board {
+    /// Creates an otherwise empty board populated by self-locating pieces.
+    ///
+    /// If multiple pieces occupy the same square, the last one replaces the
+    /// previous occupant.
+    pub fn from_pieces(pieces: impl IntoIterator<Item = Piece>) -> Self {
+        pieces.into_iter().collect()
+    }
+}
+
+impl FromIterator<Piece> for Board {
+    fn from_iter<I: IntoIterator<Item = Piece>>(pieces: I) -> Self {
+        let mut board = Self::empty();
+        board.extend(pieces);
+        board
+    }
+}
+
+impl Extend<Piece> for Board {
+    fn extend<I: IntoIterator<Item = Piece>>(&mut self, pieces: I) {
+        for piece in pieces {
+            self.set_piece(piece);
+        }
+    }
+}
+
+impl<'a> Extend<&'a Piece> for Board {
+    fn extend<I: IntoIterator<Item = &'a Piece>>(&mut self, pieces: I) {
+        self.extend(pieces.into_iter().copied());
+    }
+}
+
 pub(super) const fn initial_pieces() -> [Option<Piece>; Square::COUNT] {
     let mut pieces = [None; Square::COUNT];
     let back_rank = [
