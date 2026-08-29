@@ -3,8 +3,9 @@
 #![no_std]
 #![forbid(unsafe_code)]
 
-mod bitboard;
-mod square;
+mod model;
+pub mod notation;
 
-pub use bitboard::{BitBoard, Squares as BitBoardSquares};
-pub use square::{AllSquares, InvalidSquare, Square};
+pub use model::{
+    AllSquares, BitBoard, BitBoardSquares, Color, InvalidSquare, Piece, PieceKind, Square,
+};

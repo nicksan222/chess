@@ -7,7 +7,7 @@ use core::{
     },
 };
 
-use crate::Square;
+use super::Square;
 
 /// A compact set of chessboard squares stored in one 64-bit word.
 #[derive(Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
