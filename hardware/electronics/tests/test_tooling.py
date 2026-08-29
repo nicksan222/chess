@@ -182,6 +182,8 @@ class ContinuousIntegrationTest(unittest.TestCase):
         action = (REPO / ".github" / "actions" / "run-in-devcontainer" / "action.yml").read_text()
         self.assertIn("with-devcontainer.sh", action)
         self.assertIn("@devcontainers/cli", action)
+        self.assertIn("github.token", action)
+        self.assertNotIn("secrets.GITHUB_TOKEN", action)
         self.assertNotIn("sudo apt-get", workflow)
         self.assertNotIn("devcontainers/ci", workflow)
         self.assertNotIn("./tools/check", workflow)
