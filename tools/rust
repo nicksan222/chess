@@ -19,3 +19,5 @@ printf '\n==> Lint host workspace\n'
 cargo clippy --workspace --all-targets -- -D warnings
 printf '\n==> Test host workspace\n'
 cargo test --workspace --all-targets
+printf '\n==> Document host workspace\n'
+RUSTDOCFLAGS='-D warnings' cargo doc --workspace --no-deps
