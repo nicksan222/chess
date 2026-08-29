@@ -65,7 +65,7 @@ fn pieces_report_legal_destinations_and_move_themselves() {
         game.piece_at(Square::E4),
         Some(Piece::new(Color::White, PieceKind::Pawn, Square::E4))
     );
-    assert_eq!(game.board().side_to_move(), Color::Black);
+    assert_eq!(game.side_to_move(), Color::Black);
     assert_eq!(game.board().en_passant_target(), Some(Square::E3));
     assert_eq!(game.board().halfmove_clock(), HalfmoveClock::ZERO);
 }
@@ -180,5 +180,34 @@ fn en_passant_and_selected_promotion_are_applied() {
     assert_eq!(
         promotion.board().fullmove_number(),
         FullmoveNumber::new(40).unwrap()
+    );
+}
+
+#[test]
+fn game_reports_pieces_side_to_move_and_check() {
+    let game = Game::new();
+
+    assert_eq!(game.side_to_move(), Color::White);
+    assert!(!game.is_in_check());
+    assert_eq!(game.pieces().len(), 32);
+    assert_eq!(game.into_iter().count(), 32);
+
+    let mut board = board_with([
+        Piece::new(Color::White, PieceKind::King, Square::E1),
+        Piece::new(Color::White, PieceKind::Queen, Square::E5),
+        Piece::new(Color::Black, PieceKind::King, Square::E8),
+    ]);
+    board.set_side_to_move(Color::Black);
+    let checked = Game::from_board(board);
+
+    assert_eq!(checked.side_to_move(), Color::Black);
+    assert!(checked.is_in_check());
+    assert_eq!(
+        checked.pieces().collect::<Vec<_>>(),
+        [
+            Piece::new(Color::White, PieceKind::King, Square::E1),
+            Piece::new(Color::White, PieceKind::Queen, Square::E5),
+            Piece::new(Color::Black, PieceKind::King, Square::E8),
+        ]
     );
 }

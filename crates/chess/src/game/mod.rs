@@ -3,6 +3,7 @@
 mod aggregate;
 mod history;
 mod movement;
+mod position;
 mod sync_error;
 
 pub use aggregate::Game;
