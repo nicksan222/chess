@@ -1,19 +1,25 @@
-# Chess
+# Chess ♟️
 
-Chess aims to become an open-source physical smart chessboard. The intended
-board combines 64 magnetic square sensors and 64 individually addressable RGB
-LEDs with a battery-powered Raspberry Pi Pico 2 W.
+Chess is an open-source smart chessboard you can build, modify, and play on.
+Each square senses a magnetic piece and has its own RGB light, allowing the board
+to follow a physical game, highlight moves, and provide feedback without needing
+a screen or internet connection. A battery-powered Raspberry Pi Pico 2 W runs
+the board using Rust firmware.
 
-The firmware will be written in Rust for the RP2350's ARM Cortex-M33 and is
-expected to use Embassy in the future. Initial development is focused on
-offline chess functionality: physical board sensing, lighting, local play, and
-the shared models needed to support them. Integration points remain isolated so
-additional adapters can be introduced later without changing board logic.
+<div align="center">
+  <a href="hardware/cad/blender/board-assembly/renders/finished.png">
+    <img src="hardware/cad/blender/board-assembly/renders/finished.png" width="62%" alt="Finished smart chessboard render">
+  </a>
+  <a href="hardware/cad/blender/single-tile/merged/renders/open.png">
+    <img src="hardware/cad/blender/single-tile/merged/renders/open.png" width="31%" alt="Open magnetic sensor tile render">
+  </a>
+  <br>
+  <sub>The full board—and a peek inside one tiny square. See the <a href="hardware/cad/blender/">Blender CAD sources</a>.</sub>
+</div>
 
-This repository currently contains scaffolding only. No firmware, chess logic,
-protocol, bridge integration, or simulator behavior has been implemented.
-Shared Rust crates, firmware, bridge and simulator applications, Blender source,
-electronics documentation, the bill of materials, and project documentation
-all live in this monorepo.
-
-See [docs/development.md](docs/development.md) for the current host-side checks.
+The repository contains the software, electronics, and printable CAD needed to
+build the board. The project is still taking shape: the mechanical design and
+revision-A electronics are ready for review while the firmware is being built.
+Run `make gen` to regenerate the CAD and electronics outputs, or see
+[`docs/development.md`](docs/development.md) for the complete development
+workflow.
