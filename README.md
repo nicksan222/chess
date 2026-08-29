@@ -7,14 +7,14 @@ a screen or internet connection. A battery-powered Raspberry Pi Pico 2 W runs
 the board using Rust firmware.
 
 <div align="center">
-  <a href="hardware/cad/blender/board-assembly/renders/finished.png">
-    <img src="hardware/cad/blender/board-assembly/renders/finished.png" width="62%" alt="Finished smart chessboard render">
+  <a href="hardware/cad/generated/board-assembly-finished.png">
+    <img src="hardware/cad/generated/board-assembly-finished.png" width="62%" alt="Finished smart chessboard render">
   </a>
-  <a href="hardware/cad/blender/single-tile/merged/renders/open.png">
-    <img src="hardware/cad/blender/single-tile/merged/renders/open.png" width="31%" alt="Open magnetic sensor tile render">
+  <a href="hardware/cad/generated/single-tile-merged-open.png">
+    <img src="hardware/cad/generated/single-tile-merged-open.png" width="31%" alt="Open magnetic sensor tile render">
   </a>
   <br>
-  <sub>The full board—and a peek inside one tiny square. See the <a href="hardware/cad/blender/">Blender CAD sources</a>.</sub>
+  <sub>The full board—and a peek inside one tiny square. See the <a href="hardware/cad/">Blender CAD sources</a>.</sub>
 </div>
 
 The repository contains the software, electronics, and printable CAD needed to

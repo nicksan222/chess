@@ -10,9 +10,10 @@ from types import ModuleType
 
 ELECTRONICS = Path(__file__).resolve().parents[1]
 PROJECTS = ELECTRONICS / "projects"
-BOM = ELECTRONICS / "bom.md"
-CHESSBOARD_SVG = ELECTRONICS / "chessboard.svg"
-SQUARE_SVG = ELECTRONICS / "square.svg"
+GENERATED = ELECTRONICS / "generated"
+BOM = GENERATED / "bom.md"
+CHESSBOARD_SVG = GENERATED / "chessboard.svg"
+SQUARE_SVG = GENERATED / "square.svg"
 SQUARES = [f"{file_}{rank}" for file_ in "ABCDEFGH" for rank in range(1, 9)]
 
 
@@ -88,19 +89,24 @@ class SchematicSourceTest(unittest.TestCase):
         self.assertIn("LED_DATA_CHAIN", labels)
         self.assertIn("LED_DOUT_LAST", labels)
 
-    def test_renders_live_in_the_main_directory(self) -> None:
-        drawings = {path.name for path in ELECTRONICS.glob("*.svg")}
-        drawings |= {path.name for path in ELECTRONICS.glob("*.png")}
+    def test_renders_live_together_in_the_generated_folder(self) -> None:
+        published = {path.name for path in GENERATED.iterdir()} - {"README.md"}
         self.assertEqual(
-            drawings,
-            {"chessboard.svg", "chessboard.png", "square.svg", "square.png"},
+            published,
+            {
+                "chessboard.svg",
+                "chessboard.png",
+                "square.svg",
+                "square.png",
+                "bom.md",
+            },
         )
         for project in ("chessboard", "square"):
             self.assertFalse((PROJECTS / project / "generated").exists(), project)
 
     def test_generated_drawings_carry_no_trailing_whitespace(self) -> None:
         """The repository's pre-commit check rejects it, generated or not."""
-        for path in sorted(ELECTRONICS.glob("*.svg")):
+        for path in sorted(GENERATED.glob("*.svg")):
             offenders = [
                 number
                 for number, line in enumerate(path.read_text().splitlines(), 1)

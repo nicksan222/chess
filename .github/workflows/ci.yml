@@ -8,32 +8,59 @@ permissions:
   contents: read
 
 jobs:
-  cad-relationships:
+  cad:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Validate shared CAD dimensions
-        run: python3 hardware/cad/blender/dimensions.py
-      - name: Test CAD dimension relationships
-        run: python3 -m unittest discover -s hardware/cad/blender/tests
-      - name: Discover CAD generators
-        run: ./tools/generate-cad --list
+      - name: Install Blender runtime libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends \
+            libdecor-0-0 libgl1 libice6 libsm6 libx11-6 libxext6 libxfixes3 \
+            libxi6 libxkbcommon0 libxrender1 python3 xz-utils
+      - name: Cache Blender
+        uses: actions/cache@v4
+        with:
+          path: .cache/blender
+          key: blender-4.5.13-linux-x64
+      - name: Install the CAD toolchain
+        run: ./tools/cad setup
+      - name: Check CAD
+        run: ./tools/cad check
+      - name: Build CAD
+        run: ./tools/cad build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cad-generated
+          path: hardware/cad/generated
 
   electronics:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install Python
-        run: sudo apt-get update && sudo apt-get install --yes --no-install-recommends python3 python3-pip python3-venv make
-      - name: Test and generate schematics
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends \
+            make python3 python3-pip python3-venv
+      - name: Install the electronics toolchain
+        run: ./tools/electronics setup
+      - name: Check electronics
         run: ./tools/electronics check
       - uses: actions/upload-artifact@v4
         with:
           name: electronics-generated
-          path: |
-            hardware/electronics/*.svg
-            hardware/electronics/*.png
-            hardware/electronics/bom.md
+          path: hardware/electronics/generated
+
+  devcontainer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # The container is the documented way in, so prove both hardware
+      # toolchains come up inside it with no host installs.
+      - uses: devcontainers/ci@v0.3
+        with:
+          runCmd: ./tools/cad check && ./tools/electronics check
 
   host-workspace:
     runs-on: ubuntu-latest

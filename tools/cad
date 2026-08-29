@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repository_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "${repository_root}"
+
+readonly domain=cad
+readonly domain_dir=hardware/cad
+readonly blender_version="4.5.13"
+readonly blender_archive="blender-${blender_version}-linux-x64.tar.xz"
+readonly blender_sha256="da4e69b06b75b9e642d106496c50e7e240218b411d2f6e18271c1d1d819cef91"
+readonly blender_url="https://download.blender.org/release/Blender4.5/${blender_archive}"
+readonly cache_root="${repository_root}/.cache/blender"
+readonly archive_path="${cache_root}/${blender_archive}"
+readonly cached_blender="${cache_root}/blender-${blender_version}-linux-x64/blender"
+
+# shellcheck source=tools/lib/pipeline.sh
+source tools/lib/pipeline.sh
+
+blender_bin=""
+
+# Blender is downloaded into .cache rather than installed, so the host stays
+# untouched. BLENDER_BIN overrides it on platforms without a published build.
+setup_toolchain() {
+    if [[ -n "${BLENDER_BIN:-}" ]]; then
+        if [[ ! -x "${BLENDER_BIN}" ]]; then
+            printf 'BLENDER_BIN is not executable: %s\n' "${BLENDER_BIN}" >&2
+            return 1
+        fi
+        blender_bin="${BLENDER_BIN}"
+        return 0
+    fi
+
+    if [[ "$(uname -m)" != "x86_64" ]]; then
+        printf 'Automatic Blender setup supports Linux x86_64 only. Set BLENDER_BIN.\n' >&2
+        return 1
+    fi
+
+    mkdir -p "${cache_root}"
+    if [[ ! -x "${cached_blender}" ]]; then
+        if [[ ! -f "${archive_path}" ]]; then
+            printf 'Downloading Blender %s LTS...\n' "${blender_version}" >&2
+            curl --fail --location --retry 3 --show-error \
+                --output "${archive_path}" "${blender_url}"
+        fi
+        printf '%s  %s\n' "${blender_sha256}" "${archive_path}" | sha256sum --check --status
+        tar -xf "${archive_path}" -C "${cache_root}"
+    fi
+    blender_bin="${cached_blender}"
+}
+
+clean_artefacts() {
+    mkdir -p "${domain_dir}/generated"
+    find "${domain_dir}/generated" -maxdepth 1 -type f ! -name README.md -delete
+}
+
+run_generator() {
+    "${blender_bin}" --background --factory-startup --python "$1"
+}
+
+run_checks() {
+    printf '\n==> Validate %s dimensions\n' "${domain}"
+    python3 "${domain_dir}/core/dimensions.py"
+    printf '\n==> Test %s\n' "${domain}"
+    python3 -m unittest discover -s "${domain_dir}/tests"
+    printf '\n==> Discover %s generators\n' "${domain}"
+    pipeline_list
+}
+
+pipeline_main "$@"

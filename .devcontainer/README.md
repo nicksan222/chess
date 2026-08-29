@@ -1,25 +1,38 @@
 # Development container
 
 This directory owns the reproducible VS Code / Cursor development environment.
-Open the repository and run **Dev Containers: Reopen in Container**.
+Open the repository and run **Dev Containers: Reopen in Container**, or drive it
+from the [`devcontainer` CLI](https://github.com/devcontainers/cli):
+
+```sh
+devcontainer up --workspace-folder .
+devcontainer exec --workspace-folder . ./tools/electronics check
+devcontainer exec --workspace-folder . ./tools/cad check
+devcontainer exec --workspace-folder . make check
+```
 
 The image provides:
 
 - stable Rust with `rustfmt` and Clippy;
-- Python 3, pip, and venv for CAD dimension checks and Schemdraw schematics;
+- Python 3, pip, and venv for Schemdraw schematics and CAD dimension checks;
+- `curl`, `xz-utils`, and the X11 and GL libraries Blender links against even in
+  background mode, so `./tools/cad setup` needs nothing from the host;
 - the `thumbv8m.main-none-eabihf` compilation target;
 - native build, USB, and udev development libraries;
 - Rust, Python, TOML, LLDB, Markdown, and GitHub Actions editor integration.
 
 Container creation configures the repository pre-commit hook and runs
-`./tools/check`.
+`./tools/electronics setup` and `./tools/cad setup`, which install Schemdraw
+into `.cache/electronics` and Blender into `.cache/blender`. Both live in the
+workspace, so they survive a rebuild and never touch the host.
 
 After create:
 
 ```sh
-make electronics         # rewrite schematic SVG and PNG
-make electronics-check   # generate drawings and run topology tests
-make gen                 # CAD (downloads Blender on first use) + electronics
+./tools/electronics check   # generate schematics, BOM, and run the tests
+./tools/cad check           # validate dimensions and run the tests
+./tools/cad build           # re-render every Blender model
+make check                  # the full gate, including the Rust workspace
 ```
 
 Host-specific device access and hardware flashing policy do not belong in the

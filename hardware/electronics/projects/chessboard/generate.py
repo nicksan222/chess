@@ -42,7 +42,7 @@ def assemble() -> canvas.Schematic:
 
 def build() -> canvas.Schematic:
     sch = assemble()
-    sch.save(ELECTRONICS_ROOT, NAME)
+    sch.save(ELECTRONICS_ROOT / "generated", NAME)
     return sch
 
 

@@ -15,12 +15,8 @@ run_check() {
 run_check "Format host workspace" cargo fmt --check
 run_check "Format firmware application" \
     cargo fmt --manifest-path apps/firmware/Cargo.toml --check
-run_check "Validate CAD dimensions" \
-    python3 hardware/cad/blender/dimensions.py
-run_check "Test CAD dimensions" \
-    python3 -m unittest discover -s hardware/cad/blender/tests
-run_check "Discover CAD generators" ./tools/generate-cad --list
-run_check "Test electronics schematic" ./tools/electronics check
+run_check "Check CAD" ./tools/cad check
+run_check "Check electronics" ./tools/electronics check
 run_check "Type-check host workspace" cargo check --workspace --all-targets
 run_check "Lint host workspace" \
     cargo clippy --workspace --all-targets -- -D warnings

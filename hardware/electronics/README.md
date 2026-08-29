@@ -13,22 +13,21 @@ make electronics
 
 ## Layout
 
-Generated artefacts sit at the top of this directory; everything that produces
-them lives in a subdirectory.
+Generated artefacts live in `generated/`; everything that produces them lives
+in a subdirectory beside it.
 
 ```
-chessboard.svg / .png   generated drawing of the complete board
-square.svg / .png       generated drawing of one square
-bom.md                  generated bill of materials with quantities
-
-components/             one physical part per module
-blocks/                 reusable groups of components
-core/                   canvas, net names, bill of materials
-projects/               one directory per sheet, each with generate.py
+generated/    drawings and the bill of materials
+components/   one physical part per module
+blocks/       reusable groups of components
+core/         canvas, net names, bill of materials
+projects/     one directory per sheet, each with generate.py
 tests/
+prototype/    build notes from physical prototypes, not source
 ```
 
-Never edit the generated files; rerun the build instead.
+`generated/` holds `<project>.svg`, `<project>.png` and `bom.md`. Never edit
+anything in there; rerun the build instead. `hardware/cad` has the same shape.
 
 ## Adding a component
 

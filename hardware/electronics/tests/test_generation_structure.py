@@ -19,9 +19,8 @@ class GeneratorStructureTest(unittest.TestCase):
             text=True,
             capture_output=True,
         )
-        discovered = [line.split("\t", 1)[1] for line in result.stdout.splitlines()]
         self.assertEqual(
-            discovered,
+            result.stdout.splitlines(),
             [
                 "hardware/electronics/projects/square/generate.py",
                 "hardware/electronics/projects/chessboard/generate.py",
@@ -64,18 +63,29 @@ class GeneratorStructureTest(unittest.TestCase):
         for path in components.glob("*.py"):
             self.assertNotIn("def add_", path.read_text(), path.name)
 
-    def test_only_generated_artefacts_sit_in_the_main_directory(self) -> None:
+    def test_the_main_directory_holds_no_artefacts(self) -> None:
+        """Generated output belongs in generated/, not loose beside the source."""
         loose = {path.name for path in ELECTRONICS_ROOT.iterdir() if path.is_file()}
+        self.assertEqual(loose, {"README.md", "requirements.txt"})
+        self.assertTrue((ELECTRONICS_ROOT / "generated").is_dir())
+
+    def test_the_domain_keeps_the_shared_directory_shape(self) -> None:
+        """Both hardware domains present the same directories to a reader."""
+        directories = {
+            path.name
+            for path in ELECTRONICS_ROOT.iterdir()
+            if path.is_dir() and path.name != "__pycache__"
+        }
         self.assertEqual(
-            loose,
+            directories,
             {
-                "README.md",
-                "requirements.txt",
-                "bom.md",
-                "chessboard.svg",
-                "chessboard.png",
-                "square.svg",
-                "square.png",
+                "blocks",
+                "components",
+                "core",
+                "generated",
+                "projects",
+                "prototype",
+                "tests",
             },
         )
 

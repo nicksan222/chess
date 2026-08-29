@@ -17,7 +17,8 @@ if str(ELECTRONICS_ROOT) not in sys.path:
     sys.path.insert(0, str(ELECTRONICS_ROOT))
 
 PROJECTS = ELECTRONICS_ROOT / "projects"
-OUTPUT = ELECTRONICS_ROOT / "bom.md"
+GENERATED = ELECTRONICS_ROOT / "generated"
+OUTPUT = GENERATED / "bom.md"
 GENERATED_BY = "hardware/electronics/core/bom.py"
 
 
@@ -152,6 +153,7 @@ def document() -> str:
 
 
 def main() -> None:
+    GENERATED.mkdir(parents=True, exist_ok=True)
     OUTPUT.write_text(document())
     print(f"wrote {OUTPUT}")
 

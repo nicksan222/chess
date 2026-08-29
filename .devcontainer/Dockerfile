@@ -10,8 +10,18 @@ RUN apt-get update \
         cmake \
         curl \
         git \
+        libdecor-0-0 \
+        libgl1 \
+        libice6 \
+        libsm6 \
         libudev-dev \
         libusb-1.0-0-dev \
+        libx11-6 \
+        libxext6 \
+        libxfixes3 \
+        libxi6 \
+        libxkbcommon0 \
+        libxrender1 \
         make \
         pkg-config \
         python3 \
