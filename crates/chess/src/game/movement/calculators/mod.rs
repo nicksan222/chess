@@ -35,7 +35,6 @@ pub(super) fn attacks(board: &Board, piece: Piece) -> SquareSet {
 pub(super) fn is_attacked(board: &Board, square: Square, by: Color) -> bool {
     board
         .iter()
-        .map(|(_, piece)| piece)
         .filter(|piece| piece.color() == by)
         .any(|piece| attacks(board, piece).contains(square))
 }

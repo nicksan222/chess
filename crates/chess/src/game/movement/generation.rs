@@ -38,7 +38,6 @@ impl Board {
     pub fn is_in_check(&self, color: Color) -> bool {
         let Some(king) = self
             .iter()
-            .map(|(_, piece)| piece)
             .find(|piece| piece.color() == color && piece.kind() == PieceKind::King)
         else {
             return false;

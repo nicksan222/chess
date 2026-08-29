@@ -31,8 +31,8 @@ fn initial_board_has_self_locating_pieces_and_standard_state() {
         BOARD.piece_at(Square::D8),
         Some(Piece::new(Color::Black, PieceKind::Queen, Square::D8))
     );
-    for (square, piece) in BOARD.iter() {
-        assert_eq!(piece.square(), square);
+    for piece in BOARD.iter() {
+        assert_eq!(BOARD.piece_at(piece.square()), Some(piece));
     }
     assert_eq!(BOARD.side_to_move(), Color::White);
     assert_eq!(BOARD.castling_rights(), CastlingRights::ALL);
@@ -77,9 +77,9 @@ fn piece_iteration_is_ordered_exact_sized_and_double_ended() {
 
     let mut pieces = board.iter();
     assert_eq!(pieces.len(), 3);
-    assert_eq!(pieces.next(), Some((Square::A1, rook)));
-    assert_eq!(pieces.next_back(), Some((Square::H8, king)));
-    assert_eq!(pieces.next(), Some((Square::E4, knight)));
+    assert_eq!(pieces.next(), Some(rook));
+    assert_eq!(pieces.next_back(), Some(king));
+    assert_eq!(pieces.next(), Some(knight));
     assert_eq!(pieces.next(), None);
 }
 

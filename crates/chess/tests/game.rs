@@ -24,7 +24,6 @@ fn perft(game: &Game, depth: u8) -> u64 {
     let moves = game
         .board()
         .iter()
-        .map(|(_, piece)| piece)
         .filter(|piece| piece.color() == color)
         .flat_map(|piece| {
             piece

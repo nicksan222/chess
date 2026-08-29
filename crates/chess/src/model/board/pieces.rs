@@ -41,7 +41,7 @@ pub(super) const fn initial_pieces() -> [Option<Piece>; Square::COUNT] {
     pieces
 }
 
-/// An iterator over the occupied squares in a [`Board`].
+/// An iterator over the self-locating pieces in a [`Board`].
 #[derive(Clone, Debug)]
 pub struct BoardPieces<'a> {
     board: &'a Board,
@@ -60,13 +60,13 @@ impl<'a> BoardPieces<'a> {
 }
 
 impl Iterator for BoardPieces<'_> {
-    type Item = (Square, Piece);
+    type Item = Piece;
 
     fn next(&mut self) -> Option<Self::Item> {
         for square in self.squares.by_ref() {
             if let Some(piece) = self.board.piece_at(square) {
                 self.remaining -= 1;
-                return Some((square, piece));
+                return Some(piece);
             }
         }
         None
@@ -82,7 +82,7 @@ impl DoubleEndedIterator for BoardPieces<'_> {
         while let Some(square) = self.squares.next_back() {
             if let Some(piece) = self.board.piece_at(square) {
                 self.remaining -= 1;
-                return Some((square, piece));
+                return Some(piece);
             }
         }
         None
