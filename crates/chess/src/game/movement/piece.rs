@@ -3,8 +3,8 @@ use crate::{Board, Game, MoveError, MoveStep, Piece, PieceKind, Square, SquareSe
 impl Piece {
     /// Returns every currently legal destination for this piece.
     #[must_use]
-    pub fn where_can_move(self, board: &Board) -> SquareSet {
-        board.destinations(self)
+    pub fn legal_destinations(self, board: &Board) -> SquareSet {
+        board.legal_destinations(self)
     }
 
     /// Moves this piece in `game`, recording the resulting hash-linked step.

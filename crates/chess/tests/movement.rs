@@ -8,7 +8,7 @@ fn destinations(board: &Board, square: Square) -> Vec<Square> {
     board
         .piece_at(square)
         .unwrap()
-        .where_can_move(board)
+        .legal_destinations(board)
         .into_iter()
         .collect()
 }

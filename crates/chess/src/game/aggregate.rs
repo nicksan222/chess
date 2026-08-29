@@ -43,6 +43,11 @@ impl Game {
         &self.history
     }
 
+    /// Returns every legal move in the current board state.
+    pub fn legal_moves(&self) -> impl Iterator<Item = ChessMove> + '_ {
+        self.board.legal_moves()
+    }
+
     /// Applies and records a locally initiated move.
     pub fn play(&mut self, chess_move: ChessMove) -> Result<MoveStep, MoveError> {
         let canonical = self.board.make_move(chess_move)?;

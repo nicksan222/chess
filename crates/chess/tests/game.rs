@@ -16,18 +16,7 @@ fn perft(game: &Game, depth: u8) -> u64 {
     if depth == 0 {
         return 1;
     }
-    let color = game.board().side_to_move();
-    let moves = game
-        .board()
-        .iter()
-        .filter(|piece| piece.color() == color)
-        .flat_map(|piece| {
-            piece
-                .where_can_move(game.board())
-                .into_iter()
-                .map(move |to| ChessMove::new(piece.square(), to))
-        })
-        .collect::<Vec<_>>();
+    let moves = game.legal_moves().collect::<Vec<_>>();
 
     moves
         .into_iter()
@@ -56,12 +45,14 @@ fn pieces_report_legal_destinations_and_move_themselves() {
     let knight = game.piece_at(Square::G1).unwrap();
 
     assert_eq!(
-        pawn.where_can_move(game.board()).iter().collect::<Vec<_>>(),
+        pawn.legal_destinations(game.board())
+            .iter()
+            .collect::<Vec<_>>(),
         [Square::E3, Square::E4]
     );
     assert_eq!(
         knight
-            .where_can_move(game.board())
+            .legal_destinations(game.board())
             .iter()
             .collect::<Vec<_>>(),
         [Square::F3, Square::H3]
@@ -109,7 +100,7 @@ fn pinned_pieces_cannot_expose_their_king() {
         Piece::new(Color::Black, PieceKind::King, Square::G8),
     ]);
     let rook = board.piece_at(Square::E2).unwrap();
-    let destinations = rook.where_can_move(&board);
+    let destinations = rook.legal_destinations(&board);
 
     assert!(!destinations.contains(Square::D2));
     assert!(destinations.contains(Square::E3));
@@ -130,8 +121,8 @@ fn castling_moves_both_self_locating_pieces() {
     let mut game = Game::from_board(board);
     let king = game.piece_at(Square::E1).unwrap();
 
-    assert!(king.where_can_move(game.board()).contains(Square::G1));
-    assert!(king.where_can_move(game.board()).contains(Square::C1));
+    assert!(king.legal_destinations(game.board()).contains(Square::G1));
+    assert!(king.legal_destinations(game.board()).contains(Square::C1));
     king.move_to(Square::G1, &mut game).unwrap();
 
     assert_eq!(game.piece_at(Square::E1), None);
@@ -151,7 +142,7 @@ fn en_passant_and_selected_promotion_are_applied() {
     play(&mut game, Square::D7, Square::D5);
 
     let pawn = game.piece_at(Square::E5).unwrap();
-    assert!(pawn.where_can_move(game.board()).contains(Square::D6));
+    assert!(pawn.legal_destinations(game.board()).contains(Square::D6));
     pawn.move_to(Square::D6, &mut game).unwrap();
     assert_eq!(game.piece_at(Square::D5), None);
     assert_eq!(game.piece_at(Square::D6).unwrap().square(), Square::D6);
@@ -163,6 +154,21 @@ fn en_passant_and_selected_promotion_are_applied() {
     ]);
     board.set_fullmove_number(FullmoveNumber::new(40).unwrap());
     let mut promotion = Game::from_board(board);
+    let promotion_choices = promotion
+        .legal_moves()
+        .filter(|chess_move| chess_move.from() == Square::A7)
+        .map(ChessMove::promotion_kind)
+        .collect::<Vec<_>>();
+    assert_eq!(
+        promotion_choices,
+        [
+            Some(PieceKind::Knight),
+            Some(PieceKind::Bishop),
+            Some(PieceKind::Rook),
+            Some(PieceKind::Queen),
+        ]
+    );
+
     let step = promotion
         .piece_at(Square::A7)
         .unwrap()

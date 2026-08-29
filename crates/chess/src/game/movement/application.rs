@@ -13,7 +13,7 @@ impl Board {
                 actual: piece.color(),
             });
         }
-        if !self.destinations(piece).contains(chess_move.to()) {
+        if !self.legal_destinations(piece).contains(chess_move.to()) {
             return Err(MoveError::IllegalDestination {
                 from: chess_move.from(),
                 to: chess_move.to(),
