@@ -86,7 +86,8 @@ electronics jobs, sequentially. The firmware application at `apps/firmware` is
 an independent embedded project, so embedded type-checking remains deferred
 until its runtime and linker setup exist.
 
-The pre-commit hook invokes this same gate on the developer machine. GitHub
+The pre-commit hook runs this gate without CAD generation so commits do not
+wait on Blender. GitHub
 **CI** prebuilds the development container, then runs `./tools/cad`,
 `./tools/electronics`, and `./tools/rust` in parallel through the Dev
 Container CLI so later workflows reuse the image instead of downloading

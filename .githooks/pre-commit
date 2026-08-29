@@ -4,4 +4,4 @@ set -euo pipefail
 repository_root="$(git rev-parse --show-toplevel)"
 
 git diff --cached --check
-exec "${repository_root}/tools/check"
+SKIP_CAD_GENERATE=1 exec "${repository_root}/tools/check"

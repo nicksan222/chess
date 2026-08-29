@@ -75,6 +75,9 @@ generate() {
     done < <(list_projects)
 }
 
-setup
 run_tests
-generate
+# Pre-commit sets SKIP_CAD_GENERATE so Blender renders stay off the hook.
+if [[ -z "${SKIP_CAD_GENERATE:-}" ]]; then
+    setup
+    generate
+fi

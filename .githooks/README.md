@@ -1,5 +1,5 @@
 # Git hooks
 
-This directory owns version-controlled Git hooks. Hooks should call shared
-repository tooling so a local commit and `devcontainer exec ./tools/check` in
-CI enforce the same quality policy.
+This directory owns version-controlled Git hooks. The pre-commit hook runs
+`./tools/check` with CAD generation skipped so commits stay fast; Blender
+renders stay on `./tools/cad` and CI.
