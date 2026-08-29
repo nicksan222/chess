@@ -23,10 +23,16 @@
     "vscode": {
       "extensions": [
         "DavidAnson.vscode-markdownlint",
+        "fill-labs.dependi",
         "GitHub.vscode-github-actions",
+        "ms-azuretools.vscode-containers",
+        "ms-python.debugpy",
         "ms-python.python",
+        "ms-python.vscode-pylance",
+        "redhat.vscode-yaml",
         "rust-lang.rust-analyzer",
         "tamasfe.even-better-toml",
+        "timonwong.shellcheck",
         "vadimcn.vscode-lldb"
       ],
       "settings": {
@@ -37,11 +43,23 @@
           "editor.defaultFormatter": "rust-lang.rust-analyzer",
           "editor.formatOnSave": true
         },
+        "[yaml]": {
+          "editor.defaultFormatter": "redhat.vscode-yaml"
+        },
         "files.watcherExclude": {
           "**/target/**": true
         },
+        "python.analysis.extraPaths": [
+          "hardware/cad",
+          "hardware/electronics"
+        ],
         "python.defaultInterpreterPath": "/opt/electronics/bin/python",
+        "python.languageServer": "Pylance",
         "rust-analyzer.check.command": "check",
+        "rust-analyzer.linkedProjects": [
+          "Cargo.toml",
+          "apps/firmware/Cargo.toml"
+        ],
         "terminal.integrated.defaultProfile.linux": "bash"
       }
     }

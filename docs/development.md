@@ -27,7 +27,8 @@ The image provides:
 - X11/GL/EGL, Mesa, Xvfb, and `xauth` so headless Blender can render;
 - the `thumbv8m.main-none-eabihf` compilation target;
 - native build, USB, and udev development libraries;
-- Rust, Python, TOML, LLDB, Markdown, and GitHub Actions editor integration.
+- rust-src, Pylance, YAML, ShellCheck, Docker, Cargo.toml, TOML, LLDB,
+  Markdown, and GitHub Actions editor integration.
 
 Container creation configures the repository's pre-commit hook. The image
 already contains the hardware toolchains, so the first `./tools/cad` or

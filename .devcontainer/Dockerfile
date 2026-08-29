@@ -35,6 +35,7 @@ RUN apt-get update \
         python3 \
         python3-pip \
         python3-venv \
+        shellcheck \
         usbutils \
         xauth \
         xvfb \
@@ -62,6 +63,6 @@ ENV BLENDER_BIN=/opt/blender/blender \
     PATH="/opt/electronics/bin:${PATH}"
 
 USER vscode
-RUN rustup component add clippy rustfmt \
+RUN rustup component add clippy rustfmt rust-src \
     && rustup target add thumbv8m.main-none-eabihf
 USER root

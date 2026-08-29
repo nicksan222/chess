@@ -22,7 +22,8 @@ The image provides:
 - X11/GL/EGL, Mesa, Xvfb, and `xauth` so headless Blender can render;
 - the `thumbv8m.main-none-eabihf` compilation target;
 - native build, USB, and udev development libraries;
-- Rust, Python, TOML, LLDB, Markdown, and GitHub Actions editor integration.
+- rust-src, Pylance, YAML, ShellCheck, Docker, Cargo.toml, TOML, LLDB,
+  Markdown, and GitHub Actions editor integration.
 
 CI prebuilds this image, pushes it to GHCR, then runs CAD, electronics, and
 Rust as parallel `devcontainer exec` jobs against that digest. Subsequent
