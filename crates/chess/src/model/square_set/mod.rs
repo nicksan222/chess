@@ -1,8 +1,9 @@
-use core::{
-    fmt,
-    iter::FusedIterator,
-    ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Not, Sub, SubAssign},
-};
+mod iter;
+mod ops;
+
+pub use iter::Squares;
+
+use core::fmt;
 
 use super::Square;
 
@@ -30,7 +31,7 @@ impl fmt::Display for SquareCount {
 /// The storage strategy is private. Callers interact only through set
 /// semantics and square iteration.
 #[derive(Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct SquareSet(u64);
+pub struct SquareSet(pub(super) u64);
 
 impl SquareSet {
     /// A set containing no squares.
@@ -130,7 +131,7 @@ impl SquareSet {
 
     /// Returns contained squares in board-index order.
     pub const fn iter(self) -> Squares {
-        Squares { bits: self.0 }
+        Squares::new(self.0)
     }
 }
 
@@ -139,138 +140,3 @@ impl fmt::Debug for SquareSet {
         formatter.debug_set().entries(*self).finish()
     }
 }
-
-impl From<Square> for SquareSet {
-    fn from(square: Square) -> Self {
-        Self::from_square(square)
-    }
-}
-
-impl FromIterator<Square> for SquareSet {
-    fn from_iter<I: IntoIterator<Item = Square>>(iter: I) -> Self {
-        let mut set = Self::EMPTY;
-        set.extend(iter);
-        set
-    }
-}
-
-impl Extend<Square> for SquareSet {
-    fn extend<I: IntoIterator<Item = Square>>(&mut self, iter: I) {
-        for square in iter {
-            self.insert(square);
-        }
-    }
-}
-
-impl<'a> Extend<&'a Square> for SquareSet {
-    fn extend<I: IntoIterator<Item = &'a Square>>(&mut self, iter: I) {
-        self.extend(iter.into_iter().copied());
-    }
-}
-
-impl IntoIterator for SquareSet {
-    type Item = Square;
-    type IntoIter = Squares;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.iter()
-    }
-}
-
-impl IntoIterator for &SquareSet {
-    type Item = Square;
-    type IntoIter = Squares;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.iter()
-    }
-}
-
-macro_rules! impl_set_op {
-    ($trait:ident, $method:ident, $operator:tt) => {
-        impl $trait for SquareSet {
-            type Output = Self;
-
-            fn $method(self, rhs: Self) -> Self::Output {
-                Self(self.0 $operator rhs.0)
-            }
-        }
-    };
-}
-
-macro_rules! impl_set_assign_op {
-    ($trait:ident, $method:ident, $operator:tt) => {
-        impl $trait for SquareSet {
-            fn $method(&mut self, rhs: Self) {
-                self.0 $operator rhs.0;
-            }
-        }
-    };
-}
-
-impl_set_op!(BitAnd, bitand, &);
-impl_set_op!(BitOr, bitor, |);
-impl_set_op!(BitXor, bitxor, ^);
-impl_set_assign_op!(BitAndAssign, bitand_assign, &=);
-impl_set_assign_op!(BitOrAssign, bitor_assign, |=);
-impl_set_assign_op!(BitXorAssign, bitxor_assign, ^=);
-
-impl Not for SquareSet {
-    type Output = Self;
-
-    fn not(self) -> Self::Output {
-        Self(!self.0)
-    }
-}
-
-impl Sub for SquareSet {
-    type Output = Self;
-
-    fn sub(self, rhs: Self) -> Self::Output {
-        Self(self.0 & !rhs.0)
-    }
-}
-
-impl SubAssign for SquareSet {
-    fn sub_assign(&mut self, rhs: Self) {
-        self.0 &= !rhs.0;
-    }
-}
-
-/// An iterator over a [`SquareSet`].
-#[derive(Clone, Debug)]
-pub struct Squares {
-    bits: u64,
-}
-
-impl Iterator for Squares {
-    type Item = Square;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        if self.bits == 0 {
-            return None;
-        }
-        let index = self.bits.trailing_zeros() as u8;
-        self.bits &= self.bits - 1;
-        Square::from_raw_index(index)
-    }
-
-    fn size_hint(&self) -> (usize, Option<usize>) {
-        let remaining = self.bits.count_ones() as usize;
-        (remaining, Some(remaining))
-    }
-}
-
-impl DoubleEndedIterator for Squares {
-    fn next_back(&mut self) -> Option<Self::Item> {
-        if self.bits == 0 {
-            return None;
-        }
-        let index = (63 - self.bits.leading_zeros()) as u8;
-        self.bits &= !(1_u64 << index);
-        Square::from_raw_index(index)
-    }
-}
-
-impl ExactSizeIterator for Squares {}
-impl FusedIterator for Squares {}
