@@ -1,4 +1,4 @@
-use crate::{Board, ChessMove, Color, Piece, PieceKind, Rank, Square, SquareOffset};
+use crate::{Board, ChessMove, Color, HalfmoveClock, Piece, PieceKind, Rank, Square, SquareOffset};
 
 use super::MoveError;
 
@@ -21,7 +21,7 @@ impl Board {
         }
 
         let reaches_back_rank =
-            piece.kind() == PieceKind::Pawn && Self::is_back_rank(chess_move.to(), piece.color());
+            piece.kind() == PieceKind::Pawn && is_back_rank(chess_move.to(), piece.color());
         let promotion = match (reaches_back_rank, chess_move.promotion_kind()) {
             (true, None) => Some(PieceKind::Queen),
             (
@@ -71,7 +71,7 @@ impl Board {
         self.remove_piece(piece.square());
         let mut moved = piece.at(destination);
         if let Some(kind) = promotion.or_else(|| {
-            (piece.kind() == PieceKind::Pawn && Self::is_back_rank(destination, piece.color()))
+            (piece.kind() == PieceKind::Pawn && is_back_rank(destination, piece.color()))
                 .then_some(PieceKind::Queen)
         }) {
             moved = moved.promoted(kind);
@@ -101,7 +101,7 @@ impl Board {
         }
 
         let double_push = is_initial_double_pawn_push(piece, destination);
-        self.finish_move(piece, captured, double_push);
+        finish_move(self, piece, captured, double_push);
     }
 
     fn update_rook_right(&mut self, piece: Piece) {
@@ -118,6 +118,42 @@ impl Board {
         }
         self.set_castling_rights(rights);
     }
+}
+
+fn finish_move(board: &mut Board, moved: Piece, captured: Option<Piece>, double_push: bool) {
+    let mut halfmove_clock = board.halfmove_clock();
+    if moved.kind() == PieceKind::Pawn || captured.is_some() {
+        halfmove_clock = HalfmoveClock::ZERO;
+    } else {
+        halfmove_clock.increment();
+    }
+    board.set_halfmove_clock(halfmove_clock);
+
+    let en_passant_target = if double_push {
+        let rank_delta = match moved.color() {
+            Color::White => 1,
+            Color::Black => -1,
+        };
+        moved.square().offset(SquareOffset::new(0, rank_delta))
+    } else {
+        None
+    };
+    board.set_en_passant_target(en_passant_target);
+
+    if moved.color() == Color::Black {
+        let mut fullmove_number = board.fullmove_number();
+        fullmove_number.increment();
+        board.set_fullmove_number(fullmove_number);
+    }
+    board.set_side_to_move(moved.color().opposite());
+}
+
+fn is_back_rank(square: Square, color: Color) -> bool {
+    square.rank()
+        == match color {
+            Color::White => Rank::Eight,
+            Color::Black => Rank::One,
+        }
 }
 
 fn is_initial_double_pawn_push(piece: Piece, destination: Square) -> bool {
