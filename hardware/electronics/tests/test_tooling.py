@@ -143,6 +143,7 @@ class ElectronicsToolingTest(unittest.TestCase):
             "libxkbcommon0",
             "libxrender1",
             "python3-venv",
+            "xauth",
             "xvfb",
             "xz-utils",
         ):

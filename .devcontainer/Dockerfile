@@ -11,6 +11,7 @@ RUN apt-get update \
         curl \
         git \
         libdecor-0-0 \
+        libdecor-0-plugin-1 \
         libegl1 \
         libgl1 \
         libgl1-mesa-dri \
@@ -31,10 +32,13 @@ RUN apt-get update \
         python3-pip \
         python3-venv \
         usbutils \
+        xauth \
         xvfb \
         xz-utils \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+USER vscode
 RUN rustup component add clippy rustfmt \
     && rustup target add thumbv8m.main-none-eabihf
+USER root
