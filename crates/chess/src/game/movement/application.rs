@@ -100,8 +100,7 @@ impl Board {
             self.update_rook_right(captured);
         }
 
-        let double_push = piece.kind() == PieceKind::Pawn
-            && piece.square().rank().distance(destination.rank()) == RankDistance::Two;
+        let double_push = is_initial_double_pawn_push(piece, destination);
         self.finish_move(piece, captured, double_push);
     }
 
@@ -121,34 +120,10 @@ impl Board {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-enum RankDistance {
-    Zero,
-    One,
-    Two,
-    Three,
-    Four,
-    Five,
-    Six,
-    Seven,
-}
-
-trait Distance {
-    fn distance(self, other: Self) -> RankDistance;
-}
-
-impl Distance for Rank {
-    fn distance(self, other: Self) -> RankDistance {
-        match (self as u8).abs_diff(other as u8) {
-            0 => RankDistance::Zero,
-            1 => RankDistance::One,
-            2 => RankDistance::Two,
-            3 => RankDistance::Three,
-            4 => RankDistance::Four,
-            5 => RankDistance::Five,
-            6 => RankDistance::Six,
-            7 => RankDistance::Seven,
-            _ => unreachable!("ranks are at most seven squares apart"),
-        }
-    }
+fn is_initial_double_pawn_push(piece: Piece, destination: Square) -> bool {
+    piece.kind() == PieceKind::Pawn
+        && matches!(
+            (piece.color(), piece.square().rank(), destination.rank()),
+            (Color::White, Rank::Two, Rank::Four) | (Color::Black, Rank::Seven, Rank::Five)
+        )
 }
