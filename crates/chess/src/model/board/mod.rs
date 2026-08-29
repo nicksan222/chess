@@ -1,13 +1,14 @@
 mod castling;
 mod clocks;
-mod pieces;
+mod iter;
+mod setup;
 
 pub use castling::CastlingRights;
 pub use clocks::{FullmoveNumber, HalfmoveClock, InvalidFullmoveNumber};
-pub use pieces::BoardPieces;
+pub use iter::BoardPieces;
 
 use super::{Color, Piece, PieceKind, Square, SquareSet};
-use pieces::initial_pieces;
+use setup::initial_pieces;
 
 /// A complete chess board, independent of move history and notation.
 ///
