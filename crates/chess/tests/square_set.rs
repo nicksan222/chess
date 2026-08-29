@@ -1,6 +1,4 @@
-use std::mem::size_of;
-
-use chess::{BitBoard, BoardDirection, BoardEdge, File, Rank, Square, SquareIndex, SquareOffset};
+use chess::{BoardDirection, BoardEdge, File, Rank, Square, SquareIndex, SquareOffset, SquareSet};
 
 #[test]
 fn square_coordinates_and_indices_round_trip_exhaustively() {
@@ -42,7 +40,7 @@ fn square_offsets_respect_board_edges() {
 }
 
 #[test]
-fn square_steps_and_rays_use_objective_coordinates() {
+fn square_steps_and_rays_express_forced_board_geometry() {
     assert_eq!(
         Square::D4.step(BoardDirection::TowardRank8),
         Some(Square::D5)
@@ -124,31 +122,29 @@ fn square_iterator_is_exact_sized_and_double_ended() {
 }
 
 #[test]
-fn bitboard_has_compact_representation_and_set_semantics() {
-    assert_eq!(size_of::<BitBoard>(), size_of::<u64>());
-
-    let mut board = BitBoard::EMPTY;
+fn square_set_has_collection_semantics() {
+    let mut board = SquareSet::EMPTY;
     assert!(board.is_empty());
     assert!(!board.is_full());
     assert!(board.insert(Square::A1));
     assert!(!board.insert(Square::A1));
     assert!(board.insert(Square::E4));
-    assert_eq!(board.len(), 2);
+    assert_eq!(board.len().value(), 2);
     assert!(board.contains(Square::A1));
     assert!(board.remove(Square::A1));
     assert!(!board.remove(Square::A1));
     assert!(board.toggle(Square::H8));
     assert!(!board.toggle(Square::H8));
-    assert_eq!(board, BitBoard::from(Square::E4));
+    assert_eq!(board, SquareSet::from(Square::E4));
 
     board.clear();
-    assert_eq!(board, BitBoard::EMPTY);
-    assert!(BitBoard::FULL.is_full());
+    assert_eq!(board, SquareSet::EMPTY);
+    assert!(SquareSet::FULL.is_full());
 }
 
 #[test]
 fn iteration_is_ordered_exact_sized_and_double_ended() {
-    let board: BitBoard = [Square::H8, Square::E4, Square::A1].into_iter().collect();
+    let board: SquareSet = [Square::H8, Square::E4, Square::A1].into_iter().collect();
     let mut squares = board.iter();
 
     assert_eq!(squares.len(), 3);
@@ -162,9 +158,9 @@ fn iteration_is_ordered_exact_sized_and_double_ended() {
 }
 
 #[test]
-fn set_operators_match_raw_bit_operations() {
-    let first: BitBoard = [Square::A1, Square::B2, Square::C3].into_iter().collect();
-    let second: BitBoard = [Square::B2, Square::D4].into_iter().collect();
+fn set_operators_match_union_intersection_and_difference() {
+    let first: SquareSet = [Square::A1, Square::B2, Square::C3].into_iter().collect();
+    let second: SquareSet = [Square::B2, Square::D4].into_iter().collect();
 
     assert_eq!(
         (first | second).iter().collect::<Vec<_>>(),
@@ -181,89 +177,15 @@ fn set_operators_match_raw_bit_operations() {
     );
     assert!(first.intersects(second));
     assert!(!first.is_disjoint(second));
-    assert_eq!((!BitBoard::EMPTY), BitBoard::FULL);
+    assert_eq!((!SquareSet::EMPTY), SquareSet::FULL);
 
     let mut assigned = first;
     assigned |= second;
-    assigned &= !BitBoard::from(Square::A1);
-    assigned ^= BitBoard::from(Square::H8);
-    assigned -= BitBoard::from(Square::B2);
+    assigned &= !SquareSet::from(Square::A1);
+    assigned ^= SquareSet::from(Square::H8);
+    assigned -= SquareSet::from(Square::B2);
     assert_eq!(
         assigned.iter().collect::<Vec<_>>(),
         [Square::C3, Square::D4, Square::H8]
     );
-}
-
-#[test]
-fn directional_shifts_never_wrap_across_files() {
-    assert_eq!(
-        BitBoard::from(Square::E4).north(),
-        BitBoard::from(Square::E5)
-    );
-    assert_eq!(
-        BitBoard::from(Square::E4).south(),
-        BitBoard::from(Square::E3)
-    );
-    assert_eq!(
-        BitBoard::from(Square::E4).east(),
-        BitBoard::from(Square::F4)
-    );
-    assert_eq!(
-        BitBoard::from(Square::E4).west(),
-        BitBoard::from(Square::D4)
-    );
-    assert_eq!(
-        BitBoard::from(Square::E4).north_east(),
-        BitBoard::from(Square::F5)
-    );
-    assert_eq!(
-        BitBoard::from(Square::E4).north_west(),
-        BitBoard::from(Square::D5)
-    );
-    assert_eq!(
-        BitBoard::from(Square::E4).south_east(),
-        BitBoard::from(Square::F3)
-    );
-    assert_eq!(
-        BitBoard::from(Square::E4).south_west(),
-        BitBoard::from(Square::D3)
-    );
-
-    assert!(BitBoard::from(Square::H4).east().is_empty());
-    assert!(BitBoard::from(Square::A4).west().is_empty());
-    assert!(BitBoard::from(Square::A8).north().is_empty());
-    assert!(BitBoard::from(Square::A1).south().is_empty());
-}
-
-#[test]
-fn raw_shifts_are_total_for_every_shift_amount() {
-    let board = BitBoard::from(Square::A1);
-
-    assert_eq!(board << 63, BitBoard::from(Square::H8));
-    assert_eq!(board << 64, BitBoard::EMPTY);
-    assert_eq!(BitBoard::from(Square::H8) >> 63, board);
-    assert_eq!(BitBoard::from(Square::H8) >> 64, BitBoard::EMPTY);
-
-    let mut shifted = board;
-    shifted <<= 8;
-    assert_eq!(shifted, BitBoard::from(Square::A2));
-    shifted >>= 8;
-    assert_eq!(shifted, board);
-}
-
-#[test]
-fn bitboard_round_trips_every_raw_value_in_deterministic_sample() {
-    let mut state = 0x0123_4567_89AB_CDEF_u64;
-
-    for _ in 0..10_000 {
-        state = state
-            .wrapping_mul(6_364_136_223_846_793_005)
-            .wrapping_add(1_442_695_040_888_963_407);
-        let board = BitBoard::from_bits(state);
-        let reconstructed: BitBoard = board.iter().collect();
-
-        assert_eq!(board.bits(), state);
-        assert_eq!(board.len(), state.count_ones());
-        assert_eq!(reconstructed, board);
-    }
 }
