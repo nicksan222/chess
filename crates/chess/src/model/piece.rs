@@ -46,8 +46,8 @@ impl fmt::Display for PieceKind {
 
 /// A chess piece with its color, movement kind, and current square.
 ///
-/// Pieces are self-locating domain objects. A position owns the set of pieces
-/// and preserves the invariant that no two pieces share a square.
+/// Pieces are self-locating domain objects. A [`crate::Board`] owns the set
+/// of pieces and preserves the invariant that no two pieces share a square.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Piece {
     color: Color,
@@ -88,6 +88,28 @@ impl Piece {
     #[must_use]
     pub fn where_can_move(self, board: &crate::Board) -> crate::SquareSet {
         board.destinations(self)
+    }
+
+    /// Moves this piece in `game`, recording the resulting hash-linked step.
+    ///
+    /// Pawn moves to the back rank promote to a queen. Use
+    /// [`Piece::move_and_promote`] to select another promotion kind.
+    pub fn move_to(
+        self,
+        destination: Square,
+        game: &mut crate::Game,
+    ) -> Result<crate::MoveStep, crate::MoveError> {
+        game.move_piece(self, destination, None)
+    }
+
+    /// Moves and promotes this pawn in `game`, recording the resulting step.
+    pub fn move_and_promote(
+        self,
+        destination: Square,
+        promotion: PieceKind,
+        game: &mut crate::Game,
+    ) -> Result<crate::MoveStep, crate::MoveError> {
+        game.move_piece(self, destination, Some(promotion))
     }
 
     pub(crate) const fn at(self, square: Square) -> Self {
