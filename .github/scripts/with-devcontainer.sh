@@ -13,7 +13,8 @@ if [[ $# -eq 0 ]]; then
 fi
 
 image="${DEVCONTAINER_IMAGE:?DEVCONTAINER_IMAGE is not set}"
-config="${repository_root}/.devcontainer/ci.json"
+config_dir="$(mktemp -d "${TMPDIR:-/tmp}/chess-devcontainer.XXXXXX")"
+config="${config_dir}/devcontainer.json"
 
 python3 - "${config}" "${image}" <<'PY'
 import json
