@@ -3,11 +3,13 @@ mod coordinate;
 mod geometry;
 mod index;
 mod iter;
+mod parse;
 
 pub use coordinate::{File, Rank};
 pub use geometry::{BoardDirection, BoardEdge, SquareOffset};
 pub use index::{InvalidSquare, SquareIndex};
 pub use iter::{AllSquares, SquareRay};
+pub use parse::ParseSquareError;
 
 use core::fmt;
 

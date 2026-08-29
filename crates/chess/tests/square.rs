@@ -1,4 +1,6 @@
-use chess::{BoardDirection, BoardEdge, File, Rank, Square, SquareIndex, SquareOffset};
+use chess::{
+    BoardDirection, BoardEdge, File, ParseSquareError, Rank, Square, SquareIndex, SquareOffset,
+};
 
 #[test]
 fn square_coordinates_and_indices_round_trip_exhaustively() {
@@ -28,6 +30,16 @@ fn square_rejects_invalid_coordinates_and_formats_algebraically() {
     assert_eq!(error.to_string(), "square index 255 is outside 0..64");
     assert_eq!(Square::E4.to_string(), "e4");
     assert_eq!(format!("{:?}", Square::H8), "h8");
+}
+
+#[test]
+fn algebraic_squares_parse_without_notation_boilerplate() {
+    assert_eq!("e4".parse::<Square>(), Ok(Square::E4));
+    assert_eq!("H8".parse::<Square>(), Ok(Square::H8));
+    assert_eq!("a".parse::<Square>(), Err(ParseSquareError::Length));
+    assert_eq!("i4".parse::<Square>(), Err(ParseSquareError::File));
+    assert_eq!("a9".parse::<Square>(), Err(ParseSquareError::Rank));
+    assert_eq!(Square::C6.to_string().parse(), Ok(Square::C6));
 }
 
 #[test]
