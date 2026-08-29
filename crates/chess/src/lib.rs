@@ -6,6 +6,7 @@
 mod game;
 mod model;
 
+pub use game::{ForceMoveError, ForcedMove};
 pub use model::{
     AllSquares, Board, BoardDirection, BoardEdge, BoardPieces, CastlingRights, ChessMove, Color,
     File, FullmoveNumber, HalfmoveClock, InvalidFullmoveNumber, InvalidPromotion, InvalidSquare,
