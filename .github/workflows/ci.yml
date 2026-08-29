@@ -19,6 +19,22 @@ jobs:
       - name: Discover CAD generators
         run: ./tools/generate-cad --list
 
+  electronics:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Python
+        run: sudo apt-get update && sudo apt-get install --yes --no-install-recommends python3 python3-pip python3-venv make
+      - name: Test and generate schematics
+        run: ./tools/electronics check
+      - uses: actions/upload-artifact@v4
+        with:
+          name: electronics-generated
+          path: |
+            hardware/electronics/*.svg
+            hardware/electronics/*.png
+            hardware/electronics/bom.md
+
   host-workspace:
     runs-on: ubuntu-latest
     steps:

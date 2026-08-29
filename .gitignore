@@ -5,6 +5,7 @@
 .DS_Store
 .idea/
 .vscode/
+.venv/
 *.swp
 *.tmp
 *.blend1

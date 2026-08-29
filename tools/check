@@ -20,6 +20,7 @@ run_check "Validate CAD dimensions" \
 run_check "Test CAD dimensions" \
     python3 -m unittest discover -s hardware/cad/blender/tests
 run_check "Discover CAD generators" ./tools/generate-cad --list
+run_check "Test electronics schematic" ./tools/electronics check
 run_check "Type-check host workspace" cargo check --workspace --all-targets
 run_check "Lint host workspace" \
     cargo clippy --workspace --all-targets -- -D warnings

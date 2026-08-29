@@ -14,6 +14,9 @@ RUN apt-get update \
         libusb-1.0-0-dev \
         make \
         pkg-config \
+        python3 \
+        python3-pip \
+        python3-venv \
         usbutils \
         xz-utils \
     && apt-get clean \

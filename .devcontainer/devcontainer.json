@@ -23,11 +23,15 @@
       "extensions": [
         "DavidAnson.vscode-markdownlint",
         "GitHub.vscode-github-actions",
+        "ms-python.python",
         "rust-lang.rust-analyzer",
         "tamasfe.even-better-toml",
         "vadimcn.vscode-lldb"
       ],
       "settings": {
+        "[python]": {
+          "editor.formatOnSave": false
+        },
         "[rust]": {
           "editor.defaultFormatter": "rust-lang.rust-analyzer",
           "editor.formatOnSave": true
@@ -35,6 +39,7 @@
         "files.watcherExclude": {
           "**/target/**": true
         },
+        "python.defaultInterpreterPath": "/usr/bin/python3",
         "rust-analyzer.check.command": "check",
         "terminal.integrated.defaultProfile.linux": "bash"
       }
