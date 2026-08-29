@@ -8,3 +8,5 @@ adapters.
 
 The crate is `no_std`. Its linked list, queue, and growable stack require an
 allocator; fixed-capacity collections are available for allocator-free firmware.
+The linked list is the storage primitive for the chess crate's hash-linked move
+history.
