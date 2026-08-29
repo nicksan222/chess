@@ -1,6 +1,6 @@
 use std::mem::size_of;
 
-use chess::{BitBoard, Square};
+use chess::{BitBoard, BoardDirection, BoardEdge, Square};
 
 #[test]
 fn square_coordinates_and_indices_round_trip_exhaustively() {
@@ -39,6 +39,77 @@ fn square_offsets_respect_board_edges() {
     assert_eq!(Square::A1.offset(0, -1), None);
     assert_eq!(Square::H8.offset(1, 0), None);
     assert_eq!(Square::H8.offset(0, 1), None);
+}
+
+#[test]
+fn square_steps_and_rays_use_objective_coordinates() {
+    assert_eq!(
+        Square::D4.step(BoardDirection::TowardRank8),
+        Some(Square::D5)
+    );
+    assert_eq!(
+        Square::D4.step(BoardDirection::TowardRank1FileA),
+        Some(Square::C3)
+    );
+    assert_eq!(Square::A1.step(BoardDirection::TowardFileA), None);
+    assert_eq!(Square::H8.step(BoardDirection::TowardRank8FileH), None);
+    assert_eq!(
+        Square::D4
+            .ray(BoardDirection::TowardRank8FileH)
+            .collect::<Vec<_>>(),
+        [Square::E5, Square::F6, Square::G7, Square::H8]
+    );
+    assert_eq!(
+        Square::H4
+            .ray(BoardDirection::TowardFileA)
+            .collect::<Vec<_>>(),
+        [
+            Square::G4,
+            Square::F4,
+            Square::E4,
+            Square::D4,
+            Square::C4,
+            Square::B4,
+            Square::A4,
+        ]
+    );
+}
+
+#[test]
+fn board_edges_are_objective_and_corners_belong_to_two_edges() {
+    assert!(BoardEdge::FileA.contains(Square::A4));
+    assert!(BoardEdge::Rank8.contains(Square::E8));
+    assert!(!BoardEdge::FileH.contains(Square::G8));
+    assert_eq!(
+        Square::A1.edges().collect::<Vec<_>>(),
+        [BoardEdge::FileA, BoardEdge::Rank1]
+    );
+    assert_eq!(
+        Square::H8.edges().collect::<Vec<_>>(),
+        [BoardEdge::FileH, BoardEdge::Rank8]
+    );
+    assert!(Square::A1.is_edge());
+    assert!(Square::A1.is_corner());
+    assert!(Square::A4.is_edge());
+    assert!(!Square::A4.is_corner());
+    assert!(!Square::D4.is_edge());
+    assert!(!Square::D4.is_corner());
+
+    for edge in BoardEdge::ALL {
+        assert_eq!(
+            Square::all()
+                .filter(|square| edge.contains(*square))
+                .count(),
+            8
+        );
+    }
+    assert_eq!(Square::all().filter(|square| square.is_edge()).count(), 28);
+    assert_eq!(Square::all().filter(|square| square.is_corner()).count(), 4);
+    for square in Square::all() {
+        let edge_count = square.edges().count();
+        assert_eq!(square.is_edge(), edge_count != 0);
+        assert_eq!(square.is_corner(), edge_count == 2);
+    }
 }
 
 #[test]
