@@ -1,3 +1,7 @@
+mod parse;
+
+pub use parse::ParseMoveError;
+
 use core::fmt;
 
 use super::{PieceKind, Square};

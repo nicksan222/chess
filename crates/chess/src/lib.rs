@@ -13,6 +13,6 @@ pub use game::{
 pub use model::{
     AllSquares, Board, BoardDirection, BoardEdge, BoardPieces, CastlingRights, ChessMove, Color,
     File, FullmoveNumber, HalfmoveClock, InvalidFullmoveNumber, InvalidPromotion, InvalidSquare,
-    ParseSquareError, Piece, PieceKind, Rank, Square, SquareCount, SquareIndex, SquareOffset,
-    SquareRay, SquareSet, SquareSetSquares,
+    ParseMoveError, ParseSquareError, Piece, PieceKind, Rank, Square, SquareCount, SquareIndex,
+    SquareOffset, SquareRay, SquareSet, SquareSetSquares,
 };

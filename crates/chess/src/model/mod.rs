@@ -10,7 +10,7 @@ mod square_set;
 pub use board::{
     Board, BoardPieces, CastlingRights, FullmoveNumber, HalfmoveClock, InvalidFullmoveNumber,
 };
-pub use chess_move::{ChessMove, InvalidPromotion};
+pub use chess_move::{ChessMove, InvalidPromotion, ParseMoveError};
 pub use color::Color;
 pub use piece::{Piece, PieceKind};
 pub use square::{

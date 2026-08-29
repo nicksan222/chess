@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use chess::{ChessMove, InvalidPromotion, PieceKind, Square};
+use chess::{ChessMove, InvalidPromotion, ParseMoveError, ParseSquareError, PieceKind, Square};
 
 fn assert_value_traits<T>()
 where
@@ -22,6 +22,25 @@ fn moves_own_their_origin_destination_and_optional_promotion() {
     assert_eq!(promotion.to(), Square::A8);
     assert_eq!(promotion.promotion_kind(), Some(PieceKind::Knight));
     assert_eq!(promotion.to_string(), "a7a8n");
+}
+
+#[test]
+fn coordinate_moves_parse_with_optional_promotions() {
+    assert_eq!("e2e4".parse(), Ok(ChessMove::new(Square::E2, Square::E4)));
+    assert_eq!(
+        "A7A8Q".parse(),
+        Ok(ChessMove::promotion(Square::A7, Square::A8, PieceKind::Queen).unwrap())
+    );
+    assert_eq!("e2".parse::<ChessMove>(), Err(ParseMoveError::Length));
+    assert_eq!(
+        "i2e4".parse::<ChessMove>(),
+        Err(ParseMoveError::Origin(ParseSquareError::File))
+    );
+    assert_eq!(
+        "e2e9".parse::<ChessMove>(),
+        Err(ParseMoveError::Destination(ParseSquareError::Rank))
+    );
+    assert_eq!("a7a8k".parse::<ChessMove>(), Err(ParseMoveError::Promotion));
 }
 
 #[test]
