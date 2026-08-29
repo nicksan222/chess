@@ -56,7 +56,7 @@ impl Board {
 
     /// Returns all squares occupied by pieces matching `color` and `kind`.
     #[must_use]
-    pub fn pieces(&self, color: Color, kind: PieceKind) -> SquareSet {
+    pub fn occupied_by_kind(&self, color: Color, kind: PieceKind) -> SquareSet {
         self.iter()
             .filter(|piece| piece.color() == color && piece.kind() == kind)
             .map(Piece::square)
@@ -92,8 +92,13 @@ impl Board {
     }
 
     /// Returns self-locating pieces in board order.
-    pub fn iter(&self) -> BoardPieces<'_> {
+    pub fn pieces(&self) -> BoardPieces<'_> {
         BoardPieces::new(self, self.occupied_count())
+    }
+
+    /// Returns self-locating pieces in board order.
+    pub fn iter(&self) -> BoardPieces<'_> {
+        self.pieces()
     }
 
     fn occupied_count(&self) -> usize {

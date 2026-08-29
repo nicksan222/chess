@@ -54,3 +54,12 @@ impl DoubleEndedIterator for BoardPieces<'_> {
 
 impl ExactSizeIterator for BoardPieces<'_> {}
 impl FusedIterator for BoardPieces<'_> {}
+
+impl<'a> IntoIterator for &'a Board {
+    type Item = Piece;
+    type IntoIter = BoardPieces<'a>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.pieces()
+    }
+}

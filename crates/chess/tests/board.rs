@@ -22,7 +22,10 @@ fn initial_board_has_self_locating_pieces_and_standard_state() {
     assert_eq!(BOARD.occupied().len().value(), 32);
     assert_eq!(BOARD.occupied_by(Color::White).len().value(), 16);
     assert_eq!(BOARD.occupied_by(Color::Black).len().value(), 16);
-    assert_eq!(BOARD.pieces(Color::White, PieceKind::Pawn), white_pawns);
+    assert_eq!(
+        BOARD.occupied_by_kind(Color::White, PieceKind::Pawn),
+        white_pawns
+    );
     assert_eq!(
         BOARD.piece_at(Square::E1),
         Some(Piece::new(Color::White, PieceKind::King, Square::E1))
@@ -52,12 +55,12 @@ fn setting_a_piece_uses_its_square_and_replaces_the_occupant() {
     assert_eq!(board.piece_at(Square::E4), Some(black_queen));
     assert!(
         !board
-            .pieces(Color::White, PieceKind::Rook)
+            .occupied_by_kind(Color::White, PieceKind::Rook)
             .contains(Square::E4)
     );
     assert!(
         board
-            .pieces(Color::Black, PieceKind::Queen)
+            .occupied_by_kind(Color::Black, PieceKind::Queen)
             .contains(Square::E4)
     );
     assert_eq!(board.occupied().len().value(), 1);
@@ -75,7 +78,12 @@ fn piece_iteration_is_ordered_exact_sized_and_double_ended() {
     board.set_piece(knight);
     board.set_piece(king);
 
-    let mut pieces = board.iter();
+    assert_eq!(
+        (&board).into_iter().collect::<Vec<_>>(),
+        [rook, knight, king]
+    );
+
+    let mut pieces = board.pieces();
     assert_eq!(pieces.len(), 3);
     assert_eq!(pieces.next(), Some(rook));
     assert_eq!(pieces.next_back(), Some(king));
