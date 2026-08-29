@@ -29,6 +29,9 @@ impl PieceKind {
         Self::Queen,
         Self::King,
     ];
+
+    /// Piece kinds a pawn may promote to.
+    pub const PROMOTIONS: [Self; 4] = [Self::Knight, Self::Bishop, Self::Rook, Self::Queen];
 }
 
 impl fmt::Display for PieceKind {

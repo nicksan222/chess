@@ -154,9 +154,9 @@ fn en_passant_and_selected_promotion_are_applied() {
     ]);
     board.set_fullmove_number(FullmoveNumber::new(40).unwrap());
     let mut promotion = Game::from_board(board);
-    let promotion_choices = promotion
-        .legal_moves()
-        .filter(|chess_move| chess_move.from() == Square::A7)
+    let pawn = promotion.piece_at(Square::A7).unwrap();
+    let promotion_choices = pawn
+        .legal_moves(promotion.board())
         .map(ChessMove::promotion_kind)
         .collect::<Vec<_>>();
     assert_eq!(
@@ -169,9 +169,7 @@ fn en_passant_and_selected_promotion_are_applied() {
         ]
     );
 
-    let step = promotion
-        .piece_at(Square::A7)
-        .unwrap()
+    let step = pawn
         .move_and_promote(Square::A8, PieceKind::Knight, &mut promotion)
         .unwrap();
     assert_eq!(step.chess_move().promotion_kind(), Some(PieceKind::Knight));

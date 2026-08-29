@@ -1,6 +1,6 @@
-use crate::{Board, ChessMove, Color, Piece, PieceKind, Square, SquareSet};
+use crate::{Board, ChessMove, Color, Piece, PieceKind, SquareSet};
 
-use super::{calculators, transition::is_back_rank};
+use super::calculators;
 
 impl Board {
     /// Returns every legal destination for `piece` in this board.
@@ -40,11 +40,7 @@ impl Board {
         let side = self.side_to_move();
         self.pieces()
             .filter(move |piece| piece.color() == side)
-            .flat_map(move |piece| {
-                self.legal_destinations(piece)
-                    .into_iter()
-                    .flat_map(move |destination| moves_to(piece, destination).into_iter().flatten())
-            })
+            .flat_map(|piece| piece.legal_moves(self))
     }
 
     /// Returns whether `color`'s king is currently attacked.
@@ -57,24 +53,5 @@ impl Board {
             return false;
         };
         calculators::is_attacked(self, king.square(), color.opposite())
-    }
-}
-
-fn moves_to(piece: Piece, destination: Square) -> [Option<ChessMove>; 4] {
-    if piece.kind() == PieceKind::Pawn && is_back_rank(destination, piece.color()) {
-        [
-            PieceKind::Knight,
-            PieceKind::Bishop,
-            PieceKind::Rook,
-            PieceKind::Queen,
-        ]
-        .map(|kind| ChessMove::promotion(piece.square(), destination, kind).ok())
-    } else {
-        [
-            Some(ChessMove::new(piece.square(), destination)),
-            None,
-            None,
-            None,
-        ]
     }
 }

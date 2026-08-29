@@ -54,6 +54,15 @@ fn piece_kinds_have_stable_order_and_names() {
         assert_eq!(actual, kind);
         assert_eq!(kind.to_string(), name);
     }
+    assert_eq!(
+        PieceKind::PROMOTIONS,
+        [
+            PieceKind::Knight,
+            PieceKind::Bishop,
+            PieceKind::Rook,
+            PieceKind::Queen,
+        ]
+    );
 }
 
 #[test]
