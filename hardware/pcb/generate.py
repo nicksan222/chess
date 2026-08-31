@@ -209,6 +209,9 @@ def add_power_planes(board, net_by_name) -> None:
 
 
 def build() -> None:
+    # KiCad normally generates random item UUIDs. A fixed seed makes the native
+    # project and every exported artifact reproducible in CI.
+    pcbnew.KIID.SeedGenerator(0x43484553)
     board = pcbnew.BOARD()
     board.SetCopperLayerCount(4)
     pad_nets, names = connectivity()
