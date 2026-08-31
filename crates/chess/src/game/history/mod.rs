@@ -22,7 +22,7 @@ use hashing::{calculate_board_anchor, calculate_hash, validate_step};
 /// The authoritative, SHA-256-linked timeline of a game.
 ///
 /// Every accepted move, invalid state, and terminal result is retained in one
-/// chronological [`LinkedList`](chess_core::collections::LinkedList). Each
+/// chronological [`LinkedList`]. Each
 /// step commits to its event and every preceding event.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct GameHistory {
@@ -89,6 +89,11 @@ impl GameHistory {
     }
 
     /// Creates and appends a local event step when its transition is valid.
+    ///
+    /// Active history accepts any event category. Once an invalid event is
+    /// newest, only another invalid event may follow. Once a final event is
+    /// newest, no event may follow. The returned step contains the cumulative
+    /// hash suitable for transport or persistence.
     pub fn push(&mut self, event: HistoryEvent) -> Result<HistoryStep, HistoryError> {
         self.validate_transition(event)?;
         let ply = self.next_ply();
@@ -105,6 +110,10 @@ impl GameHistory {
     }
 
     /// Validates and appends a step received from another component.
+    ///
+    /// This low-level operation checks hashes and structural transitions but
+    /// cannot validate chess semantics. Use [`Game::accept`](crate::Game::accept)
+    /// when applying peer events to a game.
     pub fn try_append(&mut self, incoming: HistoryStep) -> Result<(), HistoryError> {
         self.validate_next(incoming)?;
         self.append_validated(incoming);
@@ -129,6 +138,11 @@ impl GameHistory {
     }
 
     /// Recomputes every link and reports the first invalid step.
+    ///
+    /// Verification starts from the retained board anchor, checks every
+    /// sequence number and cumulative hash, and finally confirms the cached
+    /// tip. It does not replay chess moves; [`Game::verify`](crate::Game::verify)
+    /// adds board-cache and final-state verification.
     pub fn verify(&self) -> Result<(), HistoryError> {
         let mut previous = self.anchor;
         let mut expected_value = Ply::FIRST.value();

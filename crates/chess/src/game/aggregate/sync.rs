@@ -9,6 +9,15 @@ use super::Game;
 
 impl Game {
     /// Verifies and accepts an authoritative history step from a peer.
+    ///
+    /// Validation covers the sequence number, previous hash, event hash,
+    /// structural history transition, move legality, canonical promotion, and
+    /// semantic validity of final events. An accepted move updates the board
+    /// cache and derives any automatic final event exactly as local play does.
+    ///
+    /// A synchronization failure is itself retained as an invalid event unless
+    /// history is already sealed by a final event. This intentionally makes
+    /// divergence visible and blocks further valid transitions until resolved.
     pub fn accept(&mut self, step: HistoryStep) -> Result<(), GameSyncError> {
         if let Err(error) = self.history.validate_next(step) {
             let sync = GameSyncError::History(error);

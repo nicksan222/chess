@@ -50,6 +50,10 @@ impl Game {
     }
 
     /// Claims an available draw and seals authoritative history.
+    ///
+    /// An unavailable claim is retained as [`InvalidState::DrawClaim`] and
+    /// blocks further play until it is resolved. A successful claim appends a
+    /// [`FinalState::Draw`] and can never be undone.
     pub fn claim_draw(&mut self, claim: DrawClaim) -> Result<(), DrawClaimError> {
         if !self.draw_claims().contains(claim) {
             self.record_invalid(InvalidState::DrawClaim { claim });
@@ -88,6 +92,10 @@ impl Game {
     }
 
     /// Returns draws made claimable by `chess_move` without changing this game.
+    ///
+    /// The complete game is cloned, the move is processed through normal play,
+    /// and claims are read from the resulting position. Invalid and final
+    /// events created during that simulation remain confined to the clone.
     pub fn draw_claims_after(&self, chess_move: ChessMove) -> Result<DrawClaims, MoveError> {
         let mut next = self.clone();
         next.play(chess_move)?;
