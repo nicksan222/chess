@@ -28,8 +28,6 @@ from footprints.sk9822 import CHAIN_PINS
 
 GROUND_STUB_MM = 1.8
 LABEL_INSET_MM = 3.5
-FILES = "ABCDEFGH"
-
 
 def pad_positions(
     placements: list[Placement],
@@ -128,8 +126,9 @@ def add_silkscreen(artwork: Artwork) -> None:
     # exactly as wide as the grid, so there is no margin to put them in: outside
     # the edge means outside the board, where a fab trims the silkscreen away.
     centres = square_centres(shared)
+    files = sources.names().FILES
     for column in range(shared.GRID_COUNT):
-        letter = FILES[column]
+        letter = files[column]
         x, _y = centres[f"{letter}1"]
         artwork.silk_lines += text.text_segments(
             letter, x, -half + LABEL_INSET_MM, height

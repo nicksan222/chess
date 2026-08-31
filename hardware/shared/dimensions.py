@@ -12,6 +12,8 @@ square centres, LED positions and reed positions stay symmetric about the origin
 
 from math import isclose
 
+from .components import REED_SWITCH, SK9822
+
 
 # Unit contract. One Blender unit represents one millimetre in generated files.
 MILLIMETRES_PER_METRE = 1_000.0
@@ -58,8 +60,8 @@ PLAYING_SPAN_MM = SQUARE_SIZE_MM * GRID_COUNT
 # WS2812B this design replaced, so the pocket dimensions are unchanged; the
 # difference is electrical, a separate clock line the host can drive from SPI.
 # https://www.ledyilighting.com/wp-content/uploads/2025/02/WS2812B-datasheet.pdf
-LED_PACKAGE_REFERENCE = "SK9822 5050 clocked RGB"
-LED_PACKAGE_NOMINAL_SIZE_MM = (5.4, 5.0, 1.57)
+LED_PACKAGE_REFERENCE = SK9822.description
+LED_PACKAGE_NOMINAL_SIZE_MM = SK9822.body_mm
 LED_PACKAGE_TOLERANCE_MM = 0.05
 LED_PACKAGE_MAX_SIZE_MM = tuple(
     axis + LED_PACKAGE_TOLERANCE_MM for axis in LED_PACKAGE_NOMINAL_SIZE_MM
@@ -71,7 +73,7 @@ LED_POSITION_MM = (13.0, 13.0)
 # Through-hole reed switch lying flat at the centre of each square, on the PCB.
 # Sensitivity remains the open prototype question: a flat reed under a vertical
 # piece magnet couples through the field's fringe rather than head-on.
-REED_SENSOR_BODY_MM = (14.0, 2.2)
+REED_SENSOR_BODY_MM = REED_SWITCH.body_mm[:2]
 REED_SENSOR_POSITION_MM = (0.0, 0.0)
 REED_SENSOR_STANDOFF_MM = 1.0
 

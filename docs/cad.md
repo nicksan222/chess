@@ -63,7 +63,7 @@ values rather than repeating physical measurements locally. Run the file directl
 to print the current scale summary:
 
 ```sh
-python3 hardware/shared/dimensions.py
+PYTHONPATH=hardware python3 -m shared.dimensions
 ```
 
 ## Scale

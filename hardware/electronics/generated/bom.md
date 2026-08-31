@@ -13,8 +13,8 @@ drawings always agree.
 | Qty | Value | Package | Description | References |
 |----:|---|---|---|---|
 | 64 | 100nF | disc 2.54 mm | Local LED decoupling capacitor | C8-C71 |
-| 64 | REED NO | axial 14 mm | Normally-open magnetic sensor | RS1-RS64 |
-| 64 | SK9822 | PLCC-6 5050 | Clocked addressable RGB LED | U6-U69 |
+| 64 | REED NO | axial 14 mm | Normally-open through-hole reed switch | RS1-RS64 |
+| 64 | SK9822 | PLCC-6 5050 | Clocked 5050 RGB LED | U6-U69 |
 | 12 | TACT 6mm | 6x6 mm THT | Momentary panel button, 9.5 mm actuator | SW1-SW12 |
 | 4 | 100nF | disc 2.54 mm | Expander decoupling capacitor | C3-C6 |
 | 4 | DIP-28 socket | DIP-28 | Turned-pin socket; the chip drops in after assembly | SKT1-SKT4 |

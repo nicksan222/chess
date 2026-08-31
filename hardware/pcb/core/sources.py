@@ -1,17 +1,12 @@
-"""Read the two upstream domains without importing either as a package.
+"""Read shared contracts and the schematic's generated netlist.
 
-This domain needs the shared mechanical envelope and the wiring assignment from
-`hardware/electronics`. It must not copy either set of numbers, because another
-copy is another thing to keep in step.
-
-Modules are loaded by path so the PCB runner remains isolated from sibling
-packages named `core`. The shared contract deliberately has no CAD dependency;
-future KiCad and other domain adapters consume the same source.
+The shared package deliberately has no CAD, EDA, or PCB dependency, so future
+KiCad and other domain adapters can consume the same definitions.
 """
 
 from __future__ import annotations
 
-import importlib.util
+import importlib
 import json
 import sys
 from pathlib import Path
@@ -21,33 +16,25 @@ PCB_ROOT = Path(__file__).resolve().parents[1]
 HARDWARE_ROOT = PCB_ROOT.parent
 REPOSITORY_ROOT = HARDWARE_ROOT.parent
 
-SHARED_DIMENSIONS_PATH = HARDWARE_ROOT / "shared" / "dimensions.py"
-ELECTRONICS_NAMES_PATH = HARDWARE_ROOT / "electronics" / "core" / "names.py"
 NETLIST_PATH = HARDWARE_ROOT / "electronics" / "generated" / "netlist.json"
 
 PROJECT_NAME = "board"
 
 
-def _load(path: Path, module_name: str) -> ModuleType:
-    if not path.is_file():
-        raise RuntimeError(f"Upstream source is missing: {path}")
-    spec = importlib.util.spec_from_file_location(module_name, path)
-    if spec is None or spec.loader is None:
-        raise RuntimeError(f"Cannot load {path}")
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[module_name] = module
-    spec.loader.exec_module(module)
-    return module
+def _shared(module: str) -> ModuleType:
+    if str(HARDWARE_ROOT) not in sys.path:
+        sys.path.insert(0, str(HARDWARE_ROOT))
+    return importlib.import_module(f"shared.{module}")
 
 
 def dimensions() -> ModuleType:
-    """The mechanical envelope: board size, square pitch, feature positions."""
-    return _load(SHARED_DIMENSIONS_PATH, "pcb_shared_dimensions")
+    """The shared mechanical envelope and feature positions."""
+    return _shared("dimensions")
 
 
 def names() -> ModuleType:
-    """The wiring assignment: squares to expander pins, buttons to Pi lines."""
-    return _load(ELECTRONICS_NAMES_PATH, "pcb_electronics_names")
+    """The shared wiring assignment, net names, and host lines."""
+    return _shared("wiring")
 
 
 def netlist() -> dict:

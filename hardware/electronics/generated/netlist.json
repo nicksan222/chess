@@ -678,7 +678,7 @@
           "value": "4.7k"
         },
         "RS1": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "A1"
           },
@@ -687,7 +687,7 @@
           "value": "REED NO"
         },
         "RS10": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "B3"
           },
@@ -696,7 +696,7 @@
           "value": "REED NO"
         },
         "RS11": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "C3"
           },
@@ -705,7 +705,7 @@
           "value": "REED NO"
         },
         "RS12": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "D3"
           },
@@ -714,7 +714,7 @@
           "value": "REED NO"
         },
         "RS13": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "A4"
           },
@@ -723,7 +723,7 @@
           "value": "REED NO"
         },
         "RS14": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "B4"
           },
@@ -732,7 +732,7 @@
           "value": "REED NO"
         },
         "RS15": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "C4"
           },
@@ -741,7 +741,7 @@
           "value": "REED NO"
         },
         "RS16": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "D4"
           },
@@ -750,7 +750,7 @@
           "value": "REED NO"
         },
         "RS17": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "E1"
           },
@@ -759,7 +759,7 @@
           "value": "REED NO"
         },
         "RS18": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "F1"
           },
@@ -768,7 +768,7 @@
           "value": "REED NO"
         },
         "RS19": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "G1"
           },
@@ -777,7 +777,7 @@
           "value": "REED NO"
         },
         "RS2": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "B1"
           },
@@ -786,7 +786,7 @@
           "value": "REED NO"
         },
         "RS20": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "H1"
           },
@@ -795,7 +795,7 @@
           "value": "REED NO"
         },
         "RS21": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "E2"
           },
@@ -804,7 +804,7 @@
           "value": "REED NO"
         },
         "RS22": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "F2"
           },
@@ -813,7 +813,7 @@
           "value": "REED NO"
         },
         "RS23": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "G2"
           },
@@ -822,7 +822,7 @@
           "value": "REED NO"
         },
         "RS24": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "H2"
           },
@@ -831,7 +831,7 @@
           "value": "REED NO"
         },
         "RS25": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "E3"
           },
@@ -840,7 +840,7 @@
           "value": "REED NO"
         },
         "RS26": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "F3"
           },
@@ -849,7 +849,7 @@
           "value": "REED NO"
         },
         "RS27": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "G3"
           },
@@ -858,7 +858,7 @@
           "value": "REED NO"
         },
         "RS28": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "H3"
           },
@@ -867,7 +867,7 @@
           "value": "REED NO"
         },
         "RS29": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "E4"
           },
@@ -876,7 +876,7 @@
           "value": "REED NO"
         },
         "RS3": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "C1"
           },
@@ -885,7 +885,7 @@
           "value": "REED NO"
         },
         "RS30": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "F4"
           },
@@ -894,7 +894,7 @@
           "value": "REED NO"
         },
         "RS31": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "G4"
           },
@@ -903,7 +903,7 @@
           "value": "REED NO"
         },
         "RS32": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "H4"
           },
@@ -912,7 +912,7 @@
           "value": "REED NO"
         },
         "RS33": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "A5"
           },
@@ -921,7 +921,7 @@
           "value": "REED NO"
         },
         "RS34": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "B5"
           },
@@ -930,7 +930,7 @@
           "value": "REED NO"
         },
         "RS35": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "C5"
           },
@@ -939,7 +939,7 @@
           "value": "REED NO"
         },
         "RS36": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "D5"
           },
@@ -948,7 +948,7 @@
           "value": "REED NO"
         },
         "RS37": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "A6"
           },
@@ -957,7 +957,7 @@
           "value": "REED NO"
         },
         "RS38": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "B6"
           },
@@ -966,7 +966,7 @@
           "value": "REED NO"
         },
         "RS39": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "C6"
           },
@@ -975,7 +975,7 @@
           "value": "REED NO"
         },
         "RS4": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "D1"
           },
@@ -984,7 +984,7 @@
           "value": "REED NO"
         },
         "RS40": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "D6"
           },
@@ -993,7 +993,7 @@
           "value": "REED NO"
         },
         "RS41": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "A7"
           },
@@ -1002,7 +1002,7 @@
           "value": "REED NO"
         },
         "RS42": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "B7"
           },
@@ -1011,7 +1011,7 @@
           "value": "REED NO"
         },
         "RS43": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "C7"
           },
@@ -1020,7 +1020,7 @@
           "value": "REED NO"
         },
         "RS44": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "D7"
           },
@@ -1029,7 +1029,7 @@
           "value": "REED NO"
         },
         "RS45": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "A8"
           },
@@ -1038,7 +1038,7 @@
           "value": "REED NO"
         },
         "RS46": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "B8"
           },
@@ -1047,7 +1047,7 @@
           "value": "REED NO"
         },
         "RS47": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "C8"
           },
@@ -1056,7 +1056,7 @@
           "value": "REED NO"
         },
         "RS48": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "D8"
           },
@@ -1065,7 +1065,7 @@
           "value": "REED NO"
         },
         "RS49": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "E5"
           },
@@ -1074,7 +1074,7 @@
           "value": "REED NO"
         },
         "RS5": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "A2"
           },
@@ -1083,7 +1083,7 @@
           "value": "REED NO"
         },
         "RS50": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "F5"
           },
@@ -1092,7 +1092,7 @@
           "value": "REED NO"
         },
         "RS51": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "G5"
           },
@@ -1101,7 +1101,7 @@
           "value": "REED NO"
         },
         "RS52": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "H5"
           },
@@ -1110,7 +1110,7 @@
           "value": "REED NO"
         },
         "RS53": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "E6"
           },
@@ -1119,7 +1119,7 @@
           "value": "REED NO"
         },
         "RS54": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "F6"
           },
@@ -1128,7 +1128,7 @@
           "value": "REED NO"
         },
         "RS55": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "G6"
           },
@@ -1137,7 +1137,7 @@
           "value": "REED NO"
         },
         "RS56": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "H6"
           },
@@ -1146,7 +1146,7 @@
           "value": "REED NO"
         },
         "RS57": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "E7"
           },
@@ -1155,7 +1155,7 @@
           "value": "REED NO"
         },
         "RS58": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "F7"
           },
@@ -1164,7 +1164,7 @@
           "value": "REED NO"
         },
         "RS59": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "G7"
           },
@@ -1173,7 +1173,7 @@
           "value": "REED NO"
         },
         "RS6": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "B2"
           },
@@ -1182,7 +1182,7 @@
           "value": "REED NO"
         },
         "RS60": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "H7"
           },
@@ -1191,7 +1191,7 @@
           "value": "REED NO"
         },
         "RS61": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "E8"
           },
@@ -1200,7 +1200,7 @@
           "value": "REED NO"
         },
         "RS62": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "F8"
           },
@@ -1209,7 +1209,7 @@
           "value": "REED NO"
         },
         "RS63": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "G8"
           },
@@ -1218,7 +1218,7 @@
           "value": "REED NO"
         },
         "RS64": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "H8"
           },
@@ -1227,7 +1227,7 @@
           "value": "REED NO"
         },
         "RS7": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "C2"
           },
@@ -1236,7 +1236,7 @@
           "value": "REED NO"
         },
         "RS8": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "D2"
           },
@@ -1245,7 +1245,7 @@
           "value": "REED NO"
         },
         "RS9": {
-          "description": "Normally-open magnetic sensor",
+          "description": "Normally-open through-hole reed switch",
           "extras": {
             "Square": "A3"
           },
@@ -1442,7 +1442,7 @@
           "value": "MCP23017-E/SP"
         },
         "U10": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "5",
             "Square": "E1"
@@ -1452,7 +1452,7 @@
           "value": "SK9822"
         },
         "U11": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "6",
             "Square": "F1"
@@ -1462,7 +1462,7 @@
           "value": "SK9822"
         },
         "U12": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "7",
             "Square": "G1"
@@ -1472,7 +1472,7 @@
           "value": "SK9822"
         },
         "U13": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "8",
             "Square": "H1"
@@ -1482,7 +1482,7 @@
           "value": "SK9822"
         },
         "U14": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "9",
             "Square": "H2"
@@ -1492,7 +1492,7 @@
           "value": "SK9822"
         },
         "U15": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "10",
             "Square": "G2"
@@ -1502,7 +1502,7 @@
           "value": "SK9822"
         },
         "U16": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "11",
             "Square": "F2"
@@ -1512,7 +1512,7 @@
           "value": "SK9822"
         },
         "U17": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "12",
             "Square": "E2"
@@ -1522,7 +1522,7 @@
           "value": "SK9822"
         },
         "U18": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "13",
             "Square": "D2"
@@ -1532,7 +1532,7 @@
           "value": "SK9822"
         },
         "U19": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "14",
             "Square": "C2"
@@ -1552,7 +1552,7 @@
           "value": "MCP23017-E/SP"
         },
         "U20": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "15",
             "Square": "B2"
@@ -1562,7 +1562,7 @@
           "value": "SK9822"
         },
         "U21": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "16",
             "Square": "A2"
@@ -1572,7 +1572,7 @@
           "value": "SK9822"
         },
         "U22": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "17",
             "Square": "A3"
@@ -1582,7 +1582,7 @@
           "value": "SK9822"
         },
         "U23": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "18",
             "Square": "B3"
@@ -1592,7 +1592,7 @@
           "value": "SK9822"
         },
         "U24": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "19",
             "Square": "C3"
@@ -1602,7 +1602,7 @@
           "value": "SK9822"
         },
         "U25": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "20",
             "Square": "D3"
@@ -1612,7 +1612,7 @@
           "value": "SK9822"
         },
         "U26": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "21",
             "Square": "E3"
@@ -1622,7 +1622,7 @@
           "value": "SK9822"
         },
         "U27": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "22",
             "Square": "F3"
@@ -1632,7 +1632,7 @@
           "value": "SK9822"
         },
         "U28": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "23",
             "Square": "G3"
@@ -1642,7 +1642,7 @@
           "value": "SK9822"
         },
         "U29": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "24",
             "Square": "H3"
@@ -1662,7 +1662,7 @@
           "value": "MCP23017-E/SP"
         },
         "U30": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "25",
             "Square": "H4"
@@ -1672,7 +1672,7 @@
           "value": "SK9822"
         },
         "U31": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "26",
             "Square": "G4"
@@ -1682,7 +1682,7 @@
           "value": "SK9822"
         },
         "U32": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "27",
             "Square": "F4"
@@ -1692,7 +1692,7 @@
           "value": "SK9822"
         },
         "U33": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "28",
             "Square": "E4"
@@ -1702,7 +1702,7 @@
           "value": "SK9822"
         },
         "U34": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "29",
             "Square": "D4"
@@ -1712,7 +1712,7 @@
           "value": "SK9822"
         },
         "U35": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "30",
             "Square": "C4"
@@ -1722,7 +1722,7 @@
           "value": "SK9822"
         },
         "U36": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "31",
             "Square": "B4"
@@ -1732,7 +1732,7 @@
           "value": "SK9822"
         },
         "U37": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "32",
             "Square": "A4"
@@ -1742,7 +1742,7 @@
           "value": "SK9822"
         },
         "U38": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "33",
             "Square": "A5"
@@ -1752,7 +1752,7 @@
           "value": "SK9822"
         },
         "U39": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "34",
             "Square": "B5"
@@ -1772,7 +1772,7 @@
           "value": "MCP23017-E/SP"
         },
         "U40": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "35",
             "Square": "C5"
@@ -1782,7 +1782,7 @@
           "value": "SK9822"
         },
         "U41": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "36",
             "Square": "D5"
@@ -1792,7 +1792,7 @@
           "value": "SK9822"
         },
         "U42": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "37",
             "Square": "E5"
@@ -1802,7 +1802,7 @@
           "value": "SK9822"
         },
         "U43": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "38",
             "Square": "F5"
@@ -1812,7 +1812,7 @@
           "value": "SK9822"
         },
         "U44": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "39",
             "Square": "G5"
@@ -1822,7 +1822,7 @@
           "value": "SK9822"
         },
         "U45": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "40",
             "Square": "H5"
@@ -1832,7 +1832,7 @@
           "value": "SK9822"
         },
         "U46": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "41",
             "Square": "H6"
@@ -1842,7 +1842,7 @@
           "value": "SK9822"
         },
         "U47": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "42",
             "Square": "G6"
@@ -1852,7 +1852,7 @@
           "value": "SK9822"
         },
         "U48": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "43",
             "Square": "F6"
@@ -1862,7 +1862,7 @@
           "value": "SK9822"
         },
         "U49": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "44",
             "Square": "E6"
@@ -1879,7 +1879,7 @@
           "value": "SN74AHCT125N"
         },
         "U50": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "45",
             "Square": "D6"
@@ -1889,7 +1889,7 @@
           "value": "SK9822"
         },
         "U51": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "46",
             "Square": "C6"
@@ -1899,7 +1899,7 @@
           "value": "SK9822"
         },
         "U52": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "47",
             "Square": "B6"
@@ -1909,7 +1909,7 @@
           "value": "SK9822"
         },
         "U53": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "48",
             "Square": "A6"
@@ -1919,7 +1919,7 @@
           "value": "SK9822"
         },
         "U54": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "49",
             "Square": "A7"
@@ -1929,7 +1929,7 @@
           "value": "SK9822"
         },
         "U55": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "50",
             "Square": "B7"
@@ -1939,7 +1939,7 @@
           "value": "SK9822"
         },
         "U56": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "51",
             "Square": "C7"
@@ -1949,7 +1949,7 @@
           "value": "SK9822"
         },
         "U57": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "52",
             "Square": "D7"
@@ -1959,7 +1959,7 @@
           "value": "SK9822"
         },
         "U58": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "53",
             "Square": "E7"
@@ -1969,7 +1969,7 @@
           "value": "SK9822"
         },
         "U59": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "54",
             "Square": "F7"
@@ -1979,7 +1979,7 @@
           "value": "SK9822"
         },
         "U6": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "1",
             "Square": "A1"
@@ -1989,7 +1989,7 @@
           "value": "SK9822"
         },
         "U60": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "55",
             "Square": "G7"
@@ -1999,7 +1999,7 @@
           "value": "SK9822"
         },
         "U61": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "56",
             "Square": "H7"
@@ -2009,7 +2009,7 @@
           "value": "SK9822"
         },
         "U62": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "57",
             "Square": "H8"
@@ -2019,7 +2019,7 @@
           "value": "SK9822"
         },
         "U63": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "58",
             "Square": "G8"
@@ -2029,7 +2029,7 @@
           "value": "SK9822"
         },
         "U64": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "59",
             "Square": "F8"
@@ -2039,7 +2039,7 @@
           "value": "SK9822"
         },
         "U65": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "60",
             "Square": "E8"
@@ -2049,7 +2049,7 @@
           "value": "SK9822"
         },
         "U66": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "61",
             "Square": "D8"
@@ -2059,7 +2059,7 @@
           "value": "SK9822"
         },
         "U67": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "62",
             "Square": "C8"
@@ -2069,7 +2069,7 @@
           "value": "SK9822"
         },
         "U68": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "63",
             "Square": "B8"
@@ -2079,7 +2079,7 @@
           "value": "SK9822"
         },
         "U69": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "64",
             "Square": "A8"
@@ -2089,7 +2089,7 @@
           "value": "SK9822"
         },
         "U7": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "2",
             "Square": "B1"
@@ -2099,7 +2099,7 @@
           "value": "SK9822"
         },
         "U8": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "3",
             "Square": "C1"
@@ -2109,7 +2109,7 @@
           "value": "SK9822"
         },
         "U9": {
-          "description": "Clocked addressable RGB LED",
+          "description": "Clocked 5050 RGB LED",
           "extras": {
             "ChainIndex": "4",
             "Square": "D1"

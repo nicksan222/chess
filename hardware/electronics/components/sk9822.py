@@ -13,6 +13,7 @@ follow the module's own convention; the footprint assignment happens at layout.
 from __future__ import annotations
 
 from schemdraw import elements as elm
+from shared.components import SK9822 as SPEC
 
 from .base import BY_PIN_NUMBER, Component, integrated_circuit
 
@@ -46,10 +47,11 @@ def _build() -> elm.Ic:
 
 
 SK9822 = Component(
-    lib="SK9822",
-    value="SK9822",
-    description="Clocked addressable RGB LED",
-    package="PLCC-6 5050",
+    lib=SPEC.key,
+    value=SPEC.key,
+    description=SPEC.description,
+    package=SPEC.package,
     build=_build,
     pins=BY_PIN_NUMBER,
+    spec=SPEC,
 )

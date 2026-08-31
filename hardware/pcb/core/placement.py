@@ -22,8 +22,6 @@ from dataclasses import dataclass
 import footprints
 from core import sources
 
-FILES = "ABCDEFGH"
-
 # Repeated parts, positioned relative to the square they serve.
 LED_CAP_OFFSET_MM = (0.0, -8.0)
 EXPANDER_OFFSET_MM = (14.0, 0.0)
@@ -105,7 +103,7 @@ def square_centres(shared) -> dict[str, tuple[float, float]]:
     """
     centres = {}
     for row, column, x, y in shared.BOARD_SQUARE_CENTERS_MM:
-        name = f"{FILES[column]}{shared.GRID_COUNT - row}"
+        name = f"{sources.names().FILES[column]}{shared.GRID_COUNT - row}"
         centres[name] = (x, y)
     return centres
 

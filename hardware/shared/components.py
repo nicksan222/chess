@@ -42,19 +42,19 @@ class ComponentImplementation(ABC, Generic[Implementation]):
 SK9822 = ComponentSpec(
     key="SK9822",
     description="Clocked 5050 RGB LED",
-    package="LED-SK9822-6",
+    package="PLCC-6 5050",
     body_mm=(5.4, 5.0, 1.57),
 )
 REED_SWITCH = ComponentSpec(
     key="REED_SWITCH",
     description="Normally-open through-hole reed switch",
-    package="REED-14MM",
+    package="axial 14 mm",
     body_mm=(14.0, 2.2, 2.2),
 )
 PI_ZERO_HEADER = ComponentSpec(
     key="PI_ZERO_HEADER",
     description="Raspberry Pi Zero 2 W 2x20 header",
-    package="HDR-2X20-2.54",
+    package="2x20 2.54 mm THT",
 )
 
 COMPONENTS = {spec.key: spec for spec in (SK9822, REED_SWITCH, PI_ZERO_HEADER)}

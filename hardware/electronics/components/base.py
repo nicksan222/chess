@@ -8,8 +8,16 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass, replace
+from pathlib import Path
+import sys
 
 from schemdraw import elements as elm
+
+HARDWARE_ROOT = Path(__file__).resolve().parents[2]
+if str(HARDWARE_ROOT) not in sys.path:
+    sys.path.insert(0, str(HARDWARE_ROOT))
+
+from shared.components import ComponentSpec
 
 # Datasheet pin number -> Schemdraw anchor name.
 TWO_TERMINAL = {"1": "start", "2": "end"}
@@ -30,6 +38,7 @@ class Component:
     # What to call this on a purchase order when the drawn value is a net name
     # rather than a part, as it is for a test point.
     part: str = ""
+    spec: ComponentSpec | None = None
 
     @property
     def ordering(self) -> str:
