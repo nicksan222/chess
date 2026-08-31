@@ -12,5 +12,5 @@ pub use history::{
     HistoryError, InvalidPly, MoveCount, MoveHash, MoveHistory, MoveHistoryIter, MoveStep, Ply,
 };
 pub use movement::{ForceMoveError, ForcedMove, MoveError};
-pub use status::GameStatus;
+pub use status::{DrawClaim, DrawClaims, DrawReason, GameStatus};
 pub use sync_error::GameSyncError;
