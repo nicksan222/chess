@@ -2,28 +2,26 @@ use sha2::{Digest, Sha256};
 
 use crate::{GameSyncError, HistoryEventKind, MoveError};
 
-use super::{
-    super::HistoryError,
-    status::{color_code, update_status},
-};
+use super::{super::HistoryError, event::update_final_state, status::color_code};
 
 pub(super) fn update_move_error(digest: &mut Sha256, error: MoveError) {
     match error {
-        MoveError::GameOver { status } => {
+        MoveError::GameOver { final_state } => {
             digest.update([0]);
-            update_status(digest, status);
+            update_final_state(digest, final_state);
         }
-        MoveError::NoPiece { square } => digest.update([1, square.index().value()]),
+        MoveError::PendingInvalid => digest.update([1]),
+        MoveError::NoPiece { square } => digest.update([2, square.index().value()]),
         MoveError::WrongSide { expected, actual } => {
-            digest.update([2, color_code(expected), color_code(actual)]);
+            digest.update([3, color_code(expected), color_code(actual)]);
         }
         MoveError::IllegalDestination { from, to } => {
-            digest.update([3, from.index().value(), to.index().value()]);
+            digest.update([4, from.index().value(), to.index().value()]);
         }
-        MoveError::UnexpectedPromotion => digest.update([4]),
-        MoveError::InvalidPromotion => digest.update([5]),
-        MoveError::NonCanonicalPromotion => digest.update([6]),
-        MoveError::StalePiece => digest.update([7]),
+        MoveError::UnexpectedPromotion => digest.update([5]),
+        MoveError::InvalidPromotion => digest.update([6]),
+        MoveError::NonCanonicalPromotion => digest.update([7]),
+        MoveError::StalePiece => digest.update([8]),
     }
 }
 

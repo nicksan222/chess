@@ -106,8 +106,3 @@ impl HistoryStep {
         self.hash
     }
 }
-
-/// Backwards-compatible name for a history hash.
-pub type MoveHash = HistoryHash;
-/// Backwards-compatible name for a history step.
-pub type MoveStep = HistoryStep;

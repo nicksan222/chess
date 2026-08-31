@@ -1,6 +1,6 @@
 use chess::{
-    Board, ChessMove, Color, FinalState, Game, GameSyncError, HistoryError, HistoryEvent,
-    InvalidState, MoveHash, MoveHistory, MoveStep, Piece, PieceKind, Ply, Square,
+    Board, ChessMove, Color, FinalState, Game, GameHistory, GameSyncError, HistoryError,
+    HistoryEvent, HistoryHash, HistoryStep, InvalidState, Piece, PieceKind, Ply, Square,
 };
 
 fn synchronization_board(pawn_square: Square) -> Board {
@@ -13,7 +13,7 @@ fn synchronization_board(pawn_square: Square) -> Board {
 
 #[test]
 fn every_link_stores_a_cumulative_hash_and_previous_tip() {
-    let mut history = MoveHistory::new();
+    let mut history = GameHistory::new();
     let first = history
         .push(HistoryEvent::Move(ChessMove::new(Square::E2, Square::E4)))
         .unwrap();
@@ -22,7 +22,7 @@ fn every_link_stores_a_cumulative_hash_and_previous_tip() {
         .unwrap();
 
     assert_eq!(first.ply(), Ply::FIRST);
-    assert_eq!(first.previous_hash(), MoveHash::GENESIS);
+    assert_eq!(first.previous_hash(), HistoryHash::GENESIS);
     assert_eq!(
         first.hash().to_string(),
         "59c8f0c8e610d5d3f71e08c7d6f8749bb8759167e8208c8c144f36650a44d5e6"
@@ -38,7 +38,7 @@ fn every_link_stores_a_cumulative_hash_and_previous_tip() {
 #[test]
 fn every_event_kind_participates_in_the_hash_chain() {
     let event_hash = |event| {
-        let mut history = MoveHistory::new();
+        let mut history = GameHistory::new();
         history.push(event).unwrap().hash()
     };
     let moved = event_hash(HistoryEvent::Move(ChessMove::new(Square::E2, Square::E4)));
@@ -74,6 +74,48 @@ fn peers_verify_all_previous_moves_before_accepting_the_latest() {
     assert!(receiver.history().is_synced_before(second));
     receiver.accept(second).unwrap();
     assert_eq!(receiver.history().tip(), sender.history().tip());
+}
+
+#[test]
+fn peers_synchronize_invalid_events_and_resolve_them_in_reverse() {
+    let mut sender = Game::new();
+    let mut receiver = Game::new();
+
+    assert!(
+        sender
+            .piece_at(Square::E7)
+            .unwrap()
+            .move_to(Square::E5, &mut sender)
+            .is_err()
+    );
+    let invalid = sender.history().latest().unwrap();
+    assert!(matches!(invalid.event(), HistoryEvent::Invalid(_)));
+
+    receiver.accept(invalid).unwrap();
+    assert_eq!(receiver.history(), sender.history());
+    assert_eq!(receiver.latest_invalid(), sender.latest_invalid());
+
+    sender.resolve_latest_invalid().unwrap();
+    receiver.resolve_latest_invalid().unwrap();
+    assert_eq!(receiver.history(), sender.history());
+    assert_eq!(receiver.status(), chess::GameStatus::InProgress);
+}
+
+#[test]
+fn peers_synchronize_claimed_final_events() {
+    let mut board = synchronization_board(Square::A2);
+    board.set_halfmove_clock(chess::HalfmoveClock::new(100));
+    board.set_piece(Piece::new(Color::White, PieceKind::Rook, Square::A1));
+    let mut sender = Game::from_board(board);
+    let mut receiver = Game::from_board(board);
+
+    sender.claim_draw(chess::DrawClaim::FiftyMoveRule).unwrap();
+    let final_step = sender.history().latest().unwrap();
+    assert!(matches!(final_step.event(), HistoryEvent::Final(_)));
+
+    receiver.accept(final_step).unwrap();
+    assert_eq!(receiver.history(), sender.history());
+    assert_eq!(receiver.status(), sender.status());
 }
 
 #[test]
@@ -115,32 +157,40 @@ fn divergent_or_corrupted_steps_are_rejected_without_mutation() {
         local.accept(divergent),
         Err(GameSyncError::History(HistoryError::Ply { .. }))
     ));
+    assert_eq!(local.board(), before.board());
+    assert!(matches!(
+        local.latest_invalid(),
+        Some(InvalidState::Synchronization(GameSyncError::History(
+            HistoryError::Ply { .. }
+        )))
+    ));
+    local.resolve_latest_invalid().unwrap();
     assert_eq!(local, before);
 
-    let mut source = MoveHistory::new();
+    let mut source = GameHistory::new();
     let valid = source
         .push(HistoryEvent::Move(ChessMove::new(Square::E2, Square::E4)))
         .unwrap();
     let mut bytes = valid.hash().to_bytes();
     bytes[0] ^= 0xff;
-    let corrupted = MoveStep::from_parts(
+    let corrupted = HistoryStep::from_parts(
         valid.ply(),
         valid.event(),
         valid.previous_hash(),
-        MoveHash::from_bytes(bytes),
+        HistoryHash::from_bytes(bytes),
     );
-    let mut empty = MoveHistory::new();
+    let mut empty = GameHistory::new();
     assert!(matches!(
         empty.try_append(corrupted),
         Err(HistoryError::Hash { .. })
     ));
     assert!(empty.is_empty());
-    assert_eq!(empty.tip(), MoveHash::GENESIS);
+    assert_eq!(empty.tip(), HistoryHash::GENESIS);
 }
 
 #[test]
 fn invalid_states_resolve_in_reverse_and_other_events_cannot_be_popped() {
-    let mut history = MoveHistory::new();
+    let mut history = GameHistory::new();
     let moved = history
         .push(HistoryEvent::Move(ChessMove::new(Square::E2, Square::E4)))
         .unwrap();
@@ -166,7 +216,7 @@ fn invalid_states_resolve_in_reverse_and_other_events_cannot_be_popped() {
 
 #[test]
 fn final_events_permanently_seal_history() {
-    let mut history = MoveHistory::new();
+    let mut history = GameHistory::new();
     let final_step = history
         .push(HistoryEvent::Final(FinalState::Stalemate))
         .unwrap();

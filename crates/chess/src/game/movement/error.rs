@@ -1,15 +1,17 @@
 use core::fmt;
 
-use crate::{Color, GameStatus, Square};
+use crate::{Color, FinalState, Square};
 
 /// A move that cannot be applied to the current board.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum MoveError {
     /// The game has already ended.
     GameOver {
-        /// The terminal status preventing further play.
-        status: GameStatus,
+        /// The terminal result preventing further play.
+        final_state: FinalState,
     },
+    /// A newer invalid history event must be resolved first.
+    PendingInvalid,
     /// The origin square is empty.
     NoPiece {
         /// The requested origin.
@@ -42,7 +44,12 @@ pub enum MoveError {
 impl fmt::Display for MoveError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::GameOver { status } => write!(formatter, "the game has ended: {status:?}"),
+            Self::GameOver { final_state } => {
+                write!(formatter, "the game has ended: {final_state:?}")
+            }
+            Self::PendingInvalid => {
+                formatter.write_str("the latest invalid state must be resolved first")
+            }
             Self::NoPiece { square } => write!(formatter, "there is no piece on {square}"),
             Self::WrongSide { expected, actual } => {
                 write!(formatter, "it is {expected}'s turn, not {actual}'s")

@@ -27,6 +27,3 @@ impl<'a> Iterator for GameHistoryIter<'a> {
 
 impl ExactSizeIterator for GameHistoryIter<'_> {}
 impl FusedIterator for GameHistoryIter<'_> {}
-
-/// Backwards-compatible name for the game-history iterator.
-pub type MoveHistoryIter<'a> = GameHistoryIter<'a>;

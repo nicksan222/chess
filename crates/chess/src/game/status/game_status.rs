@@ -1,4 +1,4 @@
-use crate::Color;
+use crate::{Color, FinalState, InvalidState};
 
 use super::{DrawClaims, DrawReason};
 
@@ -9,6 +9,11 @@ pub enum GameStatus {
     InProgress,
     /// Play may continue, but the side to move may claim one or more draws.
     DrawClaimAvailable(DrawClaims),
+    /// The latest operation is invalid and must be resolved.
+    Invalid {
+        /// The unresolved invalid state.
+        state: InvalidState,
+    },
     /// The side to move is in check and has no legal move.
     Checkmate {
         /// The player who delivered mate.
@@ -21,6 +26,16 @@ pub enum GameStatus {
         /// The rule that ended the game.
         reason: DrawReason,
     },
+}
+
+impl From<FinalState> for GameStatus {
+    fn from(final_state: FinalState) -> Self {
+        match final_state {
+            FinalState::Checkmate { winner } => Self::Checkmate { winner },
+            FinalState::Stalemate => Self::Stalemate,
+            FinalState::Draw { reason } => Self::Draw { reason },
+        }
+    }
 }
 
 impl GameStatus {

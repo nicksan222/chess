@@ -74,7 +74,7 @@ fn pieces_report_legal_destinations_and_move_themselves() {
 }
 
 #[test]
-fn stale_wrong_side_and_unreachable_moves_are_rejected_without_history() {
+fn invalid_moves_are_retained_and_must_be_resolved_before_play_continues() {
     let mut game = Game::new();
     let pawn = game.piece_at(Square::E2).unwrap();
 
@@ -82,15 +82,22 @@ fn stale_wrong_side_and_unreachable_moves_are_rejected_without_history() {
         ChessMove::new(Square::E7, Square::E5).play(&mut game),
         Err(MoveError::WrongSide { .. })
     ));
+    assert!(game.latest_invalid().is_some());
+    game.resolve_latest_invalid().unwrap();
+
     assert!(matches!(
         pawn.move_to(Square::E5, &mut game),
         Err(MoveError::IllegalDestination { .. })
     ));
+    game.resolve_latest_invalid().unwrap();
     play(&mut game, Square::E2, Square::E4);
     assert_eq!(
         pawn.move_to(Square::E3, &mut game),
         Err(MoveError::StalePiece)
     );
+    assert!(game.latest_invalid().is_some());
+    assert_eq!(game.history().len().value(), 2);
+    game.resolve_latest_invalid().unwrap();
     assert_eq!(game.history().len().value(), 1);
 }
 

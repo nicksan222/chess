@@ -42,13 +42,13 @@ impl fmt::Display for InvalidPly {
 
 impl_error!(InvalidPly);
 
-/// The number of moves retained by a [`crate::MoveHistory`].
+/// The number of events retained by a [`crate::GameHistory`].
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(transparent)]
-pub struct MoveCount(usize);
+pub struct HistoryCount(usize);
 
-impl MoveCount {
-    /// No retained moves.
+impl HistoryCount {
+    /// No retained events.
     pub const ZERO: Self = Self(0);
 
     /// Returns the primitive representation for collection boundaries.
@@ -62,7 +62,7 @@ impl MoveCount {
     }
 }
 
-impl fmt::Display for MoveCount {
+impl fmt::Display for HistoryCount {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         self.0.fmt(formatter)
     }

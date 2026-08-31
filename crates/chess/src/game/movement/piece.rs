@@ -1,4 +1,4 @@
-use crate::{Board, ChessMove, Game, MoveError, MoveStep, Piece, PieceKind, Square, SquareSet};
+use crate::{Board, ChessMove, Game, HistoryStep, MoveError, Piece, PieceKind, Square, SquareSet};
 
 use super::transition::is_back_rank;
 
@@ -22,7 +22,7 @@ impl Piece {
     ///
     /// Pawn moves to the back rank promote to a queen. Use
     /// [`Piece::move_and_promote`] to select another promotion kind.
-    pub fn move_to(self, destination: Square, game: &mut Game) -> Result<MoveStep, MoveError> {
+    pub fn move_to(self, destination: Square, game: &mut Game) -> Result<HistoryStep, MoveError> {
         game.move_piece(self, destination, None)
     }
 
@@ -32,7 +32,7 @@ impl Piece {
         destination: Square,
         promotion: PieceKind,
         game: &mut Game,
-    ) -> Result<MoveStep, MoveError> {
+    ) -> Result<HistoryStep, MoveError> {
         game.move_piece(self, destination, Some(promotion))
     }
 

@@ -35,7 +35,7 @@ fn update_event(digest: &mut Sha256, event: HistoryEvent) {
         }
         HistoryEvent::Final(final_state) => {
             digest.update([2]);
-            update_final(digest, final_state);
+            update_final_state(digest, final_state);
         }
     }
 }
@@ -48,7 +48,7 @@ fn update_move(digest: &mut Sha256, chess_move: ChessMove) {
     ]);
 }
 
-fn update_invalid(digest: &mut Sha256, invalid: InvalidState) {
+pub(super) fn update_invalid(digest: &mut Sha256, invalid: InvalidState) {
     match invalid {
         InvalidState::Move(error) => {
             digest.update([0]);
@@ -63,7 +63,7 @@ fn update_invalid(digest: &mut Sha256, invalid: InvalidState) {
     }
 }
 
-fn update_final(digest: &mut Sha256, final_state: FinalState) {
+pub(super) fn update_final_state(digest: &mut Sha256, final_state: FinalState) {
     match final_state {
         FinalState::Checkmate { winner } => digest.update([0, color_code(winner)]),
         FinalState::Stalemate => digest.update([1]),

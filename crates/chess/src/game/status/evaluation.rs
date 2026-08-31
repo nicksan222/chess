@@ -1,17 +1,25 @@
-use crate::Game;
+use crate::{DrawReason, FinalState, Game, HistoryEvent, InvalidState};
 
 use super::GameStatus;
 
 impl Game {
-    /// Returns whether the current position is checkmate, stalemate, or still playable.
+    /// Returns the status represented by authoritative history and the board cache.
     #[must_use]
     pub fn status(&self) -> GameStatus {
-        match (self.is_in_check(), self.legal_moves().next().is_some()) {
-            (_, true) => GameStatus::InProgress,
-            (true, false) => GameStatus::Checkmate {
-                winner: self.side_to_move().opposite(),
-            },
-            (false, false) => GameStatus::Stalemate,
+        match self.history().latest().map(|step| step.event()) {
+            Some(HistoryEvent::Final(final_state)) => return final_state.into(),
+            Some(HistoryEvent::Invalid(state)) => return GameStatus::Invalid { state },
+            Some(HistoryEvent::Move(_)) | None => {}
+        }
+
+        if let Some(final_state) = self.calculated_final_state() {
+            return final_state.into();
+        }
+        let claims = self.current_draw_claims();
+        if claims.is_empty() {
+            GameStatus::InProgress
+        } else {
+            GameStatus::DrawClaimAvailable(claims)
         }
     }
 
@@ -25,5 +33,48 @@ impl Game {
     #[must_use]
     pub fn is_stalemate(&self) -> bool {
         matches!(self.status(), GameStatus::Stalemate)
+    }
+
+    /// Returns whether the game has ended in any kind of draw.
+    #[must_use]
+    pub fn is_draw(&self) -> bool {
+        matches!(
+            self.status(),
+            GameStatus::Stalemate | GameStatus::Draw { .. }
+        )
+    }
+
+    pub(in crate::game) fn calculated_final_state(&self) -> Option<FinalState> {
+        if self.board().legal_moves().next().is_none() {
+            return Some(if self.is_in_check() {
+                FinalState::Checkmate {
+                    winner: self.side_to_move().opposite(),
+                }
+            } else {
+                FinalState::Stalemate
+            });
+        }
+        self.automatic_draw()
+    }
+
+    pub(in crate::game) fn final_state_is_available(&self, final_state: FinalState) -> bool {
+        if self.calculated_final_state() == Some(final_state) {
+            return true;
+        }
+        matches!(
+            final_state,
+            FinalState::Draw {
+                reason: DrawReason::Claimed(claim)
+            } if self.current_draw_claims().contains(claim)
+        )
+    }
+
+    /// Returns the newest unresolved invalid state.
+    #[must_use]
+    pub fn latest_invalid(&self) -> Option<InvalidState> {
+        match self.history().latest().map(|step| step.event()) {
+            Some(HistoryEvent::Invalid(state)) => Some(state),
+            _ => None,
+        }
     }
 }

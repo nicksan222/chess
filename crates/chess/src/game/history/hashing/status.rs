@@ -1,23 +1,6 @@
 use sha2::{Digest, Sha256};
 
-use crate::{Color, DrawClaim, DrawReason, GameStatus};
-
-pub(super) fn update_status(digest: &mut Sha256, status: GameStatus) {
-    match status {
-        GameStatus::InProgress => digest.update([0]),
-        GameStatus::DrawClaimAvailable(claims) => digest.update([
-            1,
-            claims.contains(DrawClaim::ThreefoldRepetition) as u8,
-            claims.contains(DrawClaim::FiftyMoveRule) as u8,
-        ]),
-        GameStatus::Checkmate { winner } => digest.update([2, color_code(winner)]),
-        GameStatus::Stalemate => digest.update([3]),
-        GameStatus::Draw { reason } => {
-            digest.update([4]);
-            update_draw_reason(digest, reason);
-        }
-    }
-}
+use crate::{Color, DrawClaim, DrawReason};
 
 pub(super) fn update_draw_reason(digest: &mut Sha256, reason: DrawReason) {
     match reason {

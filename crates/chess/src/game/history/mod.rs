@@ -7,9 +7,9 @@ mod step;
 
 pub use error::HistoryError;
 pub use event::{FinalState, HistoryEvent, HistoryEventKind, InvalidState};
-pub use iter::{GameHistoryIter, MoveHistoryIter};
-pub use sequence::{InvalidPly, MoveCount, Ply};
-pub use step::{HistoryHash, HistoryStep, MoveHash, MoveStep};
+pub use iter::GameHistoryIter;
+pub use sequence::{HistoryCount, InvalidPly, Ply};
+pub use step::{HistoryHash, HistoryStep};
 
 use chess_core::collections::LinkedList;
 
@@ -59,8 +59,8 @@ impl GameHistory {
 
     /// Returns the number of retained events.
     #[must_use]
-    pub const fn len(&self) -> MoveCount {
-        MoveCount::from_len(self.steps.len())
+    pub const fn len(&self) -> HistoryCount {
+        HistoryCount::from_len(self.steps.len())
     }
 
     /// Returns whether no events have been recorded.
@@ -177,6 +177,3 @@ impl GameHistory {
         Ply::new(value).expect("a history cannot contain enough allocated nodes to overflow")
     }
 }
-
-/// Backwards-compatible name for the authoritative game history.
-pub type MoveHistory = GameHistory;

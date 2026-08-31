@@ -1,6 +1,6 @@
 use core::fmt;
 
-use super::{HistoryEventKind, MoveHash, Ply};
+use super::{HistoryEventKind, HistoryHash, Ply};
 
 /// The reason a move-history link failed validation.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -17,18 +17,18 @@ pub enum HistoryError {
         /// The incoming step's ply.
         ply: Ply,
         /// The local tip.
-        expected: MoveHash,
+        expected: HistoryHash,
         /// The received previous hash.
-        actual: MoveHash,
+        actual: HistoryHash,
     },
     /// The step's cumulative hash is incorrect.
     Hash {
         /// The invalid step's ply.
         ply: Ply,
         /// The recomputed hash.
-        expected: MoveHash,
+        expected: HistoryHash,
         /// The stored or received hash.
-        actual: MoveHash,
+        actual: HistoryHash,
     },
     /// The event is not permitted after the current history tip.
     InvalidTransition {
@@ -45,9 +45,9 @@ pub enum HistoryError {
     /// The cached tip does not match the final element.
     Tip {
         /// The final element's hash.
-        expected: MoveHash,
+        expected: HistoryHash,
         /// The cached tip.
-        actual: MoveHash,
+        actual: HistoryHash,
     },
 }
 
