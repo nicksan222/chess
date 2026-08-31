@@ -1,4 +1,4 @@
-"""Input over-current protection."""
+"""Input over-current protection, in a holder so it can be replaced."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ FUSE = Component(
     lib="FUSE",
     value="5 A",
     description="Input over-current protection",
-    package="mini blade",
+    package="5x20 mm holder THT",
     build=lambda: elm.Fuse().right(),
     pins=TWO_TERMINAL,
 )

@@ -8,18 +8,18 @@ import unittest
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[3]
-RUNNERS = ("cad", "electronics")
+RUNNERS = ("cad", "electronics", "pcb")
 LISTED_PROJECTS = {
     "cad": [
-        "hardware/cad/projects/single-tile-top/generate.py",
-        "hardware/cad/projects/single-tile-bottom/generate.py",
-        "hardware/cad/projects/single-tile-merged/generate.py",
-        "hardware/cad/projects/board-skeleton/generate.py",
+        "hardware/cad/projects/board-case/generate.py",
+        "hardware/cad/projects/tile-plate/generate.py",
         "hardware/cad/projects/board-assembly/generate.py",
     ],
     "electronics": [
-        "hardware/electronics/projects/square/generate.py",
-        "hardware/electronics/projects/chessboard/generate.py",
+        "hardware/electronics/projects/board/generate.py",
+    ],
+    "pcb": [
+        "hardware/pcb/projects/board/generate.py",
     ],
 }
 
@@ -105,6 +105,15 @@ class ElectronicsToolingTest(unittest.TestCase):
         self.assertNotIn("kicad", tool.lower())
         self.assertNotIn("docker", tool.lower())
 
+    def test_pcb_runner_bootstraps_a_local_venv(self) -> None:
+        tool = runner_source("pcb")
+        self.assertIn(".cache/pcb", tool)
+        self.assertIn("/opt/pcb", tool)
+        self.assertIn("requirements.txt", tool)
+        requirements = REPO / "hardware" / "pcb" / "requirements.txt"
+        self.assertIn("gerbonara", requirements.read_text())
+        self.assertNotIn("kicad", tool.lower())
+
     def test_cad_runner_caches_blender_instead_of_installing_it(self) -> None:
         tool = runner_source("cad")
         self.assertIn(".cache/blender", tool)
@@ -121,6 +130,7 @@ class ElectronicsToolingTest(unittest.TestCase):
             self.assertNotIn(f"./tools/{name} check", post, name)
         self.assertIn("./tools/electronics", post)
         self.assertIn("./tools/cad", post)
+        self.assertIn("./tools/pcb", post)
         self.assertNotIn("kicad", post.lower())
         spec = json.loads((REPO / ".devcontainer" / "devcontainer.json").read_text())
         self.assertIn("post-create.sh", spec["postCreateCommand"])
@@ -154,7 +164,9 @@ class ElectronicsToolingTest(unittest.TestCase):
             self.assertIn(package, dockerfile, package)
         self.assertIn("/opt/blender", dockerfile)
         self.assertIn("/opt/electronics", dockerfile)
+        self.assertIn("/opt/pcb", dockerfile)
         self.assertIn("hardware/electronics/requirements.txt", dockerfile)
+        self.assertIn("hardware/pcb/requirements.txt", dockerfile)
         self.assertIn("BLENDER_SHA256", dockerfile)
         sha = "da4e69b06b75b9e642d106496c50e7e240218b411d2f6e18271c1d1d819cef91"
         self.assertIn(sha, dockerfile)
@@ -176,6 +188,7 @@ class ContinuousIntegrationTest(unittest.TestCase):
         self.assertIn("@devcontainers/cli", workflow)
         self.assertIn("command: ./tools/cad", workflow)
         self.assertIn("command: ./tools/electronics", workflow)
+        self.assertIn("command: ./tools/pcb", workflow)
         self.assertIn("command: ./tools/rust", workflow)
         self.assertIn("./.github/actions/run-in-devcontainer", workflow)
         self.assertIn("ghcr.io", workflow)
@@ -196,6 +209,10 @@ class ContinuousIntegrationTest(unittest.TestCase):
         self.assertIn("./tools/rust", check)
         self.assertIn("./tools/cad", check)
         self.assertIn("./tools/electronics", check)
+        self.assertIn("./tools/pcb", check)
+        # The layout reads the netlist the schematic publishes, so the schematic
+        # has to run first.
+        self.assertLess(check.index("./tools/electronics"), check.index("./tools/pcb"))
 
         makefile = (REPO / "Makefile").read_text()
         self.assertNotIn("cad-check", makefile)

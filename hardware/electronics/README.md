@@ -1,9 +1,17 @@
 # Electronics
 
-Python is the source of truth for the revision-A electronics design.
+Python is the source of truth for the revision-B electronics design.
 [Schemdraw](https://schemdraw.readthedocs.io/en/stable/) draws every project,
 and the placed symbols are counted into a bill of materials. There is no KiCad
 project.
+
+Revision B is a single board with no microcontroller on it. A Raspberry Pi
+Zero 2 W reads 64 reed switches through four I2C expanders and shifts the LED
+frame out over SPI, so the whole product is one Rust binary and there is no
+firmware to write. The design is constrained to be reviewable by someone who is
+not an electrical engineer and assemblable by hand: two IC part numbers, both
+socketed, and nothing surface-mount except the LEDs. See
+[`projects/board/README.md`](projects/board/README.md) for the reasoning.
 
 Regenerate everything from the repository root with:
 
@@ -43,7 +51,7 @@ INDUCTOR = Component(
     lib="L",
     value="10uH",
     description="Output filter inductor",
-    package="1210",
+    package="axial 5 mm",
     build=lambda: elm.Inductor().right(),
     pins=TWO_TERMINAL,
 )
@@ -83,5 +91,21 @@ per functional block. Sections measure their own contents, so an outline can
 never drift out of step with a layout change.
 
 The first run creates `.cache/electronics` and installs `requirements.txt`.
-Revision A remains a physically unvalidated prototype; its validation gates are
-documented instead of being represented as production results.
+
+## What the tests enforce
+
+Beyond drawing correctly, the suite guards the design's constraints, so a change
+that quietly breaks one fails the build:
+
+- every square maps to exactly one expander pin, with no collisions
+- every button lands on its own Broadcom line
+- the LED chain is continuous for clock and data, and its 63 links stay
+  electrically separate rather than shorting into one net
+- the level buffer's spare channels are held disabled with their inputs tied off
+- nothing surface-mount is placed except the LEDs
+- the purchase list stays short enough to review
+
+Revision B remains a physically unvalidated prototype. The open question is reed
+sensitivity: a flat-lying reed under a vertical piece magnet couples through the
+field's fringe, so build the single-square test in `prototype/` before ordering
+a full board.

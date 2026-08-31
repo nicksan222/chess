@@ -1,0 +1,9461 @@
+{
+  "generated_by": "hardware/electronics/core/netlist.py",
+  "projects": {
+    "board": {
+      "components": {
+        "C1": {
+          "description": "LED rail bulk capacitor",
+          "extras": {},
+          "lib": "C",
+          "package": "radial 10 mm",
+          "value": "1000uF 10V"
+        },
+        "C10": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "C1"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C11": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "D1"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C12": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "E1"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C13": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "F1"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C14": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "G1"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C15": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "H1"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C16": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "H2"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C17": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "G2"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C18": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "F2"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C19": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "E2"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C2": {
+          "description": "Rail decoupling capacitor",
+          "extras": {},
+          "lib": "C",
+          "package": "radial 5 mm",
+          "value": "10uF 16V"
+        },
+        "C20": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "D2"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C21": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "C2"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C22": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "B2"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C23": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "A2"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C24": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "A3"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C25": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "B3"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C26": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "C3"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C27": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "D3"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C28": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "E3"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C29": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "F3"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C3": {
+          "description": "Expander decoupling capacitor",
+          "extras": {},
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C30": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "G3"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C31": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "H3"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C32": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "H4"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C33": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "G4"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C34": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "F4"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C35": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "E4"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C36": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "D4"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C37": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "C4"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C38": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "B4"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C39": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "A4"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C4": {
+          "description": "Expander decoupling capacitor",
+          "extras": {},
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C40": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "A5"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C41": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "B5"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C42": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "C5"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C43": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "D5"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C44": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "E5"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C45": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "F5"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C46": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "G5"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C47": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "H5"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C48": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "H6"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C49": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "G6"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C5": {
+          "description": "Expander decoupling capacitor",
+          "extras": {},
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C50": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "F6"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C51": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "E6"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C52": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "D6"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C53": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "C6"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C54": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "B6"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C55": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "A6"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C56": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "A7"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C57": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "B7"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C58": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "C7"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C59": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "D7"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C6": {
+          "description": "Expander decoupling capacitor",
+          "extras": {},
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C60": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "E7"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C61": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "F7"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C62": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "G7"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C63": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "H7"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C64": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "H8"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C65": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "G8"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C66": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "F8"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C67": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "E8"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C68": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "D8"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C69": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "C8"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C7": {
+          "description": "Buffer decoupling capacitor",
+          "extras": {},
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C70": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "B8"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C71": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "A8"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C8": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "A1"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "C9": {
+          "description": "Local LED decoupling capacitor",
+          "extras": {
+            "Square": "B1"
+          },
+          "lib": "C",
+          "package": "disc 2.54 mm",
+          "value": "100nF"
+        },
+        "D1": {
+          "description": "Input transient suppressor on the 5 V rail",
+          "extras": {},
+          "lib": "TVS",
+          "package": "axial DO-15",
+          "value": "P6KE6.8A"
+        },
+        "F1": {
+          "description": "Input over-current protection",
+          "extras": {},
+          "lib": "FUSE",
+          "package": "5x20 mm holder THT",
+          "value": "5 A"
+        },
+        "J1": {
+          "description": "Raspberry Pi Zero 2 W GPIO socket",
+          "extras": {},
+          "lib": "PI_HEADER",
+          "package": "2x20 2.54 mm THT",
+          "value": "2x20 header"
+        },
+        "J2": {
+          "description": "SSD1306 OLED module connector",
+          "extras": {},
+          "lib": "OLED_HEADER",
+          "package": "1x4 2.54 mm THT",
+          "value": "1x4 header"
+        },
+        "J3": {
+          "description": "5 V DC input jack, centre positive",
+          "extras": {},
+          "lib": "BARREL_JACK",
+          "package": "5.5x2.1 mm THT",
+          "value": "DC 5.5x2.1"
+        },
+        "R1": {
+          "description": "I2C pull-up",
+          "extras": {},
+          "lib": "R",
+          "package": "axial 1/4 W",
+          "value": "4.7k"
+        },
+        "R2": {
+          "description": "I2C pull-up",
+          "extras": {},
+          "lib": "R",
+          "package": "axial 1/4 W",
+          "value": "4.7k"
+        },
+        "RS1": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "A1"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS10": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "B3"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS11": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "C3"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS12": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "D3"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS13": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "A4"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS14": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "B4"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS15": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "C4"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS16": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "D4"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS17": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "E1"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS18": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "F1"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS19": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "G1"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS2": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "B1"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS20": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "H1"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS21": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "E2"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS22": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "F2"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS23": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "G2"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS24": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "H2"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS25": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "E3"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS26": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "F3"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS27": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "G3"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS28": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "H3"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS29": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "E4"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS3": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "C1"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS30": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "F4"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS31": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "G4"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS32": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "H4"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS33": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "A5"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS34": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "B5"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS35": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "C5"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS36": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "D5"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS37": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "A6"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS38": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "B6"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS39": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "C6"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS4": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "D1"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS40": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "D6"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS41": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "A7"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS42": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "B7"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS43": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "C7"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS44": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "D7"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS45": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "A8"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS46": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "B8"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS47": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "C8"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS48": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "D8"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS49": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "E5"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS5": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "A2"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS50": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "F5"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS51": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "G5"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS52": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "H5"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS53": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "E6"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS54": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "F6"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS55": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "G6"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS56": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "H6"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS57": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "E7"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS58": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "F7"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS59": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "G7"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS6": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "B2"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS60": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "H7"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS61": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "E8"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS62": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "F8"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS63": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "G8"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS64": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "H8"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS7": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "C2"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS8": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "D2"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "RS9": {
+          "description": "Normally-open magnetic sensor",
+          "extras": {
+            "Square": "A3"
+          },
+          "lib": "REED",
+          "package": "axial 14 mm",
+          "value": "REED NO"
+        },
+        "SKT1": {
+          "description": "Turned-pin socket; the chip drops in after assembly",
+          "extras": {},
+          "lib": "DIP_SOCKET",
+          "package": "DIP-28",
+          "value": "DIP-28 socket"
+        },
+        "SKT2": {
+          "description": "Turned-pin socket; the chip drops in after assembly",
+          "extras": {},
+          "lib": "DIP_SOCKET",
+          "package": "DIP-28",
+          "value": "DIP-28 socket"
+        },
+        "SKT3": {
+          "description": "Turned-pin socket; the chip drops in after assembly",
+          "extras": {},
+          "lib": "DIP_SOCKET",
+          "package": "DIP-28",
+          "value": "DIP-28 socket"
+        },
+        "SKT4": {
+          "description": "Turned-pin socket; the chip drops in after assembly",
+          "extras": {},
+          "lib": "DIP_SOCKET",
+          "package": "DIP-28",
+          "value": "DIP-28 socket"
+        },
+        "SKT5": {
+          "description": "Turned-pin socket; the chip drops in after assembly",
+          "extras": {},
+          "lib": "DIP_SOCKET",
+          "package": "DIP-14",
+          "value": "DIP-14 socket"
+        },
+        "SW1": {
+          "description": "Momentary panel button, 9.5 mm actuator",
+          "extras": {
+            "Function": "UP"
+          },
+          "lib": "BUTTON",
+          "package": "6x6 mm THT",
+          "value": "TACT 6mm"
+        },
+        "SW10": {
+          "description": "Momentary panel button, 9.5 mm actuator",
+          "extras": {
+            "Function": "F3"
+          },
+          "lib": "BUTTON",
+          "package": "6x6 mm THT",
+          "value": "TACT 6mm"
+        },
+        "SW11": {
+          "description": "Momentary panel button, 9.5 mm actuator",
+          "extras": {
+            "Function": "F4"
+          },
+          "lib": "BUTTON",
+          "package": "6x6 mm THT",
+          "value": "TACT 6mm"
+        },
+        "SW12": {
+          "description": "Momentary panel button, 9.5 mm actuator",
+          "extras": {
+            "Function": "F5"
+          },
+          "lib": "BUTTON",
+          "package": "6x6 mm THT",
+          "value": "TACT 6mm"
+        },
+        "SW13": {
+          "description": "Latching power switch",
+          "extras": {},
+          "lib": "SWITCH",
+          "package": "SPST rocker THT",
+          "value": "POWER"
+        },
+        "SW2": {
+          "description": "Momentary panel button, 9.5 mm actuator",
+          "extras": {
+            "Function": "DOWN"
+          },
+          "lib": "BUTTON",
+          "package": "6x6 mm THT",
+          "value": "TACT 6mm"
+        },
+        "SW3": {
+          "description": "Momentary panel button, 9.5 mm actuator",
+          "extras": {
+            "Function": "LEFT"
+          },
+          "lib": "BUTTON",
+          "package": "6x6 mm THT",
+          "value": "TACT 6mm"
+        },
+        "SW4": {
+          "description": "Momentary panel button, 9.5 mm actuator",
+          "extras": {
+            "Function": "RIGHT"
+          },
+          "lib": "BUTTON",
+          "package": "6x6 mm THT",
+          "value": "TACT 6mm"
+        },
+        "SW5": {
+          "description": "Momentary panel button, 9.5 mm actuator",
+          "extras": {
+            "Function": "OK"
+          },
+          "lib": "BUTTON",
+          "package": "6x6 mm THT",
+          "value": "TACT 6mm"
+        },
+        "SW6": {
+          "description": "Momentary panel button, 9.5 mm actuator",
+          "extras": {
+            "Function": "RESET"
+          },
+          "lib": "BUTTON",
+          "package": "6x6 mm THT",
+          "value": "TACT 6mm"
+        },
+        "SW7": {
+          "description": "Momentary panel button, 9.5 mm actuator",
+          "extras": {
+            "Function": "PASS"
+          },
+          "lib": "BUTTON",
+          "package": "6x6 mm THT",
+          "value": "TACT 6mm"
+        },
+        "SW8": {
+          "description": "Momentary panel button, 9.5 mm actuator",
+          "extras": {
+            "Function": "F1"
+          },
+          "lib": "BUTTON",
+          "package": "6x6 mm THT",
+          "value": "TACT 6mm"
+        },
+        "SW9": {
+          "description": "Momentary panel button, 9.5 mm actuator",
+          "extras": {
+            "Function": "F2"
+          },
+          "lib": "BUTTON",
+          "package": "6x6 mm THT",
+          "value": "TACT 6mm"
+        },
+        "TP1": {
+          "description": "5 V test point",
+          "extras": {},
+          "lib": "TESTPOINT",
+          "package": "turret 1.6 mm THT",
+          "value": "+5V"
+        },
+        "TP2": {
+          "description": "Ground test point",
+          "extras": {},
+          "lib": "TESTPOINT",
+          "package": "turret 1.6 mm THT",
+          "value": "GND"
+        },
+        "TP3": {
+          "description": "Buffered LED data test point",
+          "extras": {},
+          "lib": "TESTPOINT",
+          "package": "turret 1.6 mm THT",
+          "value": "LED_DATA_5V"
+        },
+        "TP4": {
+          "description": "Buffered LED clock test point",
+          "extras": {},
+          "lib": "TESTPOINT",
+          "package": "turret 1.6 mm THT",
+          "value": "LED_CLK_5V"
+        },
+        "U1": {
+          "description": "16-bit I2C port expander, one per board quadrant",
+          "extras": {
+            "Address": "0x20",
+            "Quadrant": "A1-D4"
+          },
+          "lib": "MCP23017",
+          "package": "PDIP-28",
+          "value": "MCP23017-E/SP"
+        },
+        "U10": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "5",
+            "Square": "E1"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U11": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "6",
+            "Square": "F1"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U12": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "7",
+            "Square": "G1"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U13": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "8",
+            "Square": "H1"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U14": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "9",
+            "Square": "H2"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U15": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "10",
+            "Square": "G2"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U16": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "11",
+            "Square": "F2"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U17": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "12",
+            "Square": "E2"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U18": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "13",
+            "Square": "D2"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U19": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "14",
+            "Square": "C2"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U2": {
+          "description": "16-bit I2C port expander, one per board quadrant",
+          "extras": {
+            "Address": "0x21",
+            "Quadrant": "E1-H4"
+          },
+          "lib": "MCP23017",
+          "package": "PDIP-28",
+          "value": "MCP23017-E/SP"
+        },
+        "U20": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "15",
+            "Square": "B2"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U21": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "16",
+            "Square": "A2"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U22": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "17",
+            "Square": "A3"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U23": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "18",
+            "Square": "B3"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U24": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "19",
+            "Square": "C3"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U25": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "20",
+            "Square": "D3"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U26": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "21",
+            "Square": "E3"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U27": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "22",
+            "Square": "F3"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U28": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "23",
+            "Square": "G3"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U29": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "24",
+            "Square": "H3"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U3": {
+          "description": "16-bit I2C port expander, one per board quadrant",
+          "extras": {
+            "Address": "0x22",
+            "Quadrant": "A5-D8"
+          },
+          "lib": "MCP23017",
+          "package": "PDIP-28",
+          "value": "MCP23017-E/SP"
+        },
+        "U30": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "25",
+            "Square": "H4"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U31": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "26",
+            "Square": "G4"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U32": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "27",
+            "Square": "F4"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U33": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "28",
+            "Square": "E4"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U34": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "29",
+            "Square": "D4"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U35": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "30",
+            "Square": "C4"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U36": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "31",
+            "Square": "B4"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U37": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "32",
+            "Square": "A4"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U38": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "33",
+            "Square": "A5"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U39": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "34",
+            "Square": "B5"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U4": {
+          "description": "16-bit I2C port expander, one per board quadrant",
+          "extras": {
+            "Address": "0x23",
+            "Quadrant": "E5-H8"
+          },
+          "lib": "MCP23017",
+          "package": "PDIP-28",
+          "value": "MCP23017-E/SP"
+        },
+        "U40": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "35",
+            "Square": "C5"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U41": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "36",
+            "Square": "D5"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U42": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "37",
+            "Square": "E5"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U43": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "38",
+            "Square": "F5"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U44": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "39",
+            "Square": "G5"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U45": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "40",
+            "Square": "H5"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U46": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "41",
+            "Square": "H6"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U47": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "42",
+            "Square": "G6"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U48": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "43",
+            "Square": "F6"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U49": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "44",
+            "Square": "E6"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U5": {
+          "description": "Quad 5 V buffer accepts 3.3 V SPI clock and data",
+          "extras": {},
+          "lib": "AHCT125",
+          "package": "DIP-14",
+          "value": "SN74AHCT125N"
+        },
+        "U50": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "45",
+            "Square": "D6"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U51": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "46",
+            "Square": "C6"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U52": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "47",
+            "Square": "B6"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U53": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "48",
+            "Square": "A6"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U54": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "49",
+            "Square": "A7"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U55": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "50",
+            "Square": "B7"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U56": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "51",
+            "Square": "C7"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U57": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "52",
+            "Square": "D7"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U58": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "53",
+            "Square": "E7"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U59": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "54",
+            "Square": "F7"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U6": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "1",
+            "Square": "A1"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U60": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "55",
+            "Square": "G7"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U61": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "56",
+            "Square": "H7"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U62": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "57",
+            "Square": "H8"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U63": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "58",
+            "Square": "G8"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U64": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "59",
+            "Square": "F8"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U65": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "60",
+            "Square": "E8"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U66": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "61",
+            "Square": "D8"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U67": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "62",
+            "Square": "C8"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U68": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "63",
+            "Square": "B8"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U69": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "64",
+            "Square": "A8"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U7": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "2",
+            "Square": "B1"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U8": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "3",
+            "Square": "C1"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        },
+        "U9": {
+          "description": "Clocked addressable RGB LED",
+          "extras": {
+            "ChainIndex": "4",
+            "Square": "D1"
+          },
+          "lib": "SK9822",
+          "package": "PLCC-6 5050",
+          "value": "SK9822"
+        }
+      },
+      "connections": [
+        {
+          "name": "+3V3",
+          "pads": [
+            [
+              "C3",
+              "1"
+            ],
+            [
+              "C4",
+              "1"
+            ],
+            [
+              "C5",
+              "1"
+            ],
+            [
+              "C6",
+              "1"
+            ],
+            [
+              "J1",
+              "1"
+            ],
+            [
+              "J1",
+              "17"
+            ],
+            [
+              "J2",
+              "2"
+            ],
+            [
+              "R1",
+              "1"
+            ],
+            [
+              "R2",
+              "1"
+            ],
+            [
+              "U1",
+              "18"
+            ],
+            [
+              "U1",
+              "9"
+            ],
+            [
+              "U2",
+              "15"
+            ],
+            [
+              "U2",
+              "18"
+            ],
+            [
+              "U2",
+              "9"
+            ],
+            [
+              "U3",
+              "16"
+            ],
+            [
+              "U3",
+              "18"
+            ],
+            [
+              "U3",
+              "9"
+            ],
+            [
+              "U4",
+              "15"
+            ],
+            [
+              "U4",
+              "16"
+            ],
+            [
+              "U4",
+              "18"
+            ],
+            [
+              "U4",
+              "9"
+            ]
+          ]
+        },
+        {
+          "name": "+5V",
+          "pads": [
+            [
+              "C1",
+              "1"
+            ],
+            [
+              "C10",
+              "1"
+            ],
+            [
+              "C11",
+              "1"
+            ],
+            [
+              "C12",
+              "1"
+            ],
+            [
+              "C13",
+              "1"
+            ],
+            [
+              "C14",
+              "1"
+            ],
+            [
+              "C15",
+              "1"
+            ],
+            [
+              "C16",
+              "1"
+            ],
+            [
+              "C17",
+              "1"
+            ],
+            [
+              "C18",
+              "1"
+            ],
+            [
+              "C19",
+              "1"
+            ],
+            [
+              "C2",
+              "1"
+            ],
+            [
+              "C20",
+              "1"
+            ],
+            [
+              "C21",
+              "1"
+            ],
+            [
+              "C22",
+              "1"
+            ],
+            [
+              "C23",
+              "1"
+            ],
+            [
+              "C24",
+              "1"
+            ],
+            [
+              "C25",
+              "1"
+            ],
+            [
+              "C26",
+              "1"
+            ],
+            [
+              "C27",
+              "1"
+            ],
+            [
+              "C28",
+              "1"
+            ],
+            [
+              "C29",
+              "1"
+            ],
+            [
+              "C30",
+              "1"
+            ],
+            [
+              "C31",
+              "1"
+            ],
+            [
+              "C32",
+              "1"
+            ],
+            [
+              "C33",
+              "1"
+            ],
+            [
+              "C34",
+              "1"
+            ],
+            [
+              "C35",
+              "1"
+            ],
+            [
+              "C36",
+              "1"
+            ],
+            [
+              "C37",
+              "1"
+            ],
+            [
+              "C38",
+              "1"
+            ],
+            [
+              "C39",
+              "1"
+            ],
+            [
+              "C40",
+              "1"
+            ],
+            [
+              "C41",
+              "1"
+            ],
+            [
+              "C42",
+              "1"
+            ],
+            [
+              "C43",
+              "1"
+            ],
+            [
+              "C44",
+              "1"
+            ],
+            [
+              "C45",
+              "1"
+            ],
+            [
+              "C46",
+              "1"
+            ],
+            [
+              "C47",
+              "1"
+            ],
+            [
+              "C48",
+              "1"
+            ],
+            [
+              "C49",
+              "1"
+            ],
+            [
+              "C50",
+              "1"
+            ],
+            [
+              "C51",
+              "1"
+            ],
+            [
+              "C52",
+              "1"
+            ],
+            [
+              "C53",
+              "1"
+            ],
+            [
+              "C54",
+              "1"
+            ],
+            [
+              "C55",
+              "1"
+            ],
+            [
+              "C56",
+              "1"
+            ],
+            [
+              "C57",
+              "1"
+            ],
+            [
+              "C58",
+              "1"
+            ],
+            [
+              "C59",
+              "1"
+            ],
+            [
+              "C60",
+              "1"
+            ],
+            [
+              "C61",
+              "1"
+            ],
+            [
+              "C62",
+              "1"
+            ],
+            [
+              "C63",
+              "1"
+            ],
+            [
+              "C64",
+              "1"
+            ],
+            [
+              "C65",
+              "1"
+            ],
+            [
+              "C66",
+              "1"
+            ],
+            [
+              "C67",
+              "1"
+            ],
+            [
+              "C68",
+              "1"
+            ],
+            [
+              "C69",
+              "1"
+            ],
+            [
+              "C7",
+              "1"
+            ],
+            [
+              "C70",
+              "1"
+            ],
+            [
+              "C71",
+              "1"
+            ],
+            [
+              "C8",
+              "1"
+            ],
+            [
+              "C9",
+              "1"
+            ],
+            [
+              "D1",
+              "1"
+            ],
+            [
+              "J1",
+              "2"
+            ],
+            [
+              "J1",
+              "4"
+            ],
+            [
+              "SW13",
+              "2"
+            ],
+            [
+              "TP1",
+              "1"
+            ],
+            [
+              "U10",
+              "1"
+            ],
+            [
+              "U11",
+              "1"
+            ],
+            [
+              "U12",
+              "1"
+            ],
+            [
+              "U13",
+              "1"
+            ],
+            [
+              "U14",
+              "1"
+            ],
+            [
+              "U15",
+              "1"
+            ],
+            [
+              "U16",
+              "1"
+            ],
+            [
+              "U17",
+              "1"
+            ],
+            [
+              "U18",
+              "1"
+            ],
+            [
+              "U19",
+              "1"
+            ],
+            [
+              "U20",
+              "1"
+            ],
+            [
+              "U21",
+              "1"
+            ],
+            [
+              "U22",
+              "1"
+            ],
+            [
+              "U23",
+              "1"
+            ],
+            [
+              "U24",
+              "1"
+            ],
+            [
+              "U25",
+              "1"
+            ],
+            [
+              "U26",
+              "1"
+            ],
+            [
+              "U27",
+              "1"
+            ],
+            [
+              "U28",
+              "1"
+            ],
+            [
+              "U29",
+              "1"
+            ],
+            [
+              "U30",
+              "1"
+            ],
+            [
+              "U31",
+              "1"
+            ],
+            [
+              "U32",
+              "1"
+            ],
+            [
+              "U33",
+              "1"
+            ],
+            [
+              "U34",
+              "1"
+            ],
+            [
+              "U35",
+              "1"
+            ],
+            [
+              "U36",
+              "1"
+            ],
+            [
+              "U37",
+              "1"
+            ],
+            [
+              "U38",
+              "1"
+            ],
+            [
+              "U39",
+              "1"
+            ],
+            [
+              "U40",
+              "1"
+            ],
+            [
+              "U41",
+              "1"
+            ],
+            [
+              "U42",
+              "1"
+            ],
+            [
+              "U43",
+              "1"
+            ],
+            [
+              "U44",
+              "1"
+            ],
+            [
+              "U45",
+              "1"
+            ],
+            [
+              "U46",
+              "1"
+            ],
+            [
+              "U47",
+              "1"
+            ],
+            [
+              "U48",
+              "1"
+            ],
+            [
+              "U49",
+              "1"
+            ],
+            [
+              "U5",
+              "10"
+            ],
+            [
+              "U5",
+              "13"
+            ],
+            [
+              "U5",
+              "14"
+            ],
+            [
+              "U50",
+              "1"
+            ],
+            [
+              "U51",
+              "1"
+            ],
+            [
+              "U52",
+              "1"
+            ],
+            [
+              "U53",
+              "1"
+            ],
+            [
+              "U54",
+              "1"
+            ],
+            [
+              "U55",
+              "1"
+            ],
+            [
+              "U56",
+              "1"
+            ],
+            [
+              "U57",
+              "1"
+            ],
+            [
+              "U58",
+              "1"
+            ],
+            [
+              "U59",
+              "1"
+            ],
+            [
+              "U6",
+              "1"
+            ],
+            [
+              "U60",
+              "1"
+            ],
+            [
+              "U61",
+              "1"
+            ],
+            [
+              "U62",
+              "1"
+            ],
+            [
+              "U63",
+              "1"
+            ],
+            [
+              "U64",
+              "1"
+            ],
+            [
+              "U65",
+              "1"
+            ],
+            [
+              "U66",
+              "1"
+            ],
+            [
+              "U67",
+              "1"
+            ],
+            [
+              "U68",
+              "1"
+            ],
+            [
+              "U69",
+              "1"
+            ],
+            [
+              "U7",
+              "1"
+            ],
+            [
+              "U8",
+              "1"
+            ],
+            [
+              "U9",
+              "1"
+            ]
+          ]
+        },
+        {
+          "name": "BTN_DOWN",
+          "pads": [
+            [
+              "J1",
+              "31"
+            ],
+            [
+              "SW2",
+              "1"
+            ]
+          ]
+        },
+        {
+          "name": "BTN_F1",
+          "pads": [
+            [
+              "J1",
+              "38"
+            ],
+            [
+              "SW8",
+              "1"
+            ]
+          ]
+        },
+        {
+          "name": "BTN_F2",
+          "pads": [
+            [
+              "J1",
+              "40"
+            ],
+            [
+              "SW9",
+              "1"
+            ]
+          ]
+        },
+        {
+          "name": "BTN_F3",
+          "pads": [
+            [
+              "J1",
+              "15"
+            ],
+            [
+              "SW10",
+              "1"
+            ]
+          ]
+        },
+        {
+          "name": "BTN_F4",
+          "pads": [
+            [
+              "J1",
+              "16"
+            ],
+            [
+              "SW11",
+              "1"
+            ]
+          ]
+        },
+        {
+          "name": "BTN_F5",
+          "pads": [
+            [
+              "J1",
+              "18"
+            ],
+            [
+              "SW12",
+              "1"
+            ]
+          ]
+        },
+        {
+          "name": "BTN_LEFT",
+          "pads": [
+            [
+              "J1",
+              "32"
+            ],
+            [
+              "SW3",
+              "1"
+            ]
+          ]
+        },
+        {
+          "name": "BTN_OK",
+          "pads": [
+            [
+              "J1",
+              "36"
+            ],
+            [
+              "SW5",
+              "1"
+            ]
+          ]
+        },
+        {
+          "name": "BTN_PASS",
+          "pads": [
+            [
+              "J1",
+              "35"
+            ],
+            [
+              "SW7",
+              "1"
+            ]
+          ]
+        },
+        {
+          "name": "BTN_RESET",
+          "pads": [
+            [
+              "J1",
+              "11"
+            ],
+            [
+              "SW6",
+              "1"
+            ]
+          ]
+        },
+        {
+          "name": "BTN_RIGHT",
+          "pads": [
+            [
+              "J1",
+              "33"
+            ],
+            [
+              "SW4",
+              "1"
+            ]
+          ]
+        },
+        {
+          "name": "BTN_UP",
+          "pads": [
+            [
+              "J1",
+              "29"
+            ],
+            [
+              "SW1",
+              "1"
+            ]
+          ]
+        },
+        {
+          "name": "DC_FUSED",
+          "pads": [
+            [
+              "F1",
+              "2"
+            ],
+            [
+              "SW13",
+              "1"
+            ]
+          ]
+        },
+        {
+          "name": "DC_IN",
+          "pads": [
+            [
+              "F1",
+              "1"
+            ],
+            [
+              "J3",
+              "1"
+            ]
+          ]
+        },
+        {
+          "name": "GND",
+          "pads": [
+            [
+              "C1",
+              "2"
+            ],
+            [
+              "C10",
+              "2"
+            ],
+            [
+              "C11",
+              "2"
+            ],
+            [
+              "C12",
+              "2"
+            ],
+            [
+              "C13",
+              "2"
+            ],
+            [
+              "C14",
+              "2"
+            ],
+            [
+              "C15",
+              "2"
+            ],
+            [
+              "C16",
+              "2"
+            ],
+            [
+              "C17",
+              "2"
+            ],
+            [
+              "C18",
+              "2"
+            ],
+            [
+              "C19",
+              "2"
+            ],
+            [
+              "C2",
+              "2"
+            ],
+            [
+              "C20",
+              "2"
+            ],
+            [
+              "C21",
+              "2"
+            ],
+            [
+              "C22",
+              "2"
+            ],
+            [
+              "C23",
+              "2"
+            ],
+            [
+              "C24",
+              "2"
+            ],
+            [
+              "C25",
+              "2"
+            ],
+            [
+              "C26",
+              "2"
+            ],
+            [
+              "C27",
+              "2"
+            ],
+            [
+              "C28",
+              "2"
+            ],
+            [
+              "C29",
+              "2"
+            ],
+            [
+              "C3",
+              "2"
+            ],
+            [
+              "C30",
+              "2"
+            ],
+            [
+              "C31",
+              "2"
+            ],
+            [
+              "C32",
+              "2"
+            ],
+            [
+              "C33",
+              "2"
+            ],
+            [
+              "C34",
+              "2"
+            ],
+            [
+              "C35",
+              "2"
+            ],
+            [
+              "C36",
+              "2"
+            ],
+            [
+              "C37",
+              "2"
+            ],
+            [
+              "C38",
+              "2"
+            ],
+            [
+              "C39",
+              "2"
+            ],
+            [
+              "C4",
+              "2"
+            ],
+            [
+              "C40",
+              "2"
+            ],
+            [
+              "C41",
+              "2"
+            ],
+            [
+              "C42",
+              "2"
+            ],
+            [
+              "C43",
+              "2"
+            ],
+            [
+              "C44",
+              "2"
+            ],
+            [
+              "C45",
+              "2"
+            ],
+            [
+              "C46",
+              "2"
+            ],
+            [
+              "C47",
+              "2"
+            ],
+            [
+              "C48",
+              "2"
+            ],
+            [
+              "C49",
+              "2"
+            ],
+            [
+              "C5",
+              "2"
+            ],
+            [
+              "C50",
+              "2"
+            ],
+            [
+              "C51",
+              "2"
+            ],
+            [
+              "C52",
+              "2"
+            ],
+            [
+              "C53",
+              "2"
+            ],
+            [
+              "C54",
+              "2"
+            ],
+            [
+              "C55",
+              "2"
+            ],
+            [
+              "C56",
+              "2"
+            ],
+            [
+              "C57",
+              "2"
+            ],
+            [
+              "C58",
+              "2"
+            ],
+            [
+              "C59",
+              "2"
+            ],
+            [
+              "C6",
+              "2"
+            ],
+            [
+              "C60",
+              "2"
+            ],
+            [
+              "C61",
+              "2"
+            ],
+            [
+              "C62",
+              "2"
+            ],
+            [
+              "C63",
+              "2"
+            ],
+            [
+              "C64",
+              "2"
+            ],
+            [
+              "C65",
+              "2"
+            ],
+            [
+              "C66",
+              "2"
+            ],
+            [
+              "C67",
+              "2"
+            ],
+            [
+              "C68",
+              "2"
+            ],
+            [
+              "C69",
+              "2"
+            ],
+            [
+              "C7",
+              "2"
+            ],
+            [
+              "C70",
+              "2"
+            ],
+            [
+              "C71",
+              "2"
+            ],
+            [
+              "C8",
+              "2"
+            ],
+            [
+              "C9",
+              "2"
+            ],
+            [
+              "D1",
+              "2"
+            ],
+            [
+              "J1",
+              "14"
+            ],
+            [
+              "J1",
+              "20"
+            ],
+            [
+              "J1",
+              "25"
+            ],
+            [
+              "J1",
+              "30"
+            ],
+            [
+              "J1",
+              "34"
+            ],
+            [
+              "J1",
+              "39"
+            ],
+            [
+              "J1",
+              "6"
+            ],
+            [
+              "J1",
+              "9"
+            ],
+            [
+              "J2",
+              "1"
+            ],
+            [
+              "J3",
+              "2"
+            ],
+            [
+              "RS1",
+              "2"
+            ],
+            [
+              "RS10",
+              "2"
+            ],
+            [
+              "RS11",
+              "2"
+            ],
+            [
+              "RS12",
+              "2"
+            ],
+            [
+              "RS13",
+              "2"
+            ],
+            [
+              "RS14",
+              "2"
+            ],
+            [
+              "RS15",
+              "2"
+            ],
+            [
+              "RS16",
+              "2"
+            ],
+            [
+              "RS17",
+              "2"
+            ],
+            [
+              "RS18",
+              "2"
+            ],
+            [
+              "RS19",
+              "2"
+            ],
+            [
+              "RS2",
+              "2"
+            ],
+            [
+              "RS20",
+              "2"
+            ],
+            [
+              "RS21",
+              "2"
+            ],
+            [
+              "RS22",
+              "2"
+            ],
+            [
+              "RS23",
+              "2"
+            ],
+            [
+              "RS24",
+              "2"
+            ],
+            [
+              "RS25",
+              "2"
+            ],
+            [
+              "RS26",
+              "2"
+            ],
+            [
+              "RS27",
+              "2"
+            ],
+            [
+              "RS28",
+              "2"
+            ],
+            [
+              "RS29",
+              "2"
+            ],
+            [
+              "RS3",
+              "2"
+            ],
+            [
+              "RS30",
+              "2"
+            ],
+            [
+              "RS31",
+              "2"
+            ],
+            [
+              "RS32",
+              "2"
+            ],
+            [
+              "RS33",
+              "2"
+            ],
+            [
+              "RS34",
+              "2"
+            ],
+            [
+              "RS35",
+              "2"
+            ],
+            [
+              "RS36",
+              "2"
+            ],
+            [
+              "RS37",
+              "2"
+            ],
+            [
+              "RS38",
+              "2"
+            ],
+            [
+              "RS39",
+              "2"
+            ],
+            [
+              "RS4",
+              "2"
+            ],
+            [
+              "RS40",
+              "2"
+            ],
+            [
+              "RS41",
+              "2"
+            ],
+            [
+              "RS42",
+              "2"
+            ],
+            [
+              "RS43",
+              "2"
+            ],
+            [
+              "RS44",
+              "2"
+            ],
+            [
+              "RS45",
+              "2"
+            ],
+            [
+              "RS46",
+              "2"
+            ],
+            [
+              "RS47",
+              "2"
+            ],
+            [
+              "RS48",
+              "2"
+            ],
+            [
+              "RS49",
+              "2"
+            ],
+            [
+              "RS5",
+              "2"
+            ],
+            [
+              "RS50",
+              "2"
+            ],
+            [
+              "RS51",
+              "2"
+            ],
+            [
+              "RS52",
+              "2"
+            ],
+            [
+              "RS53",
+              "2"
+            ],
+            [
+              "RS54",
+              "2"
+            ],
+            [
+              "RS55",
+              "2"
+            ],
+            [
+              "RS56",
+              "2"
+            ],
+            [
+              "RS57",
+              "2"
+            ],
+            [
+              "RS58",
+              "2"
+            ],
+            [
+              "RS59",
+              "2"
+            ],
+            [
+              "RS6",
+              "2"
+            ],
+            [
+              "RS60",
+              "2"
+            ],
+            [
+              "RS61",
+              "2"
+            ],
+            [
+              "RS62",
+              "2"
+            ],
+            [
+              "RS63",
+              "2"
+            ],
+            [
+              "RS64",
+              "2"
+            ],
+            [
+              "RS7",
+              "2"
+            ],
+            [
+              "RS8",
+              "2"
+            ],
+            [
+              "RS9",
+              "2"
+            ],
+            [
+              "SW1",
+              "2"
+            ],
+            [
+              "SW10",
+              "2"
+            ],
+            [
+              "SW11",
+              "2"
+            ],
+            [
+              "SW12",
+              "2"
+            ],
+            [
+              "SW2",
+              "2"
+            ],
+            [
+              "SW3",
+              "2"
+            ],
+            [
+              "SW4",
+              "2"
+            ],
+            [
+              "SW5",
+              "2"
+            ],
+            [
+              "SW6",
+              "2"
+            ],
+            [
+              "SW7",
+              "2"
+            ],
+            [
+              "SW8",
+              "2"
+            ],
+            [
+              "SW9",
+              "2"
+            ],
+            [
+              "TP2",
+              "1"
+            ],
+            [
+              "U1",
+              "10"
+            ],
+            [
+              "U1",
+              "15"
+            ],
+            [
+              "U1",
+              "16"
+            ],
+            [
+              "U1",
+              "17"
+            ],
+            [
+              "U10",
+              "2"
+            ],
+            [
+              "U11",
+              "2"
+            ],
+            [
+              "U12",
+              "2"
+            ],
+            [
+              "U13",
+              "2"
+            ],
+            [
+              "U14",
+              "2"
+            ],
+            [
+              "U15",
+              "2"
+            ],
+            [
+              "U16",
+              "2"
+            ],
+            [
+              "U17",
+              "2"
+            ],
+            [
+              "U18",
+              "2"
+            ],
+            [
+              "U19",
+              "2"
+            ],
+            [
+              "U2",
+              "10"
+            ],
+            [
+              "U2",
+              "16"
+            ],
+            [
+              "U2",
+              "17"
+            ],
+            [
+              "U20",
+              "2"
+            ],
+            [
+              "U21",
+              "2"
+            ],
+            [
+              "U22",
+              "2"
+            ],
+            [
+              "U23",
+              "2"
+            ],
+            [
+              "U24",
+              "2"
+            ],
+            [
+              "U25",
+              "2"
+            ],
+            [
+              "U26",
+              "2"
+            ],
+            [
+              "U27",
+              "2"
+            ],
+            [
+              "U28",
+              "2"
+            ],
+            [
+              "U29",
+              "2"
+            ],
+            [
+              "U3",
+              "10"
+            ],
+            [
+              "U3",
+              "15"
+            ],
+            [
+              "U3",
+              "17"
+            ],
+            [
+              "U30",
+              "2"
+            ],
+            [
+              "U31",
+              "2"
+            ],
+            [
+              "U32",
+              "2"
+            ],
+            [
+              "U33",
+              "2"
+            ],
+            [
+              "U34",
+              "2"
+            ],
+            [
+              "U35",
+              "2"
+            ],
+            [
+              "U36",
+              "2"
+            ],
+            [
+              "U37",
+              "2"
+            ],
+            [
+              "U38",
+              "2"
+            ],
+            [
+              "U39",
+              "2"
+            ],
+            [
+              "U4",
+              "10"
+            ],
+            [
+              "U4",
+              "17"
+            ],
+            [
+              "U40",
+              "2"
+            ],
+            [
+              "U41",
+              "2"
+            ],
+            [
+              "U42",
+              "2"
+            ],
+            [
+              "U43",
+              "2"
+            ],
+            [
+              "U44",
+              "2"
+            ],
+            [
+              "U45",
+              "2"
+            ],
+            [
+              "U46",
+              "2"
+            ],
+            [
+              "U47",
+              "2"
+            ],
+            [
+              "U48",
+              "2"
+            ],
+            [
+              "U49",
+              "2"
+            ],
+            [
+              "U5",
+              "1"
+            ],
+            [
+              "U5",
+              "12"
+            ],
+            [
+              "U5",
+              "4"
+            ],
+            [
+              "U5",
+              "7"
+            ],
+            [
+              "U5",
+              "9"
+            ],
+            [
+              "U50",
+              "2"
+            ],
+            [
+              "U51",
+              "2"
+            ],
+            [
+              "U52",
+              "2"
+            ],
+            [
+              "U53",
+              "2"
+            ],
+            [
+              "U54",
+              "2"
+            ],
+            [
+              "U55",
+              "2"
+            ],
+            [
+              "U56",
+              "2"
+            ],
+            [
+              "U57",
+              "2"
+            ],
+            [
+              "U58",
+              "2"
+            ],
+            [
+              "U59",
+              "2"
+            ],
+            [
+              "U6",
+              "2"
+            ],
+            [
+              "U60",
+              "2"
+            ],
+            [
+              "U61",
+              "2"
+            ],
+            [
+              "U62",
+              "2"
+            ],
+            [
+              "U63",
+              "2"
+            ],
+            [
+              "U64",
+              "2"
+            ],
+            [
+              "U65",
+              "2"
+            ],
+            [
+              "U66",
+              "2"
+            ],
+            [
+              "U67",
+              "2"
+            ],
+            [
+              "U68",
+              "2"
+            ],
+            [
+              "U69",
+              "2"
+            ],
+            [
+              "U7",
+              "2"
+            ],
+            [
+              "U8",
+              "2"
+            ],
+            [
+              "U9",
+              "2"
+            ]
+          ]
+        },
+        {
+          "name": "I2C_SCL",
+          "pads": [
+            [
+              "J1",
+              "5"
+            ],
+            [
+              "J2",
+              "3"
+            ],
+            [
+              "R2",
+              "2"
+            ],
+            [
+              "U1",
+              "12"
+            ],
+            [
+              "U2",
+              "12"
+            ],
+            [
+              "U3",
+              "12"
+            ],
+            [
+              "U4",
+              "12"
+            ]
+          ]
+        },
+        {
+          "name": "I2C_SDA",
+          "pads": [
+            [
+              "J1",
+              "3"
+            ],
+            [
+              "J2",
+              "4"
+            ],
+            [
+              "R1",
+              "2"
+            ],
+            [
+              "U1",
+              "13"
+            ],
+            [
+              "U2",
+              "13"
+            ],
+            [
+              "U3",
+              "13"
+            ],
+            [
+              "U4",
+              "13"
+            ]
+          ]
+        },
+        {
+          "name": "LED_C16",
+          "pads": [
+            [
+              "U21",
+              "6"
+            ],
+            [
+              "U22",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": "LED_C24",
+          "pads": [
+            [
+              "U29",
+              "6"
+            ],
+            [
+              "U30",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": "LED_C32",
+          "pads": [
+            [
+              "U37",
+              "6"
+            ],
+            [
+              "U38",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": "LED_C40",
+          "pads": [
+            [
+              "U45",
+              "6"
+            ],
+            [
+              "U46",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": "LED_C48",
+          "pads": [
+            [
+              "U53",
+              "6"
+            ],
+            [
+              "U54",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": "LED_C56",
+          "pads": [
+            [
+              "U61",
+              "6"
+            ],
+            [
+              "U62",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": "LED_C8",
+          "pads": [
+            [
+              "U13",
+              "6"
+            ],
+            [
+              "U14",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": "LED_CLK_5V",
+          "pads": [
+            [
+              "TP4",
+              "1"
+            ],
+            [
+              "U5",
+              "6"
+            ],
+            [
+              "U6",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": "LED_CLK_LAST",
+          "pads": [
+            [
+              "U69",
+              "6"
+            ]
+          ]
+        },
+        {
+          "name": "LED_D16",
+          "pads": [
+            [
+              "U21",
+              "5"
+            ],
+            [
+              "U22",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": "LED_D24",
+          "pads": [
+            [
+              "U29",
+              "5"
+            ],
+            [
+              "U30",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": "LED_D32",
+          "pads": [
+            [
+              "U37",
+              "5"
+            ],
+            [
+              "U38",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": "LED_D40",
+          "pads": [
+            [
+              "U45",
+              "5"
+            ],
+            [
+              "U46",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": "LED_D48",
+          "pads": [
+            [
+              "U53",
+              "5"
+            ],
+            [
+              "U54",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": "LED_D56",
+          "pads": [
+            [
+              "U61",
+              "5"
+            ],
+            [
+              "U62",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": "LED_D8",
+          "pads": [
+            [
+              "U13",
+              "5"
+            ],
+            [
+              "U14",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": "LED_DATA_5V",
+          "pads": [
+            [
+              "TP3",
+              "1"
+            ],
+            [
+              "U5",
+              "3"
+            ],
+            [
+              "U6",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": "LED_DATA_LAST",
+          "pads": [
+            [
+              "U69",
+              "5"
+            ]
+          ]
+        },
+        {
+          "name": "SENSE_IRQ",
+          "pads": [
+            [
+              "J1",
+              "7"
+            ],
+            [
+              "U1",
+              "20"
+            ],
+            [
+              "U2",
+              "20"
+            ],
+            [
+              "U3",
+              "20"
+            ],
+            [
+              "U4",
+              "20"
+            ]
+          ]
+        },
+        {
+          "name": "SPI_CLK_3V3",
+          "pads": [
+            [
+              "J1",
+              "23"
+            ],
+            [
+              "U5",
+              "5"
+            ]
+          ]
+        },
+        {
+          "name": "SPI_DATA_3V3",
+          "pads": [
+            [
+              "J1",
+              "19"
+            ],
+            [
+              "U5",
+              "2"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_A1",
+          "pads": [
+            [
+              "RS1",
+              "1"
+            ],
+            [
+              "U1",
+              "21"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_A2",
+          "pads": [
+            [
+              "RS5",
+              "1"
+            ],
+            [
+              "U1",
+              "25"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_A3",
+          "pads": [
+            [
+              "RS9",
+              "1"
+            ],
+            [
+              "U1",
+              "1"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_A4",
+          "pads": [
+            [
+              "RS13",
+              "1"
+            ],
+            [
+              "U1",
+              "5"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_A5",
+          "pads": [
+            [
+              "RS33",
+              "1"
+            ],
+            [
+              "U3",
+              "21"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_A6",
+          "pads": [
+            [
+              "RS37",
+              "1"
+            ],
+            [
+              "U3",
+              "25"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_A7",
+          "pads": [
+            [
+              "RS41",
+              "1"
+            ],
+            [
+              "U3",
+              "1"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_A8",
+          "pads": [
+            [
+              "RS45",
+              "1"
+            ],
+            [
+              "U3",
+              "5"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_B1",
+          "pads": [
+            [
+              "RS2",
+              "1"
+            ],
+            [
+              "U1",
+              "22"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_B2",
+          "pads": [
+            [
+              "RS6",
+              "1"
+            ],
+            [
+              "U1",
+              "26"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_B3",
+          "pads": [
+            [
+              "RS10",
+              "1"
+            ],
+            [
+              "U1",
+              "2"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_B4",
+          "pads": [
+            [
+              "RS14",
+              "1"
+            ],
+            [
+              "U1",
+              "6"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_B5",
+          "pads": [
+            [
+              "RS34",
+              "1"
+            ],
+            [
+              "U3",
+              "22"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_B6",
+          "pads": [
+            [
+              "RS38",
+              "1"
+            ],
+            [
+              "U3",
+              "26"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_B7",
+          "pads": [
+            [
+              "RS42",
+              "1"
+            ],
+            [
+              "U3",
+              "2"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_B8",
+          "pads": [
+            [
+              "RS46",
+              "1"
+            ],
+            [
+              "U3",
+              "6"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_C1",
+          "pads": [
+            [
+              "RS3",
+              "1"
+            ],
+            [
+              "U1",
+              "23"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_C2",
+          "pads": [
+            [
+              "RS7",
+              "1"
+            ],
+            [
+              "U1",
+              "27"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_C3",
+          "pads": [
+            [
+              "RS11",
+              "1"
+            ],
+            [
+              "U1",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_C4",
+          "pads": [
+            [
+              "RS15",
+              "1"
+            ],
+            [
+              "U1",
+              "7"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_C5",
+          "pads": [
+            [
+              "RS35",
+              "1"
+            ],
+            [
+              "U3",
+              "23"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_C6",
+          "pads": [
+            [
+              "RS39",
+              "1"
+            ],
+            [
+              "U3",
+              "27"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_C7",
+          "pads": [
+            [
+              "RS43",
+              "1"
+            ],
+            [
+              "U3",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_C8",
+          "pads": [
+            [
+              "RS47",
+              "1"
+            ],
+            [
+              "U3",
+              "7"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_D1",
+          "pads": [
+            [
+              "RS4",
+              "1"
+            ],
+            [
+              "U1",
+              "24"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_D2",
+          "pads": [
+            [
+              "RS8",
+              "1"
+            ],
+            [
+              "U1",
+              "28"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_D3",
+          "pads": [
+            [
+              "RS12",
+              "1"
+            ],
+            [
+              "U1",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_D4",
+          "pads": [
+            [
+              "RS16",
+              "1"
+            ],
+            [
+              "U1",
+              "8"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_D5",
+          "pads": [
+            [
+              "RS36",
+              "1"
+            ],
+            [
+              "U3",
+              "24"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_D6",
+          "pads": [
+            [
+              "RS40",
+              "1"
+            ],
+            [
+              "U3",
+              "28"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_D7",
+          "pads": [
+            [
+              "RS44",
+              "1"
+            ],
+            [
+              "U3",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_D8",
+          "pads": [
+            [
+              "RS48",
+              "1"
+            ],
+            [
+              "U3",
+              "8"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_E1",
+          "pads": [
+            [
+              "RS17",
+              "1"
+            ],
+            [
+              "U2",
+              "21"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_E2",
+          "pads": [
+            [
+              "RS21",
+              "1"
+            ],
+            [
+              "U2",
+              "25"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_E3",
+          "pads": [
+            [
+              "RS25",
+              "1"
+            ],
+            [
+              "U2",
+              "1"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_E4",
+          "pads": [
+            [
+              "RS29",
+              "1"
+            ],
+            [
+              "U2",
+              "5"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_E5",
+          "pads": [
+            [
+              "RS49",
+              "1"
+            ],
+            [
+              "U4",
+              "21"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_E6",
+          "pads": [
+            [
+              "RS53",
+              "1"
+            ],
+            [
+              "U4",
+              "25"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_E7",
+          "pads": [
+            [
+              "RS57",
+              "1"
+            ],
+            [
+              "U4",
+              "1"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_E8",
+          "pads": [
+            [
+              "RS61",
+              "1"
+            ],
+            [
+              "U4",
+              "5"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_F1",
+          "pads": [
+            [
+              "RS18",
+              "1"
+            ],
+            [
+              "U2",
+              "22"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_F2",
+          "pads": [
+            [
+              "RS22",
+              "1"
+            ],
+            [
+              "U2",
+              "26"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_F3",
+          "pads": [
+            [
+              "RS26",
+              "1"
+            ],
+            [
+              "U2",
+              "2"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_F4",
+          "pads": [
+            [
+              "RS30",
+              "1"
+            ],
+            [
+              "U2",
+              "6"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_F5",
+          "pads": [
+            [
+              "RS50",
+              "1"
+            ],
+            [
+              "U4",
+              "22"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_F6",
+          "pads": [
+            [
+              "RS54",
+              "1"
+            ],
+            [
+              "U4",
+              "26"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_F7",
+          "pads": [
+            [
+              "RS58",
+              "1"
+            ],
+            [
+              "U4",
+              "2"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_F8",
+          "pads": [
+            [
+              "RS62",
+              "1"
+            ],
+            [
+              "U4",
+              "6"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_G1",
+          "pads": [
+            [
+              "RS19",
+              "1"
+            ],
+            [
+              "U2",
+              "23"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_G2",
+          "pads": [
+            [
+              "RS23",
+              "1"
+            ],
+            [
+              "U2",
+              "27"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_G3",
+          "pads": [
+            [
+              "RS27",
+              "1"
+            ],
+            [
+              "U2",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_G4",
+          "pads": [
+            [
+              "RS31",
+              "1"
+            ],
+            [
+              "U2",
+              "7"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_G5",
+          "pads": [
+            [
+              "RS51",
+              "1"
+            ],
+            [
+              "U4",
+              "23"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_G6",
+          "pads": [
+            [
+              "RS55",
+              "1"
+            ],
+            [
+              "U4",
+              "27"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_G7",
+          "pads": [
+            [
+              "RS59",
+              "1"
+            ],
+            [
+              "U4",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_G8",
+          "pads": [
+            [
+              "RS63",
+              "1"
+            ],
+            [
+              "U4",
+              "7"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_H1",
+          "pads": [
+            [
+              "RS20",
+              "1"
+            ],
+            [
+              "U2",
+              "24"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_H2",
+          "pads": [
+            [
+              "RS24",
+              "1"
+            ],
+            [
+              "U2",
+              "28"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_H3",
+          "pads": [
+            [
+              "RS28",
+              "1"
+            ],
+            [
+              "U2",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_H4",
+          "pads": [
+            [
+              "RS32",
+              "1"
+            ],
+            [
+              "U2",
+              "8"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_H5",
+          "pads": [
+            [
+              "RS52",
+              "1"
+            ],
+            [
+              "U4",
+              "24"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_H6",
+          "pads": [
+            [
+              "RS56",
+              "1"
+            ],
+            [
+              "U4",
+              "28"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_H7",
+          "pads": [
+            [
+              "RS60",
+              "1"
+            ],
+            [
+              "U4",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": "SQ_H8",
+          "pads": [
+            [
+              "RS64",
+              "1"
+            ],
+            [
+              "U4",
+              "8"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "J1",
+              "10"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "J1",
+              "12"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "J1",
+              "13"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "J1",
+              "21"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "J1",
+              "22"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "J1",
+              "24"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "J1",
+              "26"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "J1",
+              "27"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "J1",
+              "28"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "J1",
+              "37"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "J1",
+              "8"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U1",
+              "11"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U1",
+              "14"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U1",
+              "19"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U10",
+              "3"
+            ],
+            [
+              "U9",
+              "5"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U10",
+              "4"
+            ],
+            [
+              "U9",
+              "6"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U10",
+              "5"
+            ],
+            [
+              "U11",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U10",
+              "6"
+            ],
+            [
+              "U11",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U11",
+              "5"
+            ],
+            [
+              "U12",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U11",
+              "6"
+            ],
+            [
+              "U12",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U12",
+              "5"
+            ],
+            [
+              "U13",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U12",
+              "6"
+            ],
+            [
+              "U13",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U14",
+              "5"
+            ],
+            [
+              "U15",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U14",
+              "6"
+            ],
+            [
+              "U15",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U15",
+              "5"
+            ],
+            [
+              "U16",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U15",
+              "6"
+            ],
+            [
+              "U16",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U16",
+              "5"
+            ],
+            [
+              "U17",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U16",
+              "6"
+            ],
+            [
+              "U17",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U17",
+              "5"
+            ],
+            [
+              "U18",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U17",
+              "6"
+            ],
+            [
+              "U18",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U18",
+              "5"
+            ],
+            [
+              "U19",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U18",
+              "6"
+            ],
+            [
+              "U19",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U19",
+              "5"
+            ],
+            [
+              "U20",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U19",
+              "6"
+            ],
+            [
+              "U20",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U2",
+              "11"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U2",
+              "14"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U2",
+              "19"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U20",
+              "5"
+            ],
+            [
+              "U21",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U20",
+              "6"
+            ],
+            [
+              "U21",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U22",
+              "5"
+            ],
+            [
+              "U23",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U22",
+              "6"
+            ],
+            [
+              "U23",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U23",
+              "5"
+            ],
+            [
+              "U24",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U23",
+              "6"
+            ],
+            [
+              "U24",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U24",
+              "5"
+            ],
+            [
+              "U25",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U24",
+              "6"
+            ],
+            [
+              "U25",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U25",
+              "5"
+            ],
+            [
+              "U26",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U25",
+              "6"
+            ],
+            [
+              "U26",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U26",
+              "5"
+            ],
+            [
+              "U27",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U26",
+              "6"
+            ],
+            [
+              "U27",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U27",
+              "5"
+            ],
+            [
+              "U28",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U27",
+              "6"
+            ],
+            [
+              "U28",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U28",
+              "5"
+            ],
+            [
+              "U29",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U28",
+              "6"
+            ],
+            [
+              "U29",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U3",
+              "11"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U3",
+              "14"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U3",
+              "19"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U30",
+              "5"
+            ],
+            [
+              "U31",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U30",
+              "6"
+            ],
+            [
+              "U31",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U31",
+              "5"
+            ],
+            [
+              "U32",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U31",
+              "6"
+            ],
+            [
+              "U32",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U32",
+              "5"
+            ],
+            [
+              "U33",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U32",
+              "6"
+            ],
+            [
+              "U33",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U33",
+              "5"
+            ],
+            [
+              "U34",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U33",
+              "6"
+            ],
+            [
+              "U34",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U34",
+              "5"
+            ],
+            [
+              "U35",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U34",
+              "6"
+            ],
+            [
+              "U35",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U35",
+              "5"
+            ],
+            [
+              "U36",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U35",
+              "6"
+            ],
+            [
+              "U36",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U36",
+              "5"
+            ],
+            [
+              "U37",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U36",
+              "6"
+            ],
+            [
+              "U37",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U38",
+              "5"
+            ],
+            [
+              "U39",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U38",
+              "6"
+            ],
+            [
+              "U39",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U39",
+              "5"
+            ],
+            [
+              "U40",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U39",
+              "6"
+            ],
+            [
+              "U40",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U4",
+              "11"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U4",
+              "14"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U4",
+              "19"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U40",
+              "5"
+            ],
+            [
+              "U41",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U40",
+              "6"
+            ],
+            [
+              "U41",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U41",
+              "5"
+            ],
+            [
+              "U42",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U41",
+              "6"
+            ],
+            [
+              "U42",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U42",
+              "5"
+            ],
+            [
+              "U43",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U42",
+              "6"
+            ],
+            [
+              "U43",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U43",
+              "5"
+            ],
+            [
+              "U44",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U43",
+              "6"
+            ],
+            [
+              "U44",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U44",
+              "5"
+            ],
+            [
+              "U45",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U44",
+              "6"
+            ],
+            [
+              "U45",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U46",
+              "5"
+            ],
+            [
+              "U47",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U46",
+              "6"
+            ],
+            [
+              "U47",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U47",
+              "5"
+            ],
+            [
+              "U48",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U47",
+              "6"
+            ],
+            [
+              "U48",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U48",
+              "5"
+            ],
+            [
+              "U49",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U48",
+              "6"
+            ],
+            [
+              "U49",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U49",
+              "5"
+            ],
+            [
+              "U50",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U49",
+              "6"
+            ],
+            [
+              "U50",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U5",
+              "11"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U5",
+              "8"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U50",
+              "5"
+            ],
+            [
+              "U51",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U50",
+              "6"
+            ],
+            [
+              "U51",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U51",
+              "5"
+            ],
+            [
+              "U52",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U51",
+              "6"
+            ],
+            [
+              "U52",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U52",
+              "5"
+            ],
+            [
+              "U53",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U52",
+              "6"
+            ],
+            [
+              "U53",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U54",
+              "5"
+            ],
+            [
+              "U55",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U54",
+              "6"
+            ],
+            [
+              "U55",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U55",
+              "5"
+            ],
+            [
+              "U56",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U55",
+              "6"
+            ],
+            [
+              "U56",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U56",
+              "5"
+            ],
+            [
+              "U57",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U56",
+              "6"
+            ],
+            [
+              "U57",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U57",
+              "5"
+            ],
+            [
+              "U58",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U57",
+              "6"
+            ],
+            [
+              "U58",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U58",
+              "5"
+            ],
+            [
+              "U59",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U58",
+              "6"
+            ],
+            [
+              "U59",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U59",
+              "5"
+            ],
+            [
+              "U60",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U59",
+              "6"
+            ],
+            [
+              "U60",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U6",
+              "5"
+            ],
+            [
+              "U7",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U6",
+              "6"
+            ],
+            [
+              "U7",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U60",
+              "5"
+            ],
+            [
+              "U61",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U60",
+              "6"
+            ],
+            [
+              "U61",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U62",
+              "5"
+            ],
+            [
+              "U63",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U62",
+              "6"
+            ],
+            [
+              "U63",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U63",
+              "5"
+            ],
+            [
+              "U64",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U63",
+              "6"
+            ],
+            [
+              "U64",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U64",
+              "5"
+            ],
+            [
+              "U65",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U64",
+              "6"
+            ],
+            [
+              "U65",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U65",
+              "5"
+            ],
+            [
+              "U66",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U65",
+              "6"
+            ],
+            [
+              "U66",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U66",
+              "5"
+            ],
+            [
+              "U67",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U66",
+              "6"
+            ],
+            [
+              "U67",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U67",
+              "5"
+            ],
+            [
+              "U68",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U67",
+              "6"
+            ],
+            [
+              "U68",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U68",
+              "5"
+            ],
+            [
+              "U69",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U68",
+              "6"
+            ],
+            [
+              "U69",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U7",
+              "5"
+            ],
+            [
+              "U8",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U7",
+              "6"
+            ],
+            [
+              "U8",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U8",
+              "5"
+            ],
+            [
+              "U9",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": null,
+          "pads": [
+            [
+              "U8",
+              "6"
+            ],
+            [
+              "U9",
+              "4"
+            ]
+          ]
+        }
+      ],
+      "nets": {
+        "+3V3": [
+          [
+            "C3",
+            "1"
+          ],
+          [
+            "C4",
+            "1"
+          ],
+          [
+            "C5",
+            "1"
+          ],
+          [
+            "C6",
+            "1"
+          ],
+          [
+            "J1",
+            "1"
+          ],
+          [
+            "J1",
+            "17"
+          ],
+          [
+            "J2",
+            "2"
+          ],
+          [
+            "R1",
+            "1"
+          ],
+          [
+            "R2",
+            "1"
+          ],
+          [
+            "U1",
+            "18"
+          ],
+          [
+            "U1",
+            "9"
+          ],
+          [
+            "U2",
+            "15"
+          ],
+          [
+            "U2",
+            "18"
+          ],
+          [
+            "U2",
+            "9"
+          ],
+          [
+            "U3",
+            "16"
+          ],
+          [
+            "U3",
+            "18"
+          ],
+          [
+            "U3",
+            "9"
+          ],
+          [
+            "U4",
+            "15"
+          ],
+          [
+            "U4",
+            "16"
+          ],
+          [
+            "U4",
+            "18"
+          ],
+          [
+            "U4",
+            "9"
+          ]
+        ],
+        "+5V": [
+          [
+            "C1",
+            "1"
+          ],
+          [
+            "C10",
+            "1"
+          ],
+          [
+            "C11",
+            "1"
+          ],
+          [
+            "C12",
+            "1"
+          ],
+          [
+            "C13",
+            "1"
+          ],
+          [
+            "C14",
+            "1"
+          ],
+          [
+            "C15",
+            "1"
+          ],
+          [
+            "C16",
+            "1"
+          ],
+          [
+            "C17",
+            "1"
+          ],
+          [
+            "C18",
+            "1"
+          ],
+          [
+            "C19",
+            "1"
+          ],
+          [
+            "C2",
+            "1"
+          ],
+          [
+            "C20",
+            "1"
+          ],
+          [
+            "C21",
+            "1"
+          ],
+          [
+            "C22",
+            "1"
+          ],
+          [
+            "C23",
+            "1"
+          ],
+          [
+            "C24",
+            "1"
+          ],
+          [
+            "C25",
+            "1"
+          ],
+          [
+            "C26",
+            "1"
+          ],
+          [
+            "C27",
+            "1"
+          ],
+          [
+            "C28",
+            "1"
+          ],
+          [
+            "C29",
+            "1"
+          ],
+          [
+            "C30",
+            "1"
+          ],
+          [
+            "C31",
+            "1"
+          ],
+          [
+            "C32",
+            "1"
+          ],
+          [
+            "C33",
+            "1"
+          ],
+          [
+            "C34",
+            "1"
+          ],
+          [
+            "C35",
+            "1"
+          ],
+          [
+            "C36",
+            "1"
+          ],
+          [
+            "C37",
+            "1"
+          ],
+          [
+            "C38",
+            "1"
+          ],
+          [
+            "C39",
+            "1"
+          ],
+          [
+            "C40",
+            "1"
+          ],
+          [
+            "C41",
+            "1"
+          ],
+          [
+            "C42",
+            "1"
+          ],
+          [
+            "C43",
+            "1"
+          ],
+          [
+            "C44",
+            "1"
+          ],
+          [
+            "C45",
+            "1"
+          ],
+          [
+            "C46",
+            "1"
+          ],
+          [
+            "C47",
+            "1"
+          ],
+          [
+            "C48",
+            "1"
+          ],
+          [
+            "C49",
+            "1"
+          ],
+          [
+            "C50",
+            "1"
+          ],
+          [
+            "C51",
+            "1"
+          ],
+          [
+            "C52",
+            "1"
+          ],
+          [
+            "C53",
+            "1"
+          ],
+          [
+            "C54",
+            "1"
+          ],
+          [
+            "C55",
+            "1"
+          ],
+          [
+            "C56",
+            "1"
+          ],
+          [
+            "C57",
+            "1"
+          ],
+          [
+            "C58",
+            "1"
+          ],
+          [
+            "C59",
+            "1"
+          ],
+          [
+            "C60",
+            "1"
+          ],
+          [
+            "C61",
+            "1"
+          ],
+          [
+            "C62",
+            "1"
+          ],
+          [
+            "C63",
+            "1"
+          ],
+          [
+            "C64",
+            "1"
+          ],
+          [
+            "C65",
+            "1"
+          ],
+          [
+            "C66",
+            "1"
+          ],
+          [
+            "C67",
+            "1"
+          ],
+          [
+            "C68",
+            "1"
+          ],
+          [
+            "C69",
+            "1"
+          ],
+          [
+            "C7",
+            "1"
+          ],
+          [
+            "C70",
+            "1"
+          ],
+          [
+            "C71",
+            "1"
+          ],
+          [
+            "C8",
+            "1"
+          ],
+          [
+            "C9",
+            "1"
+          ],
+          [
+            "D1",
+            "1"
+          ],
+          [
+            "J1",
+            "2"
+          ],
+          [
+            "J1",
+            "4"
+          ],
+          [
+            "SW13",
+            "2"
+          ],
+          [
+            "TP1",
+            "1"
+          ],
+          [
+            "U10",
+            "1"
+          ],
+          [
+            "U11",
+            "1"
+          ],
+          [
+            "U12",
+            "1"
+          ],
+          [
+            "U13",
+            "1"
+          ],
+          [
+            "U14",
+            "1"
+          ],
+          [
+            "U15",
+            "1"
+          ],
+          [
+            "U16",
+            "1"
+          ],
+          [
+            "U17",
+            "1"
+          ],
+          [
+            "U18",
+            "1"
+          ],
+          [
+            "U19",
+            "1"
+          ],
+          [
+            "U20",
+            "1"
+          ],
+          [
+            "U21",
+            "1"
+          ],
+          [
+            "U22",
+            "1"
+          ],
+          [
+            "U23",
+            "1"
+          ],
+          [
+            "U24",
+            "1"
+          ],
+          [
+            "U25",
+            "1"
+          ],
+          [
+            "U26",
+            "1"
+          ],
+          [
+            "U27",
+            "1"
+          ],
+          [
+            "U28",
+            "1"
+          ],
+          [
+            "U29",
+            "1"
+          ],
+          [
+            "U30",
+            "1"
+          ],
+          [
+            "U31",
+            "1"
+          ],
+          [
+            "U32",
+            "1"
+          ],
+          [
+            "U33",
+            "1"
+          ],
+          [
+            "U34",
+            "1"
+          ],
+          [
+            "U35",
+            "1"
+          ],
+          [
+            "U36",
+            "1"
+          ],
+          [
+            "U37",
+            "1"
+          ],
+          [
+            "U38",
+            "1"
+          ],
+          [
+            "U39",
+            "1"
+          ],
+          [
+            "U40",
+            "1"
+          ],
+          [
+            "U41",
+            "1"
+          ],
+          [
+            "U42",
+            "1"
+          ],
+          [
+            "U43",
+            "1"
+          ],
+          [
+            "U44",
+            "1"
+          ],
+          [
+            "U45",
+            "1"
+          ],
+          [
+            "U46",
+            "1"
+          ],
+          [
+            "U47",
+            "1"
+          ],
+          [
+            "U48",
+            "1"
+          ],
+          [
+            "U49",
+            "1"
+          ],
+          [
+            "U5",
+            "10"
+          ],
+          [
+            "U5",
+            "13"
+          ],
+          [
+            "U5",
+            "14"
+          ],
+          [
+            "U50",
+            "1"
+          ],
+          [
+            "U51",
+            "1"
+          ],
+          [
+            "U52",
+            "1"
+          ],
+          [
+            "U53",
+            "1"
+          ],
+          [
+            "U54",
+            "1"
+          ],
+          [
+            "U55",
+            "1"
+          ],
+          [
+            "U56",
+            "1"
+          ],
+          [
+            "U57",
+            "1"
+          ],
+          [
+            "U58",
+            "1"
+          ],
+          [
+            "U59",
+            "1"
+          ],
+          [
+            "U6",
+            "1"
+          ],
+          [
+            "U60",
+            "1"
+          ],
+          [
+            "U61",
+            "1"
+          ],
+          [
+            "U62",
+            "1"
+          ],
+          [
+            "U63",
+            "1"
+          ],
+          [
+            "U64",
+            "1"
+          ],
+          [
+            "U65",
+            "1"
+          ],
+          [
+            "U66",
+            "1"
+          ],
+          [
+            "U67",
+            "1"
+          ],
+          [
+            "U68",
+            "1"
+          ],
+          [
+            "U69",
+            "1"
+          ],
+          [
+            "U7",
+            "1"
+          ],
+          [
+            "U8",
+            "1"
+          ],
+          [
+            "U9",
+            "1"
+          ]
+        ],
+        "BTN_DOWN": [
+          [
+            "J1",
+            "31"
+          ],
+          [
+            "SW2",
+            "1"
+          ]
+        ],
+        "BTN_F1": [
+          [
+            "J1",
+            "38"
+          ],
+          [
+            "SW8",
+            "1"
+          ]
+        ],
+        "BTN_F2": [
+          [
+            "J1",
+            "40"
+          ],
+          [
+            "SW9",
+            "1"
+          ]
+        ],
+        "BTN_F3": [
+          [
+            "J1",
+            "15"
+          ],
+          [
+            "SW10",
+            "1"
+          ]
+        ],
+        "BTN_F4": [
+          [
+            "J1",
+            "16"
+          ],
+          [
+            "SW11",
+            "1"
+          ]
+        ],
+        "BTN_F5": [
+          [
+            "J1",
+            "18"
+          ],
+          [
+            "SW12",
+            "1"
+          ]
+        ],
+        "BTN_LEFT": [
+          [
+            "J1",
+            "32"
+          ],
+          [
+            "SW3",
+            "1"
+          ]
+        ],
+        "BTN_OK": [
+          [
+            "J1",
+            "36"
+          ],
+          [
+            "SW5",
+            "1"
+          ]
+        ],
+        "BTN_PASS": [
+          [
+            "J1",
+            "35"
+          ],
+          [
+            "SW7",
+            "1"
+          ]
+        ],
+        "BTN_RESET": [
+          [
+            "J1",
+            "11"
+          ],
+          [
+            "SW6",
+            "1"
+          ]
+        ],
+        "BTN_RIGHT": [
+          [
+            "J1",
+            "33"
+          ],
+          [
+            "SW4",
+            "1"
+          ]
+        ],
+        "BTN_UP": [
+          [
+            "J1",
+            "29"
+          ],
+          [
+            "SW1",
+            "1"
+          ]
+        ],
+        "DC_FUSED": [
+          [
+            "F1",
+            "2"
+          ],
+          [
+            "SW13",
+            "1"
+          ]
+        ],
+        "DC_IN": [
+          [
+            "F1",
+            "1"
+          ],
+          [
+            "J3",
+            "1"
+          ]
+        ],
+        "GND": [
+          [
+            "C1",
+            "2"
+          ],
+          [
+            "C10",
+            "2"
+          ],
+          [
+            "C11",
+            "2"
+          ],
+          [
+            "C12",
+            "2"
+          ],
+          [
+            "C13",
+            "2"
+          ],
+          [
+            "C14",
+            "2"
+          ],
+          [
+            "C15",
+            "2"
+          ],
+          [
+            "C16",
+            "2"
+          ],
+          [
+            "C17",
+            "2"
+          ],
+          [
+            "C18",
+            "2"
+          ],
+          [
+            "C19",
+            "2"
+          ],
+          [
+            "C2",
+            "2"
+          ],
+          [
+            "C20",
+            "2"
+          ],
+          [
+            "C21",
+            "2"
+          ],
+          [
+            "C22",
+            "2"
+          ],
+          [
+            "C23",
+            "2"
+          ],
+          [
+            "C24",
+            "2"
+          ],
+          [
+            "C25",
+            "2"
+          ],
+          [
+            "C26",
+            "2"
+          ],
+          [
+            "C27",
+            "2"
+          ],
+          [
+            "C28",
+            "2"
+          ],
+          [
+            "C29",
+            "2"
+          ],
+          [
+            "C3",
+            "2"
+          ],
+          [
+            "C30",
+            "2"
+          ],
+          [
+            "C31",
+            "2"
+          ],
+          [
+            "C32",
+            "2"
+          ],
+          [
+            "C33",
+            "2"
+          ],
+          [
+            "C34",
+            "2"
+          ],
+          [
+            "C35",
+            "2"
+          ],
+          [
+            "C36",
+            "2"
+          ],
+          [
+            "C37",
+            "2"
+          ],
+          [
+            "C38",
+            "2"
+          ],
+          [
+            "C39",
+            "2"
+          ],
+          [
+            "C4",
+            "2"
+          ],
+          [
+            "C40",
+            "2"
+          ],
+          [
+            "C41",
+            "2"
+          ],
+          [
+            "C42",
+            "2"
+          ],
+          [
+            "C43",
+            "2"
+          ],
+          [
+            "C44",
+            "2"
+          ],
+          [
+            "C45",
+            "2"
+          ],
+          [
+            "C46",
+            "2"
+          ],
+          [
+            "C47",
+            "2"
+          ],
+          [
+            "C48",
+            "2"
+          ],
+          [
+            "C49",
+            "2"
+          ],
+          [
+            "C5",
+            "2"
+          ],
+          [
+            "C50",
+            "2"
+          ],
+          [
+            "C51",
+            "2"
+          ],
+          [
+            "C52",
+            "2"
+          ],
+          [
+            "C53",
+            "2"
+          ],
+          [
+            "C54",
+            "2"
+          ],
+          [
+            "C55",
+            "2"
+          ],
+          [
+            "C56",
+            "2"
+          ],
+          [
+            "C57",
+            "2"
+          ],
+          [
+            "C58",
+            "2"
+          ],
+          [
+            "C59",
+            "2"
+          ],
+          [
+            "C6",
+            "2"
+          ],
+          [
+            "C60",
+            "2"
+          ],
+          [
+            "C61",
+            "2"
+          ],
+          [
+            "C62",
+            "2"
+          ],
+          [
+            "C63",
+            "2"
+          ],
+          [
+            "C64",
+            "2"
+          ],
+          [
+            "C65",
+            "2"
+          ],
+          [
+            "C66",
+            "2"
+          ],
+          [
+            "C67",
+            "2"
+          ],
+          [
+            "C68",
+            "2"
+          ],
+          [
+            "C69",
+            "2"
+          ],
+          [
+            "C7",
+            "2"
+          ],
+          [
+            "C70",
+            "2"
+          ],
+          [
+            "C71",
+            "2"
+          ],
+          [
+            "C8",
+            "2"
+          ],
+          [
+            "C9",
+            "2"
+          ],
+          [
+            "D1",
+            "2"
+          ],
+          [
+            "J1",
+            "14"
+          ],
+          [
+            "J1",
+            "20"
+          ],
+          [
+            "J1",
+            "25"
+          ],
+          [
+            "J1",
+            "30"
+          ],
+          [
+            "J1",
+            "34"
+          ],
+          [
+            "J1",
+            "39"
+          ],
+          [
+            "J1",
+            "6"
+          ],
+          [
+            "J1",
+            "9"
+          ],
+          [
+            "J2",
+            "1"
+          ],
+          [
+            "J3",
+            "2"
+          ],
+          [
+            "RS1",
+            "2"
+          ],
+          [
+            "RS10",
+            "2"
+          ],
+          [
+            "RS11",
+            "2"
+          ],
+          [
+            "RS12",
+            "2"
+          ],
+          [
+            "RS13",
+            "2"
+          ],
+          [
+            "RS14",
+            "2"
+          ],
+          [
+            "RS15",
+            "2"
+          ],
+          [
+            "RS16",
+            "2"
+          ],
+          [
+            "RS17",
+            "2"
+          ],
+          [
+            "RS18",
+            "2"
+          ],
+          [
+            "RS19",
+            "2"
+          ],
+          [
+            "RS2",
+            "2"
+          ],
+          [
+            "RS20",
+            "2"
+          ],
+          [
+            "RS21",
+            "2"
+          ],
+          [
+            "RS22",
+            "2"
+          ],
+          [
+            "RS23",
+            "2"
+          ],
+          [
+            "RS24",
+            "2"
+          ],
+          [
+            "RS25",
+            "2"
+          ],
+          [
+            "RS26",
+            "2"
+          ],
+          [
+            "RS27",
+            "2"
+          ],
+          [
+            "RS28",
+            "2"
+          ],
+          [
+            "RS29",
+            "2"
+          ],
+          [
+            "RS3",
+            "2"
+          ],
+          [
+            "RS30",
+            "2"
+          ],
+          [
+            "RS31",
+            "2"
+          ],
+          [
+            "RS32",
+            "2"
+          ],
+          [
+            "RS33",
+            "2"
+          ],
+          [
+            "RS34",
+            "2"
+          ],
+          [
+            "RS35",
+            "2"
+          ],
+          [
+            "RS36",
+            "2"
+          ],
+          [
+            "RS37",
+            "2"
+          ],
+          [
+            "RS38",
+            "2"
+          ],
+          [
+            "RS39",
+            "2"
+          ],
+          [
+            "RS4",
+            "2"
+          ],
+          [
+            "RS40",
+            "2"
+          ],
+          [
+            "RS41",
+            "2"
+          ],
+          [
+            "RS42",
+            "2"
+          ],
+          [
+            "RS43",
+            "2"
+          ],
+          [
+            "RS44",
+            "2"
+          ],
+          [
+            "RS45",
+            "2"
+          ],
+          [
+            "RS46",
+            "2"
+          ],
+          [
+            "RS47",
+            "2"
+          ],
+          [
+            "RS48",
+            "2"
+          ],
+          [
+            "RS49",
+            "2"
+          ],
+          [
+            "RS5",
+            "2"
+          ],
+          [
+            "RS50",
+            "2"
+          ],
+          [
+            "RS51",
+            "2"
+          ],
+          [
+            "RS52",
+            "2"
+          ],
+          [
+            "RS53",
+            "2"
+          ],
+          [
+            "RS54",
+            "2"
+          ],
+          [
+            "RS55",
+            "2"
+          ],
+          [
+            "RS56",
+            "2"
+          ],
+          [
+            "RS57",
+            "2"
+          ],
+          [
+            "RS58",
+            "2"
+          ],
+          [
+            "RS59",
+            "2"
+          ],
+          [
+            "RS6",
+            "2"
+          ],
+          [
+            "RS60",
+            "2"
+          ],
+          [
+            "RS61",
+            "2"
+          ],
+          [
+            "RS62",
+            "2"
+          ],
+          [
+            "RS63",
+            "2"
+          ],
+          [
+            "RS64",
+            "2"
+          ],
+          [
+            "RS7",
+            "2"
+          ],
+          [
+            "RS8",
+            "2"
+          ],
+          [
+            "RS9",
+            "2"
+          ],
+          [
+            "SW1",
+            "2"
+          ],
+          [
+            "SW10",
+            "2"
+          ],
+          [
+            "SW11",
+            "2"
+          ],
+          [
+            "SW12",
+            "2"
+          ],
+          [
+            "SW2",
+            "2"
+          ],
+          [
+            "SW3",
+            "2"
+          ],
+          [
+            "SW4",
+            "2"
+          ],
+          [
+            "SW5",
+            "2"
+          ],
+          [
+            "SW6",
+            "2"
+          ],
+          [
+            "SW7",
+            "2"
+          ],
+          [
+            "SW8",
+            "2"
+          ],
+          [
+            "SW9",
+            "2"
+          ],
+          [
+            "TP2",
+            "1"
+          ],
+          [
+            "U1",
+            "10"
+          ],
+          [
+            "U1",
+            "15"
+          ],
+          [
+            "U1",
+            "16"
+          ],
+          [
+            "U1",
+            "17"
+          ],
+          [
+            "U10",
+            "2"
+          ],
+          [
+            "U11",
+            "2"
+          ],
+          [
+            "U12",
+            "2"
+          ],
+          [
+            "U13",
+            "2"
+          ],
+          [
+            "U14",
+            "2"
+          ],
+          [
+            "U15",
+            "2"
+          ],
+          [
+            "U16",
+            "2"
+          ],
+          [
+            "U17",
+            "2"
+          ],
+          [
+            "U18",
+            "2"
+          ],
+          [
+            "U19",
+            "2"
+          ],
+          [
+            "U2",
+            "10"
+          ],
+          [
+            "U2",
+            "16"
+          ],
+          [
+            "U2",
+            "17"
+          ],
+          [
+            "U20",
+            "2"
+          ],
+          [
+            "U21",
+            "2"
+          ],
+          [
+            "U22",
+            "2"
+          ],
+          [
+            "U23",
+            "2"
+          ],
+          [
+            "U24",
+            "2"
+          ],
+          [
+            "U25",
+            "2"
+          ],
+          [
+            "U26",
+            "2"
+          ],
+          [
+            "U27",
+            "2"
+          ],
+          [
+            "U28",
+            "2"
+          ],
+          [
+            "U29",
+            "2"
+          ],
+          [
+            "U3",
+            "10"
+          ],
+          [
+            "U3",
+            "15"
+          ],
+          [
+            "U3",
+            "17"
+          ],
+          [
+            "U30",
+            "2"
+          ],
+          [
+            "U31",
+            "2"
+          ],
+          [
+            "U32",
+            "2"
+          ],
+          [
+            "U33",
+            "2"
+          ],
+          [
+            "U34",
+            "2"
+          ],
+          [
+            "U35",
+            "2"
+          ],
+          [
+            "U36",
+            "2"
+          ],
+          [
+            "U37",
+            "2"
+          ],
+          [
+            "U38",
+            "2"
+          ],
+          [
+            "U39",
+            "2"
+          ],
+          [
+            "U4",
+            "10"
+          ],
+          [
+            "U4",
+            "17"
+          ],
+          [
+            "U40",
+            "2"
+          ],
+          [
+            "U41",
+            "2"
+          ],
+          [
+            "U42",
+            "2"
+          ],
+          [
+            "U43",
+            "2"
+          ],
+          [
+            "U44",
+            "2"
+          ],
+          [
+            "U45",
+            "2"
+          ],
+          [
+            "U46",
+            "2"
+          ],
+          [
+            "U47",
+            "2"
+          ],
+          [
+            "U48",
+            "2"
+          ],
+          [
+            "U49",
+            "2"
+          ],
+          [
+            "U5",
+            "1"
+          ],
+          [
+            "U5",
+            "12"
+          ],
+          [
+            "U5",
+            "4"
+          ],
+          [
+            "U5",
+            "7"
+          ],
+          [
+            "U5",
+            "9"
+          ],
+          [
+            "U50",
+            "2"
+          ],
+          [
+            "U51",
+            "2"
+          ],
+          [
+            "U52",
+            "2"
+          ],
+          [
+            "U53",
+            "2"
+          ],
+          [
+            "U54",
+            "2"
+          ],
+          [
+            "U55",
+            "2"
+          ],
+          [
+            "U56",
+            "2"
+          ],
+          [
+            "U57",
+            "2"
+          ],
+          [
+            "U58",
+            "2"
+          ],
+          [
+            "U59",
+            "2"
+          ],
+          [
+            "U6",
+            "2"
+          ],
+          [
+            "U60",
+            "2"
+          ],
+          [
+            "U61",
+            "2"
+          ],
+          [
+            "U62",
+            "2"
+          ],
+          [
+            "U63",
+            "2"
+          ],
+          [
+            "U64",
+            "2"
+          ],
+          [
+            "U65",
+            "2"
+          ],
+          [
+            "U66",
+            "2"
+          ],
+          [
+            "U67",
+            "2"
+          ],
+          [
+            "U68",
+            "2"
+          ],
+          [
+            "U69",
+            "2"
+          ],
+          [
+            "U7",
+            "2"
+          ],
+          [
+            "U8",
+            "2"
+          ],
+          [
+            "U9",
+            "2"
+          ]
+        ],
+        "I2C_SCL": [
+          [
+            "J1",
+            "5"
+          ],
+          [
+            "J2",
+            "3"
+          ],
+          [
+            "R2",
+            "2"
+          ],
+          [
+            "U1",
+            "12"
+          ],
+          [
+            "U2",
+            "12"
+          ],
+          [
+            "U3",
+            "12"
+          ],
+          [
+            "U4",
+            "12"
+          ]
+        ],
+        "I2C_SDA": [
+          [
+            "J1",
+            "3"
+          ],
+          [
+            "J2",
+            "4"
+          ],
+          [
+            "R1",
+            "2"
+          ],
+          [
+            "U1",
+            "13"
+          ],
+          [
+            "U2",
+            "13"
+          ],
+          [
+            "U3",
+            "13"
+          ],
+          [
+            "U4",
+            "13"
+          ]
+        ],
+        "LED_C16": [
+          [
+            "U21",
+            "6"
+          ],
+          [
+            "U22",
+            "4"
+          ]
+        ],
+        "LED_C24": [
+          [
+            "U29",
+            "6"
+          ],
+          [
+            "U30",
+            "4"
+          ]
+        ],
+        "LED_C32": [
+          [
+            "U37",
+            "6"
+          ],
+          [
+            "U38",
+            "4"
+          ]
+        ],
+        "LED_C40": [
+          [
+            "U45",
+            "6"
+          ],
+          [
+            "U46",
+            "4"
+          ]
+        ],
+        "LED_C48": [
+          [
+            "U53",
+            "6"
+          ],
+          [
+            "U54",
+            "4"
+          ]
+        ],
+        "LED_C56": [
+          [
+            "U61",
+            "6"
+          ],
+          [
+            "U62",
+            "4"
+          ]
+        ],
+        "LED_C8": [
+          [
+            "U13",
+            "6"
+          ],
+          [
+            "U14",
+            "4"
+          ]
+        ],
+        "LED_CLK_5V": [
+          [
+            "TP4",
+            "1"
+          ],
+          [
+            "U5",
+            "6"
+          ],
+          [
+            "U6",
+            "4"
+          ]
+        ],
+        "LED_CLK_LAST": [
+          [
+            "U69",
+            "6"
+          ]
+        ],
+        "LED_D16": [
+          [
+            "U21",
+            "5"
+          ],
+          [
+            "U22",
+            "3"
+          ]
+        ],
+        "LED_D24": [
+          [
+            "U29",
+            "5"
+          ],
+          [
+            "U30",
+            "3"
+          ]
+        ],
+        "LED_D32": [
+          [
+            "U37",
+            "5"
+          ],
+          [
+            "U38",
+            "3"
+          ]
+        ],
+        "LED_D40": [
+          [
+            "U45",
+            "5"
+          ],
+          [
+            "U46",
+            "3"
+          ]
+        ],
+        "LED_D48": [
+          [
+            "U53",
+            "5"
+          ],
+          [
+            "U54",
+            "3"
+          ]
+        ],
+        "LED_D56": [
+          [
+            "U61",
+            "5"
+          ],
+          [
+            "U62",
+            "3"
+          ]
+        ],
+        "LED_D8": [
+          [
+            "U13",
+            "5"
+          ],
+          [
+            "U14",
+            "3"
+          ]
+        ],
+        "LED_DATA_5V": [
+          [
+            "TP3",
+            "1"
+          ],
+          [
+            "U5",
+            "3"
+          ],
+          [
+            "U6",
+            "3"
+          ]
+        ],
+        "LED_DATA_LAST": [
+          [
+            "U69",
+            "5"
+          ]
+        ],
+        "SENSE_IRQ": [
+          [
+            "J1",
+            "7"
+          ],
+          [
+            "U1",
+            "20"
+          ],
+          [
+            "U2",
+            "20"
+          ],
+          [
+            "U3",
+            "20"
+          ],
+          [
+            "U4",
+            "20"
+          ]
+        ],
+        "SPI_CLK_3V3": [
+          [
+            "J1",
+            "23"
+          ],
+          [
+            "U5",
+            "5"
+          ]
+        ],
+        "SPI_DATA_3V3": [
+          [
+            "J1",
+            "19"
+          ],
+          [
+            "U5",
+            "2"
+          ]
+        ],
+        "SQ_A1": [
+          [
+            "RS1",
+            "1"
+          ],
+          [
+            "U1",
+            "21"
+          ]
+        ],
+        "SQ_A2": [
+          [
+            "RS5",
+            "1"
+          ],
+          [
+            "U1",
+            "25"
+          ]
+        ],
+        "SQ_A3": [
+          [
+            "RS9",
+            "1"
+          ],
+          [
+            "U1",
+            "1"
+          ]
+        ],
+        "SQ_A4": [
+          [
+            "RS13",
+            "1"
+          ],
+          [
+            "U1",
+            "5"
+          ]
+        ],
+        "SQ_A5": [
+          [
+            "RS33",
+            "1"
+          ],
+          [
+            "U3",
+            "21"
+          ]
+        ],
+        "SQ_A6": [
+          [
+            "RS37",
+            "1"
+          ],
+          [
+            "U3",
+            "25"
+          ]
+        ],
+        "SQ_A7": [
+          [
+            "RS41",
+            "1"
+          ],
+          [
+            "U3",
+            "1"
+          ]
+        ],
+        "SQ_A8": [
+          [
+            "RS45",
+            "1"
+          ],
+          [
+            "U3",
+            "5"
+          ]
+        ],
+        "SQ_B1": [
+          [
+            "RS2",
+            "1"
+          ],
+          [
+            "U1",
+            "22"
+          ]
+        ],
+        "SQ_B2": [
+          [
+            "RS6",
+            "1"
+          ],
+          [
+            "U1",
+            "26"
+          ]
+        ],
+        "SQ_B3": [
+          [
+            "RS10",
+            "1"
+          ],
+          [
+            "U1",
+            "2"
+          ]
+        ],
+        "SQ_B4": [
+          [
+            "RS14",
+            "1"
+          ],
+          [
+            "U1",
+            "6"
+          ]
+        ],
+        "SQ_B5": [
+          [
+            "RS34",
+            "1"
+          ],
+          [
+            "U3",
+            "22"
+          ]
+        ],
+        "SQ_B6": [
+          [
+            "RS38",
+            "1"
+          ],
+          [
+            "U3",
+            "26"
+          ]
+        ],
+        "SQ_B7": [
+          [
+            "RS42",
+            "1"
+          ],
+          [
+            "U3",
+            "2"
+          ]
+        ],
+        "SQ_B8": [
+          [
+            "RS46",
+            "1"
+          ],
+          [
+            "U3",
+            "6"
+          ]
+        ],
+        "SQ_C1": [
+          [
+            "RS3",
+            "1"
+          ],
+          [
+            "U1",
+            "23"
+          ]
+        ],
+        "SQ_C2": [
+          [
+            "RS7",
+            "1"
+          ],
+          [
+            "U1",
+            "27"
+          ]
+        ],
+        "SQ_C3": [
+          [
+            "RS11",
+            "1"
+          ],
+          [
+            "U1",
+            "3"
+          ]
+        ],
+        "SQ_C4": [
+          [
+            "RS15",
+            "1"
+          ],
+          [
+            "U1",
+            "7"
+          ]
+        ],
+        "SQ_C5": [
+          [
+            "RS35",
+            "1"
+          ],
+          [
+            "U3",
+            "23"
+          ]
+        ],
+        "SQ_C6": [
+          [
+            "RS39",
+            "1"
+          ],
+          [
+            "U3",
+            "27"
+          ]
+        ],
+        "SQ_C7": [
+          [
+            "RS43",
+            "1"
+          ],
+          [
+            "U3",
+            "3"
+          ]
+        ],
+        "SQ_C8": [
+          [
+            "RS47",
+            "1"
+          ],
+          [
+            "U3",
+            "7"
+          ]
+        ],
+        "SQ_D1": [
+          [
+            "RS4",
+            "1"
+          ],
+          [
+            "U1",
+            "24"
+          ]
+        ],
+        "SQ_D2": [
+          [
+            "RS8",
+            "1"
+          ],
+          [
+            "U1",
+            "28"
+          ]
+        ],
+        "SQ_D3": [
+          [
+            "RS12",
+            "1"
+          ],
+          [
+            "U1",
+            "4"
+          ]
+        ],
+        "SQ_D4": [
+          [
+            "RS16",
+            "1"
+          ],
+          [
+            "U1",
+            "8"
+          ]
+        ],
+        "SQ_D5": [
+          [
+            "RS36",
+            "1"
+          ],
+          [
+            "U3",
+            "24"
+          ]
+        ],
+        "SQ_D6": [
+          [
+            "RS40",
+            "1"
+          ],
+          [
+            "U3",
+            "28"
+          ]
+        ],
+        "SQ_D7": [
+          [
+            "RS44",
+            "1"
+          ],
+          [
+            "U3",
+            "4"
+          ]
+        ],
+        "SQ_D8": [
+          [
+            "RS48",
+            "1"
+          ],
+          [
+            "U3",
+            "8"
+          ]
+        ],
+        "SQ_E1": [
+          [
+            "RS17",
+            "1"
+          ],
+          [
+            "U2",
+            "21"
+          ]
+        ],
+        "SQ_E2": [
+          [
+            "RS21",
+            "1"
+          ],
+          [
+            "U2",
+            "25"
+          ]
+        ],
+        "SQ_E3": [
+          [
+            "RS25",
+            "1"
+          ],
+          [
+            "U2",
+            "1"
+          ]
+        ],
+        "SQ_E4": [
+          [
+            "RS29",
+            "1"
+          ],
+          [
+            "U2",
+            "5"
+          ]
+        ],
+        "SQ_E5": [
+          [
+            "RS49",
+            "1"
+          ],
+          [
+            "U4",
+            "21"
+          ]
+        ],
+        "SQ_E6": [
+          [
+            "RS53",
+            "1"
+          ],
+          [
+            "U4",
+            "25"
+          ]
+        ],
+        "SQ_E7": [
+          [
+            "RS57",
+            "1"
+          ],
+          [
+            "U4",
+            "1"
+          ]
+        ],
+        "SQ_E8": [
+          [
+            "RS61",
+            "1"
+          ],
+          [
+            "U4",
+            "5"
+          ]
+        ],
+        "SQ_F1": [
+          [
+            "RS18",
+            "1"
+          ],
+          [
+            "U2",
+            "22"
+          ]
+        ],
+        "SQ_F2": [
+          [
+            "RS22",
+            "1"
+          ],
+          [
+            "U2",
+            "26"
+          ]
+        ],
+        "SQ_F3": [
+          [
+            "RS26",
+            "1"
+          ],
+          [
+            "U2",
+            "2"
+          ]
+        ],
+        "SQ_F4": [
+          [
+            "RS30",
+            "1"
+          ],
+          [
+            "U2",
+            "6"
+          ]
+        ],
+        "SQ_F5": [
+          [
+            "RS50",
+            "1"
+          ],
+          [
+            "U4",
+            "22"
+          ]
+        ],
+        "SQ_F6": [
+          [
+            "RS54",
+            "1"
+          ],
+          [
+            "U4",
+            "26"
+          ]
+        ],
+        "SQ_F7": [
+          [
+            "RS58",
+            "1"
+          ],
+          [
+            "U4",
+            "2"
+          ]
+        ],
+        "SQ_F8": [
+          [
+            "RS62",
+            "1"
+          ],
+          [
+            "U4",
+            "6"
+          ]
+        ],
+        "SQ_G1": [
+          [
+            "RS19",
+            "1"
+          ],
+          [
+            "U2",
+            "23"
+          ]
+        ],
+        "SQ_G2": [
+          [
+            "RS23",
+            "1"
+          ],
+          [
+            "U2",
+            "27"
+          ]
+        ],
+        "SQ_G3": [
+          [
+            "RS27",
+            "1"
+          ],
+          [
+            "U2",
+            "3"
+          ]
+        ],
+        "SQ_G4": [
+          [
+            "RS31",
+            "1"
+          ],
+          [
+            "U2",
+            "7"
+          ]
+        ],
+        "SQ_G5": [
+          [
+            "RS51",
+            "1"
+          ],
+          [
+            "U4",
+            "23"
+          ]
+        ],
+        "SQ_G6": [
+          [
+            "RS55",
+            "1"
+          ],
+          [
+            "U4",
+            "27"
+          ]
+        ],
+        "SQ_G7": [
+          [
+            "RS59",
+            "1"
+          ],
+          [
+            "U4",
+            "3"
+          ]
+        ],
+        "SQ_G8": [
+          [
+            "RS63",
+            "1"
+          ],
+          [
+            "U4",
+            "7"
+          ]
+        ],
+        "SQ_H1": [
+          [
+            "RS20",
+            "1"
+          ],
+          [
+            "U2",
+            "24"
+          ]
+        ],
+        "SQ_H2": [
+          [
+            "RS24",
+            "1"
+          ],
+          [
+            "U2",
+            "28"
+          ]
+        ],
+        "SQ_H3": [
+          [
+            "RS28",
+            "1"
+          ],
+          [
+            "U2",
+            "4"
+          ]
+        ],
+        "SQ_H4": [
+          [
+            "RS32",
+            "1"
+          ],
+          [
+            "U2",
+            "8"
+          ]
+        ],
+        "SQ_H5": [
+          [
+            "RS52",
+            "1"
+          ],
+          [
+            "U4",
+            "24"
+          ]
+        ],
+        "SQ_H6": [
+          [
+            "RS56",
+            "1"
+          ],
+          [
+            "U4",
+            "28"
+          ]
+        ],
+        "SQ_H7": [
+          [
+            "RS60",
+            "1"
+          ],
+          [
+            "U4",
+            "4"
+          ]
+        ],
+        "SQ_H8": [
+          [
+            "RS64",
+            "1"
+          ],
+          [
+            "U4",
+            "8"
+          ]
+        ]
+      },
+      "revision": "B-PROTOTYPE",
+      "title": "Chess Smart Board - Single Board Electronics"
+    }
+  },
+  "schema": 1,
+  "warning": "Generated file. Do not edit by hand."
+}

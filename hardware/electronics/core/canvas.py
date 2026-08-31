@@ -108,6 +108,11 @@ class Schematic:
         self._parent: dict[tuple[float, float], tuple[float, float]] = {}
         self._pins: dict[tuple[float, float], set[tuple[str, str]]] = {}
         self._names: dict[tuple[float, float], str] = {}
+        # Drawn segments and the junction dots placed on them. A tap partway
+        # along a rail is a connection, but `wire` only joins its own ends, so
+        # the two have to be reconciled when the netlist is read out.
+        self._segments: list[tuple[tuple[float, float], tuple[float, float]]] = []
+        self._taps: list[tuple[float, float]] = []
 
     def _add_point(self, x: float, y: float) -> tuple[float, float]:
         key = _pt(x, y)
@@ -194,11 +199,13 @@ class Schematic:
             self.wire(x2, y1, x2, y2)
             return
         self.drawing.add(elm.Line().at((x1, y1)).to((x2, y2)))
-        self._union(self._add_point(x1, y1), self._add_point(x2, y2))
+        start, end = self._add_point(x1, y1), self._add_point(x2, y2)
+        self._segments.append((start, end))
+        self._union(start, end)
 
     def tap(self, x: float, y: float) -> None:
         self.drawing.add(elm.Dot().at((x, y)))
-        self._add_point(x, y)
+        self._taps.append(self._add_point(x, y))
 
     def hv(self, x1: float, y1: float, x2: float, y2: float) -> None:
         self.wire(x1, y1, x2, y1)
@@ -381,7 +388,70 @@ class Schematic:
         self._title_block(right - FRAME_MARGIN, block_top - height, width, height)
         self._outline(left, bottom, right, y1 + FRAME_MARGIN, RULE_COLOR, 1.6)
 
+    def _join_taps(self) -> None:
+        """Join each junction dot to whatever segment runs through it.
+
+        A dot partway along a rail is the drawing's way of saying "connected
+        here". Only an explicit tap counts: two wires crossing without a dot are
+        not joined, which is the same convention a reader applies by eye.
+        """
+        for tap in self._taps:
+            for start, end in self._segments:
+                if _on_segment(tap, start, end):
+                    self._union(start, tap)
+
+    def groups(self) -> list[set[tuple[str, str]]]:
+        """Every electrically joined set of pins, named or not.
+
+        A link drawn as a plain wire carries no net name, so it is invisible to
+        `nets`. Continuity checks need to see it, which is what this exposes.
+        """
+        self._join_taps()
+        grouped: dict[tuple[float, float], set[tuple[str, str]]] = {}
+        for key, pins in self._pins.items():
+            grouped.setdefault(self._find(key), set()).update(pins)
+        return list(grouped.values())
+
+    def equivalence(self) -> dict[tuple[str, str], int]:
+        """Pin to circuit id, joining pins by drawn wire and by shared net name.
+
+        Both mean the same thing on a schematic: a wire joins two pins, and so
+        does giving two pins the same net label. Continuity checks have to
+        respect both or a chain drawn partly with wires and partly with labels
+        reads as broken when it is not.
+        """
+        circuit: dict[tuple[str, str], int] = {}
+        merge: dict[int, int] = {}
+
+        def root(node: int) -> int:
+            while merge[node] != node:
+                merge[node] = merge[merge[node]]
+                node = merge[node]
+            return node
+
+        def union(a: int, b: int) -> None:
+            ra, rb = root(a), root(b)
+            if ra != rb:
+                merge[rb] = ra
+
+        for index, group in enumerate(self.groups()):
+            merge[index] = index
+            for pin in group:
+                circuit[pin] = index
+        for pins in self.nets().values():
+            known = [circuit[pin] for pin in pins if pin in circuit]
+            for other in known[1:]:
+                union(known[0], other)
+        return {pin: root(index) for pin, index in circuit.items()}
+
+    def connected(self, a: tuple[str, str], b: tuple[str, str]) -> bool:
+        circuits = self.equivalence()
+        if a not in circuits or b not in circuits:
+            return False
+        return circuits[a] == circuits[b]
+
     def nets(self) -> dict[str, set[tuple[str, str]]]:
+        self._join_taps()
         grouped: dict[tuple[float, float], set[tuple[str, str]]] = {}
         for key, pins in self._pins.items():
             grouped.setdefault(self._find(key), set()).update(pins)
@@ -431,6 +501,24 @@ class Schematic:
         if longest <= 0:
             return PNG_DPI
         return min(PNG_DPI, PNG_MAX_PIXELS / longest)
+
+
+def _on_segment(
+    point: tuple[float, float],
+    start: tuple[float, float],
+    end: tuple[float, float],
+    tolerance: float = 0.02,
+) -> bool:
+    """Whether a point lies on a segment, endpoints excluded."""
+    if point in (start, end):
+        return False
+    (px, py), (x1, y1), (x2, y2) = point, start, end
+    cross = (x2 - x1) * (py - y1) - (y2 - y1) * (px - x1)
+    length = ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
+    if length == 0.0 or abs(cross) > tolerance * length:
+        return False
+    dot = (px - x1) * (x2 - x1) + (py - y1) * (y2 - y1)
+    return 0.0 <= dot <= length**2
 
 
 def load_schematic(info: SheetInfo) -> Schematic:
