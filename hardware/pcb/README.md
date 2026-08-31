@@ -3,7 +3,10 @@
 The board is a native KiCad 9 project composed from Python:
 
 - `generate.py` builds `chess-board.kicad_pcb` through KiCad's `pcbnew` API.
-- `design/netlist.json` is the reviewed connectivity contract.
+- `design/netlist.json` is the reviewed connectivity contract; every placed
+  component references an approved `part_key`.
+- `design/bom.md` is generated with exact manufacturer part numbers from
+  `hardware/shared/components.py`; anonymous substitutions are rejected.
 - `core/placement.py` and `footprints/` implement placement and package geometry.
 - `hardware/shared/` supplies dimensions, component identities, and wiring.
 - `chess-board.kicad_pro` and `chess-board.kicad_pcb` open directly in KiCad.

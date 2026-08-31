@@ -41,7 +41,8 @@ Two things are not on it because they are not electronics:
 
 - The two printed parts, quoted from an **FDM** print service. Both exceed a
   desktop bed, and 380 mm also exceeds typical MJF and resin build volumes.
-- A **5 V 5 A** power supply with a 5.5 x 2.1 mm centre-positive barrel plug.
+- The approved **MEAN WELL GST40A05-P1J, 5 V 6 A** supply with its
+  5.5 x 2.1 mm centre-positive plug.
 
 You will also need a chess set whose king base is 32 mm or less, and magnets to
 glue into the pieces.

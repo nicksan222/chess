@@ -10,10 +10,11 @@ if ! command -v kicad-cli >/dev/null || ! python3 -c 'import pcbnew' 2>/dev/null
 fi
 
 printf '\n==> Test PCB composition\n'
-PYTHONPATH=hardware/pcb python3 -m unittest discover \
+PYTHONPATH=hardware:hardware/pcb python3 -m unittest discover \
     -s hardware/pcb/tests -p 'test_*.py'
 
-printf '\n==> Generate KiCad project\n'
+printf '\n==> Generate approved BOM and KiCad project\n'
+python3 hardware/pcb/write_bom.py
 python3 hardware/pcb/generate.py
 
 out=hardware/pcb/generated

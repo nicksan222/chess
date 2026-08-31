@@ -17,6 +17,7 @@ sys.path.insert(0, str(HARDWARE_ROOT))
 import footprints  # noqa: E402
 from footprints import base as footprint_base  # noqa: E402
 from core import placement, sources  # noqa: E402
+from shared.components import COMPONENTS  # noqa: E402
 
 BOARD_PATH = PCB_ROOT / "chess-board.kicad_pcb"
 PROJECT_PATH = PCB_ROOT / "chess-board.kicad_pro"
@@ -45,10 +46,19 @@ def connectivity() -> tuple[dict[tuple[str, str], str], list[str]]:
 
 def add_footprints(board: pcbnew.BOARD, net_by_name, pad_nets):
     pads = {}
+    components = sources.netlist()["components"]
     for item in placement.build():
+        entry = components[item.reference]
+        spec = COMPONENTS[entry["part_key"]]
+        if spec.package != item.package:
+            raise RuntimeError(
+                f"{item.reference}: {spec.mpn} requires {spec.package!r}, "
+                f"not {item.package!r}"
+            )
         module = pcbnew.FOOTPRINT(board)
         module.SetReference(item.reference)
-        module.SetValue(item.package)
+        module.SetValue(spec.mpn)
+        module.SetLibDescription(f"{spec.manufacturer} {spec.mpn}: {spec.description}")
         module.Reference().SetVisible(False)
         module.Value().SetVisible(False)
         module.SetPosition(point(item.x, item.y))

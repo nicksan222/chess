@@ -325,6 +325,7 @@
 		(layer "F.Cu")
 		(uuid "00dd117d-ecf7-4f6c-a740-9d225e50f565")
 		(at 273 275)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C29"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -337,7 +338,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -398,6 +399,7 @@
 		(layer "F.Cu")
 		(uuid "00eece34-7d59-45fe-961e-b93bbfc60b5e")
 		(at 353 187)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U45"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -410,7 +412,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -500,6 +502,7 @@
 		(layer "F.Cu")
 		(uuid "00f44c23-ddb4-4c0b-b598-5975b23b54b5")
 		(at 60 120)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS41"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -512,7 +515,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -573,6 +576,7 @@
 		(layer "F.Cu")
 		(uuid "05477dc5-3657-48cd-9bae-de5aaedbd7c2")
 		(at 73 267)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U22"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -585,7 +589,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -675,6 +679,7 @@
 		(layer "F.Cu")
 		(uuid "075f30c5-31ad-4ea9-8187-6becebeb9898")
 		(at 294 300)
+		(descr "Microchip Technology MCP23017-E/SP: 16-bit I2C GPIO expander")
 		(property "Reference" "U2"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -687,7 +692,7 @@
 				)
 			)
 		)
-		(property "Value" "PDIP-28"
+		(property "Value" "MCP23017-E/SP"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -982,6 +987,7 @@
 		(layer "F.Cu")
 		(uuid "076be6d9-0a66-4c97-954b-137334d2bb93")
 		(at 233 187)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U42"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -994,7 +1000,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -1084,6 +1090,7 @@
 		(layer "F.Cu")
 		(uuid "081b7cbf-85a4-4a8b-aa39-7e083ddc9418")
 		(at 153 67)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U67"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -1096,7 +1103,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -1186,6 +1193,7 @@
 		(layer "F.Cu")
 		(uuid "09c1b748-efd6-4a51-b6f5-d2071c96ced3")
 		(at 60 280)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS9"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -1198,7 +1206,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -1259,6 +1267,7 @@
 		(layer "F.Cu")
 		(uuid "0b4b060b-b248-4f9e-84cc-11bb32e74640")
 		(at 153 347)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U8"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -1271,7 +1280,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -1361,6 +1370,7 @@
 		(layer "F.Cu")
 		(uuid "0dd268f9-2941-4e2d-ba88-0ede3431fee4")
 		(at 73 347)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U6"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -1373,7 +1383,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -1463,6 +1473,7 @@
 		(layer "F.Cu")
 		(uuid "0f890869-c001-4909-a94d-e50fd123694f")
 		(at 273 267)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U27"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -1475,7 +1486,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -1565,6 +1576,7 @@
 		(layer "F.Cu")
 		(uuid "10b6aa43-ffad-465b-b22e-605220098168")
 		(at 113 235)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C38"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -1577,7 +1589,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -1638,6 +1650,7 @@
 		(layer "F.Cu")
 		(uuid "1440c411-03e0-49e0-9f08-5b767d1f1a4d")
 		(at 353 115)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C63"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -1650,7 +1663,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -1711,6 +1724,7 @@
 		(layer "F.Cu")
 		(uuid "14a78141-3d63-4b6e-bf2a-58dedbc48ecf")
 		(at 143 300)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C3"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -1723,7 +1737,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -1784,6 +1798,7 @@
 		(layer "F.Cu")
 		(uuid "167a7ddf-3fd7-44ad-8bed-4b4c69b3b5f3")
 		(at 353 347)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U13"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -1796,7 +1811,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -1886,6 +1901,7 @@
 		(layer "F.Cu")
 		(uuid "1817b133-5aa8-4da2-aa9d-5ab179271919")
 		(at 233 347)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U10"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -1898,7 +1914,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -1988,6 +2004,7 @@
 		(layer "F.Cu")
 		(uuid "1af29956-d98a-4f47-aaf1-036039c9dd76")
 		(at 193 275)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C27"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -2000,7 +2017,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -2061,6 +2078,7 @@
 		(layer "F.Cu")
 		(uuid "1bad8749-9cd9-42a5-91d9-b8d9c02c2d77")
 		(at 260 200)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS50"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -2073,7 +2091,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -2134,6 +2152,7 @@
 		(layer "F.Cu")
 		(uuid "1e244d53-3692-4b99-8911-8f2213ec7a66")
 		(at 220 240)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS29"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -2146,7 +2165,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -2207,6 +2226,7 @@
 		(layer "F.Cu")
 		(uuid "1f798a95-c659-4883-a1c0-b097e85aa879")
 		(at 353 235)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C32"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -2219,7 +2239,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -2280,6 +2300,7 @@
 		(layer "F.Cu")
 		(uuid "20c547ca-5066-47d2-abc4-ec03a8de21b8")
 		(at 300 240)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS31"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -2292,7 +2313,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -2353,6 +2374,7 @@
 		(layer "F.Cu")
 		(uuid "24c4bec4-5e85-44f1-8667-83ed98d789af")
 		(at 100 120)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS42"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -2365,7 +2387,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -2426,6 +2448,7 @@
 		(layer "F.Cu")
 		(uuid "25499ca3-4d1b-48e5-b764-a82662cea4f5")
 		(at 353 227)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U30"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -2438,7 +2461,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -2528,6 +2551,7 @@
 		(layer "F.Cu")
 		(uuid "257baf0d-61d7-4286-acde-1df51ee8c96e")
 		(at 248 408)
+		(descr "Omron B3F-4050: 6 mm tactile switch, 9.5 mm actuator")
 		(property "Reference" "SW10"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -2540,7 +2564,7 @@
 				)
 			)
 		)
-		(property "Value" "6x6 mm THT"
+		(property "Value" "B3F-4050"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -2619,6 +2643,7 @@
 		(layer "F.Cu")
 		(uuid "25a3d191-1389-4d76-b29c-43b217d63067")
 		(at 60 160)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS37"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -2631,7 +2656,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -2692,6 +2717,7 @@
 		(layer "F.Cu")
 		(uuid "25b5e6b9-ecee-4ed5-9cf1-3d3295af00a0")
 		(at 233 147)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U49"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -2704,7 +2730,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -2794,6 +2820,7 @@
 		(layer "F.Cu")
 		(uuid "279f5587-e2d9-455e-82a9-55a514ecb60c")
 		(at 193 107)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U57"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -2806,7 +2833,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -2896,6 +2923,7 @@
 		(layer "F.Cu")
 		(uuid "283b53ed-d280-48d6-87d8-03f36f5b3b0a")
 		(at 73 67)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U69"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -2908,7 +2936,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -2998,6 +3026,7 @@
 		(layer "F.Cu")
 		(uuid "2c60c1ee-251b-49b7-a08e-a8c622cb6c19")
 		(at 313 147)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U47"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -3010,7 +3039,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -3100,6 +3129,7 @@
 		(layer "F.Cu")
 		(uuid "2d01ca83-fe01-4b90-9158-66b4400e899f")
 		(at 273 147)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U48"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -3112,7 +3142,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -3202,6 +3232,7 @@
 		(layer "F.Cu")
 		(uuid "2d10a3db-e1d3-4f57-8d23-20703d576afa")
 		(at 73 75)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C71"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -3214,7 +3245,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -3275,6 +3306,7 @@
 		(layer "F.Cu")
 		(uuid "2d4c32db-8151-4263-8c77-800ab2dbfeca")
 		(at 313 195)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C46"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -3287,7 +3319,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -3348,6 +3380,7 @@
 		(layer "F.Cu")
 		(uuid "2d95355d-447f-4bec-9ddf-980c0b1f89af")
 		(at 340 160)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS56"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -3360,7 +3393,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -3421,6 +3454,7 @@
 		(layer "F.Cu")
 		(uuid "2da6139a-74e1-4cb1-9b2c-3d467eb56d49")
 		(at 193 267)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U25"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -3433,7 +3467,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -3523,6 +3557,7 @@
 		(layer "F.Cu")
 		(uuid "2e9d92a0-caf6-4415-8321-04f8b5d8b8d1")
 		(at 180 200)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS36"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -3535,7 +3570,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -3596,6 +3631,7 @@
 		(layer "F.Cu")
 		(uuid "2f37af3a-4dae-45b6-8cf2-8b7de8d66646")
 		(at 216 408)
+		(descr "Omron B3F-4050: 6 mm tactile switch, 9.5 mm actuator")
 		(property "Reference" "SW8"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -3608,7 +3644,7 @@
 				)
 			)
 		)
-		(property "Value" "6x6 mm THT"
+		(property "Value" "B3F-4050"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -3687,6 +3723,7 @@
 		(layer "F.Cu")
 		(uuid "2f955cb9-1913-4b1b-b385-74d2bb4423a8")
 		(at 340 240)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS32"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -3699,7 +3736,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -3760,6 +3797,7 @@
 		(layer "F.Cu")
 		(uuid "310a79b2-d328-46ba-9aae-afe9b574280b")
 		(at 273 107)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U59"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -3772,7 +3810,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -3862,6 +3900,7 @@
 		(layer "F.Cu")
 		(uuid "321f419d-762e-4912-9df9-7b6efe9405db")
 		(at 273 227)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U32"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -3874,7 +3913,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -3964,6 +4003,7 @@
 		(layer "F.Cu")
 		(uuid "34d6f656-0649-4b79-bae7-b237c568a756")
 		(at 233 307)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U17"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -3976,7 +4016,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -4066,6 +4106,7 @@
 		(layer "F.Cu")
 		(uuid "34feeedb-5c7d-4775-a441-c492fe049d97")
 		(at 216 392)
+		(descr "Omron B3F-4050: 6 mm tactile switch, 9.5 mm actuator")
 		(property "Reference" "SW2"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -4078,7 +4119,7 @@
 				)
 			)
 		)
-		(property "Value" "6x6 mm THT"
+		(property "Value" "B3F-4050"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -4157,6 +4198,7 @@
 		(layer "F.Cu")
 		(uuid "35b26498-3eb2-4571-a56b-98c2c2d33121")
 		(at 60 240)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS13"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -4169,7 +4211,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -4230,6 +4272,7 @@
 		(layer "F.Cu")
 		(uuid "35da6cb7-0311-40f7-9de4-281313671132")
 		(at 50 385)
+		(descr "Littelfuse P6KE6.8A: 6.8 V unidirectional TVS diode")
 		(property "Reference" "D1"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -4242,7 +4285,7 @@
 				)
 			)
 		)
-		(property "Value" "axial DO-15"
+		(property "Value" "P6KE6.8A"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -4303,6 +4346,7 @@
 		(layer "F.Cu")
 		(uuid "38b93f7c-a669-4f61-b680-ee66d770f56c")
 		(at 233 267)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U26"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -4315,7 +4359,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -4405,6 +4449,7 @@
 		(layer "F.Cu")
 		(uuid "3b360999-c7cb-470e-97e4-b30f8399bf8c")
 		(at 353 155)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C48"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -4417,7 +4462,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -4478,6 +4523,7 @@
 		(layer "F.Cu")
 		(uuid "3b941f99-3fb5-45c9-83eb-60e04624cd36")
 		(at 313 107)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U60"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -4490,7 +4536,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -4580,6 +4626,7 @@
 		(layer "F.Cu")
 		(uuid "3c6c89d3-b26b-42df-9db5-6c34bd1c30b6")
 		(at 353 315)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C16"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -4592,7 +4639,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -4653,6 +4700,7 @@
 		(layer "F.Cu")
 		(uuid "3dc4fefc-071f-40a9-9d0d-575c448c5d1b")
 		(at 100 320)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS6"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -4665,7 +4713,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -4726,6 +4774,7 @@
 		(layer "F.Cu")
 		(uuid "3df790d1-8ed9-4010-ba79-329aca137f20")
 		(at 153 227)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U35"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -4738,7 +4787,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -4828,6 +4877,7 @@
 		(layer "F.Cu")
 		(uuid "4008ca65-6dad-43ca-8a6d-57adf9d060c6")
 		(at 273 75)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C66"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -4840,7 +4890,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -4901,6 +4951,7 @@
 		(layer "F.Cu")
 		(uuid "4057efc3-6ee2-4fa5-b569-f599f58358ce")
 		(at 140 320)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS7"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -4913,7 +4964,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -4974,6 +5025,7 @@
 		(layer "F.Cu")
 		(uuid "42a6f87d-c903-4dce-8adf-c6a6e5ddf4c0")
 		(at 150 390)
+		(descr "Yageo MFR-25FBF52-4K7: 4.7 kohm 0.25 W axial resistor")
 		(property "Reference" "R1"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -4986,7 +5038,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 1/4 W"
+		(property "Value" "MFR-25FBF52-4K7"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -5047,6 +5099,7 @@
 		(layer "F.Cu")
 		(uuid "43ea45f0-3fc8-4b30-a002-3f233d94bbc4")
 		(at 113 195)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C41"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -5059,7 +5112,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -5120,6 +5173,7 @@
 		(layer "F.Cu")
 		(uuid "4482ac73-93cb-4dac-b589-e1634476c754")
 		(at 260 80)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS62"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -5132,7 +5186,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -5193,6 +5247,7 @@
 		(layer "F.Cu")
 		(uuid "45ebd4b1-f466-470a-a210-07415bd6cdbe")
 		(at 180 240)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS16"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -5205,7 +5260,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -5266,6 +5321,7 @@
 		(layer "F.Cu")
 		(uuid "465e0ea7-fbef-4979-b66d-280223eaff54")
 		(at 113 315)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C22"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -5278,7 +5334,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -5339,6 +5395,7 @@
 		(layer "F.Cu")
 		(uuid "46976850-45bf-486a-bdb4-1de4b72628ea")
 		(at 220 360)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS17"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -5351,7 +5408,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -5412,6 +5469,7 @@
 		(layer "F.Cu")
 		(uuid "47136804-5ba3-4de9-afcf-039818b3cd5d")
 		(at 300 120)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS59"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -5424,7 +5482,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -5485,6 +5543,7 @@
 		(layer "F.Cu")
 		(uuid "4b5a4308-1c71-4d0a-a6d4-addbd75224cf")
 		(at 73 315)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C23"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -5497,7 +5556,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -5558,6 +5617,7 @@
 		(layer "F.Cu")
 		(uuid "4e028439-4b98-4b94-96d9-d83ee2ed31d3")
 		(at 280 392)
+		(descr "Omron B3F-4050: 6 mm tactile switch, 9.5 mm actuator")
 		(property "Reference" "SW6"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -5570,7 +5630,7 @@
 				)
 			)
 		)
-		(property "Value" "6x6 mm THT"
+		(property "Value" "B3F-4050"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -5649,6 +5709,7 @@
 		(layer "F.Cu")
 		(uuid "4edac8c0-7130-4850-9169-c2e4c408c351")
 		(at 232 408)
+		(descr "Omron B3F-4050: 6 mm tactile switch, 9.5 mm actuator")
 		(property "Reference" "SW9"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -5661,7 +5722,7 @@
 				)
 			)
 		)
-		(property "Value" "6x6 mm THT"
+		(property "Value" "B3F-4050"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -5740,6 +5801,7 @@
 		(layer "F.Cu")
 		(uuid "4f7bb965-0bc9-4835-a7a6-e75281c7c13c")
 		(at 73 235)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C39"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -5752,7 +5814,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -5813,6 +5875,7 @@
 		(layer "F.Cu")
 		(uuid "509f1515-d042-42ad-afce-bb3a1c9cbc82")
 		(at 73 307)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U21"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -5825,7 +5888,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -5915,6 +5978,7 @@
 		(layer "F.Cu")
 		(uuid "50dc8bce-5aab-43a6-94d1-289c9e4fd029")
 		(at 60 200)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS33"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -5927,7 +5991,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -5988,6 +6052,7 @@
 		(layer "F.Cu")
 		(uuid "515640d7-d6b3-4bb2-996c-a43627d549d7")
 		(at 113 187)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U39"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -6000,7 +6065,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -6090,6 +6155,7 @@
 		(layer "F.Cu")
 		(uuid "51f71d8d-1812-430a-be53-1b5b92e3e386")
 		(at 353 267)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U29"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -6102,7 +6168,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -6192,6 +6258,7 @@
 		(layer "F.Cu")
 		(uuid "521ab05a-8248-4137-a461-329ff1cea36d")
 		(at 313 75)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C65"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -6204,7 +6271,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -6265,6 +6332,7 @@
 		(layer "F.Cu")
 		(uuid "526be60b-a7b4-4fba-9465-fab2cb2a0c2c")
 		(at 300 280)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS27"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -6277,7 +6345,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -6338,6 +6406,7 @@
 		(layer "F.Cu")
 		(uuid "52944ad1-03e9-4206-9fa5-eb8479aefc92")
 		(at 113 147)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U52"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -6350,7 +6419,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -6440,6 +6509,7 @@
 		(layer "F.Cu")
 		(uuid "551b97eb-3713-4560-ab5d-c17fd15c5827")
 		(at 273 115)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C61"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -6452,7 +6522,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -6513,6 +6583,7 @@
 		(layer "F.Cu")
 		(uuid "569b5716-b5ad-4bf7-be00-c05c628c3815")
 		(at 313 155)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C49"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -6525,7 +6596,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -6586,6 +6657,7 @@
 		(layer "F.Cu")
 		(uuid "56e9b7cc-ab80-47bd-a4be-59e4e558333e")
 		(at 313 307)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U15"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -6598,7 +6670,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -6688,6 +6760,7 @@
 		(layer "F.Cu")
 		(uuid "59d971fe-4fc6-4d7b-a924-8cd13bbefad1")
 		(at 113 355)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C9"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -6700,7 +6773,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -6761,6 +6834,7 @@
 		(layer "F.Cu")
 		(uuid "5b17a2cf-cc0b-44e0-bb62-6a1a6d71ea06")
 		(at 73 115)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C56"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -6773,7 +6847,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -6834,6 +6908,7 @@
 		(layer "F.Cu")
 		(uuid "5bd9f506-15c7-4ab9-a501-131b9d6eea04")
 		(at 313 235)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C33"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -6846,7 +6921,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -6907,6 +6982,7 @@
 		(layer "F.Cu")
 		(uuid "5d0b7aee-1e69-4a9e-bc07-9acd56febef4")
 		(at 153 107)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U56"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -6919,7 +6995,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -7009,6 +7085,7 @@
 		(layer "F.Cu")
 		(uuid "5e724437-3454-47e4-a2a0-a84612ce0f6d")
 		(at 50 398)
+		(descr "Same Sky PJ-102A: 5.5x2.1 mm centre-positive DC jack")
 		(property "Reference" "J3"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -7021,7 +7098,7 @@
 				)
 			)
 		)
-		(property "Value" "5.5x2.1 mm THT"
+		(property "Value" "PJ-102A"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -7091,6 +7168,7 @@
 		(layer "F.Cu")
 		(uuid "60176e26-654c-4bfc-b9af-c30b33790da1")
 		(at 313 275)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C30"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -7103,7 +7181,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -7164,6 +7242,7 @@
 		(layer "F.Cu")
 		(uuid "60675e10-7484-47e4-a817-9702917da1e1")
 		(at 153 147)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U51"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -7176,7 +7255,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -7266,6 +7345,7 @@
 		(layer "F.Cu")
 		(uuid "614d9a30-55cc-4e03-89b3-963aaf89f9ca")
 		(at 180 120)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS44"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -7278,7 +7358,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -7339,6 +7419,7 @@
 		(layer "F.Cu")
 		(uuid "6153016f-db6e-4fd9-9567-aacbba515c9b")
 		(at 233 115)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C60"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -7351,7 +7432,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -7412,6 +7493,7 @@
 		(layer "F.Cu")
 		(uuid "62f3bf97-f393-40f2-b915-853add43352c")
 		(at 353 147)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U46"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -7424,7 +7506,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -7514,6 +7596,7 @@
 		(layer "F.Cu")
 		(uuid "65250864-2365-4d27-8f39-5e9c569a375e")
 		(at 56 413)
+		(descr "Keystone Electronics 3557: 5x20 mm PCB fuse holder")
 		(property "Reference" "F1"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -7526,7 +7609,7 @@
 				)
 			)
 		)
-		(property "Value" "5x20 mm holder THT"
+		(property "Value" "3557"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -7587,6 +7670,7 @@
 		(layer "F.Cu")
 		(uuid "65c2d499-1ba5-4eec-9227-e8f157806302")
 		(at 294 140)
+		(descr "Microchip Technology MCP23017-E/SP: 16-bit I2C GPIO expander")
 		(property "Reference" "U4"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -7599,7 +7683,7 @@
 				)
 			)
 		)
-		(property "Value" "PDIP-28"
+		(property "Value" "MCP23017-E/SP"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -7894,6 +7978,7 @@
 		(layer "F.Cu")
 		(uuid "65dabdba-f96d-4f08-a7bf-3e5efca8744e")
 		(at 153 75)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C69"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -7906,7 +7991,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -7967,6 +8052,7 @@
 		(layer "F.Cu")
 		(uuid "69184de0-0283-4217-9c3b-62853a1440d6")
 		(at 313 315)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C17"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -7979,7 +8065,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -8040,6 +8126,7 @@
 		(layer "F.Cu")
 		(uuid "6a058090-53c0-40c1-a1cd-5c03a1caa38c")
 		(at 73 227)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U37"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -8052,7 +8139,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -8142,6 +8229,7 @@
 		(layer "F.Cu")
 		(uuid "6b453f80-fb93-489c-8618-efbf479694dd")
 		(at 303 300)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C4"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -8154,7 +8242,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -8215,6 +8303,7 @@
 		(layer "F.Cu")
 		(uuid "6c793be8-a67d-45c0-9dca-056e6b6b02f7")
 		(at 130 400)
+		(descr "Texas Instruments SN74AHCT125N: Quad 3.3 V to 5 V logic buffer")
 		(property "Reference" "U5"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -8227,7 +8316,7 @@
 				)
 			)
 		)
-		(property "Value" "DIP-14"
+		(property "Value" "SN74AHCT125N"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -8396,6 +8485,7 @@
 		(layer "F.Cu")
 		(uuid "6c8d2b92-8814-48f0-af1c-0c564d62a52f")
 		(at 233 275)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C28"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -8408,7 +8498,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -8469,6 +8559,7 @@
 		(layer "F.Cu")
 		(uuid "6cac6c16-e556-4804-8898-44a84824b1e2")
 		(at 193 75)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C68"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -8481,7 +8572,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -8542,6 +8633,7 @@
 		(layer "F.Cu")
 		(uuid "6d3def04-010e-4ff7-ba90-5f73ded65d96")
 		(at 140 200)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS35"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -8554,7 +8646,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -8615,6 +8707,7 @@
 		(layer "F.Cu")
 		(uuid "6f2be44f-9d40-48f3-96b4-7fdd524d3b09")
 		(at 60 320)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS5"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -8627,7 +8720,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -8688,6 +8781,7 @@
 		(layer "F.Cu")
 		(uuid "6faa91a0-c641-4406-abd1-65c7eb37fa0d")
 		(at 340 120)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS60"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -8700,7 +8794,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -8761,6 +8855,7 @@
 		(layer "F.Cu")
 		(uuid "70c44ea8-e120-4778-8f80-5f82e8eea2a1")
 		(at 193 307)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U18"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -8773,7 +8868,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -8863,6 +8958,7 @@
 		(layer "F.Cu")
 		(uuid "7144c614-0578-4c3d-9e90-11df9149f882")
 		(at 220 120)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS57"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -8875,7 +8971,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -8936,6 +9032,7 @@
 		(layer "F.Cu")
 		(uuid "71629864-58a7-4ae6-ab49-916d85898029")
 		(at 140 80)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS47"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -8948,7 +9045,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -9009,6 +9106,7 @@
 		(layer "F.Cu")
 		(uuid "72f90f1e-5918-479a-a02a-6188bd94cd89")
 		(at 300 80)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS63"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -9021,7 +9119,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -9082,6 +9180,7 @@
 		(layer "F.Cu")
 		(uuid "75ab03c4-7424-476b-ba7c-6ecfd0623566")
 		(at 233 235)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C35"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -9094,7 +9193,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -9155,6 +9254,7 @@
 		(layer "F.Cu")
 		(uuid "762d4934-a548-40bf-a9e4-90ad9a762e9f")
 		(at 193 187)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U41"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -9167,7 +9267,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -9257,6 +9357,7 @@
 		(layer "F.Cu")
 		(uuid "76a3931b-dbf6-43ad-8ab0-efb2740aaf67")
 		(at 233 315)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C19"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -9269,7 +9370,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -9330,6 +9431,7 @@
 		(layer "F.Cu")
 		(uuid "76c1b759-50c4-491d-91aa-af2ee985a302")
 		(at 313 187)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U44"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -9342,7 +9444,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -9432,6 +9534,7 @@
 		(layer "F.Cu")
 		(uuid "76ca5069-fdb3-45ba-b187-ec02f02068b5")
 		(at 313 355)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C14"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -9444,7 +9547,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -9505,6 +9608,7 @@
 		(layer "F.Cu")
 		(uuid "79054361-0202-4afc-bae4-df874d3ba949")
 		(at 73 195)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C40"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -9517,7 +9621,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -9578,6 +9682,7 @@
 		(layer "F.Cu")
 		(uuid "7bb20e46-f792-4ff3-a122-72022892e0bc")
 		(at 233 155)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C51"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -9590,7 +9695,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -9651,6 +9756,7 @@
 		(layer "F.Cu")
 		(uuid "7c93cada-bc85-4351-b028-41ffc6c92cba")
 		(at 100 80)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS46"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -9663,7 +9769,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -9724,6 +9830,7 @@
 		(layer "F.Cu")
 		(uuid "7da49943-ea1a-472d-8eec-1defbba7720f")
 		(at 153 235)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C37"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -9736,7 +9843,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -9797,6 +9904,7 @@
 		(layer "F.Cu")
 		(uuid "7e856139-78eb-411e-be22-6f0e497472b9")
 		(at 193 227)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U34"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -9809,7 +9917,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -9899,6 +10007,7 @@
 		(layer "F.Cu")
 		(uuid "7e996ec5-1b61-45ae-8a1e-444d4ca06dd7")
 		(at 140 240)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS15"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -9911,7 +10020,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -9972,6 +10081,7 @@
 		(layer "F.Cu")
 		(uuid "8165c889-cb82-448a-8edc-114e3403ac5b")
 		(at 313 227)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U31"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -9984,7 +10094,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -10074,6 +10184,7 @@
 		(layer "F.Cu")
 		(uuid "82a485e2-b18b-49cd-b89d-59db2ced8176")
 		(at 264 392)
+		(descr "Omron B3F-4050: 6 mm tactile switch, 9.5 mm actuator")
 		(property "Reference" "SW5"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -10086,7 +10197,7 @@
 				)
 			)
 		)
-		(property "Value" "6x6 mm THT"
+		(property "Value" "B3F-4050"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -10165,6 +10276,7 @@
 		(layer "F.Cu")
 		(uuid "8470e0aa-4872-4f87-bd0a-ece614bfe0d0")
 		(at 100 360)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS2"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -10177,7 +10289,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -10238,6 +10350,7 @@
 		(layer "F.Cu")
 		(uuid "854fb92d-1888-4479-9961-679e831ef592")
 		(at 113 267)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U23"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -10250,7 +10363,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -10340,6 +10453,7 @@
 		(layer "F.Cu")
 		(uuid "85bbc8cf-66ec-45c4-812b-c3d41e003f34")
 		(at 180 320)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS8"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -10352,7 +10466,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -10413,6 +10527,7 @@
 		(layer "F.Cu")
 		(uuid "8640792d-61de-4e9c-bb8b-86f5f616e5fc")
 		(at 140 120)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS43"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -10425,7 +10540,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -10486,6 +10601,7 @@
 		(layer "F.Cu")
 		(uuid "86969ca6-6d5f-4062-8ea2-d3ab3f630412")
 		(at 193 235)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C36"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -10498,7 +10614,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -10559,6 +10675,7 @@
 		(layer "F.Cu")
 		(uuid "86ac39d7-be98-42b9-b7b9-77afaf9e0994")
 		(at 73 147)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U53"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -10571,7 +10688,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -10661,6 +10778,7 @@
 		(layer "F.Cu")
 		(uuid "88681917-5b6c-4a7f-a8f4-c26487d0020d")
 		(at 193 347)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U9"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -10673,7 +10791,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -10763,6 +10881,7 @@
 		(layer "F.Cu")
 		(uuid "89d8d719-6358-4780-9a3a-df774a03e17a")
 		(at 273 347)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U11"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -10775,7 +10894,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -10865,6 +10984,7 @@
 		(layer "F.Cu")
 		(uuid "8aadffc4-f875-45a4-b25a-e210cb3cb44b")
 		(at 353 75)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C64"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -10877,7 +10997,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -10938,6 +11058,7 @@
 		(layer "F.Cu")
 		(uuid "8ac605e9-88e7-4089-843b-a1fa7189d8b1")
 		(at 220 160)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS53"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -10950,7 +11071,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -11011,6 +11132,7 @@
 		(layer "F.Cu")
 		(uuid "8b6747a9-b38b-47b7-8c39-7b17854752c8")
 		(at 180 80)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS48"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -11023,7 +11145,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -11084,6 +11206,7 @@
 		(layer "F.Cu")
 		(uuid "8d2f6aaf-99ea-4f12-9b45-1b200ef97e35")
 		(at 313 347)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U12"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -11096,7 +11219,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -11186,6 +11309,7 @@
 		(layer "F.Cu")
 		(uuid "8d36e336-69a4-4817-9f70-d52f9083b7fb")
 		(at 60 80)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS45"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -11198,7 +11322,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -11259,6 +11383,7 @@
 		(layer "F.Cu")
 		(uuid "91821943-74b0-4c9a-b7ea-21965b5e948d")
 		(at 167 385)
+		(descr "Keystone Electronics 1502-2: 1.6 mm turret test point")
 		(property "Reference" "TP2"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -11271,7 +11396,7 @@
 				)
 			)
 		)
-		(property "Value" "turret 1.6 mm THT"
+		(property "Value" "1502-2"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -11322,6 +11447,7 @@
 		(layer "F.Cu")
 		(uuid "9258d071-2781-474c-941a-f3cfc89b0789")
 		(at 174 385)
+		(descr "Keystone Electronics 1502-2: 1.6 mm turret test point")
 		(property "Reference" "TP3"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -11334,7 +11460,7 @@
 				)
 			)
 		)
-		(property "Value" "turret 1.6 mm THT"
+		(property "Value" "1502-2"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -11385,6 +11511,7 @@
 		(layer "F.Cu")
 		(uuid "925901d8-5714-4358-b472-9a948ef04549")
 		(at 193 355)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C11"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -11397,7 +11524,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -11458,6 +11585,7 @@
 		(layer "F.Cu")
 		(uuid "93c9ee20-8a33-43f4-857a-39adbb7eb837")
 		(at 105 392)
+		(descr "Samtec SSW-104-02-G-S: 1x4 OLED socket")
 		(property "Reference" "J2"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -11470,7 +11598,7 @@
 				)
 			)
 		)
-		(property "Value" "1x4 2.54 mm THT"
+		(property "Value" "SSW-104-02-G-S"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -11549,6 +11677,7 @@
 		(layer "F.Cu")
 		(uuid "955f815b-cf74-4f1b-8474-5086489a4d47")
 		(at 193 147)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U50"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -11561,7 +11690,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -11651,6 +11780,7 @@
 		(layer "F.Cu")
 		(uuid "96c174dc-d221-49f2-977d-0f3fc57bf9e4")
 		(at 73 187)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U38"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -11663,7 +11793,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -11753,6 +11883,7 @@
 		(layer "F.Cu")
 		(uuid "9797c735-b805-4025-90f1-e322410d6c2a")
 		(at 180 160)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS40"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -11765,7 +11896,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -11826,6 +11957,7 @@
 		(layer "F.Cu")
 		(uuid "97fe7195-181f-44dd-92a2-193b6ce3e7ed")
 		(at 233 67)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U65"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -11838,7 +11970,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -11928,6 +12060,7 @@
 		(layer "F.Cu")
 		(uuid "98719a5b-302c-4e13-9e53-4960271113ed")
 		(at 181 385)
+		(descr "Keystone Electronics 1502-2: 1.6 mm turret test point")
 		(property "Reference" "TP4"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -11940,7 +12073,7 @@
 				)
 			)
 		)
-		(property "Value" "turret 1.6 mm THT"
+		(property "Value" "1502-2"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -11991,6 +12124,7 @@
 		(layer "F.Cu")
 		(uuid "99e5f7ab-b29a-4b56-952a-5e2d55ab6542")
 		(at 340 320)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS24"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -12003,7 +12137,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -12064,6 +12198,7 @@
 		(layer "F.Cu")
 		(uuid "9b30a28c-4ec7-4de5-8909-76ea7297c61e")
 		(at 260 280)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS26"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -12076,7 +12211,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -12137,6 +12272,7 @@
 		(layer "F.Cu")
 		(uuid "9b8496a3-582b-4f87-9ff8-174a9d42149e")
 		(at 220 320)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS21"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -12149,7 +12285,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -12210,6 +12346,7 @@
 		(layer "F.Cu")
 		(uuid "9f0e562a-e448-448e-9203-24c74b2c2808")
 		(at 140 160)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS39"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -12222,7 +12359,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -12283,6 +12420,7 @@
 		(layer "F.Cu")
 		(uuid "9f62724b-6501-431d-a7fe-f39e051d8846")
 		(at 248 392)
+		(descr "Omron B3F-4050: 6 mm tactile switch, 9.5 mm actuator")
 		(property "Reference" "SW4"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -12295,7 +12433,7 @@
 				)
 			)
 		)
-		(property "Value" "6x6 mm THT"
+		(property "Value" "B3F-4050"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -12374,6 +12512,7 @@
 		(layer "F.Cu")
 		(uuid "a0098b3d-9a79-4f75-8f01-88b81aa44386")
 		(at 353 195)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C47"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -12386,7 +12525,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -12447,6 +12586,7 @@
 		(layer "F.Cu")
 		(uuid "a0380507-b11d-4d3f-8c96-062ee4fbaf7f")
 		(at 300 160)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS55"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -12459,7 +12599,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -12520,6 +12660,7 @@
 		(layer "F.Cu")
 		(uuid "a1220dbf-92ee-4761-84f3-2fef2c4299ea")
 		(at 153 155)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C53"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -12532,7 +12673,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -12593,6 +12734,7 @@
 		(layer "F.Cu")
 		(uuid "a1e03ab0-d2c1-40b1-9abf-8cacaa4ea83b")
 		(at 313 67)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U63"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -12605,7 +12747,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -12695,6 +12837,7 @@
 		(layer "F.Cu")
 		(uuid "a27d2ab7-1d00-4721-b431-c76839537dd8")
 		(at 200 340)
+		(descr "Samtec SSW-120-02-G-D: Raspberry Pi Zero 2 W 2x20 socket")
 		(property "Reference" "J1"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -12707,7 +12850,7 @@
 				)
 			)
 		)
-		(property "Value" "2x20 2.54 mm THT"
+		(property "Value" "SSW-120-02-G-D"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -13110,6 +13253,7 @@
 		(layer "F.Cu")
 		(uuid "a483b8b5-1def-4a34-ba10-957794db584c")
 		(at 220 280)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS25"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -13122,7 +13266,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -13183,6 +13327,7 @@
 		(layer "F.Cu")
 		(uuid "a5232a80-0095-4b6a-8a1d-31227806323f")
 		(at 260 160)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS54"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -13195,7 +13340,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -13256,6 +13401,7 @@
 		(layer "F.Cu")
 		(uuid "a5ce919e-a746-4bff-a80c-0d671c60d4c6")
 		(at 113 275)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C25"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -13268,7 +13414,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -13329,6 +13475,7 @@
 		(layer "F.Cu")
 		(uuid "a693f10b-966f-4c9d-a621-63758f3b8c6e")
 		(at 153 187)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U40"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -13341,7 +13488,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -13431,6 +13578,7 @@
 		(layer "F.Cu")
 		(uuid "a711b2a3-9a95-4864-8382-caaa67833094")
 		(at 232 392)
+		(descr "Omron B3F-4050: 6 mm tactile switch, 9.5 mm actuator")
 		(property "Reference" "SW3"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -13443,7 +13591,7 @@
 				)
 			)
 		)
-		(property "Value" "6x6 mm THT"
+		(property "Value" "B3F-4050"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -13522,6 +13670,7 @@
 		(layer "F.Cu")
 		(uuid "a930b269-70f7-4789-ae59-37daed005aef")
 		(at 273 195)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C45"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -13534,7 +13683,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -13595,6 +13744,7 @@
 		(layer "F.Cu")
 		(uuid "aa27dfe7-00b6-4ca9-9433-b383b02b394c")
 		(at 260 120)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS58"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -13607,7 +13757,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -13668,6 +13818,7 @@
 		(layer "F.Cu")
 		(uuid "ab840a40-6bf2-4eb7-94ba-044905386c09")
 		(at 340 280)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS28"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -13680,7 +13831,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -13741,6 +13892,7 @@
 		(layer "F.Cu")
 		(uuid "aba3f3e5-dc00-4ad1-8467-2b0d3a8b7435")
 		(at 340 200)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS52"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -13753,7 +13905,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -13814,6 +13966,7 @@
 		(layer "F.Cu")
 		(uuid "adb28918-b37d-42b4-ad12-703acc25653b")
 		(at 353 355)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C15"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -13826,7 +13979,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -13887,6 +14040,7 @@
 		(layer "F.Cu")
 		(uuid "adb60304-1d8b-443a-bb9d-bbad414e7915")
 		(at 300 360)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS19"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -13899,7 +14053,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -13960,6 +14114,7 @@
 		(layer "F.Cu")
 		(uuid "b057e582-a850-455f-95fb-c430ac84dc2a")
 		(at 220 200)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS49"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -13972,7 +14127,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -14033,6 +14188,7 @@
 		(layer "F.Cu")
 		(uuid "b0f7d371-7f37-4871-a9da-f785d5811c10")
 		(at 260 240)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS30"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -14045,7 +14201,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -14106,6 +14262,7 @@
 		(layer "F.Cu")
 		(uuid "b15007e5-754c-47c8-b3d5-d127935a3543")
 		(at 150 396)
+		(descr "Yageo MFR-25FBF52-4K7: 4.7 kohm 0.25 W axial resistor")
 		(property "Reference" "R2"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -14118,7 +14275,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 1/4 W"
+		(property "Value" "MFR-25FBF52-4K7"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -14179,6 +14336,7 @@
 		(layer "F.Cu")
 		(uuid "b1b5bdf8-8874-4a6e-bc80-6fe19a81713f")
 		(at 153 355)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C10"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -14191,7 +14349,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -14252,6 +14410,7 @@
 		(layer "F.Cu")
 		(uuid "b2d0792c-46ac-4314-a2c8-6867459ad403")
 		(at 113 107)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U55"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -14264,7 +14423,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -14354,6 +14513,7 @@
 		(layer "F.Cu")
 		(uuid "b3750bb6-fb25-4092-b1ad-ce26687039c3")
 		(at 134 140)
+		(descr "Microchip Technology MCP23017-E/SP: 16-bit I2C GPIO expander")
 		(property "Reference" "U3"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -14366,7 +14526,7 @@
 				)
 			)
 		)
-		(property "Value" "PDIP-28"
+		(property "Value" "MCP23017-E/SP"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -14661,6 +14821,7 @@
 		(layer "F.Cu")
 		(uuid "b3a30dfd-e87d-4613-8fda-103898b1b8ce")
 		(at 73 275)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C24"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -14673,7 +14834,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -14734,6 +14895,7 @@
 		(layer "F.Cu")
 		(uuid "b7d451ed-8656-4e7f-a1ef-be6b6fdaee08")
 		(at 113 155)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C54"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -14746,7 +14908,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -14807,6 +14969,7 @@
 		(layer "F.Cu")
 		(uuid "b9e3d0fa-482a-488f-a795-122696810fe3")
 		(at 260 320)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS22"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -14819,7 +14982,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -14880,6 +15043,7 @@
 		(layer "F.Cu")
 		(uuid "bae52417-1a65-4077-9c68-cf656f1bc505")
 		(at 113 347)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U7"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -14892,7 +15056,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -14982,6 +15146,7 @@
 		(layer "F.Cu")
 		(uuid "bbfb79ac-69ed-4f5e-8597-ddba678ce59b")
 		(at 87 410)
+		(descr "E-Switch RA11131100: PCB SPST rocker switch")
 		(property "Reference" "SW13"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -14994,7 +15159,7 @@
 				)
 			)
 		)
-		(property "Value" "SPST rocker THT"
+		(property "Value" "RA11131100"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -15055,6 +15220,7 @@
 		(layer "F.Cu")
 		(uuid "bc4dbabb-32ac-4105-b293-0e6e77ec1aaa")
 		(at 100 240)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS14"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -15067,7 +15233,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -15128,6 +15294,7 @@
 		(layer "F.Cu")
 		(uuid "bce980af-bb82-4933-a349-ca0fb9fd9d12")
 		(at 100 280)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS10"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -15140,7 +15307,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -15201,6 +15368,7 @@
 		(layer "F.Cu")
 		(uuid "bd8910ef-34ad-441c-ad7c-cf6389938158")
 		(at 193 315)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C20"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -15213,7 +15381,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -15274,6 +15442,7 @@
 		(layer "F.Cu")
 		(uuid "be93d656-280a-4f7d-bbec-26f1230a9f4c")
 		(at 273 155)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C50"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -15286,7 +15455,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -15347,6 +15516,7 @@
 		(layer "F.Cu")
 		(uuid "c22ffd7f-b501-4ced-8904-583bc59d1daf")
 		(at 140 280)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS11"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -15359,7 +15529,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -15420,6 +15590,7 @@
 		(layer "F.Cu")
 		(uuid "c3b4f24c-27b0-497f-be05-f03f4d3bf1b2")
 		(at 273 315)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C18"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -15432,7 +15603,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -15493,6 +15664,7 @@
 		(layer "F.Cu")
 		(uuid "c7a6b83b-62b4-466a-bd9c-7097aec9ea48")
 		(at 193 67)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U66"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -15505,7 +15677,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -15595,6 +15767,7 @@
 		(layer "F.Cu")
 		(uuid "c7e6184a-6df3-4d8a-8a58-214b63f30de6")
 		(at 273 307)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U16"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -15607,7 +15780,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -15697,6 +15870,7 @@
 		(layer "F.Cu")
 		(uuid "c8ef1ae3-4881-4659-94cd-ef1d8a5d32ef")
 		(at 193 195)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C43"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -15709,7 +15883,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -15770,6 +15944,7 @@
 		(layer "F.Cu")
 		(uuid "ca4b6b03-3dc5-40cf-b2d1-437fe08b51d7")
 		(at 220 80)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS61"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -15782,7 +15957,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -15843,6 +16018,7 @@
 		(layer "F.Cu")
 		(uuid "ca5bb7de-fa8e-4b22-b112-39a7bc5f8b9c")
 		(at 300 200)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS51"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -15855,7 +16031,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -15916,6 +16092,7 @@
 		(layer "F.Cu")
 		(uuid "cad0ae31-2b9c-40fc-bd71-ee89eb57ab8d")
 		(at 60 360)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS1"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -15928,7 +16105,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -15989,6 +16166,7 @@
 		(layer "F.Cu")
 		(uuid "cbc184b6-66b6-42e8-bca4-72d87f446f74")
 		(at 353 307)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U14"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -16001,7 +16179,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -16091,6 +16269,7 @@
 		(layer "F.Cu")
 		(uuid "cc9a5144-3240-49bb-b347-2cc679c6be35")
 		(at 193 155)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C52"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -16103,7 +16282,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -16164,6 +16343,7 @@
 		(layer "F.Cu")
 		(uuid "cd3c9833-6aa1-4238-82c2-ccff5c92d751")
 		(at 353 275)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C31"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -16176,7 +16356,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -16237,6 +16417,7 @@
 		(layer "F.Cu")
 		(uuid "cd746f2f-d0d8-48af-b41e-38bc9a206d19")
 		(at 273 67)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U64"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -16249,7 +16430,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -16339,6 +16520,7 @@
 		(layer "F.Cu")
 		(uuid "cd900886-24a9-4fcd-a165-7530ef6ca537")
 		(at 153 275)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C26"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -16351,7 +16533,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -16412,6 +16594,7 @@
 		(layer "F.Cu")
 		(uuid "cdcc15f7-d846-41f0-9050-ba707a646843")
 		(at 153 307)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U19"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -16424,7 +16607,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -16514,6 +16697,7 @@
 		(layer "F.Cu")
 		(uuid "ce78776d-2791-4853-81a0-21728390ed54")
 		(at 73 107)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U54"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -16526,7 +16710,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -16616,6 +16800,7 @@
 		(layer "F.Cu")
 		(uuid "cece5cae-01b2-4f46-ace9-0b094e56ee29")
 		(at 264 408)
+		(descr "Omron B3F-4050: 6 mm tactile switch, 9.5 mm actuator")
 		(property "Reference" "SW11"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -16628,7 +16813,7 @@
 				)
 			)
 		)
-		(property "Value" "6x6 mm THT"
+		(property "Value" "B3F-4050"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -16707,6 +16892,7 @@
 		(layer "F.Cu")
 		(uuid "cee5753d-b62d-45aa-8ff1-d20d656a0b50")
 		(at 273 355)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C13"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -16719,7 +16905,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -16780,6 +16966,7 @@
 		(layer "F.Cu")
 		(uuid "d096d875-d46b-4bca-a8b2-21a89eb66fac")
 		(at 353 107)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U61"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -16792,7 +16979,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -16882,6 +17069,7 @@
 		(layer "F.Cu")
 		(uuid "d1ad5fb3-0aa5-499b-bf16-cd6c194b4589")
 		(at 280 408)
+		(descr "Omron B3F-4050: 6 mm tactile switch, 9.5 mm actuator")
 		(property "Reference" "SW12"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -16894,7 +17082,7 @@
 				)
 			)
 		)
-		(property "Value" "6x6 mm THT"
+		(property "Value" "B3F-4050"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -16973,6 +17161,7 @@
 		(layer "F.Cu")
 		(uuid "d41e3714-1b79-430c-b7d3-4481968df903")
 		(at 273 235)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C34"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -16985,7 +17174,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -17046,6 +17235,7 @@
 		(layer "F.Cu")
 		(uuid "d44b9cdf-87be-4533-af50-aa4f70d72b8f")
 		(at 134 300)
+		(descr "Microchip Technology MCP23017-E/SP: 16-bit I2C GPIO expander")
 		(property "Reference" "U1"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -17058,7 +17248,7 @@
 				)
 			)
 		)
-		(property "Value" "PDIP-28"
+		(property "Value" "MCP23017-E/SP"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -17353,6 +17543,7 @@
 		(layer "F.Cu")
 		(uuid "d55e1b5c-b1bb-486e-ad83-32e57777e057")
 		(at 73 355)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C8"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -17365,7 +17556,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -17426,6 +17617,7 @@
 		(layer "F.Cu")
 		(uuid "d6e146a7-862b-4da2-8d11-6e2957f09513")
 		(at 200 408)
+		(descr "Omron B3F-4050: 6 mm tactile switch, 9.5 mm actuator")
 		(property "Reference" "SW7"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -17438,7 +17630,7 @@
 				)
 			)
 		)
-		(property "Value" "6x6 mm THT"
+		(property "Value" "B3F-4050"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -17517,6 +17709,7 @@
 		(layer "F.Cu")
 		(uuid "d9c755d2-978f-4273-94c0-6e3510a87fc7")
 		(at 113 75)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C70"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -17529,7 +17722,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -17590,6 +17783,7 @@
 		(layer "F.Cu")
 		(uuid "da160b54-c23b-4724-90d4-3238ada28b51")
 		(at 340 80)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS64"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -17602,7 +17796,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -17663,6 +17857,7 @@
 		(layer "F.Cu")
 		(uuid "da780f0b-7cbc-4758-93a0-72b3ae973840")
 		(at 200 392)
+		(descr "Omron B3F-4050: 6 mm tactile switch, 9.5 mm actuator")
 		(property "Reference" "SW1"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -17675,7 +17870,7 @@
 				)
 			)
 		)
-		(property "Value" "6x6 mm THT"
+		(property "Value" "B3F-4050"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -17754,6 +17949,7 @@
 		(layer "F.Cu")
 		(uuid "dcf4f92a-f619-46df-bbbf-1b894501e15a")
 		(at 233 107)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U58"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -17766,7 +17962,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -17856,6 +18052,7 @@
 		(layer "F.Cu")
 		(uuid "ddb66544-481a-401e-8936-2bc2d407a48d")
 		(at 153 195)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C42"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -17868,7 +18065,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -17929,6 +18126,7 @@
 		(layer "F.Cu")
 		(uuid "de9c1265-6dcf-47d6-b387-262ef20b2670")
 		(at 84 388)
+		(descr "Nichicon UVR1C100MDD: 10 uF 16 V radial electrolytic")
 		(property "Reference" "C2"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -17941,7 +18139,7 @@
 				)
 			)
 		)
-		(property "Value" "radial 5 mm"
+		(property "Value" "UVR1C100MDD"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -18002,6 +18200,7 @@
 		(layer "F.Cu")
 		(uuid "e02fc29a-bd1b-4ca4-aa82-45d0f30450f8")
 		(at 340 360)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS20"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -18014,7 +18213,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -18075,6 +18274,7 @@
 		(layer "F.Cu")
 		(uuid "e18bd047-b581-4aba-bb79-1e0dd51ef74f")
 		(at 72 390)
+		(descr "Panasonic EEU-FR1A102: 1000 uF 10 V low-ESR electrolytic")
 		(property "Reference" "C1"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -18087,7 +18287,7 @@
 				)
 			)
 		)
-		(property "Value" "radial 10 mm"
+		(property "Value" "EEU-FR1A102"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -18148,6 +18348,7 @@
 		(layer "F.Cu")
 		(uuid "e25e4c91-51bf-4ed0-b43e-9f1e883ed049")
 		(at 273 187)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U43"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -18160,7 +18361,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -18250,6 +18451,7 @@
 		(layer "F.Cu")
 		(uuid "e40d4010-6bab-4bd4-b0ec-8d3a6919b9fa")
 		(at 353 67)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U62"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -18262,7 +18464,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -18352,6 +18554,7 @@
 		(layer "F.Cu")
 		(uuid "e73b7c0c-7c4a-42bc-92f3-6d64abf85fe6")
 		(at 143 140)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C5"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -18364,7 +18567,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -18425,6 +18628,7 @@
 		(layer "F.Cu")
 		(uuid "e77be0ef-8ba0-4ae0-9792-4fd893c4a108")
 		(at 113 227)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U36"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -18437,7 +18641,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -18527,6 +18731,7 @@
 		(layer "F.Cu")
 		(uuid "e7de26ef-9da4-447c-9ede-b40c9d7bf727")
 		(at 153 115)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C58"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -18539,7 +18744,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -18600,6 +18805,7 @@
 		(layer "F.Cu")
 		(uuid "e827553a-c507-4ef7-affa-1e7399fedeaa")
 		(at 180 360)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS4"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -18612,7 +18818,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -18673,6 +18879,7 @@
 		(layer "F.Cu")
 		(uuid "e87017c2-be8c-4472-85fe-75d3e7e811c1")
 		(at 233 227)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U33"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -18685,7 +18892,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -18775,6 +18982,7 @@
 		(layer "F.Cu")
 		(uuid "e8b97b93-c46a-4272-ad36-a80a234ebc11")
 		(at 73 155)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C55"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -18787,7 +18995,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -18848,6 +19056,7 @@
 		(layer "F.Cu")
 		(uuid "e926bdf2-dc44-4f64-a92c-04d5528a5046")
 		(at 260 360)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS18"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -18860,7 +19069,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -18921,6 +19130,7 @@
 		(layer "F.Cu")
 		(uuid "eb9caf26-49be-4717-928e-0388ed52daf8")
 		(at 313 267)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U28"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -18933,7 +19143,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -19023,6 +19233,7 @@
 		(layer "F.Cu")
 		(uuid "ecb92fd6-8ea3-4620-8559-27ebc8e77560")
 		(at 233 75)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C67"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -19035,7 +19246,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -19096,6 +19307,7 @@
 		(layer "F.Cu")
 		(uuid "ecbf0ccb-c638-4694-9aa3-0b0d25eb2ee9")
 		(at 100 160)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS38"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -19108,7 +19320,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -19169,6 +19381,7 @@
 		(layer "F.Cu")
 		(uuid "ed40dc1c-18b4-4b57-a18c-2bb90a54f85e")
 		(at 303 140)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C6"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -19181,7 +19394,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -19242,6 +19455,7 @@
 		(layer "F.Cu")
 		(uuid "edc2ec4e-8594-4573-b120-55cab4b5f355")
 		(at 193 115)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C59"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -19254,7 +19468,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -19315,6 +19529,7 @@
 		(layer "F.Cu")
 		(uuid "ef2e1751-2128-4eba-abfc-f1c445eb007b")
 		(at 233 195)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C44"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -19327,7 +19542,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -19388,6 +19603,7 @@
 		(layer "F.Cu")
 		(uuid "ef6e0d71-8a64-4e4b-8a84-8a9cb017d0dd")
 		(at 100 200)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS34"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -19400,7 +19616,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -19461,6 +19677,7 @@
 		(layer "F.Cu")
 		(uuid "f182ef0d-b073-446e-a381-3cf3afa69fb4")
 		(at 300 320)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS23"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -19473,7 +19690,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -19534,6 +19751,7 @@
 		(layer "F.Cu")
 		(uuid "f1a8de97-fea1-4496-8fbd-c7dd6d64ae4b")
 		(at 313 115)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C62"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -19546,7 +19764,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -19607,6 +19825,7 @@
 		(layer "F.Cu")
 		(uuid "f20019ef-563a-4a94-8a22-aa0db63e85df")
 		(at 233 355)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C12"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -19619,7 +19838,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -19680,6 +19899,7 @@
 		(layer "F.Cu")
 		(uuid "f2abbbf7-d27a-4860-a8f1-c49f6d983f63")
 		(at 142 400)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C7"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -19692,7 +19912,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -19753,6 +19973,7 @@
 		(layer "F.Cu")
 		(uuid "f32e89b3-0fd8-45dd-ae34-e2449bf531a1")
 		(at 160 385)
+		(descr "Keystone Electronics 1502-2: 1.6 mm turret test point")
 		(property "Reference" "TP1"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -19765,7 +19986,7 @@
 				)
 			)
 		)
-		(property "Value" "turret 1.6 mm THT"
+		(property "Value" "1502-2"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -19816,6 +20037,7 @@
 		(layer "F.Cu")
 		(uuid "f5b42680-fb88-42f3-96b3-178318c8ed5c")
 		(at 113 67)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U68"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -19828,7 +20050,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -19918,6 +20140,7 @@
 		(layer "F.Cu")
 		(uuid "f7551fcc-79ef-4cb4-89e0-b55b4c98a1d6")
 		(at 140 360)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS3"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -19930,7 +20153,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -19991,6 +20214,7 @@
 		(layer "F.Cu")
 		(uuid "f7c8f6f1-6013-486a-b10e-642adf9807b5")
 		(at 113 307)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U20"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -20003,7 +20227,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -20093,6 +20317,7 @@
 		(layer "F.Cu")
 		(uuid "fdb984e9-f036-4a59-967e-ec5763b58089")
 		(at 153 267)
+		(descr "Opsco Optoelectronics SK9822-EC20: Clocked 5050 RGB LED")
 		(property "Reference" "U24"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -20105,7 +20330,7 @@
 				)
 			)
 		)
-		(property "Value" "PLCC-6 5050"
+		(property "Value" "SK9822-EC20"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -20195,6 +20420,7 @@
 		(layer "F.Cu")
 		(uuid "ff3e7c34-8c70-41cd-b67c-bfc205abda15")
 		(at 113 115)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C57"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -20207,7 +20433,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -20268,6 +20494,7 @@
 		(layer "F.Cu")
 		(uuid "ffa93912-1f57-4773-9f57-6defbc04faaf")
 		(at 180 280)
+		(descr "Standex-Meder Electronics KSK-1A66-1015: Normally-open axial reed switch")
 		(property "Reference" "RS12"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -20280,7 +20507,7 @@
 				)
 			)
 		)
-		(property "Value" "axial 14 mm"
+		(property "Value" "KSK-1A66-1015"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -20341,6 +20568,7 @@
 		(layer "F.Cu")
 		(uuid "ffdac500-5c1f-4965-af85-1cdad747fcc0")
 		(at 153 315)
+		(descr "KEMET C315C104M5U5TA: 100 nF radial ceramic capacitor")
 		(property "Reference" "C21"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -20353,7 +20581,7 @@
 				)
 			)
 		)
-		(property "Value" "disc 2.54 mm"
+		(property "Value" "C315C104M5U5TA"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)

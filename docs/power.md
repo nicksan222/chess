@@ -6,7 +6,8 @@ Describe how the board is powered and where the current goes.
 
 ## No conversion on the board
 
-A 5 V 5 A wall supply feeds a barrel jack, and that is the rail. There is no buck
+A MEAN WELL GST40A05-P1J 5 V 6 A regulated supply feeds the barrel jack, and
+that is the rail. There is no buck
 converter, no inductor, no USB power negotiation and no battery. The 3.3 V the
 expanders and the display need comes off the Raspberry Pi's own header, which
 about 5 mA of load against a roughly 250 mA budget comfortably allows.

@@ -4,6 +4,8 @@ import json
 import unittest
 from pathlib import Path
 
+from shared.components import COMPONENTS
+
 PCB = Path(__file__).resolve().parents[1]
 
 
@@ -15,6 +17,13 @@ class ReleasePolicyTest(unittest.TestCase):
                 self.assertEqual(
                     connection.get("no_connect", False), len(connection["pads"]) == 1
                 )
+
+    def test_every_placed_part_resolves_to_an_approved_product(self):
+        design = json.loads((PCB / "design/netlist.json").read_text())
+        for reference, component in design["projects"]["board"]["components"].items():
+            with self.subTest(reference=reference):
+                spec = COMPONENTS[component["part_key"]]
+                self.assertEqual(component["package"], spec.package)
 
     def test_the_project_has_no_drc_exclusions(self):
         project = json.loads((PCB / "chess-board.kicad_pro").read_text())

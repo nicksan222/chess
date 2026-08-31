@@ -8,6 +8,7 @@
           "extras": {},
           "lib": "C",
           "package": "radial 10 mm",
+          "part_key": "CAP_1000U",
           "value": "1000uF 10V"
         },
         "C10": {
@@ -17,6 +18,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C11": {
@@ -26,6 +28,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C12": {
@@ -35,6 +38,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C13": {
@@ -44,6 +48,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C14": {
@@ -53,6 +58,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C15": {
@@ -62,6 +68,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C16": {
@@ -71,6 +78,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C17": {
@@ -80,6 +88,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C18": {
@@ -89,6 +98,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C19": {
@@ -98,6 +108,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C2": {
@@ -105,6 +116,7 @@
           "extras": {},
           "lib": "C",
           "package": "radial 5 mm",
+          "part_key": "CAP_10U",
           "value": "10uF 16V"
         },
         "C20": {
@@ -114,6 +126,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C21": {
@@ -123,6 +136,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C22": {
@@ -132,6 +146,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C23": {
@@ -141,6 +156,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C24": {
@@ -150,6 +166,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C25": {
@@ -159,6 +176,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C26": {
@@ -168,6 +186,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C27": {
@@ -177,6 +196,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C28": {
@@ -186,6 +206,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C29": {
@@ -195,6 +216,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C3": {
@@ -202,6 +224,7 @@
           "extras": {},
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C30": {
@@ -211,6 +234,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C31": {
@@ -220,6 +244,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C32": {
@@ -229,6 +254,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C33": {
@@ -238,6 +264,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C34": {
@@ -247,6 +274,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C35": {
@@ -256,6 +284,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C36": {
@@ -265,6 +294,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C37": {
@@ -274,6 +304,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C38": {
@@ -283,6 +314,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C39": {
@@ -292,6 +324,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C4": {
@@ -299,6 +332,7 @@
           "extras": {},
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C40": {
@@ -308,6 +342,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C41": {
@@ -317,6 +352,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C42": {
@@ -326,6 +362,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C43": {
@@ -335,6 +372,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C44": {
@@ -344,6 +382,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C45": {
@@ -353,6 +392,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C46": {
@@ -362,6 +402,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C47": {
@@ -371,6 +412,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C48": {
@@ -380,6 +422,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C49": {
@@ -389,6 +432,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C5": {
@@ -396,6 +440,7 @@
           "extras": {},
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C50": {
@@ -405,6 +450,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C51": {
@@ -414,6 +460,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C52": {
@@ -423,6 +470,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C53": {
@@ -432,6 +480,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C54": {
@@ -441,6 +490,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C55": {
@@ -450,6 +500,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C56": {
@@ -459,6 +510,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C57": {
@@ -468,6 +520,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C58": {
@@ -477,6 +530,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C59": {
@@ -486,6 +540,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C6": {
@@ -493,6 +548,7 @@
           "extras": {},
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C60": {
@@ -502,6 +558,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C61": {
@@ -511,6 +568,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C62": {
@@ -520,6 +578,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C63": {
@@ -529,6 +588,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C64": {
@@ -538,6 +598,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C65": {
@@ -547,6 +608,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C66": {
@@ -556,6 +618,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C67": {
@@ -565,6 +628,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C68": {
@@ -574,6 +638,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C69": {
@@ -583,6 +648,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C7": {
@@ -590,6 +656,7 @@
           "extras": {},
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C70": {
@@ -599,6 +666,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C71": {
@@ -608,6 +676,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C8": {
@@ -617,6 +686,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C9": {
@@ -626,6 +696,7 @@
           },
           "lib": "C",
           "package": "disc 2.54 mm",
+          "part_key": "CAP_100N",
           "value": "100nF"
         },
         "D1": {
@@ -633,6 +704,7 @@
           "extras": {},
           "lib": "TVS",
           "package": "axial DO-15",
+          "part_key": "TVS_6V8",
           "value": "P6KE6.8A"
         },
         "F1": {
@@ -640,6 +712,7 @@
           "extras": {},
           "lib": "FUSE",
           "package": "5x20 mm holder THT",
+          "part_key": "FUSE_HOLDER",
           "value": "5 A"
         },
         "J1": {
@@ -647,6 +720,7 @@
           "extras": {},
           "lib": "PI_HEADER",
           "package": "2x20 2.54 mm THT",
+          "part_key": "PI_ZERO_HEADER",
           "value": "2x20 header"
         },
         "J2": {
@@ -654,6 +728,7 @@
           "extras": {},
           "lib": "OLED_HEADER",
           "package": "1x4 2.54 mm THT",
+          "part_key": "OLED_HEADER",
           "value": "1x4 header"
         },
         "J3": {
@@ -661,6 +736,7 @@
           "extras": {},
           "lib": "BARREL_JACK",
           "package": "5.5x2.1 mm THT",
+          "part_key": "BARREL_JACK",
           "value": "DC 5.5x2.1"
         },
         "R1": {
@@ -668,6 +744,7 @@
           "extras": {},
           "lib": "R",
           "package": "axial 1/4 W",
+          "part_key": "RES_4K7",
           "value": "4.7k"
         },
         "R2": {
@@ -675,6 +752,7 @@
           "extras": {},
           "lib": "R",
           "package": "axial 1/4 W",
+          "part_key": "RES_4K7",
           "value": "4.7k"
         },
         "RS1": {
@@ -684,6 +762,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS10": {
@@ -693,6 +772,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS11": {
@@ -702,6 +782,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS12": {
@@ -711,6 +792,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS13": {
@@ -720,6 +802,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS14": {
@@ -729,6 +812,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS15": {
@@ -738,6 +822,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS16": {
@@ -747,6 +832,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS17": {
@@ -756,6 +842,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS18": {
@@ -765,6 +852,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS19": {
@@ -774,6 +862,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS2": {
@@ -783,6 +872,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS20": {
@@ -792,6 +882,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS21": {
@@ -801,6 +892,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS22": {
@@ -810,6 +902,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS23": {
@@ -819,6 +912,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS24": {
@@ -828,6 +922,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS25": {
@@ -837,6 +932,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS26": {
@@ -846,6 +942,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS27": {
@@ -855,6 +952,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS28": {
@@ -864,6 +962,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS29": {
@@ -873,6 +972,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS3": {
@@ -882,6 +982,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS30": {
@@ -891,6 +992,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS31": {
@@ -900,6 +1002,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS32": {
@@ -909,6 +1012,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS33": {
@@ -918,6 +1022,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS34": {
@@ -927,6 +1032,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS35": {
@@ -936,6 +1042,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS36": {
@@ -945,6 +1052,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS37": {
@@ -954,6 +1062,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS38": {
@@ -963,6 +1072,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS39": {
@@ -972,6 +1082,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS4": {
@@ -981,6 +1092,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS40": {
@@ -990,6 +1102,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS41": {
@@ -999,6 +1112,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS42": {
@@ -1008,6 +1122,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS43": {
@@ -1017,6 +1132,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS44": {
@@ -1026,6 +1142,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS45": {
@@ -1035,6 +1152,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS46": {
@@ -1044,6 +1162,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS47": {
@@ -1053,6 +1172,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS48": {
@@ -1062,6 +1182,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS49": {
@@ -1071,6 +1192,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS5": {
@@ -1080,6 +1202,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS50": {
@@ -1089,6 +1212,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS51": {
@@ -1098,6 +1222,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS52": {
@@ -1107,6 +1232,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS53": {
@@ -1116,6 +1242,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS54": {
@@ -1125,6 +1252,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS55": {
@@ -1134,6 +1262,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS56": {
@@ -1143,6 +1272,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS57": {
@@ -1152,6 +1282,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS58": {
@@ -1161,6 +1292,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS59": {
@@ -1170,6 +1302,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS6": {
@@ -1179,6 +1312,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS60": {
@@ -1188,6 +1322,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS61": {
@@ -1197,6 +1332,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS62": {
@@ -1206,6 +1342,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS63": {
@@ -1215,6 +1352,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS64": {
@@ -1224,6 +1362,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS7": {
@@ -1233,6 +1372,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS8": {
@@ -1242,6 +1382,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "RS9": {
@@ -1251,6 +1392,7 @@
           },
           "lib": "REED",
           "package": "axial 14 mm",
+          "part_key": "REED_SWITCH",
           "value": "REED NO"
         },
         "SKT1": {
@@ -1258,6 +1400,7 @@
           "extras": {},
           "lib": "DIP_SOCKET",
           "package": "DIP-28",
+          "part_key": "DIP28_SOCKET",
           "value": "DIP-28 socket"
         },
         "SKT2": {
@@ -1265,6 +1408,7 @@
           "extras": {},
           "lib": "DIP_SOCKET",
           "package": "DIP-28",
+          "part_key": "DIP28_SOCKET",
           "value": "DIP-28 socket"
         },
         "SKT3": {
@@ -1272,6 +1416,7 @@
           "extras": {},
           "lib": "DIP_SOCKET",
           "package": "DIP-28",
+          "part_key": "DIP28_SOCKET",
           "value": "DIP-28 socket"
         },
         "SKT4": {
@@ -1279,6 +1424,7 @@
           "extras": {},
           "lib": "DIP_SOCKET",
           "package": "DIP-28",
+          "part_key": "DIP28_SOCKET",
           "value": "DIP-28 socket"
         },
         "SKT5": {
@@ -1286,6 +1432,7 @@
           "extras": {},
           "lib": "DIP_SOCKET",
           "package": "DIP-14",
+          "part_key": "DIP14_SOCKET",
           "value": "DIP-14 socket"
         },
         "SW1": {
@@ -1295,6 +1442,7 @@
           },
           "lib": "BUTTON",
           "package": "6x6 mm THT",
+          "part_key": "BUTTON",
           "value": "TACT 6mm"
         },
         "SW10": {
@@ -1304,6 +1452,7 @@
           },
           "lib": "BUTTON",
           "package": "6x6 mm THT",
+          "part_key": "BUTTON",
           "value": "TACT 6mm"
         },
         "SW11": {
@@ -1313,6 +1462,7 @@
           },
           "lib": "BUTTON",
           "package": "6x6 mm THT",
+          "part_key": "BUTTON",
           "value": "TACT 6mm"
         },
         "SW12": {
@@ -1322,6 +1472,7 @@
           },
           "lib": "BUTTON",
           "package": "6x6 mm THT",
+          "part_key": "BUTTON",
           "value": "TACT 6mm"
         },
         "SW13": {
@@ -1329,6 +1480,7 @@
           "extras": {},
           "lib": "SWITCH",
           "package": "SPST rocker THT",
+          "part_key": "POWER_SWITCH",
           "value": "POWER"
         },
         "SW2": {
@@ -1338,6 +1490,7 @@
           },
           "lib": "BUTTON",
           "package": "6x6 mm THT",
+          "part_key": "BUTTON",
           "value": "TACT 6mm"
         },
         "SW3": {
@@ -1347,6 +1500,7 @@
           },
           "lib": "BUTTON",
           "package": "6x6 mm THT",
+          "part_key": "BUTTON",
           "value": "TACT 6mm"
         },
         "SW4": {
@@ -1356,6 +1510,7 @@
           },
           "lib": "BUTTON",
           "package": "6x6 mm THT",
+          "part_key": "BUTTON",
           "value": "TACT 6mm"
         },
         "SW5": {
@@ -1365,6 +1520,7 @@
           },
           "lib": "BUTTON",
           "package": "6x6 mm THT",
+          "part_key": "BUTTON",
           "value": "TACT 6mm"
         },
         "SW6": {
@@ -1374,6 +1530,7 @@
           },
           "lib": "BUTTON",
           "package": "6x6 mm THT",
+          "part_key": "BUTTON",
           "value": "TACT 6mm"
         },
         "SW7": {
@@ -1383,6 +1540,7 @@
           },
           "lib": "BUTTON",
           "package": "6x6 mm THT",
+          "part_key": "BUTTON",
           "value": "TACT 6mm"
         },
         "SW8": {
@@ -1392,6 +1550,7 @@
           },
           "lib": "BUTTON",
           "package": "6x6 mm THT",
+          "part_key": "BUTTON",
           "value": "TACT 6mm"
         },
         "SW9": {
@@ -1401,6 +1560,7 @@
           },
           "lib": "BUTTON",
           "package": "6x6 mm THT",
+          "part_key": "BUTTON",
           "value": "TACT 6mm"
         },
         "TP1": {
@@ -1408,6 +1568,7 @@
           "extras": {},
           "lib": "TESTPOINT",
           "package": "turret 1.6 mm THT",
+          "part_key": "TEST_POINT",
           "value": "+5V"
         },
         "TP2": {
@@ -1415,6 +1576,7 @@
           "extras": {},
           "lib": "TESTPOINT",
           "package": "turret 1.6 mm THT",
+          "part_key": "TEST_POINT",
           "value": "GND"
         },
         "TP3": {
@@ -1422,6 +1584,7 @@
           "extras": {},
           "lib": "TESTPOINT",
           "package": "turret 1.6 mm THT",
+          "part_key": "TEST_POINT",
           "value": "LED_DATA_5V"
         },
         "TP4": {
@@ -1429,6 +1592,7 @@
           "extras": {},
           "lib": "TESTPOINT",
           "package": "turret 1.6 mm THT",
+          "part_key": "TEST_POINT",
           "value": "LED_CLK_5V"
         },
         "U1": {
@@ -1439,6 +1603,7 @@
           },
           "lib": "MCP23017",
           "package": "PDIP-28",
+          "part_key": "MCP23017",
           "value": "MCP23017-E/SP"
         },
         "U10": {
@@ -1449,6 +1614,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U11": {
@@ -1459,6 +1625,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U12": {
@@ -1469,6 +1636,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U13": {
@@ -1479,6 +1647,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U14": {
@@ -1489,6 +1658,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U15": {
@@ -1499,6 +1669,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U16": {
@@ -1509,6 +1680,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U17": {
@@ -1519,6 +1691,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U18": {
@@ -1529,6 +1702,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U19": {
@@ -1539,6 +1713,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U2": {
@@ -1549,6 +1724,7 @@
           },
           "lib": "MCP23017",
           "package": "PDIP-28",
+          "part_key": "MCP23017",
           "value": "MCP23017-E/SP"
         },
         "U20": {
@@ -1559,6 +1735,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U21": {
@@ -1569,6 +1746,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U22": {
@@ -1579,6 +1757,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U23": {
@@ -1589,6 +1768,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U24": {
@@ -1599,6 +1779,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U25": {
@@ -1609,6 +1790,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U26": {
@@ -1619,6 +1801,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U27": {
@@ -1629,6 +1812,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U28": {
@@ -1639,6 +1823,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U29": {
@@ -1649,6 +1834,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U3": {
@@ -1659,6 +1845,7 @@
           },
           "lib": "MCP23017",
           "package": "PDIP-28",
+          "part_key": "MCP23017",
           "value": "MCP23017-E/SP"
         },
         "U30": {
@@ -1669,6 +1856,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U31": {
@@ -1679,6 +1867,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U32": {
@@ -1689,6 +1878,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U33": {
@@ -1699,6 +1889,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U34": {
@@ -1709,6 +1900,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U35": {
@@ -1719,6 +1911,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U36": {
@@ -1729,6 +1922,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U37": {
@@ -1739,6 +1933,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U38": {
@@ -1749,6 +1944,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U39": {
@@ -1759,6 +1955,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U4": {
@@ -1769,6 +1966,7 @@
           },
           "lib": "MCP23017",
           "package": "PDIP-28",
+          "part_key": "MCP23017",
           "value": "MCP23017-E/SP"
         },
         "U40": {
@@ -1779,6 +1977,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U41": {
@@ -1789,6 +1988,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U42": {
@@ -1799,6 +1999,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U43": {
@@ -1809,6 +2010,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U44": {
@@ -1819,6 +2021,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U45": {
@@ -1829,6 +2032,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U46": {
@@ -1839,6 +2043,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U47": {
@@ -1849,6 +2054,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U48": {
@@ -1859,6 +2065,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U49": {
@@ -1869,6 +2076,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U5": {
@@ -1876,6 +2084,7 @@
           "extras": {},
           "lib": "AHCT125",
           "package": "DIP-14",
+          "part_key": "AHCT125",
           "value": "SN74AHCT125N"
         },
         "U50": {
@@ -1886,6 +2095,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U51": {
@@ -1896,6 +2106,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U52": {
@@ -1906,6 +2117,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U53": {
@@ -1916,6 +2128,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U54": {
@@ -1926,6 +2139,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U55": {
@@ -1936,6 +2150,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U56": {
@@ -1946,6 +2161,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U57": {
@@ -1956,6 +2172,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U58": {
@@ -1966,6 +2183,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U59": {
@@ -1976,6 +2194,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U6": {
@@ -1986,6 +2205,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U60": {
@@ -1996,6 +2216,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U61": {
@@ -2006,6 +2227,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U62": {
@@ -2016,6 +2238,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U63": {
@@ -2026,6 +2249,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U64": {
@@ -2036,6 +2260,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U65": {
@@ -2046,6 +2271,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U66": {
@@ -2056,6 +2282,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U67": {
@@ -2066,6 +2293,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U68": {
@@ -2076,6 +2304,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U69": {
@@ -2086,6 +2315,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U7": {
@@ -2096,6 +2326,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U8": {
@@ -2106,6 +2337,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         },
         "U9": {
@@ -2116,6 +2348,7 @@
           },
           "lib": "SK9822",
           "package": "PLCC-6 5050",
+          "part_key": "SK9822",
           "value": "SK9822"
         }
       },
