@@ -5,11 +5,10 @@ not be weakened to clear an item.
 
 ## Blocking
 
-- **26 open copper connections.** KiCad reports zero geometry violations. All
-  64 reed inputs, every LED-chain link, protected input power, SPI/level-shifter
-  signals, and six button GPIO paths are routed. Remaining opens are I²C (12),
-  shared IRQ (4), isolated 3.3 V pour islands (4), and six button GPIO paths.
-  Gerbers are intentionally absent.
+- **Copper routing is complete.** KiCad reports zero geometry violations and
+  zero unconnected items. All reed inputs, LED-chain links, power rails, buses,
+  interrupts, and button GPIO paths are routed. Gerbers remain intentionally
+  absent until the schematic and physical prototype gates also pass.
 - **Native schematic missing.** Connectivity is reviewed JSON embedded into the
   PCB, but there is not yet a `chess-board.kicad_sch`; therefore true KiCad
   schematic/PCB parity cannot run. The release gate now rejects this explicitly.
@@ -29,7 +28,7 @@ not be weakened to clear an item.
   malformed courtyards.
 - Add KiCad 3D models for assembly-height and connector-access review. Current 3D
   renders show board, pads, drills, planes, and copper but not component bodies.
-- Obtain the fabricator's actual four-layer stack-up and confirm dielectric,
+- Obtain the fabricator's actual eight-layer stack-up and confirm dielectric,
   finished thickness, copper weight, via aspect ratio, and plane clearances.
 
 ## Electrical review

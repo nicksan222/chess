@@ -23,6 +23,8 @@ def audit() -> dict:
     settings = project["board"]["design_settings"]
     report_path = ROOT / "generated/drc.json"
     report = json.loads(report_path.read_text()) if report_path.is_file() else {}
+    erc_path = ROOT / "generated/erc.json"
+    erc = json.loads(erc_path.read_text()) if erc_path.is_file() else {}
 
     unknown = sorted(
         {
@@ -63,6 +65,9 @@ def audit() -> dict:
         "native_schematic": (ROOT / "chess-board.kicad_sch").is_file(),
         "drc_exclusions": len(settings.get("drc_exclusions", [])),
         "ignored_drc_rules": ignored,
+        "erc_violations": sum(
+            len(sheet.get("violations", [])) for sheet in erc.get("sheets", [])
+        ),
         "drc_violations": len(report.get("violations", [])),
         "unconnected_items": len(report.get("unconnected_items", [])),
         "schematic_parity_errors": len(report.get("schematic_parity", [])),
@@ -83,6 +88,7 @@ def audit() -> dict:
             result["native_schematic"],
             result["drc_exclusions"] == 0,
             not ignored,
+            result["erc_violations"] == 0,
             result["drc_violations"] == 0,
             result["unconnected_items"] == 0,
             result["schematic_parity_errors"] == 0,

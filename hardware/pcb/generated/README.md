@@ -2,10 +2,11 @@
 
 `./tools/pcb` always writes review artifacts:
 
+- `schematic/chess-board.svg` — complete native-schematic review drawing.
 - `board-top.svg` and `board-bottom.svg` — board-fitted, full-color layer plots.
 - `board-top.png` and `board-bottom.png` — orthographic 3D board renders.
 - `board-3d.png` — high-quality perspective render with lighting and shadows.
-- `drc.rpt` and `drc.json` — complete KiCad validation results.
+- `erc.json`, `drc.rpt`, and `drc.json` — schematic, layout, and parity results.
 - `audit.json` — BOM, MPN, schematic, DRC, connectivity, and prototype status.
 
 Gerber and drill files are generated only after the release gate proves there

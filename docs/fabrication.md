@@ -16,10 +16,10 @@ Excellon, and preview files under `hardware/pcb/generated`.
 ## Release gate
 
 A fabrication package is acceptable only when `generated/drc.rpt` contains zero
-violations and zero unconnected items. The current migration preserves placement
-and connectivity but deliberately discards unsafe custom routing, so it is not
-yet ready to order.
+violations and zero unconnected items. Copper routing and zones now satisfy that
+gate. Ordering remains blocked until native schematic parity and the documented
+reed/magnet prototype evidence also pass.
 
 Before ordering, inspect the project in KiCad, verify footprints against vendor
-datasheets, complete routing and copper zones in generator-owned code, run DRC,
-and inspect the board manufacturer's preview.
+datasheets, complete the remaining release evidence, run `./tools/pcb`, and
+inspect the board manufacturer's preview.

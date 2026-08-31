@@ -11,10 +11,18 @@ PROJECT = ROOT / "chess-board.kicad_pro"
 CONNECTIVITY = ROOT / "design" / "netlist.json"
 SCHEMATIC = ROOT / "chess-board.kicad_sch"
 REPORT = ROOT / "generated" / "drc.json"
+ERC_REPORT = ROOT / "generated" / "erc.json"
 BOM = ROOT / "design" / "bom.md"
 
 
 def validate() -> None:
+    prototype_records = [
+        path for path in (ROOT / "prototype").glob("*")
+        if path.name != "README.md"
+    ]
+    if not prototype_records:
+        raise SystemExit("release blocked: reed/magnet prototype evidence is missing")
+
     if not SCHEMATIC.is_file():
         raise SystemExit("release blocked: native KiCad schematic is missing")
 
@@ -44,6 +52,13 @@ def validate() -> None:
             raise SystemExit(f"connection {index} is silently unconnected")
         if len(pads) != 1 and explicit:
             raise SystemExit(f"connection {index} incorrectly bypasses routing")
+
+    erc = json.loads(ERC_REPORT.read_text())
+    erc_violations = sum(
+        len(sheet.get("violations", [])) for sheet in erc.get("sheets", [])
+    )
+    if erc_violations:
+        raise SystemExit(f"release blocked: {erc_violations} ERC violations")
 
     report = json.loads(REPORT.read_text())
     violations = report.get("violations", [])

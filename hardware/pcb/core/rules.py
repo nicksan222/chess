@@ -4,7 +4,7 @@ KiCad owns finished-copper DRC; this module owns the values injected into that
 native rules engine and independently checks them against fabrication capability.
 
 Two sets of numbers. `PCBWAY_*` are the manufacturer's stated capabilities for a
-standard four-layer board, and are not ours to choose. `TRACE_*`, `PAD_*` and the
+standard eight-layer board, and are not ours to choose. `TRACE_*`, `PAD_*` and the
 rest are what this design uses, chosen with a wide margin so a prototype is never
 near a process limit. `validate()` refuses any choice that is not inside the
 capability, so raising a limit cannot silently produce an unmanufacturable board.
@@ -15,7 +15,7 @@ against the current page before an order; a fab can change its process.
 
 from __future__ import annotations
 
-# --- Manufacturer capability, standard four-layer process -------------------
+# --- Manufacturer capability, standard eight-layer process -------------------
 PCBWAY_MIN_TRACE_WIDTH_MM = 0.1
 PCBWAY_MIN_CLEARANCE_MM = 0.1
 PCBWAY_MIN_DRILL_MM = 0.2
@@ -29,7 +29,7 @@ PCBWAY_MAX_BOARD_MM = (500.0, 1000.0)
 # Four times the process minimum. This board is hand-soldered and hand-reviewed;
 # there is no reason to be anywhere near the limit.
 TRACE_WIDTH_MM = 0.4
-POWER_TRACE_WIDTH_MM = 1.0
+POWER_TRACE_WIDTH_MM = 1.5
 CLEARANCE_MM = 0.4
 
 VIA_DRILL_MM = 0.4
@@ -51,7 +51,7 @@ POUR_CLEARANCE_MM = 0.5
 POUR_TO_OUTLINE_MM = 0.5
 
 BOARD_THICKNESS_MM = 1.6
-COPPER_LAYERS = 4
+COPPER_LAYERS = 8
 
 
 def drill_for_lead(lead_diameter_mm: float) -> float:
@@ -83,15 +83,19 @@ def validate() -> None:
     if annular_ring(VIA_PAD_MM, VIA_DRILL_MM) < PCBWAY_MIN_ANNULAR_RING_MM:
         raise ValueError("Via annular ring is thinner than the process allows")
     if THT_ANNULAR_RING_MM < PCBWAY_MIN_ANNULAR_RING_MM:
-        raise ValueError("Through-hole annular ring is thinner than the process allows")
+        raise ValueError(
+            "Through-hole annular ring is thinner than the process allows"
+        )
     if SILK_LINE_MM < PCBWAY_MIN_SILK_LINE_MM:
         raise ValueError("Silkscreen line is thinner than the process allows")
     if SILK_TEXT_HEIGHT_MM < PCBWAY_MIN_SILK_TEXT_HEIGHT_MM:
         raise ValueError("Silkscreen text is smaller than the process can hold")
     if OUTLINE_LINE_MM <= 0.0:
         raise ValueError("The board outline needs a drawn width")
-    if COPPER_LAYERS != 4:
-        raise ValueError("The dedicated GND and 5 V planes require four copper layers")
+    if COPPER_LAYERS != 8:
+        raise ValueError(
+            "Three rail planes and three isolated bus layers require eight layers"
+        )
     if MASK_EXPANSION_MM <= 0.0:
         raise ValueError("Soldermask must open wider than the pad it clears")
 

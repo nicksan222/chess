@@ -14,11 +14,13 @@ from dataclasses import dataclass
 import pcbnew
 
 from core import rules
+from core.nets import ButtonNet
 
 GRID_MM = 0.5
 TRACK_MM = rules.TRACE_WIDTH_MM
-KEEP_OUT_MM = rules.CLEARANCE_MM + TRACK_MM / 2
+KEEP_OUT_MM = rules.CLEARANCE_MM + TRACK_MM / 2 + 0.02
 LAYERS = (pcbnew.F_Cu, pcbnew.B_Cu)
+BUTTON_NET_NAMES = frozenset(ButtonNet)
 
 
 def _mm(value: int) -> float:
@@ -35,17 +37,38 @@ def _position(cell: tuple[int, int]) -> pcbnew.VECTOR2I:
     )
 
 
-def _blocked(board: pcbnew.BOARD, netcode: int, bounds: tuple[int, int, int, int]):
+def _blocked(
+    board: pcbnew.BOARD,
+    netcode: int,
+    bounds: tuple[int, int, int, int],
+    layers: tuple[int, ...],
+):
     x0, y0, x1, y1 = bounds
-    blocked = {layer: set() for layer in LAYERS}
+    blocked = {layer: set() for layer in layers}
     via_forbidden: set[tuple[int, int]] = set()
 
-    def mark_box(box, layers, extra=KEEP_OUT_MM):
+    def mark_circle(position, radius, target_layers):
+        centre_x, centre_y = _mm(position.x), _mm(position.y)
+        reach = radius + KEEP_OUT_MM
+        left = math.floor((centre_x - reach) / GRID_MM)
+        right = math.ceil((centre_x + reach) / GRID_MM)
+        top = math.floor((centre_y - reach) / GRID_MM)
+        bottom = math.ceil((centre_y + reach) / GRID_MM)
+        for layer in target_layers:
+            cells = blocked[layer]
+            for ix in range(max(x0, left), min(x1, right) + 1):
+                for iy in range(max(y0, top), min(y1, bottom) + 1):
+                    dx = ix * GRID_MM - centre_x
+                    dy = iy * GRID_MM - centre_y
+                    if dx * dx + dy * dy <= reach * reach:
+                        cells.add((ix, iy))
+
+    def mark_box(box, target_layers, extra=KEEP_OUT_MM):
         left = math.floor((_mm(box.GetLeft()) - extra) / GRID_MM)
         right = math.ceil((_mm(box.GetRight()) + extra) / GRID_MM)
         top = math.floor((_mm(box.GetTop()) - extra) / GRID_MM)
         bottom = math.ceil((_mm(box.GetBottom()) + extra) / GRID_MM)
-        for layer in layers:
+        for layer in target_layers:
             cells = blocked[layer]
             for ix in range(max(x0, left), min(x1, right) + 1):
                 for iy in range(max(y0, top), min(y1, bottom) + 1):
@@ -66,18 +89,52 @@ def _blocked(board: pcbnew.BOARD, netcode: int, bounds: tuple[int, int, int, int
             # and must always remain clear on both outer layers.
             if pad.GetNetCode() == netcode and netcode != 0:
                 continue
-            copper_layers = [layer for layer in LAYERS if pad.IsOnLayer(layer)]
+            copper_layers = [layer for layer in layers if pad.IsOnLayer(layer)]
             if pad.GetAttribute() == pcbnew.PAD_ATTRIB_NPTH:
-                copper_layers = list(LAYERS)
+                copper_layers = list(layers)
             if copper_layers:
-                mark_box(pad.GetBoundingBox(), copper_layers)
+                if pad.GetShape() == pcbnew.PAD_SHAPE_CIRCLE:
+                    size = pad.GetSize()
+                    mark_circle(
+                        pad.GetPosition(), max(_mm(size.x), _mm(size.y)) / 2, copper_layers
+                    )
+                else:
+                    mark_box(pad.GetBoundingBox(), copper_layers)
+
+    # Keep through-vias out of the narrow perpendicular escape channels at the
+    # Pi header. Tracks on an internal layer can then leave every GPIO pad
+    # without being pinched between an unrelated via and the adjacent header pin.
+    for footprint in board.GetFootprints():
+        if footprint.GetReference() != "J1":
+            continue
+        for pad in footprint.Pads():
+            if pad.GetNetname() not in BUTTON_NET_NAMES:
+                continue
+            centre = pad.GetPosition()
+            cx, cy = _mm(centre.x), _mm(centre.y)
+            direction = 1 if cy > 340.0 else -1
+            left = math.floor((cx - 1.2) / GRID_MM)
+            right = math.ceil((cx + 1.2) / GRID_MM)
+            near = math.floor(cy / GRID_MM)
+            far = math.ceil((cy + direction * 6.0) / GRID_MM)
+            for ix in range(max(x0, left), min(x1, right) + 1):
+                for iy in range(max(y0, min(near, far)), min(y1, max(near, far)) + 1):
+                    via_forbidden.add((ix, iy))
 
     for track in board.GetTracks():
         if track.GetNetCode() == netcode and netcode != 0:
             continue
+        box = track.GetBoundingBox()
+        left = math.floor((_mm(box.GetLeft()) - KEEP_OUT_MM) / GRID_MM)
+        right = math.ceil((_mm(box.GetRight()) + KEEP_OUT_MM) / GRID_MM)
+        top = math.floor((_mm(box.GetTop()) - KEEP_OUT_MM) / GRID_MM)
+        bottom = math.ceil((_mm(box.GetBottom()) + KEEP_OUT_MM) / GRID_MM)
+        for ix in range(max(x0, left), min(x1, right) + 1):
+            for iy in range(max(y0, top), min(y1, bottom) + 1):
+                via_forbidden.add((ix, iy))
         if isinstance(track, pcbnew.PCB_VIA):
-            mark_box(track.GetBoundingBox(), LAYERS)
-        elif track.GetLayer() in LAYERS:
+            mark_box(track.GetBoundingBox(), layers)
+        elif track.GetLayer() in layers:
             mark_box(track.GetBoundingBox(), (track.GetLayer(),))
     return blocked, via_forbidden
 
@@ -85,6 +142,7 @@ def _blocked(board: pcbnew.BOARD, netcode: int, bounds: tuple[int, int, int, int
 @dataclass(frozen=True)
 class Route:
     points: tuple[tuple[int, int, int], ...]
+    layers: tuple[int, ...]
 
 
 def find_route(
@@ -96,6 +154,8 @@ def find_route(
     preferred_layer: int | None = None,
     required_end_layer: int | None = None,
     allow_vias: bool = True,
+    layers: tuple[int, ...] = LAYERS,
+    diagonals: bool = False,
 ) -> Route:
     """Find a clearance-aware path; layer is encoded as 0=front, 1=back."""
     start_cell, end_cell = _cell(start), _cell(end)
@@ -114,14 +174,16 @@ def find_route(
         min(board_bounds[2], max(start_cell[0], end_cell[0]) + margin),
         min(board_bounds[3], max(start_cell[1], end_cell[1]) + margin),
     )
-    blocked, via_forbidden = _blocked(board, net.GetNetCode(), bounds)
-    for layer in LAYERS:
+    blocked, via_forbidden = _blocked(board, net.GetNetCode(), bounds, layers)
+    for layer in layers:
         blocked[layer].discard(start_cell)
         blocked[layer].discard(end_cell)
 
-    start_layers = range(2) if preferred_layer is None else (preferred_layer,)
+    start_layers = range(len(layers)) if preferred_layer is None else (preferred_layer,)
     starts = [(start_cell[0], start_cell[1], layer) for layer in start_layers]
-    target_layers = range(2) if required_end_layer is None else (required_end_layer,)
+    target_layers = (
+        range(len(layers)) if required_end_layer is None else (required_end_layer,)
+    )
     targets = {(end_cell[0], end_cell[1], layer) for layer in target_layers}
     queue: list[tuple[int, int, tuple[int, int, int]]] = []
     serial = 0
@@ -147,17 +209,35 @@ def find_route(
             (x, y + 1, layer_index, 1),
             (x, y - 1, layer_index, 1),
         ]
+        if diagonals:
+            candidates.extend(
+                (
+                    (x + 1, y + 1, layer_index, 2),
+                    (x + 1, y - 1, layer_index, 2),
+                    (x - 1, y + 1, layer_index, 2),
+                    (x - 1, y - 1, layer_index, 2),
+                )
+            )
         if allow_vias:
-            candidates.append((x, y, 1 - layer_index, 16))
+            candidates.extend(
+                (x, y, other_layer, 16)
+                for other_layer in range(len(layers))
+                if other_layer != layer_index
+            )
         for nx, ny, nl, step_cost in candidates:
             if not (bounds[0] <= nx <= bounds[2] and bounds[1] <= ny <= bounds[3]):
                 continue
             cell = (nx, ny)
-            if cell in blocked[LAYERS[nl]]:
+            if cell in blocked[layers[nl]]:
+                continue
+            if diagonals and nx != x and ny != y and (
+                (nx, y) in blocked[layers[nl]]
+                or (x, ny) in blocked[layers[nl]]
+            ):
                 continue
             # A through via needs clearance on both outer layers.
             if nl != layer_index and (
-                cell in blocked[LAYERS[layer_index]] or cell in via_forbidden
+                cell in blocked[layers[layer_index]] or cell in via_forbidden
             ):
                 continue
             candidate = (nx, ny, nl)
@@ -185,7 +265,7 @@ def find_route(
         if delta1 != delta2:
             simple.append(here)
     simple.append(path[-1])
-    return Route(tuple(simple))
+    return Route(tuple(simple), layers)
 
 
 def apply_route(board: pcbnew.BOARD, net, start, end, route: Route) -> None:
@@ -201,7 +281,7 @@ def apply_route(board: pcbnew.BOARD, net, start, end, route: Route) -> None:
         item.SetStart(a)
         item.SetEnd(b)
         item.SetWidth(pcbnew.FromMM(TRACK_MM))
-        item.SetLayer(LAYERS[layer_index])
+        item.SetLayer(route.layers[layer_index])
         item.SetNet(net)
         board.Add(item)
 
