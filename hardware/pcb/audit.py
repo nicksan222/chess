@@ -12,6 +12,8 @@ HARDWARE = ROOT.parent
 sys.path.insert(0, str(HARDWARE))
 sys.path.insert(0, str(ROOT))
 
+import footprints  # noqa: E402
+from components.catalog import for_netlist_entry, known_part_keys  # noqa: E402
 from shared.components import COMPONENTS  # noqa: E402
 from write_bom import render as render_bom  # noqa: E402
 
@@ -39,6 +41,35 @@ def audit() -> dict:
         if component.get("part_key") in COMPONENTS
         and component["package"] != COMPONENTS[component["part_key"]].package
     )
+    anonymous_products = sorted(
+        reference
+        for reference, component in board["components"].items()
+        if component.get("part_key") in COMPONENTS
+        and (
+            not COMPONENTS[component["part_key"]].manufacturer.strip()
+            or not COMPONENTS[component["part_key"]].mpn.strip()
+            or COMPONENTS[component["part_key"]].manufacturer.casefold() == "generic"
+            or COMPONENTS[component["part_key"]].mpn
+            == COMPONENTS[component["part_key"]].key
+        )
+    )
+    used_part_keys = {
+        component.get("part_key", "<missing>")
+        for component in board["components"].values()
+    }
+    missing_models = sorted(used_part_keys - known_part_keys())
+    pin_model_mismatches = []
+    for reference, component in board["components"].items():
+        if component.get("part_key") in missing_models:
+            continue
+        if component.get("package") not in footprints.CATALOG:
+            pin_model_mismatches.append(reference)
+            continue
+        model = for_netlist_entry(reference, component)
+        footprint = footprints.for_package(component["package"])
+        if {pad.net_number for pad in footprint.pads} != set(model.get_pins()):
+            pin_model_mismatches.append(reference)
+
     implicit_nc = sum(
         len(connection["pads"]) == 1 and not connection.get("no_connect", False)
         for connection in board["connections"]
@@ -60,6 +91,9 @@ def audit() -> dict:
         ),
         "unknown_part_keys": unknown,
         "package_mismatches": mismatches,
+        "anonymous_products": anonymous_products,
+        "missing_component_models": missing_models,
+        "pin_model_mismatches": pin_model_mismatches,
         "implicit_no_connects": implicit_nc,
         "bom_current": (ROOT / "design/bom.md").read_text() == render_bom(),
         "native_schematic": (ROOT / "chess-board.kicad_sch").is_file(),
@@ -83,6 +117,9 @@ def audit() -> dict:
         (
             not unknown,
             not mismatches,
+            not anonymous_products,
+            not missing_models,
+            not pin_model_mismatches,
             implicit_nc == 0,
             result["bom_current"],
             result["native_schematic"],

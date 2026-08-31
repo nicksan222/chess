@@ -1,4 +1,5 @@
 {
+  "anonymous_products": [],
   "approved_products": 23,
   "bom_current": true,
   "components": 233,
@@ -9,8 +10,10 @@
   "explicit_no_connects": 27,
   "ignored_drc_rules": [],
   "implicit_no_connects": 0,
+  "missing_component_models": [],
   "native_schematic": true,
   "package_mismatches": [],
+  "pin_model_mismatches": [],
   "prototype_records": 0,
   "release_ready": false,
   "revision": "B-PROTOTYPE",

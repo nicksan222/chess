@@ -71,7 +71,30 @@ def validate() -> None:
             f"{len(unconnected)} unconnected items, "
             f"{len(parity)} parity errors"
         )
-    print("PCB release gate passed: no exclusions, violations, or open connections")
+
+    from audit import audit
+
+    completeness = audit()
+    product_failures = {
+        key: completeness[key]
+        for key in (
+            "unknown_part_keys",
+            "package_mismatches",
+            "anonymous_products",
+            "missing_component_models",
+            "pin_model_mismatches",
+        )
+        if completeness[key]
+    }
+    if product_failures:
+        raise SystemExit(
+            "release blocked: product-model audit failed: "
+            f"{json.dumps(product_failures, sort_keys=True)}"
+        )
+    print(
+        "PCB release gate passed: exact products, typed pins, footprints, "
+        "connectivity, ERC, and DRC agree"
+    )
 
 
 if __name__ == "__main__":
