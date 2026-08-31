@@ -18,17 +18,39 @@ python3 hardware/pcb/generate.py
 
 out=hardware/pcb/generated
 rm -rf "${out}/gerber"
-mkdir -p "${out}/gerber"
 
 printf '\n==> KiCad DRC\n'
-kicad-cli pcb drc -o "${out}/drc.rpt" hardware/pcb/chess-board.kicad_pcb
+kicad-cli pcb drc --severity-all --severity-exclusions \
+    -o "${out}/drc.rpt" hardware/pcb/chess-board.kicad_pcb
+kicad-cli pcb drc --format json --severity-all --severity-exclusions \
+    -o "${out}/drc.json" hardware/pcb/chess-board.kicad_pcb
+
+printf '\n==> Generate review previews\n'
+svg_options=(--mode-single --page-size-mode 2 --fit-page-to-board \
+    --exclude-drawing-sheet --subtract-soldermask)
+kicad-cli pcb export svg "${svg_options[@]}" \
+    -l F.Cu,F.Mask,F.Silkscreen,Edge.Cuts \
+    -o "${out}/board-top.svg" hardware/pcb/chess-board.kicad_pcb
+kicad-cli pcb export svg "${svg_options[@]}" --mirror \
+    -l B.Cu,B.Mask,B.Silkscreen,Edge.Cuts \
+    -o "${out}/board-bottom.svg" hardware/pcb/chess-board.kicad_pcb
+python3 hardware/pcb/polish_previews.py
+kicad-cli pcb render --quality high --width 1800 --height 1200 \
+    --background opaque --floor --perspective --rotate 325,0,35 --zoom 0.75 \
+    -o "${out}/board-3d.png" hardware/pcb/chess-board.kicad_pcb
+kicad-cli pcb render --quality high --width 1400 --height 1400 \
+    --background opaque --side top --zoom 0.82 \
+    -o "${out}/board-top.png" hardware/pcb/chess-board.kicad_pcb
+kicad-cli pcb render --quality high --width 1400 --height 1400 \
+    --background opaque --side bottom --zoom 0.82 \
+    -o "${out}/board-bottom.png" hardware/pcb/chess-board.kicad_pcb
+
+printf '\n==> Enforce fabrication release gate\n'
+python3 hardware/pcb/validate_release.py
 
 printf '\n==> Export fabrication files\n'
+mkdir -p "${out}/gerber"
 kicad-cli pcb export gerbers \
-    -l F.Cu,B.Cu,F.Paste,B.Paste,F.Silkscreen,B.Silkscreen,F.Mask,B.Mask,Edge.Cuts \
+    -l F.Cu,In1.Cu,In2.Cu,B.Cu,F.Paste,B.Paste,F.Silkscreen,B.Silkscreen,F.Mask,B.Mask,Edge.Cuts \
     -o "${out}/gerber/" hardware/pcb/chess-board.kicad_pcb
 kicad-cli pcb export drill -o "${out}/gerber/" hardware/pcb/chess-board.kicad_pcb
-kicad-cli pcb export svg --mode-single -l F.Cu,F.Silkscreen,Edge.Cuts \
-    -o "${out}/board-top.svg" hardware/pcb/chess-board.kicad_pcb
-kicad-cli pcb export svg --mode-single -l B.Cu,B.Silkscreen,Edge.Cuts \
-    -o "${out}/board-bottom.svg" hardware/pcb/chess-board.kicad_pcb

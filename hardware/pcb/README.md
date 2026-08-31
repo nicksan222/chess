@@ -8,5 +8,19 @@ The board is a native KiCad 9 project composed from Python:
 - `hardware/shared/` supplies dimensions, component identities, and wiring.
 - `chess-board.kicad_pro` and `chess-board.kicad_pcb` open directly in KiCad.
 
-Run `./tools/pcb` to regenerate the project, run KiCad DRC, and export Gerber,
-drill, and SVG artifacts into `generated/`.
+Run `./tools/pcb` to regenerate the project, run KiCad DRC, and produce fitted
+SVG and high-quality 3D review renders in `generated/`.
+
+## Non-negotiable release policy
+
+The runner removes stale fabrication files before validation. Gerber and drill
+output is recreated only when all of these are true:
+
+- KiCad reports zero DRC violations and zero unconnected items;
+- the project contains no DRC exclusions;
+- every intentionally unused pin is explicitly marked `no_connect` in the
+  reviewed connectivity contract;
+- there are no PCB/schematic parity errors.
+
+`validate_release.py` enforces the policy after review images are generated and
+before fabrication export. A failed gate is a failed build, not a warning.
