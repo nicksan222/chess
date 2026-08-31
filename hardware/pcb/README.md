@@ -15,10 +15,41 @@ The board is a native KiCad 9 project composed from Python:
 - `chess-board.kicad_pro`, `chess-board.kicad_sch`, and
   `chess-board.kicad_pcb` open directly in KiCad.
 
-Run `./tools/pcb` to regenerate the exact-MPN BOM and native project, run KiCad
-DRC, audit every release dimension, and produce fitted SVG and high-quality 3D
-review renders in `generated/`. `AUDIT.md` is the human blocking-work list;
-`generated/audit.json` is its machine-readable status.
+## Container operations
+
+The PCB-local `Makefile` is the supported entry point from a host machine. Every
+board operation executes in the reproducible KiCad 9 development container, so
+host Python or KiCad versions cannot silently change the output:
+
+```sh
+make -C hardware/pcb help             # list all operations
+make -C hardware/pcb test             # fast composition tests
+make -C hardware/pcb component-audit  # exact products, semantic pins, footprints
+make -C hardware/pcb board            # regenerate native sources
+make -C hardware/pcb review           # generation + ERC/DRC/parity/renders, no Gerbers
+make -C hardware/pcb status           # print generated/audit.json
+make -C hardware/pcb release          # gated fabrication export
+make -C hardware/pcb shell            # container shell
+make -C hardware/pcb down             # remove the container
+```
+
+`make release` runs `./tools/pcb`; it is not a shortcut around the release gate.
+`AUDIT.md` is the human blocking-work list and `generated/audit.json` is its
+machine-readable status.
+
+## Product reality and readiness
+
+Every fitted electrical part resolves to an explicit manufacturer and part
+number in `hardware/shared/components.py`. The component-model tests require
+that each product has a semantic pin enum and that its logical pins exactly
+match its footprint. The generated BOM therefore contains purchasable product
+identities rather than anonymous `R`, `C`, or connector placeholders.
+
+That does **not** make the board automatically production-ready. Availability,
+manufacturer drawing review, stack-up review, component 3D models, and physical
+reed/magnet validation remain real engineering gates. The repository currently
+reports `release_ready: false` because prototype evidence is absent; do not order
+the board until `make -C hardware/pcb release` succeeds without bypasses.
 
 ## Non-negotiable release policy
 

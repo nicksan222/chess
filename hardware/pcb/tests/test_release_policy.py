@@ -28,6 +28,10 @@ class ReleasePolicyTest(unittest.TestCase):
             with self.subTest(reference=reference):
                 spec = COMPONENTS[component["part_key"]]
                 self.assertEqual(component["package"], spec.package)
+                self.assertTrue(spec.manufacturer.strip())
+                self.assertTrue(spec.mpn.strip())
+                self.assertNotEqual(spec.manufacturer.casefold(), "generic")
+                self.assertNotEqual(spec.mpn, spec.key)
 
     def test_native_schematic_and_symbol_library_are_current(self):
         schematic = render_schematic()
@@ -80,6 +84,27 @@ class ReleasePolicyTest(unittest.TestCase):
         self.assertEqual(report["drc_violations"], 0)
         self.assertEqual(report["unconnected_items"], 0)
         self.assertEqual(report["schematic_parity_errors"], 0)
+
+    def test_pcb_makefile_keeps_common_operations_inside_the_container(self):
+        makefile = (PCB / "Makefile").read_text()
+        for target in (
+            "test",
+            "component-audit",
+            "bom",
+            "schematic",
+            "board",
+            "review",
+            "audit",
+            "status",
+            "release",
+            "check",
+        ):
+            with self.subTest(target=target):
+                recipe = makefile.split(f"{target}:", 1)[1].split("\n\n", 1)[0]
+                self.assertIn("$(DC)", recipe)
+        self.assertIn("release: up", makefile)
+        self.assertIn("$(DC) ./tools/pcb", makefile)
+        self.assertIn("PCB_REVIEW_ONLY=1 ./tools/pcb", makefile)
 
     def test_the_runner_enforces_the_release_gate_before_gerbers(self):
         runner = (PCB.parents[1] / "tools/pcb").read_text()

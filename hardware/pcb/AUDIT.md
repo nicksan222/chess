@@ -5,16 +5,20 @@ not be weakened to clear an item.
 
 ## Blocking
 
-- **Copper routing is complete.** KiCad reports zero geometry violations and
-  zero unconnected items. All reed inputs, LED-chain links, power rails, buses,
-  interrupts, and button GPIO paths are routed. Gerbers remain intentionally
-  absent until the schematic and physical prototype gates also pass.
-- **Native schematic missing.** Connectivity is reviewed JSON embedded into the
-  PCB, but there is not yet a `chess-board.kicad_sch`; therefore true KiCad
-  schematic/PCB parity cannot run. The release gate now rejects this explicitly.
 - **Reed/magnet stack unproven.** The selected KSK-1A66-1015 lies horizontally
   below a vertical magnet. One-square testing at the final CAD spacing is still
-  mandatory before buying the large board.
+  mandatory before buying the large board. Record the evidence in `prototype/`;
+  the release gate intentionally refuses to emit Gerbers until it exists.
+
+## Automated gates currently passing
+
+- Copper routing is complete: KiCad reports zero geometry violations and zero
+  unconnected items across reed inputs, LED links, rails, buses, interrupts,
+  and controls.
+- The native schematic exists, ERC passes, and schematic/PCB parity reports zero
+  errors.
+- Every placed item resolves to an exact manufacturer part number, typed
+  component pin model, and package-compatible footprint.
 
 ## Product and mechanical review
 
