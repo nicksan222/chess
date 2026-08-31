@@ -88,6 +88,68 @@ def add_trace(board, net, start, end, layer=pcbnew.F_Cu, width=0.4) -> None:
     board.Add(trace)
 
 
+def _via(board, net, at) -> None:
+    via = pcbnew.PCB_VIA(board)
+    via.SetPosition(at)
+    via.SetWidth(pcbnew.FromMM(0.9))
+    via.SetDrill(pcbnew.FromMM(0.4))
+    via.SetNet(net)
+    board.Add(via)
+
+
+def route_led_chain(board, net_by_name, pads) -> None:
+    """Route the serpentine clock/data chain with obstacle-aware transitions."""
+    origin = pcbnew.FromMM(ORIGIN_X_MM)
+    for index, connection in enumerate(sources.netlist()["connections"], 1):
+        nodes = [tuple(node) for node in connection["pads"]]
+        if len(nodes) != 2 or not all(node in pads and node[0].startswith("U") for node in nodes):
+            continue
+        if nodes[0][1] not in {"5", "6"} or nodes[1][1] not in {"3", "4"}:
+            continue
+        name = connection["name"] or f"N${index}"
+        net = net_by_name[name]
+        start, end = (pads[node].GetPosition() for node in nodes)
+        c0, c1 = (pads[node].GetParent().GetPosition() for node in nodes)
+        if c0.y == c1.y:
+            # Four links per half-board pass the quadrant expanders. Drop those
+            # links to the free bottom layer and take a lane between reed rows.
+            x0, x1 = sorted((start.x, end.x))
+            blocker = next((
+                module.GetBoundingBox()
+                for module in board.GetFootprints()
+                if module.GetReference() in {"U1", "U2", "U3", "U4"}
+                and module.GetBoundingBox().GetLeft() <= x1
+                and module.GetBoundingBox().GetRight() >= x0
+                and module.GetBoundingBox().GetTop() <= start.y <= module.GetBoundingBox().GetBottom()
+            ), None)
+            if blocker is None:
+                add_trace(board, net, start, end)
+                continue
+            # These eight links share space with through-hole expanders and are
+            # left to the general signal router rather than guessed here.
+            continue
+
+        # Rank transitions run at the board edge. Clock remains on top; data
+        # changes to the bottom so the two transitions cannot cross each other.
+        right_side = start.x > origin
+        direction = 1 if right_side else -1
+        is_clock = nodes[0][1] == "6"
+        distance_mm = (3.0 if right_side else 8.0) if is_clock else (2.0 if right_side else 7.0)
+        distance = pcbnew.FromMM(distance_mm)
+        first = pcbnew.VECTOR2I(start.x + direction * distance, start.y)
+        second = pcbnew.VECTOR2I(end.x + direction * distance, end.y)
+        if is_clock:
+            add_trace(board, net, start, first)
+            add_trace(board, net, first, second)
+            add_trace(board, net, second, end)
+        else:
+            add_trace(board, net, start, first)
+            add_trace(board, net, second, end)
+            _via(board, net, first)
+            _via(board, net, second)
+            add_trace(board, net, first, second, pcbnew.B_Cu)
+
+
 def fanout_power(board, net_by_name) -> None:
     """Connect surface-mount power pads to dedicated internal planes."""
     for module in board.GetFootprints():
@@ -156,6 +218,7 @@ def build() -> None:
         board.Add(net)
         net_by_name[name] = net
     pads = add_footprints(board, net_by_name, pad_nets)
+    route_led_chain(board, net_by_name, pads)
     fanout_power(board, net_by_name)
     add_outline(board)
     add_power_planes(board, net_by_name)
