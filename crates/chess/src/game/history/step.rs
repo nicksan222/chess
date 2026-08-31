@@ -1,16 +1,14 @@
 use core::fmt;
 
-use crate::ChessMove;
+use super::{HistoryEvent, Ply};
 
-use super::Ply;
-
-/// A SHA-256 commitment to a move and every move preceding it.
+/// A SHA-256 commitment to one event and every event preceding it.
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(transparent)]
-pub struct MoveHash([u8; Self::BYTE_COUNT]);
+pub struct HistoryHash([u8; Self::BYTE_COUNT]);
 
-impl MoveHash {
-    /// The number of bytes in a move hash.
+impl HistoryHash {
+    /// The number of bytes in a history hash.
     pub const BYTE_COUNT: usize = 32;
 
     /// The anchor for a history that is not tied to an initial board.
@@ -35,13 +33,13 @@ impl MoveHash {
     }
 }
 
-impl Default for MoveHash {
+impl Default for HistoryHash {
     fn default() -> Self {
         Self::GENESIS
     }
 }
 
-impl fmt::Display for MoveHash {
+impl fmt::Display for HistoryHash {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         for byte in self.0 {
             write!(formatter, "{byte:02x}")?;
@@ -50,35 +48,35 @@ impl fmt::Display for MoveHash {
     }
 }
 
-impl fmt::Debug for MoveHash {
+impl fmt::Debug for HistoryHash {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(formatter, "MoveHash({self})")
+        write!(formatter, "HistoryHash({self})")
     }
 }
 
-/// One immutable element in a hash-linked move history.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
-pub struct MoveStep {
+/// One immutable event in a hash-linked game history.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct HistoryStep {
     ply: Ply,
-    chess_move: ChessMove,
-    previous_hash: MoveHash,
-    hash: MoveHash,
+    event: HistoryEvent,
+    previous_hash: HistoryHash,
+    hash: HistoryHash,
 }
 
-impl MoveStep {
+impl HistoryStep {
     /// Reconstructs a step received from transport or persistence.
     ///
-    /// Use [`crate::MoveHistory::try_append`] to validate it before accepting it.
+    /// Use [`crate::GameHistory::try_append`] to validate it before accepting it.
     #[must_use]
     pub const fn from_parts(
         ply: Ply,
-        chess_move: ChessMove,
-        previous_hash: MoveHash,
-        hash: MoveHash,
+        event: HistoryEvent,
+        previous_hash: HistoryHash,
+        hash: HistoryHash,
     ) -> Self {
         Self {
             ply,
-            chess_move,
+            event,
             previous_hash,
             hash,
         }
@@ -90,21 +88,26 @@ impl MoveStep {
         self.ply
     }
 
-    /// Returns the recorded chess move.
+    /// Returns the authoritative event.
     #[must_use]
-    pub const fn chess_move(self) -> ChessMove {
-        self.chess_move
+    pub const fn event(self) -> HistoryEvent {
+        self.event
     }
 
-    /// Returns the commitment that must match before this move is applied.
+    /// Returns the commitment that must match before this event is applied.
     #[must_use]
-    pub const fn previous_hash(self) -> MoveHash {
+    pub const fn previous_hash(self) -> HistoryHash {
         self.previous_hash
     }
 
-    /// Returns the commitment to this move and all preceding moves.
+    /// Returns the commitment to this event and all preceding events.
     #[must_use]
-    pub const fn hash(self) -> MoveHash {
+    pub const fn hash(self) -> HistoryHash {
         self.hash
     }
 }
+
+/// Backwards-compatible name for a history hash.
+pub type MoveHash = HistoryHash;
+/// Backwards-compatible name for a history step.
+pub type MoveStep = HistoryStep;

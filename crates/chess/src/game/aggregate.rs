@@ -1,8 +1,8 @@
-use crate::{Board, ChessMove, Piece, PieceKind, Square};
+use crate::{Board, ChessMove, HistoryEvent, Piece, PieceKind, Square};
 
 use super::{GameSyncError, MoveError, MoveHistory, MoveStep};
 
-/// A playable board coupled to its hash-linked move history.
+/// A playable board coupled to its hash-linked history.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Game {
     board: Board,
@@ -37,7 +37,7 @@ impl Game {
         self.board.piece_at(square)
     }
 
-    /// Returns the immutable, hash-linked move history.
+    /// Returns the immutable, hash-linked game history.
     #[must_use]
     pub const fn history(&self) -> &MoveHistory {
         &self.history
@@ -51,25 +51,22 @@ impl Game {
     /// Applies and records a locally initiated move.
     pub fn play(&mut self, chess_move: ChessMove) -> Result<MoveStep, MoveError> {
         let canonical = self.board.make_move(chess_move)?;
-        Ok(self.history.push(canonical))
+        Ok(self.history.push(HistoryEvent::Move(canonical)))
     }
 
-    /// Verifies, applies, and records a move step received from a peer.
-    ///
-    /// The hash link is checked against every previous local move before the
-    /// newest move is applied. Neither board nor history changes on error.
+    /// Verifies and accepts a history step received from a peer.
     pub fn accept(&mut self, step: MoveStep) -> Result<(), GameSyncError> {
         self.history
             .validate_next(step)
             .map_err(GameSyncError::History)?;
-        let mut next = self.board;
-        let canonical = next
-            .make_move(step.chess_move())
-            .map_err(GameSyncError::Move)?;
-        if canonical != step.chess_move() {
-            return Err(GameSyncError::Move(MoveError::NonCanonicalPromotion));
+        if let HistoryEvent::Move(chess_move) = step.event() {
+            let mut next = self.board;
+            let canonical = next.make_move(chess_move).map_err(GameSyncError::Move)?;
+            if canonical != chess_move {
+                return Err(GameSyncError::Move(MoveError::NonCanonicalPromotion));
+            }
+            self.board = next;
         }
-        self.board = next;
         self.history.append_validated(step);
         Ok(())
     }

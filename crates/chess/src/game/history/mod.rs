@@ -7,50 +7,40 @@ mod step;
 
 pub use error::HistoryError;
 pub use event::{FinalState, HistoryEvent, InvalidState};
-pub use iter::MoveHistoryIter;
+pub use iter::{GameHistoryIter, MoveHistoryIter};
 pub use sequence::{InvalidPly, MoveCount, Ply};
-pub use step::{MoveHash, MoveStep};
+pub use step::{HistoryHash, HistoryStep, MoveHash, MoveStep};
 
 use chess_core::collections::LinkedList;
 
-use crate::{Board, ChessMove};
+use crate::Board;
 
 use hashing::{calculate_board_anchor, calculate_hash, validate_step};
 
-/// A chronological move list whose elements form a SHA-256 hash chain.
+/// The authoritative, SHA-256-linked timeline of a game.
 ///
-/// Each element is stored in the project's safe
-/// [`LinkedList`](chess_core::collections::LinkedList). A step hashes a domain
-/// tag, its previous hash, its ply, and its canonically encoded move. Games
-/// additionally anchor the chain to their initial board. Matching the
-/// `previous_hash` of an incoming step therefore verifies synchronization
-/// through every move except that new step.
-///
-/// The chain provides corruption and synchronization detection, not signer
-/// authentication: a malicious peer able to replace the whole history can
-/// recompute hashes. Protocol authentication can sign [`MoveHash`] values.
+/// Every accepted move, invalid state, and terminal result is retained in one
+/// chronological [`LinkedList`](chess_core::collections::LinkedList). Each
+/// step commits to its event and every preceding event.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
-pub struct MoveHistory {
-    steps: LinkedList<MoveStep>,
-    anchor: MoveHash,
-    tip: MoveHash,
+pub struct GameHistory {
+    steps: LinkedList<HistoryStep>,
+    anchor: HistoryHash,
+    tip: HistoryHash,
 }
 
-impl MoveHistory {
+impl GameHistory {
     /// Creates an empty history at the genesis hash.
     #[must_use]
     pub const fn new() -> Self {
         Self {
             steps: LinkedList::new(),
-            anchor: MoveHash::GENESIS,
-            tip: MoveHash::GENESIS,
+            anchor: HistoryHash::GENESIS,
+            tip: HistoryHash::GENESIS,
         }
     }
 
     /// Creates an empty history anchored to a specific initial board.
-    ///
-    /// Anchoring prevents equal move sequences played from different board
-    /// states from appearing synchronized.
     #[must_use]
     pub fn for_board(board: &Board) -> Self {
         let anchor = calculate_board_anchor(board);
@@ -63,67 +53,63 @@ impl MoveHistory {
 
     /// Returns the commitment to the initial board.
     #[must_use]
-    pub const fn anchor(&self) -> MoveHash {
+    pub const fn anchor(&self) -> HistoryHash {
         self.anchor
     }
 
-    /// Returns the number of retained moves.
+    /// Returns the number of retained events.
     #[must_use]
     pub const fn len(&self) -> MoveCount {
         MoveCount::from_len(self.steps.len())
     }
 
-    /// Returns whether no moves have been recorded.
+    /// Returns whether no events have been recorded.
     #[must_use]
     pub const fn is_empty(&self) -> bool {
         self.steps.is_empty()
     }
 
-    /// Returns the latest cumulative hash, or the genesis hash when empty.
+    /// Returns the latest cumulative hash.
     #[must_use]
-    pub const fn tip(&self) -> MoveHash {
+    pub const fn tip(&self) -> HistoryHash {
         self.tip
     }
 
-    /// Returns the retained steps in chronological order.
-    pub fn iter(&self) -> MoveHistoryIter<'_> {
-        MoveHistoryIter::new(self.steps.iter())
+    /// Returns the latest event step.
+    #[must_use]
+    pub fn latest(&self) -> Option<HistoryStep> {
+        self.steps.back().copied()
     }
 
-    /// Creates and appends the next locally produced move step.
-    pub fn push(&mut self, chess_move: ChessMove) -> MoveStep {
+    /// Returns retained steps in chronological order.
+    pub fn iter(&self) -> GameHistoryIter<'_> {
+        GameHistoryIter::new(self.steps.iter())
+    }
+
+    /// Creates and appends a local event step.
+    pub fn push(&mut self, event: HistoryEvent) -> HistoryStep {
         let ply = self.next_ply();
-        let step = MoveStep::from_parts(
-            ply,
-            chess_move,
-            self.tip,
-            calculate_hash(self.tip, ply, chess_move),
-        );
+        let step =
+            HistoryStep::from_parts(ply, event, self.tip, calculate_hash(self.tip, ply, event));
         self.append_validated(step);
         step
     }
 
-    /// Returns whether this history contains exactly the moves preceding
-    /// `incoming` and whether the incoming step itself has a valid hash.
-    ///
-    /// This is the board synchronization check to perform before applying the
-    /// latest move.
+    /// Returns whether `incoming` is the valid next event.
     #[must_use]
-    pub fn is_synced_before(&self, incoming: MoveStep) -> bool {
+    pub fn is_synced_before(&self, incoming: HistoryStep) -> bool {
         self.validate_next(incoming).is_ok()
     }
 
     /// Validates and appends a step received from another component.
-    ///
-    /// The history remains unchanged on error.
-    pub fn try_append(&mut self, incoming: MoveStep) -> Result<(), HistoryError> {
+    pub fn try_append(&mut self, incoming: HistoryStep) -> Result<(), HistoryError> {
         self.validate_next(incoming)?;
         self.append_validated(incoming);
         Ok(())
     }
 
-    /// Removes and returns the latest move, restoring the preceding tip.
-    pub fn pop(&mut self) -> Option<MoveStep> {
+    /// Removes the latest event and restores the preceding tip.
+    pub fn pop(&mut self) -> Option<HistoryStep> {
         let step = self.steps.pop_back()?;
         self.tip = step.previous_hash();
         Some(step)
@@ -148,17 +134,20 @@ impl MoveHistory {
         Ok(())
     }
 
-    pub(crate) fn validate_next(&self, incoming: MoveStep) -> Result<(), HistoryError> {
+    pub(crate) fn validate_next(&self, incoming: HistoryStep) -> Result<(), HistoryError> {
         validate_step(incoming, self.next_ply(), self.tip)
     }
 
-    pub(crate) fn append_validated(&mut self, step: MoveStep) {
+    pub(crate) fn append_validated(&mut self, step: HistoryStep) {
         self.tip = step.hash();
         self.steps.push_back(step);
     }
 
     fn next_ply(&self) -> Ply {
         let value = (self.steps.len() as u64).saturating_add(1);
-        Ply::new(value).expect("a move history cannot contain enough allocated nodes to overflow")
+        Ply::new(value).expect("a history cannot contain enough allocated nodes to overflow")
     }
 }
+
+/// Backwards-compatible name for the authoritative game history.
+pub type MoveHistory = GameHistory;

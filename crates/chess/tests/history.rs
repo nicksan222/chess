@@ -1,6 +1,6 @@
 use chess::{
-    Board, ChessMove, Color, Game, GameSyncError, HistoryError, MoveHash, MoveHistory, MoveStep,
-    Piece, PieceKind, Ply, Square,
+    Board, ChessMove, Color, FinalState, Game, GameSyncError, HistoryError, HistoryEvent,
+    InvalidState, MoveHash, MoveHistory, MoveStep, Piece, PieceKind, Ply, Square,
 };
 
 fn synchronization_board(pawn_square: Square) -> Board {
@@ -14,20 +14,35 @@ fn synchronization_board(pawn_square: Square) -> Board {
 #[test]
 fn every_link_stores_a_cumulative_hash_and_previous_tip() {
     let mut history = MoveHistory::new();
-    let first = history.push(ChessMove::new(Square::E2, Square::E4));
-    let second = history.push(ChessMove::new(Square::E7, Square::E5));
+    let first = history.push(HistoryEvent::Move(ChessMove::new(Square::E2, Square::E4)));
+    let second = history.push(HistoryEvent::Move(ChessMove::new(Square::E7, Square::E5)));
 
     assert_eq!(first.ply(), Ply::FIRST);
     assert_eq!(first.previous_hash(), MoveHash::GENESIS);
     assert_eq!(
         first.hash().to_string(),
-        "ea0fc25719e0cca4c5f9d507e5f67de36d2918b331de690b40e3283f13dcd59b"
+        "59c8f0c8e610d5d3f71e08c7d6f8749bb8759167e8208c8c144f36650a44d5e6"
     );
     assert_eq!(second.ply(), Ply::new(2).unwrap());
     assert_eq!(second.previous_hash(), first.hash());
     assert_eq!(history.tip(), second.hash());
     assert_eq!(history.len().value(), 2);
     assert_eq!(history.iter().copied().collect::<Vec<_>>(), [first, second]);
+    assert_eq!(history.verify(), Ok(()));
+}
+
+#[test]
+fn every_event_kind_participates_in_the_hash_chain() {
+    let mut history = MoveHistory::new();
+    let moved = history.push(HistoryEvent::Move(ChessMove::new(Square::E2, Square::E4)));
+    let invalid = history.push(HistoryEvent::Invalid(InvalidState::PendingInvalid));
+    let final_step = history.push(HistoryEvent::Final(FinalState::Stalemate));
+
+    assert_eq!(invalid.previous_hash(), moved.hash());
+    assert_eq!(final_step.previous_hash(), invalid.hash());
+    assert_ne!(moved.hash(), invalid.hash());
+    assert_ne!(invalid.hash(), final_step.hash());
+    assert_eq!(history.latest(), Some(final_step));
     assert_eq!(history.verify(), Ok(()));
 }
 
@@ -99,12 +114,12 @@ fn divergent_or_corrupted_steps_are_rejected_without_mutation() {
     assert_eq!(local, before);
 
     let mut source = MoveHistory::new();
-    let valid = source.push(ChessMove::new(Square::E2, Square::E4));
+    let valid = source.push(HistoryEvent::Move(ChessMove::new(Square::E2, Square::E4)));
     let mut bytes = valid.hash().to_bytes();
     bytes[0] ^= 0xff;
     let corrupted = MoveStep::from_parts(
         valid.ply(),
-        valid.chess_move(),
+        valid.event(),
         valid.previous_hash(),
         MoveHash::from_bytes(bytes),
     );
@@ -120,8 +135,8 @@ fn divergent_or_corrupted_steps_are_rejected_without_mutation() {
 #[test]
 fn popping_restores_the_previous_cumulative_hash() {
     let mut history = MoveHistory::new();
-    let first = history.push(ChessMove::new(Square::E2, Square::E4));
-    let second = history.push(ChessMove::new(Square::E7, Square::E5));
+    let first = history.push(HistoryEvent::Move(ChessMove::new(Square::E2, Square::E4)));
+    let second = history.push(HistoryEvent::Move(ChessMove::new(Square::E7, Square::E5)));
 
     assert_eq!(history.pop(), Some(second));
     assert_eq!(history.tip(), first.hash());

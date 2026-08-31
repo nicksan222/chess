@@ -2,19 +2,19 @@ use core::iter::FusedIterator;
 
 use chess_core::collections::Iter as LinkedListIter;
 
-use super::MoveStep;
+use super::HistoryStep;
 
-/// An iterator over hash-linked move steps in chronological order.
-pub struct MoveHistoryIter<'a>(LinkedListIter<'a, MoveStep>);
+/// An iterator over hash-linked game-history steps in chronological order.
+pub struct GameHistoryIter<'a>(LinkedListIter<'a, HistoryStep>);
 
-impl<'a> MoveHistoryIter<'a> {
-    pub(super) const fn new(iter: LinkedListIter<'a, MoveStep>) -> Self {
+impl<'a> GameHistoryIter<'a> {
+    pub(super) const fn new(iter: LinkedListIter<'a, HistoryStep>) -> Self {
         Self(iter)
     }
 }
 
-impl<'a> Iterator for MoveHistoryIter<'a> {
-    type Item = &'a MoveStep;
+impl<'a> Iterator for GameHistoryIter<'a> {
+    type Item = &'a HistoryStep;
 
     fn next(&mut self) -> Option<Self::Item> {
         self.0.next()
@@ -25,5 +25,8 @@ impl<'a> Iterator for MoveHistoryIter<'a> {
     }
 }
 
-impl ExactSizeIterator for MoveHistoryIter<'_> {}
-impl FusedIterator for MoveHistoryIter<'_> {}
+impl ExactSizeIterator for GameHistoryIter<'_> {}
+impl FusedIterator for GameHistoryIter<'_> {}
+
+/// Backwards-compatible name for the game-history iterator.
+pub type MoveHistoryIter<'a> = GameHistoryIter<'a>;

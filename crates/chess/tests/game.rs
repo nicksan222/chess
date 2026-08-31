@@ -59,7 +59,10 @@ fn pieces_report_legal_destinations_and_move_themselves() {
     );
 
     let step = pawn.move_to(Square::E4, &mut game).unwrap();
-    assert_eq!(step.chess_move(), ChessMove::new(Square::E2, Square::E4));
+    assert_eq!(
+        step.event(),
+        chess::HistoryEvent::Move(ChessMove::new(Square::E2, Square::E4))
+    );
     assert_eq!(game.piece_at(Square::E2), None);
     assert_eq!(
         game.piece_at(Square::E4),
@@ -172,7 +175,12 @@ fn en_passant_and_selected_promotion_are_applied() {
     let step = pawn
         .move_and_promote(Square::A8, PieceKind::Knight, &mut promotion)
         .unwrap();
-    assert_eq!(step.chess_move().promotion_kind(), Some(PieceKind::Knight));
+    assert_eq!(
+        step.event(),
+        chess::HistoryEvent::Move(
+            ChessMove::promotion(Square::A7, Square::A8, PieceKind::Knight).unwrap()
+        )
+    );
     assert_eq!(
         promotion.piece_at(Square::A8).unwrap().kind(),
         PieceKind::Knight
