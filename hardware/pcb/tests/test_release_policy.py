@@ -90,7 +90,7 @@ class ReleasePolicyTest(unittest.TestCase):
         self.assertLess(gate, fabrication)
         self.assertIn("--severity-exclusions", runner)
         workflow = (PCB.parents[1] / ".github/workflows/ci.yml").read_text()
-        self.assertIn("PCB_REVIEW_ONLY=1 ./tools/pcb", workflow)
+        self.assertIn("env PCB_REVIEW_ONLY=1 ./tools/pcb", workflow)
 
 
 if __name__ == "__main__":
