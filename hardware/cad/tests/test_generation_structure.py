@@ -8,6 +8,10 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 CAD_ROOT = REPOSITORY_ROOT / "hardware" / "cad"
 PROJECTS = CAD_ROOT / "projects"
 GENERATED = CAD_ROOT / "generated"
+BLOCKS = CAD_ROOT / "blocks"
+
+PRINTABLE_PROJECTS = ("board-case", "tile-plate")
+VIEW_PROJECTS = ("board-assembly",)
 
 
 class GeneratorStructureTest(unittest.TestCase):
@@ -23,19 +27,16 @@ class GeneratorStructureTest(unittest.TestCase):
         self.assertEqual(
             [path for _, path in ranked],
             [
-                "hardware/cad/projects/single-tile-top/generate.py",
-                "hardware/cad/projects/single-tile-bottom/generate.py",
-                "hardware/cad/projects/single-tile-merged/generate.py",
-                "hardware/cad/projects/board-skeleton/generate.py",
+                "hardware/cad/projects/board-case/generate.py",
+                "hardware/cad/projects/tile-plate/generate.py",
                 "hardware/cad/projects/board-assembly/generate.py",
             ],
         )
 
     def test_every_printable_model_has_one_owning_generator(self) -> None:
         ownership = {
-            "Tile_Top_Lid": PROJECTS / "single-tile-top" / "generate.py",
-            "Tile_Bottom_Tray": PROJECTS / "single-tile-bottom" / "generate.py",
-            "Printable_Empty_Board_Tray": PROJECTS / "board-skeleton" / "generate.py",
+            "Printable_Board_Case": PROJECTS / "board-case" / "generate.py",
+            "Printable_Tile_Plate": PROJECTS / "tile-plate" / "generate.py",
         }
         generator_text = {path: path.read_text() for path in set(ownership.values())}
         for object_name, owner in ownership.items():
@@ -46,28 +47,70 @@ class GeneratorStructureTest(unittest.TestCase):
                 )
                 self.assertNotIn(f'"{object_name}"', other_text)
 
-    def test_views_import_printable_sources_without_redefining_them(self) -> None:
-        view_generators = (
-            PROJECTS / "single-tile-merged" / "generate.py",
-            PROJECTS / "board-assembly" / "generate.py",
+    def test_the_board_is_two_printed_parts(self) -> None:
+        self.assertEqual(
+            {path.parent.name for path in PROJECTS.glob("*/generate.py")},
+            set(PRINTABLE_PROJECTS) | set(VIEW_PROJECTS),
         )
+
+    def test_views_import_printable_sources_without_redefining_them(self) -> None:
         forbidden_geometry_calls = (
             "modeling.rounded_box(",
+            "modeling.box_between(",
             "modeling.cylinder(",
             "modeling.boolean_apply(",
+            "modeling.cut_batch(",
+            "modeling.union_batch(",
             "bpy.ops.mesh.",
         )
-        for generator in view_generators:
-            text = generator.read_text()
-            with self.subTest(generator=generator):
+        for project in VIEW_PROJECTS:
+            text = (PROJECTS / project / "generate.py").read_text()
+            with self.subTest(generator=project):
                 self.assertIn("modeling.load_objects(", text)
                 for call in forbidden_geometry_calls:
-                    self.assertNotIn(call, text)
+                    self.assertNotIn(call, text, call)
+
+    def test_printable_generators_validate_what_they_produce(self) -> None:
+        for project in PRINTABLE_PROJECTS:
+            text = (PROJECTS / project / "generate.py").read_text()
+            with self.subTest(generator=project):
+                self.assertIn("validation.validate_fdm_part(", text)
 
     def test_legacy_layout_is_removed(self) -> None:
         self.assertFalse((CAD_ROOT / "blender").exists())
-        self.assertFalse((PROJECTS / "single-tile").exists())
         self.assertFalse((REPOSITORY_ROOT / "tools" / "generate-cad").exists())
+        for gone in (
+            "single-tile",
+            "single-tile-top",
+            "single-tile-bottom",
+            "single-tile-merged",
+            "board-skeleton",
+        ):
+            self.assertFalse((PROJECTS / gone).exists(), gone)
+        self.assertFalse((BLOCKS / "tile_electronics.py").exists())
+
+
+class SharedModelingTest(unittest.TestCase):
+    """The boolean traps that cost real debugging time stay documented."""
+
+    def test_batch_helpers_warn_that_members_must_be_disjoint(self) -> None:
+        text = (CAD_ROOT / "core" / "modeling.py").read_text()
+        self.assertIn("def cut_batch(", text)
+        self.assertIn("def union_batch(", text)
+        self.assertIn("disjoint", text)
+
+    def test_a_bevel_wider_than_its_box_is_refused(self) -> None:
+        """It produces a silently invalid mesh rather than an error."""
+        text = (CAD_ROOT / "core" / "modeling.py").read_text()
+        self.assertIn("bevel radius", text)
+        self.assertIn("min(dimensions)", text)
+
+    def test_generators_use_the_shared_batch_helpers(self) -> None:
+        for project in PRINTABLE_PROJECTS:
+            text = (PROJECTS / project / "generate.py").read_text()
+            with self.subTest(generator=project):
+                self.assertIn("modeling.cut_batch(", text)
+                self.assertNotIn("def _cut(", text)
 
 
 class GeneratedLayoutTest(unittest.TestCase):

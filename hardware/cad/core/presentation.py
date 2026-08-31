@@ -70,7 +70,7 @@ def add_studio(
         "Studio_Floor",
         (*floor_size, 3.0),
         (0.0, 0.0, -1.5),
-        2.0,
+        1.0,
         collection,
     )
     floor.data.materials.append(floor_material)
