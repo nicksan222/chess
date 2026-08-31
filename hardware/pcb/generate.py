@@ -16,7 +16,7 @@ sys.path.insert(0, str(HARDWARE_ROOT))
 
 import footprints  # noqa: E402
 from footprints import base as footprint_base  # noqa: E402
-from core import placement, rules, sources  # noqa: E402
+from core import grid_router, placement, rules, sources  # noqa: E402
 from shared.components import COMPONENTS  # noqa: E402
 
 BOARD_PATH = PCB_ROOT / "chess-board.kicad_pcb"
@@ -120,13 +120,15 @@ def _via(board, net, at) -> None:
     board.Add(via)
 
 
-def route_led_chain(board, net_by_name, pads) -> None:
-    """Route the serpentine clock/data chain with obstacle-aware transitions."""
+def route_led_chain(board, net_by_name, pads, *, obstructed_only=False) -> None:
+    """Route regular links first and expander-obstructed links after sensors."""
     origin = pcbnew.FromMM(ORIGIN_X_MM)
     for index, connection in enumerate(sources.netlist()["connections"], 1):
         nodes = [tuple(node) for node in connection["pads"]]
         if len(nodes) != 2 or not all(node in pads and node[0].startswith("U") for node in nodes):
             continue
+        if nodes[0][1] in {"3", "4"} and nodes[1][1] in {"5", "6"}:
+            nodes.reverse()
         if nodes[0][1] not in {"5", "6"} or nodes[1][1] not in {"3", "4"}:
             continue
         name = connection["name"] or f"N${index}"
@@ -140,18 +142,29 @@ def route_led_chain(board, net_by_name, pads) -> None:
             blocker = next((
                 module.GetBoundingBox()
                 for module in board.GetFootprints()
-                if module.GetReference() in {"U1", "U2", "U3", "U4"}
+                if module.GetReference() not in {nodes[0][0], nodes[1][0]}
                 and module.GetBoundingBox().GetLeft() <= x1
                 and module.GetBoundingBox().GetRight() >= x0
                 and module.GetBoundingBox().GetTop() <= start.y <= module.GetBoundingBox().GetBottom()
             ), None)
             if blocker is None:
-                add_trace(board, net, start, end)
+                if not obstructed_only:
+                    add_trace(board, net, start, end)
                 continue
-            # These eight links share space with through-hole expanders and are
-            # left to the general signal router rather than guessed here.
+            if obstructed_only:
+                route = grid_router.find_route(
+                    board,
+                    net,
+                    start,
+                    end,
+                    preferred_layer=0,
+                    required_end_layer=0,
+                )
+                grid_router.apply_route(board, net, start, end, route)
             continue
 
+        if obstructed_only:
+            continue
         # Rank transitions run at the board edge. Clock remains on top; data
         # changes to the bottom so the two transitions cannot cross each other.
         right_side = start.x > origin
@@ -171,6 +184,134 @@ def route_led_chain(board, net_by_name, pads) -> None:
             _via(board, net, first)
             _via(board, net, second)
             add_trace(board, net, first, second, pcbnew.B_Cu)
+
+
+def route_control_signals(board, net_by_name, pads, only=None) -> None:
+    """Route buses, controls, and level-shifted LED inputs as connected trees."""
+    prefixes = ("SPI_", "LED_CLK_5V", "LED_DATA_5V")
+    selected = []
+    for connection in sources.netlist()["connections"]:
+        name = connection["name"]
+        if name and name.startswith(prefixes) and (only is None or name in only):
+            selected.append(connection)
+    # Reserve the longest shared trunks before short button branches.
+    def signal_priority(item):
+        name = item["name"]
+        order = {"SENSE_IRQ": 0, "I2C_SDA": 1, "I2C_SCL": 2}
+        return (order.get(name, 3), name)
+
+    selected.sort(key=signal_priority)
+    for connection in selected:
+        name = connection["name"]
+        nodes = [tuple(node) for node in connection["pads"]]
+        nodes.sort(key=lambda node: (node[0] != "J1", node[0], node[1]))
+        remaining = set(range(1, len(nodes)))
+        connected = {0}
+        while remaining:
+            left, right = min(
+                ((a, b) for a in connected for b in remaining),
+                key=lambda pair: abs(pads[nodes[pair[0]]].GetPosition().x - pads[nodes[pair[1]]].GetPosition().x)
+                + abs(pads[nodes[pair[0]]].GetPosition().y - pads[nodes[pair[1]]].GetPosition().y),
+            )
+            start = pads[nodes[left]].GetPosition()
+            end = pads[nodes[right]].GetPosition()
+            net = net_by_name[name]
+            preferred_layer = 1 if name in {"I2C_SDA", "I2C_SCL", "SPI_DATA_3V3"} else 0
+            start_pad, end_pad = pads[nodes[left]], pads[nodes[right]]
+            if start_pad.IsOnLayer(pcbnew.F_Cu) and not start_pad.IsOnLayer(pcbnew.B_Cu):
+                preferred_layer = 0
+            required_end_layer = (
+                0
+                if end_pad.IsOnLayer(pcbnew.F_Cu) and not end_pad.IsOnLayer(pcbnew.B_Cu)
+                else None
+            )
+            try:
+                route = grid_router.find_route(
+                    board,
+                    net,
+                    start,
+                    end,
+                    preferred_layer=preferred_layer,
+                    required_end_layer=required_end_layer,
+                    allow_vias=True,
+                )
+            except RuntimeError as error:
+                raise RuntimeError(f"{error}: {nodes[left]} -> {nodes[right]}") from error
+            grid_router.apply_route(board, net, start, end, route)
+            connected.add(right)
+            remaining.remove(right)
+
+
+def route_buttons(board, net_by_name, pads) -> None:
+    """Connect both switch contacts and route each control to the Pi header."""
+    names = [
+        "BTN_F3", "BTN_F4", "BTN_F5", "BTN_RESET", "BTN_PASS", "BTN_F1",
+        "BTN_F2", "BTN_OK", "BTN_RIGHT", "BTN_LEFT", "BTN_DOWN", "BTN_UP",
+    ]
+    connections = {item["name"]: item for item in sources.netlist()["connections"]}
+    for index, name in enumerate(names):
+        nodes = [tuple(node) for node in connections[name]["pads"]]
+        pi = next(node for node in nodes if node[0] == "J1")
+        switch_node = next(node for node in nodes if node[0].startswith("SW"))
+        module = next(
+            footprint for footprint in board.GetFootprints()
+            if footprint.GetReference() == switch_node[0]
+        )
+        primary = next(pad for pad in module.Pads() if pad.GetNumber() == "1")
+        duplicate = next(pad for pad in module.Pads() if pad.GetNumber() == "1b")
+        net = net_by_name[name]
+        add_trace(
+            board,
+            net,
+            primary.GetPosition(),
+            duplicate.GetPosition(),
+            pcbnew.B_Cu,
+        )
+        try:
+            route = grid_router.find_route(
+                board,
+                net,
+                pads[pi].GetPosition(),
+                primary.GetPosition(),
+                preferred_layer=1 - index % 2,
+            )
+        except RuntimeError:
+            # The duplicate switch holes are still intentionally joined. Dense
+            # Pi-header escapes that do not fit are left visible to KiCad DRC.
+            continue
+        grid_router.apply_route(
+            board, net, pads[pi].GetPosition(), primary.GetPosition(), route
+        )
+
+
+def route_square_sensors(board, net_by_name, pads) -> None:
+    """Route every reed input on a clearance-aware outer-layer grid."""
+    for connection in sources.netlist()["connections"]:
+        name = connection["name"]
+        if not name or not name.startswith("SQ_"):
+            continue
+        nodes = [tuple(node) for node in connection["pads"]]
+        if len(nodes) != 2:
+            raise RuntimeError(f"{name}: square sensor net must have two pads")
+        start, end = (pads[node].GetPosition() for node in nodes)
+        net = net_by_name[name]
+        route = grid_router.find_route(board, net, start, end)
+        grid_router.apply_route(board, net, start, end, route)
+
+
+def route_input_power(board, net_by_name, pads) -> None:
+    """Route the short protected high-current input path at 1.5 mm width."""
+    for name, left, right in (
+        ("DC_IN", ("J3", "1"), ("F1", "1")),
+        ("DC_FUSED", ("F1", "2"), ("SW13", "1")),
+    ):
+        add_trace(
+            board,
+            net_by_name[name],
+            pads[left].GetPosition(),
+            pads[right].GetPosition(),
+            width=1.5,
+        )
 
 
 def fanout_power(board, net_by_name) -> None:
@@ -254,7 +395,12 @@ def add_power_planes(board, net_by_name) -> None:
         (envelope.x_max - 1, envelope.y_max - 1),
         (envelope.x_min + 1, envelope.y_max - 1),
     )
-    for name, layer in (("GND", pcbnew.In1_Cu), ("+5V", pcbnew.In2_Cu)):
+    for name, layer in (
+        ("GND", pcbnew.In1_Cu),
+        ("+5V", pcbnew.In2_Cu),
+        ("+3V3", pcbnew.F_Cu),
+        ("+3V3", pcbnew.B_Cu),
+    ):
         zone = pcbnew.ZONE(board)
         zone.SetNet(net_by_name[name])
         zone.SetLayer(layer)
@@ -291,10 +437,15 @@ def build() -> None:
         board.Add(net)
         net_by_name[name] = net
     pads = add_footprints(board, net_by_name, pad_nets)
+    add_outline(board)
+    add_mounting_holes(board)
     route_led_chain(board, net_by_name, pads)
     fanout_power(board, net_by_name)
-    add_mounting_holes(board)
-    add_outline(board)
+    route_square_sensors(board, net_by_name, pads)
+    route_led_chain(board, net_by_name, pads, obstructed_only=True)
+    route_control_signals(board, net_by_name, pads)
+    route_buttons(board, net_by_name, pads)
+    route_input_power(board, net_by_name, pads)
     add_power_planes(board, net_by_name)
     pcbnew.SaveBoard(str(BOARD_PATH), board)
 

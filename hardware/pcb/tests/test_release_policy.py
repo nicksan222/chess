@@ -43,6 +43,18 @@ class ReleasePolicyTest(unittest.TestCase):
         self.assertEqual(settings.get("drc_exclusions", []), [])
         self.assertNotIn("ignore", settings["rule_severities"].values())
 
+    def test_completed_routing_subsystems_stay_complete(self):
+        drc = json.loads((PCB / "generated/drc.json").read_text())
+        descriptions = "\n".join(
+            item["description"]
+            for violation in drc["unconnected_items"]
+            for item in violation["items"]
+        )
+        for routed_prefix in ("[SQ_", "[LED_", "[SPI_", "[DC_"):
+            with self.subTest(prefix=routed_prefix):
+                self.assertNotIn(routed_prefix, descriptions)
+        self.assertFalse(any("[N$" in line for line in descriptions.splitlines()))
+
     def test_machine_audit_covers_every_release_dimension(self):
         report = board_audit.audit()
         self.assertEqual(report["unknown_part_keys"], [])

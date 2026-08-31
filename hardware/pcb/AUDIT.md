@@ -5,8 +5,11 @@ not be weakened to clear an item.
 
 ## Blocking
 
-- **142 open copper connections.** KiCad reports zero geometry violations but
-  142 unconnected items. Gerbers are intentionally absent.
+- **26 open copper connections.** KiCad reports zero geometry violations. All
+  64 reed inputs, every LED-chain link, protected input power, SPI/level-shifter
+  signals, and six button GPIO paths are routed. Remaining opens are I²C (12),
+  shared IRQ (4), isolated 3.3 V pour islands (4), and six button GPIO paths.
+  Gerbers are intentionally absent.
 - **Native schematic missing.** Connectivity is reviewed JSON embedded into the
   PCB, but there is not yet a `chess-board.kicad_sch`; therefore true KiCad
   schematic/PCB parity cannot run. The release gate now rejects this explicitly.
