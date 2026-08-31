@@ -83,7 +83,7 @@ jobs:
       - uses: ./.github/actions/run-in-devcontainer
         with:
           image: ${{ needs.prebuild.outputs.image }}
-          command: ./tools/pcb
+          command: PCB_REVIEW_ONLY=1 ./tools/pcb
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:

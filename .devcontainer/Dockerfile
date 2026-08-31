@@ -1,6 +1,6 @@
 # Build context is the repository root (see devcontainer.json).
-ARG VARIANT="1-ubuntu-24.04"
-FROM mcr.microsoft.com/devcontainers/rust:${VARIANT}
+ARG VARIANT="ubuntu-24.04"
+FROM mcr.microsoft.com/devcontainers/base:${VARIANT}
 
 ARG BLENDER_VERSION="4.5.13"
 ARG KICAD_PPA="ppa:kicad/kicad-9.0-releases"
@@ -16,7 +16,7 @@ RUN apt-get update \
         curl \
         git \
         libdecor-0-0 \
-        libdecor-0-plugin-1 \
+        libdecor-0-plugin-1-cairo \
         libegl1 \
         libgl1 \
         libgl1-mesa-dri \
@@ -41,6 +41,7 @@ RUN apt-get update \
         usbutils \
         xauth \
         xvfb \
+        xdotool \
         xz-utils \
     && add-apt-repository --yes "${KICAD_PPA}" \
     && apt-get update \
@@ -59,8 +60,11 @@ RUN archive="blender-${BLENDER_VERSION}-linux-x64.tar.xz" \
     && rm "/tmp/${archive}"
 
 ENV BLENDER_BIN=/opt/blender/blender \
-    PATH="${PATH}"
+    PATH="/home/vscode/.cargo/bin:${PATH}"
 
 USER vscode
-RUN rustup component add clippy rustfmt rust-src
+RUN curl --fail --location --proto '=https' --tlsv1.2 --show-error \
+        https://sh.rustup.rs \
+        | sh -s -- -y --profile minimal --default-toolchain stable \
+    && rustup component add clippy rustfmt rust-src
 USER root
