@@ -51,7 +51,7 @@ the render shows it.
 
 ## Shared measurements
 
-Shared CAD measurements live in `hardware/cad/core/dimensions.py`, which
+Shared CAD measurements live in `hardware/shared/dimensions.py`, which
 validates itself on import. Among other things it checks that the internal stack
 — floor, Pi cavity, board, gap, plate — sums exactly to the case height, that
 every plate screw lands on the case ledge rather than over the PCB, that no
@@ -63,7 +63,7 @@ values rather than repeating physical measurements locally. Run the file directl
 to print the current scale summary:
 
 ```sh
-python3 hardware/cad/core/dimensions.py
+python3 hardware/shared/dimensions.py
 ```
 
 ## Scale

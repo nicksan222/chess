@@ -38,7 +38,7 @@ they stay attached. Order is significant, and `test_fabrication.py` asserts it.
 
 Every LED sits where the tile plate has a diffuser pocket. Every reed sits at a
 square centre. Every button sits under a bezel hole. Those positions are read
-from `hardware/cad/core/dimensions.py`, so the copper and the plastic cannot
+from `hardware/shared/dimensions.py`, so the copper and the plastic cannot
 disagree.
 
 The expanders are the exception worth knowing about: a PDIP-28 is nearly as long

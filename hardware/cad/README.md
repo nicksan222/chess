@@ -46,7 +46,7 @@ A generator writes `GENERATED / f"{NAME}.blend"` plus one PNG per view, named
 
 ## Shared modules
 
-`core/dimensions.py` is the authoritative source for measurements shared across
+`../shared/dimensions.py` is the authoritative source for measurements shared across
 projects. It derives the playing span from square size and grid count, derives
 the plate span from fit clearance, and validates the vertical stack, the control
 panel layout, the board support positions and the plate fixings. Project READMEs

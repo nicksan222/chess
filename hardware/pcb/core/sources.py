@@ -1,18 +1,12 @@
 """Read the two upstream domains without importing either as a package.
 
-This domain needs the mechanical envelope from `hardware/cad` and the wiring
-assignment from `hardware/electronics`. It must not copy either set of numbers,
-because a third copy is a third thing to keep in step.
+This domain needs the shared mechanical envelope and the wiring assignment from
+`hardware/electronics`. It must not copy either set of numbers, because another
+copy is another thing to keep in step.
 
-Direct imports are not available: both domains contain a package called `core`,
-so putting both roots on the path would make one shadow the other. Loading the
-two modules by file path under distinct names avoids that entirely, and has the
-side benefit of making the dependency explicit and auditable — these are the only
-two files this domain reads from elsewhere, plus one generated artefact.
-
-Neither module pulls in a heavy dependency: the CAD dimensions import only
-`math`, and the electronics names module imports nothing. So this domain's
-toolchain needs Gerbonara and nothing else.
+Modules are loaded by path so the PCB runner remains isolated from sibling
+packages named `core`. The shared contract deliberately has no CAD dependency;
+future KiCad and other domain adapters consume the same source.
 """
 
 from __future__ import annotations
@@ -27,7 +21,7 @@ PCB_ROOT = Path(__file__).resolve().parents[1]
 HARDWARE_ROOT = PCB_ROOT.parent
 REPOSITORY_ROOT = HARDWARE_ROOT.parent
 
-CAD_DIMENSIONS_PATH = HARDWARE_ROOT / "cad" / "core" / "dimensions.py"
+SHARED_DIMENSIONS_PATH = HARDWARE_ROOT / "shared" / "dimensions.py"
 ELECTRONICS_NAMES_PATH = HARDWARE_ROOT / "electronics" / "core" / "names.py"
 NETLIST_PATH = HARDWARE_ROOT / "electronics" / "generated" / "netlist.json"
 
@@ -48,7 +42,7 @@ def _load(path: Path, module_name: str) -> ModuleType:
 
 def dimensions() -> ModuleType:
     """The mechanical envelope: board size, square pitch, feature positions."""
-    return _load(CAD_DIMENSIONS_PATH, "pcb_cad_dimensions")
+    return _load(SHARED_DIMENSIONS_PATH, "pcb_shared_dimensions")
 
 
 def names() -> ModuleType:

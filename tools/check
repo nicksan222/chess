@@ -13,6 +13,7 @@ run_check() {
 }
 
 run_check "Rust" ./tools/rust
+run_check "Shared hardware" ./tools/shared-hardware
 run_check "CAD" ./tools/cad
 # Electronics before PCB: the schematic publishes the netlist the layout reads.
 run_check "Electronics" ./tools/electronics
