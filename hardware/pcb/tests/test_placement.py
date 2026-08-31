@@ -16,7 +16,7 @@ if str(PCB_ROOT) not in sys.path:
     sys.path.insert(0, str(PCB_ROOT))
 
 from core import placement, sources  # noqa: E402
-from core.layers import Board  # noqa: E402
+from core.board import Board  # noqa: E402
 
 
 class PlacementTest(unittest.TestCase):

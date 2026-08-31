@@ -40,8 +40,8 @@ requirement a non-real-time host could violate.
 ## Repository
 
 The repository contains the software, the design contract, the board layout and the
-printable CAD needed to build the board. Fabrication output is generated from
-reviewed Python and JSON sources, with no EDA application in the loop. Run `make gen` to regenerate everything, or see
+printable CAD needed to build the board. Python composes a native KiCad project
+from reviewed shared definitions and connectivity. Run `make gen` to regenerate everything, or see
 [`docs/development.md`](docs/development.md) for the complete development
 workflow. [`docs/assembly.md`](docs/assembly.md) covers what to order and the
 order to solder it in.
@@ -53,10 +53,9 @@ board layout generates real Gerbers. Nothing has been physically built yet.
 
 Two things stand between this and a working board:
 
-- **The layout is partly routed.** 127 of 214 connections are done — the LED
-  chain and ground — and the reed sense lines, buses and 5 V distribution are
-  not. The fabrication package is deliberately withheld until every net is
-  routed, because a fab cannot tell an unrouted board from a finished one.
+- **The KiCad migration is unrouted.** Placement and connectivity are generated,
+  but unsafe traces from the former custom Gerber implementation were discarded.
+  KiCad DRC is the fabrication gate.
   `hardware/pcb/generated/routing.md` is the running score.
 - **Reed sensitivity is unproven.** The reeds lie flat under a vertical piece
   magnet, so they couple through the field's fringe rather than head-on. Test one

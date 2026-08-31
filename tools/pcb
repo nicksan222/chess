@@ -1,56 +1,34 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-repository_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
-cd "${repository_root}"
+root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "${root}"
 
-if [[ $# -ne 0 ]]; then
-    printf 'Usage: ./tools/pcb\n' >&2
-    exit 2
+if ! command -v kicad-cli >/dev/null || ! python3 -c 'import pcbnew' 2>/dev/null; then
+    printf 'error: KiCad 9 with its Python pcbnew module is required\n' >&2
+    exit 1
 fi
 
-domain_dir=hardware/pcb
-venv_dir="${repository_root}/.cache/pcb"
+printf '\n==> Test PCB composition\n'
+PYTHONPATH=hardware/pcb python3 -m unittest discover \
+    -s hardware/pcb/tests -p 'test_*.py'
 
-# shellcheck source=tools/lib/pipeline.sh
-source tools/lib/pipeline.sh
+printf '\n==> Generate KiCad project\n'
+python3 hardware/pcb/generate.py
 
-setup() {
-    if python3 -c "import gerbonara" >/dev/null 2>&1; then
-        return 0
-    fi
-    if [[ -x /opt/pcb/bin/python ]] \
-        && /opt/pcb/bin/python -c "import gerbonara" >/dev/null 2>&1; then
-        export PATH="/opt/pcb/bin:${PATH}"
-        return 0
-    fi
-    if [[ ! -x "${venv_dir}/bin/python" ]]; then
-        printf 'creating %s\n' "${venv_dir}" >&2
-        python3 -m venv "${venv_dir}"
-    fi
-    if ! "${venv_dir}/bin/python" -c "import gerbonara" > /dev/null 2>&1; then
-        "${venv_dir}/bin/pip" install --quiet -r "${domain_dir}/requirements.txt"
-    fi
-    export PATH="${venv_dir}/bin:${PATH}"
-}
+out=hardware/pcb/generated
+rm -rf "${out}/gerber"
+mkdir -p "${out}/gerber"
 
-run_tests() {
-    printf '\n==> Validate pcb rules\n'
-    python3 "${domain_dir}/core/rules.py"
-    printf '\n==> Test pcb\n'
-    python3 -m unittest discover -s "${domain_dir}/tests"
-}
+printf '\n==> KiCad DRC\n'
+kicad-cli pcb drc -o "${out}/drc.rpt" hardware/pcb/chess-board.kicad_pcb
 
-generate() {
-    mkdir -p "${domain_dir}/generated"
-    find "${domain_dir}/generated" -maxdepth 1 -type f ! -name README.md -delete
-    local generator
-    while IFS= read -r generator; do
-        printf '\n==> Generate %s\n' "$(dirname -- "${generator}")"
-        python3 "${generator}"
-    done < <(list_projects)
-}
-
-setup
-run_tests
-generate
+printf '\n==> Export fabrication files\n'
+kicad-cli pcb export gerbers \
+    -l F.Cu,B.Cu,F.Paste,B.Paste,F.Silkscreen,B.Silkscreen,F.Mask,B.Mask,Edge.Cuts \
+    -o "${out}/gerber/" hardware/pcb/chess-board.kicad_pcb
+kicad-cli pcb export drill -o "${out}/gerber/" hardware/pcb/chess-board.kicad_pcb
+kicad-cli pcb export svg --mode-single -l F.Cu,F.Silkscreen,Edge.Cuts \
+    -o "${out}/board-top.svg" hardware/pcb/chess-board.kicad_pcb
+kicad-cli pcb export svg --mode-single -l B.Cu,B.Silkscreen,Edge.Cuts \
+    -o "${out}/board-bottom.svg" hardware/pcb/chess-board.kicad_pcb

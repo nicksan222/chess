@@ -1,7 +1,7 @@
 # Development container
 
 This directory owns the reproducible VS Code / Cursor development environment.
-The Dockerfile installs every toolchain the jobs need: Blender, Gerbonara, and
+The Dockerfile installs every toolchain the jobs need: Blender, KiCad 9, and
 the Rust components. Open the repository and run **Dev Containers:
 Reopen in Container**, or drive it from the
 [`devcontainer` CLI](https://github.com/devcontainers/cli):
@@ -17,7 +17,7 @@ devcontainer exec --workspace-folder . make check
 The image provides:
 
 - stable Rust with `rustfmt` and Clippy;
-- Gerbonara in `/opt/pcb`;
+- KiCad 9 with `kicad-cli` and `pcbnew`;
 - a checksum-verified Blender at `/opt/blender`;
 - X11/GL/EGL, Mesa, Xvfb, and `xauth` so headless Blender can render;
 - native build, USB, and udev development libraries;

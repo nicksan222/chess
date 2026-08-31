@@ -1,8 +1,9 @@
 # Build context is the repository root (see devcontainer.json).
-ARG VARIANT="1-bookworm"
+ARG VARIANT="1-ubuntu-24.04"
 FROM mcr.microsoft.com/devcontainers/rust:${VARIANT}
 
 ARG BLENDER_VERSION="4.5.13"
+ARG KICAD_PPA="ppa:kicad/kicad-9.0-releases"
 ARG BLENDER_SHA256="da4e69b06b75b9e642d106496c50e7e240218b411d2f6e18271c1d1d819cef91"
 
 RUN apt-get update \
@@ -31,6 +32,7 @@ RUN apt-get update \
         libxkbcommon0 \
         libxrender1 \
         make \
+        software-properties-common \
         pkg-config \
         python3 \
         python3-pip \
@@ -40,6 +42,9 @@ RUN apt-get update \
         xauth \
         xvfb \
         xz-utils \
+    && add-apt-repository --yes "${KICAD_PPA}" \
+    && apt-get update \
+    && apt-get install --yes --no-install-recommends kicad \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -53,14 +58,8 @@ RUN archive="blender-${BLENDER_VERSION}-linux-x64.tar.xz" \
     && mv "/opt/blender-${BLENDER_VERSION}-linux-x64" /opt/blender \
     && rm "/tmp/${archive}"
 
-COPY hardware/pcb/requirements.txt /tmp/pcb-requirements.txt
-RUN python3 -m venv /opt/pcb \
-    && /opt/pcb/bin/pip install --upgrade pip \
-    && /opt/pcb/bin/pip install -r /tmp/pcb-requirements.txt \
-    && rm /tmp/pcb-requirements.txt
-
 ENV BLENDER_BIN=/opt/blender/blender \
-    PATH="/opt/pcb/bin:${PATH}"
+    PATH="${PATH}"
 
 USER vscode
 RUN rustup component add clippy rustfmt rust-src

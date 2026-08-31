@@ -1,6 +1,6 @@
 # Development
 
-Use the development container for the pinned Rust, Blender, and Gerbonara
+Use the development container for the pinned Rust, Blender, and KiCad 9
 toolchains. From the repository root:
 
 ```sh
