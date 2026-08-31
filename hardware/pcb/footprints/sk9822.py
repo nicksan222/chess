@@ -10,15 +10,9 @@ convention it uses: 1 VDD, 2 GND, 3 SDI, 4 CKI, 5 SDO, 6 CKO.
 
 from __future__ import annotations
 
-from .base import RECT, Footprint, Pad, courtyard_for
+from components.sk9822 import Sk9822Pin
 
-SUPPLY_PIN = "1"
-GROUND_PIN = "2"
-DATA_IN_PIN = "3"
-CLOCK_IN_PIN = "4"
-DATA_OUT_PIN = "5"
-CLOCK_OUT_PIN = "6"
-CHAIN_PINS = (DATA_IN_PIN, CLOCK_IN_PIN, DATA_OUT_PIN, CLOCK_OUT_PIN)
+from .base import RECT, Footprint, Pad, courtyard_for
 
 BODY_MM = (5.0, 5.0)
 _PAD_LONG = 1.5
@@ -28,14 +22,14 @@ _PITCH = 1.6
 
 _PADS = (
     # Left edge, top to bottom: data in, clock in.
-    Pad(DATA_IN_PIN, -_EDGE, _PITCH / 2.0, _PAD_LONG, _PAD_SHORT, RECT),
-    Pad(CLOCK_IN_PIN, -_EDGE, -_PITCH / 2.0, _PAD_LONG, _PAD_SHORT, RECT),
+    Pad(Sk9822Pin.DATA_IN, -_EDGE, _PITCH / 2.0, _PAD_LONG, _PAD_SHORT, RECT),
+    Pad(Sk9822Pin.CLOCK_IN, -_EDGE, -_PITCH / 2.0, _PAD_LONG, _PAD_SHORT, RECT),
     # Right edge: data out, clock out.
-    Pad(DATA_OUT_PIN, _EDGE, _PITCH / 2.0, _PAD_LONG, _PAD_SHORT, RECT),
-    Pad(CLOCK_OUT_PIN, _EDGE, -_PITCH / 2.0, _PAD_LONG, _PAD_SHORT, RECT),
+    Pad(Sk9822Pin.DATA_OUT, _EDGE, _PITCH / 2.0, _PAD_LONG, _PAD_SHORT, RECT),
+    Pad(Sk9822Pin.CLOCK_OUT, _EDGE, -_PITCH / 2.0, _PAD_LONG, _PAD_SHORT, RECT),
     # Supply above, ground below.
-    Pad(SUPPLY_PIN, 0.0, _EDGE, _PAD_SHORT, _PAD_LONG, RECT),
-    Pad(GROUND_PIN, 0.0, -_EDGE, _PAD_SHORT, _PAD_LONG, RECT),
+    Pad(Sk9822Pin.FIVE_VOLTS, 0.0, _EDGE, _PAD_SHORT, _PAD_LONG, RECT),
+    Pad(Sk9822Pin.GROUND, 0.0, -_EDGE, _PAD_SHORT, _PAD_LONG, RECT),
 )
 
 SK9822_5050 = Footprint(

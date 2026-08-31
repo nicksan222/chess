@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from components.barrel_jack import BarrelJackPad
+from components.tactile_switch import TactileSwitchPad
+from components.test_point import TestPointPin
 from core import rules
 
 from .base import RECT, ROUND, Footprint, Pad, courtyard_for
@@ -14,10 +17,10 @@ _TACT_PAD = rules.pad_for_drill(_TACT_DRILL)
 # models the part as two terminals while the footprint has four pads. The `b`
 # suffix is what tells the netlist check they share a pin.
 _TACT_PADS = (
-    Pad("1", -3.25, 2.25, _TACT_PAD, _TACT_PAD, RECT, _TACT_DRILL),
-    Pad("1b", -3.25, -2.25, _TACT_PAD, _TACT_PAD, ROUND, _TACT_DRILL),
-    Pad("2", 3.25, 2.25, _TACT_PAD, _TACT_PAD, ROUND, _TACT_DRILL),
-    Pad("2b", 3.25, -2.25, _TACT_PAD, _TACT_PAD, ROUND, _TACT_DRILL),
+    Pad(TactileSwitchPad.SIGNAL_PRIMARY, -3.25, 2.25, _TACT_PAD, _TACT_PAD, RECT, _TACT_DRILL),
+    Pad(TactileSwitchPad.SIGNAL_DUPLICATE, -3.25, -2.25, _TACT_PAD, _TACT_PAD, ROUND, _TACT_DRILL),
+    Pad(TactileSwitchPad.GROUND_PRIMARY, 3.25, 2.25, _TACT_PAD, _TACT_PAD, ROUND, _TACT_DRILL),
+    Pad(TactileSwitchPad.GROUND_DUPLICATE, 3.25, -2.25, _TACT_PAD, _TACT_PAD, ROUND, _TACT_DRILL),
 )
 
 TACTILE_6MM = Footprint(
@@ -30,7 +33,7 @@ TACTILE_6MM = Footprint(
 _TURRET_DRILL = rules.drill_for_lead(1.0)
 _TURRET_PAD = rules.pad_for_drill(_TURRET_DRILL)
 _TURRET_PADS = (
-    Pad("1", 0.0, 0.0, _TURRET_PAD, _TURRET_PAD, ROUND, _TURRET_DRILL),
+    Pad(TestPointPin.PROBE, 0.0, 0.0, _TURRET_PAD, _TURRET_PAD, ROUND, _TURRET_DRILL),
 )
 
 TESTPOINT_TURRET = Footprint(
@@ -46,9 +49,9 @@ TESTPOINT_TURRET = Footprint(
 _JACK_DRILL = rules.drill_for_lead(1.5)
 _JACK_PAD = rules.pad_for_drill(_JACK_DRILL)
 _JACK_PADS = (
-    Pad("1", -4.5, 0.0, _JACK_PAD, _JACK_PAD, RECT, _JACK_DRILL),
-    Pad("2", 0.0, -4.85, _JACK_PAD, _JACK_PAD, ROUND, _JACK_DRILL),
-    Pad("2b", 4.5, 0.0, _JACK_PAD, _JACK_PAD, ROUND, _JACK_DRILL),
+    Pad(BarrelJackPad.CENTRE_POSITIVE, -4.5, 0.0, _JACK_PAD, _JACK_PAD, RECT, _JACK_DRILL),
+    Pad(BarrelJackPad.SLEEVE_GROUND, 0.0, -4.85, _JACK_PAD, _JACK_PAD, ROUND, _JACK_DRILL),
+    Pad(BarrelJackPad.SWITCHED_SLEEVE_GROUND, 4.5, 0.0, _JACK_PAD, _JACK_PAD, ROUND, _JACK_DRILL),
 )
 
 BARREL_JACK = Footprint(

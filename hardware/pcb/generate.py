@@ -18,6 +18,12 @@ import footprints  # noqa: E402
 from footprints import base as footprint_base  # noqa: E402
 from core import grid_router, placement, rules, sources  # noqa: E402
 from core.nets import ButtonNet, Net  # noqa: E402
+from components.barrel_jack import BarrelJackPin, DC_INPUT_JACK  # noqa: E402
+from components.base import ComponentReference  # noqa: E402
+from components.fuse_holder import FuseHolderPin, INPUT_FUSE  # noqa: E402
+from components.power_switch import MAIN_POWER_SWITCH, PowerSwitchPin  # noqa: E402
+from components.sk9822 import Sk9822, Sk9822Pin  # noqa: E402
+from components.tactile_switch import TactileSwitchPad  # noqa: E402
 from shared.components import COMPONENTS  # noqa: E402
 
 BOARD_PATH = PCB_ROOT / "chess-board.kicad_pcb"
@@ -140,9 +146,15 @@ def route_led_chain(board, net_by_name, pads, *, obstructed_only=False) -> None:
         nodes = [tuple(node) for node in connection["pads"]]
         if len(nodes) != 2 or not all(node in pads and node[0].startswith("U") for node in nodes):
             continue
-        if nodes[0][1] in {"3", "4"} and nodes[1][1] in {"5", "6"}:
+        if (
+            nodes[0][1] in Sk9822.input_pins()
+            and nodes[1][1] in Sk9822.output_pins()
+        ):
             nodes.reverse()
-        if nodes[0][1] not in {"5", "6"} or nodes[1][1] not in {"3", "4"}:
+        if (
+            nodes[0][1] not in Sk9822.output_pins()
+            or nodes[1][1] not in Sk9822.input_pins()
+        ):
             continue
         name = connection["name"] or f"N${index}"
         net = net_by_name[name]
@@ -182,7 +194,7 @@ def route_led_chain(board, net_by_name, pads, *, obstructed_only=False) -> None:
         # changes to the bottom so the two transitions cannot cross each other.
         right_side = start.x > origin
         direction = 1 if right_side else -1
-        is_clock = nodes[0][1] == "6"
+        is_clock = nodes[0][1] == Sk9822Pin.CLOCK_OUT
         distance_mm = (3.0 if right_side else 8.0) if is_clock else (1.0 if right_side else 6.0)
         distance = pcbnew.FromMM(distance_mm)
         first = pcbnew.VECTOR2I(start.x + direction * distance, start.y)
@@ -217,7 +229,13 @@ def route_control_signals(board, net_by_name, pads, only=None) -> None:
     for connection in selected:
         name = connection["name"]
         nodes = [tuple(node) for node in connection["pads"]]
-        nodes.sort(key=lambda node: (node[0] != "J1", node[0], node[1]))
+        nodes.sort(
+            key=lambda node: (
+                node[0] != ComponentReference.HOST_GPIO_HEADER,
+                node[0],
+                node[1],
+            )
+        )
         remaining = set(range(1, len(nodes)))
         connected = {0}
         while remaining:
@@ -265,7 +283,13 @@ def route_internal_buses(board, net_by_name, pads) -> None:
     }
     for name in (Net.I2C_SDA, Net.I2C_SCL, Net.SENSE_IRQ):
         nodes = [tuple(node) for node in connections[name]["pads"]]
-        nodes.sort(key=lambda node: (node[0] != "J1", node[0], node[1]))
+        nodes.sort(
+            key=lambda node: (
+                node[0] != ComponentReference.HOST_GPIO_HEADER,
+                node[0],
+                node[1],
+            )
+        )
         connected = {0}
         remaining = set(range(1, len(nodes)))
         net = net_by_name[name]
@@ -316,14 +340,26 @@ def route_buttons(board, net_by_name, pads) -> None:
     connections = {item["name"]: item for item in sources.netlist()["connections"]}
     for index, name in enumerate(names):
         nodes = [tuple(node) for node in connections[name]["pads"]]
-        pi = next(node for node in nodes if node[0] == "J1")
+        pi = next(
+            node
+            for node in nodes
+            if node[0] == ComponentReference.HOST_GPIO_HEADER
+        )
         switch_node = next(node for node in nodes if node[0].startswith("SW"))
         module = next(
             footprint for footprint in board.GetFootprints()
             if footprint.GetReference() == switch_node[0]
         )
-        primary = next(pad for pad in module.Pads() if pad.GetNumber() == "1")
-        duplicate = next(pad for pad in module.Pads() if pad.GetNumber() == "1b")
+        primary = next(
+            pad
+            for pad in module.Pads()
+            if pad.GetNumber() == TactileSwitchPad.SIGNAL_PRIMARY
+        )
+        duplicate = next(
+            pad
+            for pad in module.Pads()
+            if pad.GetNumber() == TactileSwitchPad.SIGNAL_DUPLICATE
+        )
         net = net_by_name[name]
         add_trace(
             board,
@@ -409,8 +445,16 @@ def route_square_sensors(board, net_by_name, pads) -> None:
 def route_input_power(board, net_by_name, pads) -> None:
     """Route the short protected high-current input path at 1.5 mm width."""
     for name, left, right in (
-        (Net.DC_INPUT, ("J3", "1"), ("F1", "1")),
-        (Net.DC_FUSED, ("F1", "2"), ("SW13", "1")),
+        (
+            Net.DC_INPUT,
+            DC_INPUT_JACK.endpoint(BarrelJackPin.CENTRE_POSITIVE),
+            INPUT_FUSE.endpoint(FuseHolderPin.UNFUSED_INPUT),
+        ),
+        (
+            Net.DC_FUSED,
+            INPUT_FUSE.endpoint(FuseHolderPin.FUSED_OUTPUT),
+            MAIN_POWER_SWITCH.endpoint(PowerSwitchPin.FUSED_INPUT),
+        ),
     ):
         add_trace(
             board,
