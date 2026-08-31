@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from components.ahct125 import Ahct125Pin
-from components.dip_socket import Dip28Pin
 from components.mcp23017 import Mcp23017Pin
 
 from .base import dual_inline
@@ -23,7 +22,7 @@ DIP_28_SOCKET = dual_inline(
     ways=28,
     row_spacing=7.62,
     body=(7.6, 34.8),
-    pin_numbers=tuple(Dip28Pin),
+    pin_numbers=tuple(Mcp23017Pin),
 )
 
 DIP_14 = dual_inline(

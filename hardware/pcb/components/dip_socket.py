@@ -1,16 +1,17 @@
-"""DIP sockets; pin identities pass through to the installed IC."""
+"""IC sockets expose the semantic pins of the device installed in them."""
 
-from enum import StrEnum
+from .ahct125 import Ahct125Pin
 from .base import BoardComponent
+from .mcp23017 import Mcp23017Pin
 
 
-Dip28Pin = StrEnum("Dip28Pin", {f"IC_PIN_{number}": str(number) for number in range(1, 29)})
-Dip14Pin = StrEnum("Dip14Pin", {f"IC_PIN_{number}": str(number) for number in range(1, 15)})
+class Dip28Socket(BoardComponent[Mcp23017Pin]):
+    """Socket carrying one MCP23017 expander."""
+
+    pin_type = Mcp23017Pin
 
 
-class Dip28Socket(BoardComponent[Dip28Pin]):
-    pin_type = Dip28Pin
+class Dip14Socket(BoardComponent[Ahct125Pin]):
+    """Socket carrying the SN74AHCT125 level shifter."""
 
-
-class Dip14Socket(BoardComponent[Dip14Pin]):
-    pin_type = Dip14Pin
+    pin_type = Ahct125Pin

@@ -14,7 +14,10 @@ if str(PCB_ROOT) not in sys.path:
 from components.barrel_jack import BarrelJackPin, DC_INPUT_JACK  # noqa: E402
 from components.base import ComponentReference  # noqa: E402
 from components.catalog import for_netlist_entry, known_part_keys  # noqa: E402
+from components.dip_socket import Dip14Socket, Dip28Socket  # noqa: E402
 from components.fuse_holder import FuseHolderPin, INPUT_FUSE  # noqa: E402
+from components.mcp23017 import Mcp23017Pin  # noqa: E402
+from components.ahct125 import Ahct125Pin  # noqa: E402
 from components.sk9822 import Sk9822, Sk9822Pin  # noqa: E402
 from core import sources  # noqa: E402
 
@@ -46,6 +49,13 @@ class ComponentModelTest(unittest.TestCase):
                 with self.subTest(reference=reference, number=number):
                     pin = components[reference].get_pin_by_number(number)
                     self.assertIsInstance(pin, StrEnum)
+
+    def test_sockets_expose_the_installed_ics_semantic_pins(self) -> None:
+        self.assertIs(Dip28Socket("U1S").get_pin_by_number("12"), Mcp23017Pin.I2C_CLOCK)
+        self.assertIs(
+            Dip14Socket("U5S").get_pin_by_number("2"),
+            Ahct125Pin.BUFFER_1_INPUT,
+        )
 
     def test_power_endpoints_have_semantic_reference_and_pin_enums(self) -> None:
         reference, pin = DC_INPUT_JACK.endpoint(BarrelJackPin.CENTRE_POSITIVE)
