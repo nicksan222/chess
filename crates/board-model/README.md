@@ -13,10 +13,10 @@ Hardware drivers, transports, and adapter concepts do not belong here.
 
 ## The mapping is a contract with the schematic
 
-`core/names.py` under `hardware/electronics` decides which expander pin reads
+`wiring.py` under `hardware/shared` decides which expander pin reads
 which square. This crate has to make the same decision, and nothing in either
 build would notice them drifting apart — so
-`hardware/electronics/tests/test_host_agreement.py` checks that the two formulas
+`hardware/shared/tests/test_host_agreement.py` checks that the two formulas
 still match.
 
 Both sides encode the same two rules:

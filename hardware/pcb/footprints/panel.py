@@ -10,7 +10,7 @@ _TACT_DRILL = rules.drill_for_lead(0.7)
 _TACT_PAD = rules.pad_for_drill(_TACT_DRILL)
 
 # A 6 mm tactile switch has four legs in two shorted pairs, on a 6.5 by 4.5 mm
-# rectangle. Both legs of a pair carry the same net, which is why the schematic
+# rectangle. Both legs of a pair carry the same net, which is why the design contract
 # models the part as two terminals while the footprint has four pads. The `b`
 # suffix is what tells the netlist check they share a pin.
 _TACT_PADS = (
@@ -41,7 +41,7 @@ TESTPOINT_TURRET = Footprint(
 )
 
 # A DC-005 style jack has three terminals: the centre pin, the sleeve, and a
-# switched sleeve contact that is unused here. The schematic models two nets, so
+# switched sleeve contact that is unused here. The design contract models two nets, so
 # the third pad carries the sleeve net rather than being left floating.
 _JACK_DRILL = rules.drill_for_lead(1.5)
 _JACK_PAD = rules.pad_for_drill(_JACK_DRILL)

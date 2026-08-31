@@ -114,7 +114,7 @@ class SharedModelingTest(unittest.TestCase):
 
 
 class GeneratedLayoutTest(unittest.TestCase):
-    """CAD and electronics agree on where build output lives."""
+    """CAD and PCB agree on where build output lives."""
 
     def test_every_generator_writes_into_the_generated_folder(self) -> None:
         for generator in sorted(PROJECTS.glob("*/generate.py")):

@@ -1,6 +1,6 @@
 """Which net each pad belongs to.
 
-The schematic publishes nets as lists of (reference, pin) pairs. Copper needs the
+The design contract publishes nets as lists of (reference, pin) pairs. Copper needs the
 inverse: given a pad, what net is it on. That answer decides whether the ground
 pour connects to a pad or has to be cleared away from it, which is the difference
 between a working board and one with every net shorted together.

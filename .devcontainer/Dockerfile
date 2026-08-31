@@ -53,12 +53,6 @@ RUN archive="blender-${BLENDER_VERSION}-linux-x64.tar.xz" \
     && mv "/opt/blender-${BLENDER_VERSION}-linux-x64" /opt/blender \
     && rm "/tmp/${archive}"
 
-COPY hardware/electronics/requirements.txt /tmp/electronics-requirements.txt
-RUN python3 -m venv /opt/electronics \
-    && /opt/electronics/bin/pip install --upgrade pip \
-    && /opt/electronics/bin/pip install -r /tmp/electronics-requirements.txt \
-    && rm /tmp/electronics-requirements.txt
-
 COPY hardware/pcb/requirements.txt /tmp/pcb-requirements.txt
 RUN python3 -m venv /opt/pcb \
     && /opt/pcb/bin/pip install --upgrade pip \
@@ -66,7 +60,7 @@ RUN python3 -m venv /opt/pcb \
     && rm /tmp/pcb-requirements.txt
 
 ENV BLENDER_BIN=/opt/blender/blender \
-    PATH="/opt/electronics/bin:${PATH}"
+    PATH="/opt/pcb/bin:${PATH}"
 
 USER vscode
 RUN rustup component add clippy rustfmt rust-src

@@ -9,9 +9,8 @@
 //! I2C, no SPI and no operating system here, so the mapping can be tested on a
 //! host without any hardware present.
 //!
-//! The mappings must agree with the schematic generated from
-//! `hardware/electronics`; `core/names.py` there is the other half of this
-//! contract.
+//! The mappings must agree with `hardware/shared/wiring.py`, the
+//! tool-independent hardware contract.
 
 #![no_std]
 #![forbid(unsafe_code)]

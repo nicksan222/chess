@@ -1,5 +1,5 @@
 {
-  "generated_by": "hardware/electronics/core/netlist.py",
+  "generated_by": "hardware/pcb/design/netlist.json",
   "projects": {
     "board": {
       "components": {
@@ -9457,5 +9457,5 @@
     }
   },
   "schema": 1,
-  "warning": "Generated file. Do not edit by hand."
+  "warning": "Source connectivity contract; update deliberately with PCB design changes"
 }

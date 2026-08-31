@@ -1,4 +1,4 @@
-"""Every part the schematic places must have copper to land on.
+"""Every part the design contract places must have copper to land on.
 
 The join between the two domains is the `package` string. These tests are what
 stop a new part appearing in the bill of materials with no footprint behind it,
@@ -40,7 +40,7 @@ class CoverageTest(unittest.TestCase):
         unused = sorted(set(footprints.CATALOG) - packages)
         self.assertEqual(unused, [], f"unused footprints: {unused}")
 
-    def test_every_schematic_pin_has_a_pad(self) -> None:
+    def test_every_contract_pin_has_a_pad(self) -> None:
         for reference, entry in self.netlist["components"].items():
             footprint = footprints.for_package(entry["package"])
             available = {pad.net_number for pad in footprint.pads}

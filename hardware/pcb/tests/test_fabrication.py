@@ -267,7 +267,7 @@ class GateTest(unittest.TestCase):
     def test_the_outstanding_work_is_named_honestly(self) -> None:
         report = connectivity.report(self.statuses)
         if self.summary["complete"]:
-            self.assertIn("Every schematic connection", report)
+            self.assertIn("Every design contract connection", report)
         else:
             self.assertIn("SQ_* reed sense lines", report)
             self.assertIn("links missing", report)

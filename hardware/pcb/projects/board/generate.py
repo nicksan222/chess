@@ -1,7 +1,7 @@
 """Generate the board's fabrication artwork, and say what is still missing.
 
 Writes the layer stack, a rendered preview of both sides, and a routing report.
-The manufacturing package is only written when the report says every schematic
+The manufacturing package is only written when the report says every design contract
 connection is realised in copper, because valid Gerber files and a working board
 are not the same thing and a fab cannot tell the difference.
 """

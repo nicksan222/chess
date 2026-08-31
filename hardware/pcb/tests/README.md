@@ -5,8 +5,8 @@ build:
 
 - `test_rules.py` — the chosen geometry is inside the fab's stated capability,
   and raising a limit past it is refused rather than silently accepted.
-- `test_footprints.py` — every package the schematic places has copper to land
-  on, every schematic pin has a pad, and no two pads within a footprint collide.
+- `test_footprints.py` — every package the design contract places has copper to land
+  on, every design contract pin has a pad, and no two pads within a footprint collide.
 - `test_placement.py` — nothing overlaps, nothing hangs off the board, and every
   LED, reed and button sits where the mechanical design already put a pocket or
   a hole.

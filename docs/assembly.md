@@ -11,7 +11,7 @@ the reeds lie flat under a vertically oriented piece magnet, so they couple
 through the field's horizontal fringe rather than head-on. Build one reed, one
 LED and one expander on a scrap of prototyping board, glue a magnet into a piece,
 and confirm it triggers reliably at the height the plate puts it at. Record the
-result in `hardware/electronics/prototype/`.
+result in `hardware/pcb/prototype/`.
 
 That costs a few pounds. Discovering an orientation problem after ordering five
 320 x 360 mm boards does not.
@@ -33,8 +33,8 @@ report, and only then order.
 
 ## What to order
 
-`hardware/electronics/generated/bom.md` is generated from the schematic, so it and
-the drawing can never disagree. The "To order" table is the shopping list, about
+`hardware/pcb/design/bom.md` is the reviewed assembly manifest maintained with
+the connectivity contract. The "To order" table is the shopping list, about
 eighteen lines.
 
 Two things are not on it because they are not electronics:

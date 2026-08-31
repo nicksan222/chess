@@ -1,11 +1,11 @@
 """Shared shape of a footprint.
 
 A footprint is the copper a part lands on. Every module in this package describes
-one physical package, keyed by the same `package` string the schematic already
+one physical package, keyed by the same `package` string the design contract already
 records in its bill of materials — so the join between "what the part is" and
 "what its pads look like" is a name that already existed, not a new registry.
 
-Pad numbers are datasheet pin numbers, matching the schematic. That is what lets
+Pad numbers are datasheet pin numbers, matching the design contract. That is what lets
 the connectivity check ask "is pin 21 of U1 connected to pin 1 of RS1" without a
 translation table.
 """
@@ -56,9 +56,9 @@ class Pad:
 
     @property
     def net_number(self) -> str:
-        """The schematic pin this pad belongs to.
+        """The design contract pin this pad belongs to.
 
-        Some packages have more pads than the schematic has pins: a tactile
+        Some packages have more pads than the design contract has pins: a tactile
         switch's four legs are two shorted pairs, and a DC jack has a spare
         sleeve contact. Those extra pads are named by suffixing a letter, so
         `2b` carries whatever net pin `2` carries.

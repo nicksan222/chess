@@ -1,9 +1,9 @@
-"""Does the copper actually implement the schematic?
+"""Does the copper actually implement the design contract?
 
 This is the gate. An unrouted board still produces perfectly valid Gerber files,
 and a fab will accept them and ship the boards: valid is not the same as
 connected. So the fabrication package is only written when every connection the
-schematic declares is realised in copper, and until then this module says exactly
+design contract declares is realised in copper, and until then this module says exactly
 what is missing.
 
 It works by union-find over pads, joining them the way copper joins them:
@@ -32,7 +32,7 @@ TOLERANCE_MM = 0.01
 
 @dataclass(frozen=True)
 class NetStatus:
-    """One schematic connection, and whether copper realises it."""
+    """One design contract connection, and whether copper realises it."""
 
     name: str
     pads: tuple[tuple[str, str], ...]
@@ -75,7 +75,7 @@ def _key(position: tuple[float, float]) -> tuple[int, int]:
 
 
 def analyse(placements: list[Placement], artwork: Artwork) -> list[NetStatus]:
-    """One status per schematic connection that needs more than one pad."""
+    """One status per design contract connection that needs more than one pad."""
     netlist = sources.netlist()
     positions = pad_positions(placements)
     surface = surface_mount_pads(placements)
@@ -146,7 +146,7 @@ def report(statuses: list[NetStatus], limit: int = 12) -> str:
         f"{counts['missing_links']} links missing",
     ]
     if counts["complete"]:
-        lines.append("Every schematic connection is realised in copper.")
+        lines.append("Every design contract connection is realised in copper.")
         return "\n".join(lines)
 
     grouped: dict[str, int] = {}

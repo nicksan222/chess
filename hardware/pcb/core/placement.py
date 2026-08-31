@@ -187,7 +187,7 @@ def build() -> list[Placement]:
 def _expander_cap_references(components: dict) -> dict[str, str]:
     """Decoupling capacitors that belong to an expander, by reference.
 
-    The schematic numbers them alongside the expanders, so the pairing is by
+    The design contract numbers them alongside the expanders, so the pairing is by
     order rather than by an explicit field.
     """
     expanders = sorted(

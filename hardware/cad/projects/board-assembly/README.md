@@ -20,7 +20,7 @@ board, the expanders and the Pi underneath are visible.
 
 ## The board proxy is not authoritative
 
-`hardware/electronics` owns the circuit design. The proxy exists so the assembly
+`hardware/pcb` owns the circuit design. The proxy exists so the assembly
 render shows what fills the cavity, and so the vertical stack in
 `core/dimensions.py` can be seen to add up rather than only asserted. Its
 positions are derived from the shared dimensions, so it follows any change to

@@ -39,16 +39,16 @@ requirement a non-real-time host could violate.
 
 ## Repository
 
-The repository contains the software, the schematic, the board layout and the
-printable CAD needed to build the board — all generated from Python, with no EDA
-application in the loop. Run `make gen` to regenerate everything, or see
+The repository contains the software, the design contract, the board layout and the
+printable CAD needed to build the board. Fabrication output is generated from
+reviewed Python and JSON sources, with no EDA application in the loop. Run `make gen` to regenerate everything, or see
 [`docs/development.md`](docs/development.md) for the complete development
 workflow. [`docs/assembly.md`](docs/assembly.md) covers what to order and the
 order to solder it in.
 
 ## Status
 
-The mechanical design and revision-B electronics are ready for review, and the
+The mechanical design and revision-B PCB sources are ready for review, and the
 board layout generates real Gerbers. Nothing has been physically built yet.
 
 Two things stand between this and a working board:

@@ -15,7 +15,7 @@ that reasons about obstacles. `core/connectivity.py` reports them as unrouted,
 and the fabrication package stays gated until they are done.
 
 Everything below is driven by the published connection list rather than by
-rebuilding the schematic's intent here. Routing what the schematic says, instead
+rebuilding the design contract's intent here. Routing what the design contract says, instead
 of what this module believes it says, is what stops the two drifting apart.
 """
 
@@ -32,7 +32,7 @@ LABEL_INSET_MM = 3.5
 def pad_positions(
     placements: list[Placement],
 ) -> dict[tuple[str, str], tuple[float, float]]:
-    """Board coordinates of every pad, keyed by reference and schematic pin."""
+    """Board coordinates of every pad, keyed by reference and design contract pin."""
     positions: dict[tuple[str, str], tuple[float, float]] = {}
     for placement in placements:
         for net_number, _number, position, _pad in placement.pads():

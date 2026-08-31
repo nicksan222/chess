@@ -1,7 +1,7 @@
 # Board model source
 
 - `mapping.rs` — which expander pin reads a square, and where a square sits in
-  the LED chain. Both must agree with `hardware/electronics/core/names.py`.
+  the LED chain. Both must agree with `hardware/shared/wiring.py`.
 - `occupancy.rs` — one bit per square, indexed as `chess::Square` indexes
   itself, plus the conversion from raw expander port bytes. The reed-pulls-low
   inversion is handled there, once.

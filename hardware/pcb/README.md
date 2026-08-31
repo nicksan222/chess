@@ -11,10 +11,9 @@ Regenerate everything from the repository root with:
 ./tools/pcb
 ```
 
-Run `./tools/electronics` first. The schematic publishes `netlist.json` and this
-domain reads it; the dependency is a file rather than an import, which keeps
-Schemdraw out of this toolchain and makes the contract between the two domains
-something you can open and read.
+`design/netlist.json` is the reviewed electrical connectivity contract. The
+layout reads it directly; there is no separate design contract domain that can drift
+from the PCB sent to fabrication.
 
 ## Read this before ordering anything
 
@@ -38,7 +37,7 @@ It does:
 - check nothing overlaps and nothing hangs off the board;
 - keep every dimension inside the fab's stated capability, with a wide margin;
 - clear the ground pour away from every pad that is not on ground;
-- verify that each net the schematic declares is actually joined in copper.
+- verify that each net the connectivity contract declares is joined in copper.
 
 It does **not**:
 
@@ -54,6 +53,7 @@ optional here.
 ## Layout
 
 ```
+design/       reviewed connectivity contract and assembly manifest
 generated/    gerber stack, previews, routing report, upload package
 core/         rules, sources, placement, routing, layers, connectivity
 footprints/   one physical package per module
@@ -66,23 +66,21 @@ which is not ours to choose, and the geometry this design uses, which is. It
 refuses any choice outside the capability, so raising a limit cannot silently
 produce an unmanufacturable board.
 
-`core/sources.py` is the only place this domain reaches into another. It loads
-the CAD dimensions and the electronics naming module by file path rather than
-importing them, because both domains contain a package called `core` and one
-would shadow the other.
+`core/sources.py` loads dimensions and wiring from `hardware/shared` and reads
+the local design connectivity. Tool-specific code remains in this domain.
 
 ## Adding a footprint
 
 Add a module to `footprints/` binding a `Footprint` to an UPPER_CASE name. The
 catalog discovers it and indexes it by its `package` string — the same string the
-schematic already records — so nothing else needs editing.
+design contract records — so nothing else needs editing.
 
 Derive the courtyard with `courtyard_for()` rather than writing one out. A
 courtyard smaller than its own pads is a bug the tests will catch, but not
 writing it by hand is better than catching it.
 
-Pad numbers are datasheet pin numbers so they match the schematic. Where a
-package has more pads than the schematic has pins — a tactile switch's four legs
+Pad numbers are datasheet pin numbers so they match the connectivity contract.
+Where a package has more pads than the logical component has pins — a tactile switch's four legs
 are two shorted pairs — suffix the extras with a letter: `2b` carries whatever
 pin `2` carries.
 

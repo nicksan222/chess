@@ -20,7 +20,7 @@ Regenerate everything from the repository root with:
 
 ## Layout
 
-This directory has the same shape as `hardware/electronics`: generated output
+This directory has the same shape as `hardware/pcb`: generated output
 in `generated/`, everything that produces it in a subdirectory.
 
 ```
@@ -71,7 +71,7 @@ volumes.
 
 `core/modeling.py` and `core/presentation.py` hold shared mesh operations,
 studio setup and library loading. `blocks/pcb_proxy.py` builds a presentation
-stand-in for the populated circuit board; `hardware/electronics` owns the real
+stand-in for the populated circuit board; `hardware/pcb` owns the real
 design.
 
 Every printable model has one owning generator. `board-assembly` imports those

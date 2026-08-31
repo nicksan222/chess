@@ -4,7 +4,7 @@ Six pads on two sides, which is what distinguishes it from a WS2812B's four and
 is the whole reason the chain needs no critical timing. Pads extend outward past
 the body so a hand-soldered fillet is visible and inspectable from the side.
 
-Numbering matches `hardware/electronics/components/sk9822.py`, which states the
+Numbering matches `hardware/pcb/components/sk9822.py`, which states the
 convention it uses: 1 VDD, 2 GND, 3 SDI, 4 CKI, 5 SDO, 6 CKO.
 """
 

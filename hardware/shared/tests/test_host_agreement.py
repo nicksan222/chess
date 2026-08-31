@@ -1,6 +1,6 @@
-"""The schematic and the host software must agree on the board's wiring.
+"""The shared hardware contract and host software must agree on wiring.
 
-`core/names.py` decides which expander pin reads which square and where each
+`shared/wiring.py` decides which expander pin reads which square and where each
 square sits in the LED chain. `crates/board-model` has to make the same
 decisions, because the host reads bytes off a bus and has to name squares from
 them. Nothing in either build would notice the two drifting apart, so this is the
@@ -17,14 +17,15 @@ import sys
 import unittest
 from pathlib import Path
 
-ELECTRONICS = Path(__file__).resolve().parents[1]
-REPOSITORY_ROOT = ELECTRONICS.parents[1]
+SHARED = Path(__file__).resolve().parents[1]
+HARDWARE = SHARED.parent
+REPOSITORY_ROOT = HARDWARE.parent
 BOARD_MODEL = REPOSITORY_ROOT / "crates" / "board-model" / "src"
 
-if str(ELECTRONICS) not in sys.path:
-    sys.path.insert(0, str(ELECTRONICS))
+if str(HARDWARE) not in sys.path:
+    sys.path.insert(0, str(HARDWARE))
 
-from core.names import (  # noqa: E402
+from shared.wiring import (  # noqa: E402
     EXPANDER_BASE_ADDRESS,
     EXPANDER_COUNT,
     expander_of,
@@ -77,8 +78,8 @@ class HostMappingAgreementTest(unittest.TestCase):
     def test_the_crate_records_which_module_owns_the_assignment(self) -> None:
         """A reader who changes one side needs a pointer to the other."""
         lib = (BOARD_MODEL / "lib.rs").read_text()
-        self.assertIn("core/names.py", lib)
-        self.assertIn("hardware/electronics", lib)
+        self.assertIn("shared/wiring.py", lib)
+        self.assertIn("hardware/shared", lib)
 
     def test_port_a_holds_the_lower_ranks_of_each_quadrant(self) -> None:
         """The property the Rust `is_port_b` test asserts, checked here too."""

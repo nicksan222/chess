@@ -1,4 +1,4 @@
-"""Read shared contracts and the schematic's generated netlist.
+"""Read shared contracts and the design contract's generated netlist.
 
 The shared package deliberately has no CAD, EDA, or PCB dependency, so future
 KiCad and other domain adapters can consume the same definitions.
@@ -16,7 +16,7 @@ PCB_ROOT = Path(__file__).resolve().parents[1]
 HARDWARE_ROOT = PCB_ROOT.parent
 REPOSITORY_ROOT = HARDWARE_ROOT.parent
 
-NETLIST_PATH = HARDWARE_ROOT / "electronics" / "generated" / "netlist.json"
+NETLIST_PATH = PCB_ROOT / "design" / "netlist.json"
 
 PROJECT_NAME = "board"
 
@@ -38,11 +38,10 @@ def names() -> ModuleType:
 
 
 def netlist() -> dict:
-    """The published schematic connectivity for the board project."""
+    """The reviewed source connectivity for the board project."""
     if not NETLIST_PATH.is_file():
         raise RuntimeError(
-            f"{NETLIST_PATH} is missing. Run ./tools/electronics first; the "
-            "schematic publishes the netlist this domain consumes."
+            f"{NETLIST_PATH} is missing. The PCB connectivity contract is required."
         )
     published = json.loads(NETLIST_PATH.read_text())
     if published.get("schema") != 1:

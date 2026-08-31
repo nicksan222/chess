@@ -124,7 +124,7 @@ class GridAlignmentTest(unittest.TestCase):
         self.assertEqual((header.x, header.y), tuple(self.shared.PI_BAY_CENTER_MM))
 
     def test_square_names_reconcile_the_two_row_conventions(self) -> None:
-        """CAD counts rows from the far side; the schematic names ranks near-first."""
+        """CAD counts rows from the far side; the design contract names ranks near-first."""
         centres = placement.square_centres(self.shared)
         self.assertEqual(len(centres), 64)
         half = self.shared.PLAYING_SPAN_MM / 2.0

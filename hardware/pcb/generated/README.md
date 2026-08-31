@@ -15,7 +15,7 @@ What you will find:
   rasterisers ignore filters and render the traces white on white.
 - `routing.md` — what is connected and what is not. Read this first.
 - `board-pcbway.zip` — the upload package. **It only appears when every
-  connection in the schematic is realised in copper.** If it is missing,
+  connection in the design contract is realised in copper.** If it is missing,
   `routing.md` says what is outstanding.
 
 That gate exists because a fab cannot tell an unrouted board from a finished one.

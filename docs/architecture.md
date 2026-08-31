@@ -54,10 +54,10 @@ bridge core or the shared crates.
 
 There are only two places where two things have to agree, and both are checked:
 
-- **The board's wiring.** `hardware/electronics/core/names.py` assigns squares to
+- **The board's wiring.** `hardware/shared/wiring.py` assigns squares to
   expander pins and buttons to Broadcom lines; `crates/board-model` has to make
   the same assignment. Nothing in either build would notice them drifting apart,
-  so `hardware/electronics/tests/test_host_agreement.py` compares the formulas.
+  so `hardware/shared/tests/test_host_agreement.py` compares the formulas.
 - **The physical stack.** `hardware/shared/dimensions.py` decides the heights
   that let the plate sit flush over the board, and validates that they sum
   correctly on import.

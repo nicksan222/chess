@@ -23,7 +23,7 @@ lines, and 5 V distribution. Those all compete for the same top-layer space and
 need a router that reasons about obstacles.
 
 Routing is driven by the published connection list rather than by rebuilding the
-schematic's intent here. Routing what the schematic says, instead of what this
+design contract's intent here. Routing what the design contract says, instead of what this
 module believes it says, is what stops the two drifting apart.
 
 ## The ground pour is negative

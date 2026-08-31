@@ -9,8 +9,8 @@ what that process guarantees.
 
 `hardware/pcb` writes RS-274X Gerber and Excellon files directly, using
 [Gerbonara](https://gerbolyze.gitlab.io/gerbonara). There is no KiCad project, no
-schematic capture application, and no board file to open: the artwork is a
-consequence of the schematic and the mechanical design, both of which are already
+design contract capture application, and no board file to open: the artwork is a
+consequence of the design contract and the mechanical design, both of which are already
 Python.
 
 That is possible mainly because this board is unusually regular. Every one of the
@@ -21,7 +21,7 @@ drawn, and the copper cannot drift away from the plastic.
 
 ## Two domains, joined by a file
 
-The schematic publishes `hardware/electronics/generated/netlist.json`, and the
+The design contract publishes `hardware/pcb/design/netlist.json`, and the
 layout reads it. Deliberately a file and not an import: the fabrication toolchain
 then needs Gerbonara and nothing else, the two domains stay independently
 installable, and the contract between them is something a person can open.
@@ -32,7 +32,7 @@ along a rank, so publishing only named nets would have hidden those connections
 from the layout — which would then have produced a board with an unrouted LED
 chain and no sign anything was wrong.
 
-Run `./tools/electronics` before `./tools/pcb`. `./tools/check` and `make gen`
+Run `./tools/pcb` before `./tools/pcb`. `./tools/check` and `make gen`
 already do.
 
 ## The gate
@@ -41,7 +41,7 @@ An unrouted board produces perfectly valid Gerber files. A fab will accept them,
 manufacture them and ship them, because valid and connected are different
 properties and only one of them is visible in the file.
 
-So the fabrication package is withheld until every connection the schematic
+So the fabrication package is withheld until every connection the design contract
 declares is realised in copper. `generated/routing.md` reports the state, grouped
 into a work list. If `board-pcbway.zip` is missing, the board is not ready and
 that is the gate working.
@@ -56,7 +56,7 @@ Verified, by tests that run in CI:
 
 - the chosen geometry is inside PCBWay's stated capability, with a margin of four
   times the process floor, and raising a limit past the capability is refused;
-- every package the schematic places has a footprint, and every schematic pin has
+- every package the design contract places has a footprint, and every design contract pin has
   a pad;
 - no two parts overlap and nothing hangs off the board;
 - every LED, reed and button sits where the mechanical design put a pocket or a

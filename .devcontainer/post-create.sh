@@ -12,9 +12,8 @@ cat <<'EOF'
 
 The container is ready. Hardware toolchains are already in the image.
 
-  ./tools/electronics         test, then generate
   ./tools/cad                 test, then generate
   ./tools/pcb                 test, then generate fabrication output
   ./tools/rust                fmt, clippy, and tests
-  make check                  all four, sequentially
+  make check                  all domains, sequentially
 EOF

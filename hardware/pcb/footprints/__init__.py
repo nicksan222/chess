@@ -2,10 +2,10 @@
 
 Adding a footprint is adding a module here that binds a `Footprint` to an
 UPPER_CASE name. This package discovers it and indexes it by its `package`
-string, which is the same string the schematic records, so nothing else needs
+string, which is the same string the design contract records, so nothing else needs
 editing to keep up.
 
-The same discipline as `hardware/electronics/components`, for the same reason.
+The same discipline as `hardware/pcb/components`, for the same reason.
 """
 
 from __future__ import annotations
@@ -50,7 +50,7 @@ def _discover() -> list[str]:
 
 
 def for_package(package: str) -> Footprint:
-    """The footprint a schematic package string resolves to."""
+    """The footprint a design contract package string resolves to."""
     if package not in CATALOG:
         raise KeyError(
             f"No footprint for package {package!r}. Add a module to "

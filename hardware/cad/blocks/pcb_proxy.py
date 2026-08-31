@@ -1,7 +1,7 @@
 """Presentation-only stand-in for the populated circuit board.
 
-None of this is printed and none of it is authoritative: the schematic under
-`hardware/electronics` owns the design. These shapes exist so an assembly render
+None of this is printed and none of it is authoritative: the design contract under
+`hardware/pcb` owns the design. These shapes exist so an assembly render
 shows what fills the case, and so the vertical stack in `core/dimensions.py` can
 be seen to add up rather than merely asserted.
 
@@ -51,7 +51,7 @@ def add_board(collection: bpy.types.Collection) -> bpy.types.Object:
         collection,
     )
     board.data.materials.append(palette["pcb"])
-    board["purpose"] = "Presentation proxy; the schematic owns the real design"
+    board["purpose"] = "Presentation proxy; the design contract owns the real design"
 
     _add_leds(collection, palette)
     _add_reeds(collection, palette)
@@ -99,7 +99,7 @@ def _add_reeds(
             vertices=16,
         )
         # Lying flat across the square, which is the orientation whose
-        # sensitivity the electronics prototype still has to settle.
+        # sensitivity the hardware prototype still has to settle.
         reed.rotation_euler[1] = pi / 2.0
         reed.data.materials.append(palette["glass"])
 
