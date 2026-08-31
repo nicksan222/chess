@@ -1,3 +1,5 @@
+//! King movement, attacks, and castling calculation.
+
 use crate::{Board, Color, Piece, PieceKind, Square, SquareSet};
 
 use super::{is_attacked, shared};

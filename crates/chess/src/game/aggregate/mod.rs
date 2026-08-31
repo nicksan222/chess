@@ -1,10 +1,15 @@
+//! The game aggregate and its immutable public state views.
+
 mod history_state;
 mod play;
 mod sync;
+mod verification;
 
 use crate::{Board, ChessMove, Piece, Square};
 
 use super::GameHistory;
+
+pub use verification::GameVerificationError;
 
 /// A playable board whose authoritative state transitions live in one history.
 #[derive(Clone, Debug, PartialEq, Eq)]

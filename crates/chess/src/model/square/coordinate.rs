@@ -1,3 +1,5 @@
+//! Typed board files and ranks.
+
 use core::fmt;
 
 /// A chessboard file in `a`-through-`h` order.

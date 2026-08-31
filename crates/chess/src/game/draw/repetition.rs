@@ -1,3 +1,5 @@
+//! Exact position identity and repetition counting from authoritative history.
+
 use crate::{
     Board, CastlingRights, Color, FileOffset, GameHistory, HistoryEvent, PieceKind, RankOffset,
     Square, SquareOffset,

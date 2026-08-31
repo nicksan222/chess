@@ -1,3 +1,5 @@
+//! Board edges and movement directions.
+
 use super::{File, FileOffset, Rank, RankOffset, Square, SquareOffset};
 
 /// One of the four objective chessboard edges.

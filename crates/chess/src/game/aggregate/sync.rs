@@ -1,3 +1,5 @@
+//! Validation and application of authoritative events received from peers.
+
 use crate::{
     GameSyncError, HistoryError, HistoryEvent, HistoryEventKind, HistoryStep, InvalidState,
     MoveError,

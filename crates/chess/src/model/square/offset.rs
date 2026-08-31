@@ -1,3 +1,5 @@
+//! Typed file, rank, and square displacements.
+
 use crate::Color;
 
 /// A signed number of files toward `h` (positive) or `a` (negative).

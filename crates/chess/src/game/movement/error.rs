@@ -1,3 +1,5 @@
+//! Typed reasons a requested move cannot be played.
+
 use core::fmt;
 
 use crate::{Color, FinalState, Square};

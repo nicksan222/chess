@@ -1,3 +1,5 @@
+//! Errors produced while accepting peer history steps.
+
 use core::fmt;
 
 use super::{HistoryError, MoveError};

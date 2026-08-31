@@ -1,3 +1,5 @@
+//! Typed failures for hash validation and history-state transitions.
+
 use core::fmt;
 
 use super::{HistoryEventKind, HistoryHash, Ply};

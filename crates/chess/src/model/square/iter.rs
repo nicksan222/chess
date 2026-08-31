@@ -1,3 +1,5 @@
+//! Iteration over all squares and directional rays.
+
 use super::{BoardDirection, Square};
 
 /// An iterator over the squares in one directional ray.

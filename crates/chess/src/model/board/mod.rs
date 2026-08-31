@@ -1,3 +1,5 @@
+//! Complete board state required to continue a chess game.
+
 mod castling;
 mod clocks;
 mod iter;

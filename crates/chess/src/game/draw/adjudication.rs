@@ -1,3 +1,5 @@
+//! Fifty-move, seventy-five-move, and repetition draw thresholds.
+
 use crate::{DrawClaim, DrawClaims, DrawReason, FinalState, Game};
 
 use super::{material, repetition};

@@ -1,3 +1,5 @@
+//! The public lifecycle state of a game.
+
 use crate::{Color, FinalState, InvalidState};
 
 use super::{DrawClaims, DrawReason};

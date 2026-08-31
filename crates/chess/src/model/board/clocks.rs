@@ -1,3 +1,5 @@
+//! Validated halfmove and fullmove counters.
+
 use core::{fmt, num::NonZeroU32};
 
 /// The number of halfmoves since the last pawn move or capture.

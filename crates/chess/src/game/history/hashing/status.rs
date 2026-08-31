@@ -1,3 +1,5 @@
+//! Stable hash encodings for colors, draw claims, and draw reasons.
+
 use sha2::{Digest, Sha256};
 
 use crate::{Color, DrawClaim, DrawReason};

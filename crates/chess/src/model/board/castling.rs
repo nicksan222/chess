@@ -1,3 +1,5 @@
+//! Compact representation and mutation of castling rights.
+
 use core::fmt;
 
 use crate::Color;

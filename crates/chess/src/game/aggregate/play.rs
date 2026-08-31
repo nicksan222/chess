@@ -1,3 +1,5 @@
+//! Local move application and invalid-move recording.
+
 use crate::{
     ChessMove, HistoryEvent, HistoryStep, InvalidState, MoveError, Piece, PieceKind, Square,
 };

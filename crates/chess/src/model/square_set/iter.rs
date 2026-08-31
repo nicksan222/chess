@@ -1,3 +1,5 @@
+//! Ordered iteration over squares in a bit set.
+
 use core::iter::FusedIterator;
 
 use crate::Square;

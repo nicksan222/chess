@@ -1,3 +1,5 @@
+//! History-tip inspection, invalid-state resolution, and final-state recording.
+
 use crate::{
     FinalState, HistoryError, HistoryEvent, HistoryEventKind, HistoryStep, InvalidState, MoveError,
 };

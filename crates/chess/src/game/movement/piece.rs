@@ -1,3 +1,5 @@
+//! Piece-oriented legal move queries and move commands.
+
 use crate::{Board, ChessMove, Game, HistoryStep, MoveError, Piece, PieceKind, Square, SquareSet};
 
 use super::transition::is_back_rank;

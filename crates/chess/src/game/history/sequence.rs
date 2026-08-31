@@ -1,3 +1,5 @@
+//! Validated event sequence numbers and history counts.
+
 use core::{fmt, num::NonZeroU64};
 
 /// A one-based halfmove index in a game's move history.

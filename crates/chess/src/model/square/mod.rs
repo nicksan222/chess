@@ -1,3 +1,5 @@
+//! Validated squares and board geometry operations.
+
 mod constants;
 mod coordinate;
 mod geometry;

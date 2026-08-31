@@ -1,3 +1,5 @@
+//! Unchecked board transitions and rule-state updates.
+
 use crate::{
     Board, Color, FileOffset, HalfmoveClock, Piece, PieceKind, Rank, RankOffset, Square,
     SquareOffset,

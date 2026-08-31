@@ -1,3 +1,5 @@
+//! Ordered iteration over self-locating board pieces.
+
 use core::iter::FusedIterator;
 
 use crate::{AllSquares, Piece, Square};

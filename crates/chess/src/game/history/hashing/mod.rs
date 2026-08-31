@@ -1,3 +1,5 @@
+//! SHA-256 board anchoring, event hashing, and link validation.
+
 mod anchor;
 mod error;
 mod event;

@@ -1,3 +1,5 @@
+//! Parsing of coordinate move notation.
+
 use core::{fmt, str::FromStr};
 
 use crate::{ParseSquareError, PieceKind};

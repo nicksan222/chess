@@ -1,3 +1,5 @@
+//! Canonical hashing of invalid-operation details.
+
 use sha2::{Digest, Sha256};
 
 use crate::{GameSyncError, HistoryEventKind, MoveError};

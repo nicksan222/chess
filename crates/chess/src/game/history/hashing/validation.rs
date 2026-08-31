@@ -1,3 +1,5 @@
+//! Validation of sequence numbers, previous hashes, and event hashes.
+
 use super::{
     super::{HistoryError, HistoryHash, HistoryStep, Ply},
     calculate_hash,

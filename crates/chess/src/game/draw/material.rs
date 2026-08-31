@@ -1,3 +1,5 @@
+//! Detection of material combinations in which checkmate is impossible.
+
 use crate::{Board, Color, PieceKind, Square};
 
 /// Returns whether the material makes checkmate impossible by any legal sequence.

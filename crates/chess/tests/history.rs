@@ -74,6 +74,8 @@ fn peers_verify_all_previous_moves_before_accepting_the_latest() {
     assert!(receiver.history().is_synced_before(second));
     receiver.accept(second).unwrap();
     assert_eq!(receiver.history().tip(), sender.history().tip());
+    assert_eq!(sender.verify(), Ok(()));
+    assert_eq!(receiver.verify(), Ok(()));
 }
 
 #[test]
@@ -94,6 +96,8 @@ fn peers_synchronize_invalid_events_and_resolve_them_in_reverse() {
     receiver.accept(invalid).unwrap();
     assert_eq!(receiver.history(), sender.history());
     assert_eq!(receiver.latest_invalid(), sender.latest_invalid());
+    assert_eq!(sender.verify(), Ok(()));
+    assert_eq!(receiver.verify(), Ok(()));
 
     sender.resolve_latest_invalid().unwrap();
     receiver.resolve_latest_invalid().unwrap();
@@ -116,6 +120,8 @@ fn peers_synchronize_claimed_final_events() {
     receiver.accept(final_step).unwrap();
     assert_eq!(receiver.history(), sender.history());
     assert_eq!(receiver.status(), sender.status());
+    assert_eq!(sender.verify(), Ok(()));
+    assert_eq!(receiver.verify(), Ok(()));
 }
 
 #[test]

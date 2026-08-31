@@ -1,3 +1,5 @@
+//! Authoritative move, invalid, and terminal event values.
+
 use crate::{ChessMove, Color, DrawClaim, DrawReason, GameSyncError, MoveError};
 
 /// A rejected operation retained in the authoritative game history.

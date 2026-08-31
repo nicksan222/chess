@@ -1,3 +1,5 @@
+//! Status evaluation from history and the current board cache.
+
 use crate::{DrawReason, FinalState, Game, HistoryEvent, InvalidState};
 
 use super::GameStatus;

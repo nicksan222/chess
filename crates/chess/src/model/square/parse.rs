@@ -1,3 +1,5 @@
+//! Parsing of algebraic square coordinates.
+
 use core::{fmt, str::FromStr};
 
 use super::{File, Rank, Square};

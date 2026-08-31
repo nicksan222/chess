@@ -1,3 +1,5 @@
+//! Convenience methods for playing owned move values.
+
 use crate::{ChessMove, Game, HistoryStep, MoveError};
 
 impl ChessMove {

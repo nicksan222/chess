@@ -1,3 +1,5 @@
+//! Claimable draw inspection and claim finalization.
+
 use core::fmt;
 
 use crate::{

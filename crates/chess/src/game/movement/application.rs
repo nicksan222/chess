@@ -1,3 +1,5 @@
+//! Validation and canonical application of requested moves.
+
 use crate::{Board, ChessMove, PieceKind};
 
 use super::{MoveError, transition::is_back_rank};

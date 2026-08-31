@@ -1,3 +1,5 @@
+//! Validated zero-based square indices.
+
 use core::fmt;
 
 /// A validated zero-based square index in `0..64`.

@@ -1,3 +1,5 @@
+//! Explicit relocations that intentionally bypass chess rules.
+
 use core::fmt;
 
 use crate::{Board, Piece, Square};

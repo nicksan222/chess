@@ -1,3 +1,5 @@
+//! Piece kinds and self-locating piece values.
+
 use core::fmt;
 
 use super::{Color, Square};

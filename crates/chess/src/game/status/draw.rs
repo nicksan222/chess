@@ -1,3 +1,5 @@
+//! Public values describing claimable and completed draws.
+
 use core::fmt;
 
 /// A draw the side to move may claim.

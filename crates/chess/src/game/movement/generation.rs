@@ -1,3 +1,5 @@
+//! Legal move generation and king-safety filtering.
+
 use crate::{Board, ChessMove, Color, Piece, PieceKind, SquareSet};
 
 use super::calculators;

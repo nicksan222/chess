@@ -1,3 +1,5 @@
+//! Coordinate move intent and promotion values.
+
 mod parse;
 
 pub use parse::ParseMoveError;

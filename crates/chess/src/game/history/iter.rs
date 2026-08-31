@@ -1,3 +1,5 @@
+//! Chronological iteration over authoritative history steps.
+
 use core::iter::FusedIterator;
 
 use chess_core::collections::Iter as LinkedListIter;

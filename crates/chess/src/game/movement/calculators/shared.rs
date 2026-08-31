@@ -1,3 +1,5 @@
+//! Shared ray and offset movement primitives.
+
 use crate::{Board, BoardDirection, FileOffset, Piece, RankOffset, SquareOffset, SquareSet};
 
 pub(super) const DIAGONALS: [BoardDirection; 4] = [

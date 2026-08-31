@@ -1,3 +1,5 @@
+//! Queen destinations and attacked-square calculation.
+
 use crate::{Board, Piece, SquareSet};
 
 use super::shared;

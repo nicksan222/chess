@@ -1,3 +1,5 @@
+//! Initial and caller-provided board construction.
+
 use crate::{Color, Piece, PieceKind, Square};
 
 use super::Board;

@@ -1,3 +1,5 @@
+//! Named constants for all sixty-four squares.
+
 use super::Square;
 
 macro_rules! define_squares {

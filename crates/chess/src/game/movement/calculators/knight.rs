@@ -1,3 +1,5 @@
+//! Knight destinations and attacked-square calculation.
+
 use crate::{Board, FileOffset, Piece, RankOffset, SquareOffset, SquareSet};
 
 use super::shared;

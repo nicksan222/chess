@@ -8,7 +8,7 @@ mod position;
 mod status;
 mod sync_error;
 
-pub use aggregate::Game;
+pub use aggregate::{Game, GameVerificationError};
 pub use draw::DrawClaimError;
 pub use history::{
     FinalState, GameHistory, GameHistoryIter, HistoryCount, HistoryError, HistoryEvent,

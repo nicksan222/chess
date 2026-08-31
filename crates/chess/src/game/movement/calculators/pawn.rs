@@ -1,3 +1,5 @@
+//! Pawn pushes, captures, attacks, and en-passant calculation.
+
 use crate::{
     Board, Color, FileOffset, Piece, PieceKind, Rank, RankOffset, SquareOffset, SquareSet,
 };

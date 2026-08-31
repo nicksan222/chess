@@ -1,3 +1,5 @@
+//! Read-only game position queries.
+
 use crate::{BoardPieces, Color, Game, Piece};
 
 impl Game {

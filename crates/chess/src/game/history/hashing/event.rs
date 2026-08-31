@@ -1,3 +1,5 @@
+//! Canonical hashing of every authoritative event variant.
+
 use sha2::{Digest, Sha256};
 
 use crate::{ChessMove, HistoryEvent, InvalidState};

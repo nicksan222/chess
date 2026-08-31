@@ -1,3 +1,5 @@
+//! Chess side values and color operations.
+
 use core::fmt;
 
 /// A chess player's color.

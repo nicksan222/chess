@@ -1,3 +1,5 @@
+//! Hash and immutable step values used by transport and persistence.
+
 use core::fmt;
 
 use super::{HistoryEvent, Ply};

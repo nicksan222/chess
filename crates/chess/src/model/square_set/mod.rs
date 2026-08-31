@@ -1,3 +1,5 @@
+//! Allocation-free sets of board squares.
+
 mod iter;
 mod ops;
 

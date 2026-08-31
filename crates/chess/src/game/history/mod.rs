@@ -1,3 +1,5 @@
+//! The linked list that serves as the authoritative game timeline.
+
 mod error;
 mod event;
 mod hashing;

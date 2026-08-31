@@ -1,3 +1,5 @@
+//! Status values and evaluation behavior.
+
 mod draw;
 mod evaluation;
 mod game_status;

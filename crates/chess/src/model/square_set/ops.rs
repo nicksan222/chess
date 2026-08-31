@@ -1,3 +1,5 @@
+//! Collection conversions and set operators for square sets.
+
 use core::ops::{
     BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Not, Sub, SubAssign,
 };

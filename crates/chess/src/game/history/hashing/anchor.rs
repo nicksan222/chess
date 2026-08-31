@@ -1,3 +1,5 @@
+//! Canonical hashing of the board that anchors a game history.
+
 use sha2::{Digest, Sha256};
 
 use crate::{Board, Color, PieceKind};
