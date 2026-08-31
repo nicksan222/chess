@@ -9,7 +9,8 @@ mod sync_error;
 
 pub use aggregate::Game;
 pub use history::{
-    HistoryError, InvalidPly, MoveCount, MoveHash, MoveHistory, MoveHistoryIter, MoveStep, Ply,
+    FinalState, HistoryError, HistoryEvent, InvalidPly, InvalidState, MoveCount, MoveHash,
+    MoveHistory, MoveHistoryIter, MoveStep, Ply,
 };
 pub use movement::{ForceMoveError, ForcedMove, MoveError};
 pub use status::{DrawClaim, DrawClaims, DrawReason, GameStatus};

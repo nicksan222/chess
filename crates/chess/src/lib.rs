@@ -10,9 +10,9 @@ mod game;
 mod model;
 
 pub use game::{
-    DrawClaim, DrawClaims, DrawReason, ForceMoveError, ForcedMove, Game, GameStatus, GameSyncError,
-    HistoryError, InvalidPly, MoveCount, MoveError, MoveHash, MoveHistory, MoveHistoryIter, MoveStep,
-    Ply,
+    DrawClaim, DrawClaims, DrawReason, FinalState, ForceMoveError, ForcedMove, Game, GameStatus,
+    GameSyncError, HistoryError, HistoryEvent, InvalidPly, InvalidState, MoveCount, MoveError,
+    MoveHash, MoveHistory, MoveHistoryIter, MoveStep, Ply,
 };
 pub use model::{
     AllSquares, Board, BoardDirection, BoardEdge, BoardPieces, CastlingRights, ChessMove, Color,

@@ -1,10 +1,12 @@
 mod error;
+mod event;
 mod hashing;
 mod iter;
 mod sequence;
 mod step;
 
 pub use error::HistoryError;
+pub use event::{FinalState, HistoryEvent, InvalidState};
 pub use iter::MoveHistoryIter;
 pub use sequence::{InvalidPly, MoveCount, Ply};
 pub use step::{MoveHash, MoveStep};
