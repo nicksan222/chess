@@ -53,6 +53,8 @@ generate() {
     done < <(list_projects)
     printf '\n==> Bill of materials\n'
     python3 "${domain_dir}/core/bom.py"
+    printf '\n==> Netlist\n'
+    python3 "${domain_dir}/core/netlist.py"
 }
 
 setup

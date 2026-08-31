@@ -9,15 +9,13 @@ if [[ $# -ne 0 ]]; then
     exit 2
 fi
 
-printf '\n==> Format host workspace\n'
+printf '\n==> Format workspace\n'
 cargo fmt --check
-printf '\n==> Format firmware application\n'
-cargo fmt --manifest-path apps/firmware/Cargo.toml --check
-printf '\n==> Type-check host workspace\n'
+printf '\n==> Type-check workspace\n'
 cargo check --workspace --all-targets
-printf '\n==> Lint host workspace\n'
+printf '\n==> Lint workspace\n'
 cargo clippy --workspace --all-targets -- -D warnings
-printf '\n==> Test host workspace\n'
+printf '\n==> Test workspace\n'
 cargo test --workspace --all-targets
-printf '\n==> Document host workspace\n'
+printf '\n==> Document workspace\n'
 RUSTDOCFLAGS='-D warnings' cargo doc --workspace --no-deps

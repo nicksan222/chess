@@ -59,10 +59,15 @@ RUN python3 -m venv /opt/electronics \
     && /opt/electronics/bin/pip install -r /tmp/electronics-requirements.txt \
     && rm /tmp/electronics-requirements.txt
 
+COPY hardware/pcb/requirements.txt /tmp/pcb-requirements.txt
+RUN python3 -m venv /opt/pcb \
+    && /opt/pcb/bin/pip install --upgrade pip \
+    && /opt/pcb/bin/pip install -r /tmp/pcb-requirements.txt \
+    && rm /tmp/pcb-requirements.txt
+
 ENV BLENDER_BIN=/opt/blender/blender \
     PATH="/opt/electronics/bin:${PATH}"
 
 USER vscode
-RUN rustup component add clippy rustfmt rust-src \
-    && rustup target add thumbv8m.main-none-eabihf
+RUN rustup component add clippy rustfmt rust-src
 USER root

@@ -57,8 +57,7 @@
         "python.languageServer": "Pylance",
         "rust-analyzer.check.command": "check",
         "rust-analyzer.linkedProjects": [
-          "Cargo.toml",
-          "apps/firmware/Cargo.toml"
+          "Cargo.toml"
         ],
         "terminal.integrated.defaultProfile.linux": "bash"
       }

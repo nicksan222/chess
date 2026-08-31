@@ -1,4 +1,4 @@
-.PHONY: all cad check electronics gen regen-all rust
+.PHONY: all cad check electronics gen pcb regen-all rust
 
 all: check
 
@@ -11,9 +11,13 @@ cad:
 electronics:
 	./tools/electronics
 
+pcb:
+	./tools/pcb
+
 rust:
 	./tools/rust
 
-gen: cad electronics
+# Electronics first: the schematic publishes the netlist the board layout reads.
+gen: cad electronics pcb
 
 regen-all: gen

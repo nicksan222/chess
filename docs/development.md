@@ -23,9 +23,9 @@ The image provides:
 
 - stable Rust with `rustfmt` and Clippy;
 - Schemdraw and matplotlib in `/opt/electronics`;
+- Gerbonara in `/opt/pcb`;
 - a checksum-verified Blender at `/opt/blender`;
 - X11/GL/EGL, Mesa, Xvfb, and `xauth` so headless Blender can render;
-- the `thumbv8m.main-none-eabihf` compilation target;
 - native build, USB, and udev development libraries;
 - rust-src, Pylance, YAML, ShellCheck, Docker, Cargo.toml, TOML, LLDB,
   Markdown, and GitHub Actions editor integration.
@@ -33,39 +33,51 @@ The image provides:
 Container creation configures the repository's pre-commit hook. The image
 already contains the hardware toolchains, so the first `./tools/cad` or
 `./tools/electronics` inside the container does not download them.
-The portable configuration does not expose host USB devices or install a
-flashing utility; those choices depend on the firmware tooling and host
-operating system.
+
+There is no embedded compilation target, because there is no firmware. The board
+carries no microcontroller: a Raspberry Pi Zero 2 W reads the sensors and drives
+the LEDs directly, so the whole product is one ordinary Linux binary. See
+[`architecture.md`](architecture.md) for why.
 
 ## Hardware pipelines
 
-`hardware/cad` and `hardware/electronics` are the same shape, and
-`./tools/cad` and `./tools/electronics` do the same sequential job with no
-subcommands:
+`hardware/cad`, `hardware/electronics` and `hardware/pcb` are the same shape, and
+their runners do the same sequential job with no subcommands:
 
 ```sh
 ./tools/<domain>           # install if needed, test, then generate
 ```
 
-Extra arguments are an error. Both scripts source `tools/lib/pipeline.sh` only
-so generate can list projects in `generation-order`.
+Extra arguments are an error. Each script sources `tools/lib/pipeline.sh` only so
+generate can list projects in `generation-order`.
 
-Each domain keeps its source in `core/`, `blocks/`, `projects/` and `tests/`,
-and writes everything it produces to `generated/`. Electronics additionally has
-a `components/` catalog of single parts. Adding a project is adding a directory
-under `projects/` with a `generate.py`; adding an electronics component is
-adding one module to `components/`. Neither requires editing a runner.
+Each domain keeps its source in `core/`, `projects/` and `tests/`, and writes
+everything it produces to `generated/`. Electronics adds a `components/` catalog
+of single parts and PCB adds a `footprints/` catalog; CAD and electronics both
+have `blocks/` for reusable composition. Adding a project is adding a directory
+under `projects/` with a `generate.py`; adding a component or a footprint is
+adding one module. None of it requires editing a runner.
 
-CAD writes `<project>.blend` plus one PNG per view. Electronics writes
-`<project>.svg` and `<project>.png`, then counts the placed symbols into
-`bom.md`, which lists how many of each part the design needs.
-`ELECTRONICS_PNG_DPI` changes the screenshot resolution from its 150 DPI
-default.
+What each writes:
+
+- **CAD** — `<project>.blend` plus one PNG per view.
+- **Electronics** — `<project>.svg` and `<project>.png`, then `bom.md` counted
+  from the placed symbols, then `netlist.json`. `ELECTRONICS_PNG_DPI` changes the
+  screenshot resolution from its 150 DPI default.
+- **PCB** — a Gerber and Excellon layer stack, SVG previews of both sides,
+  `routing.md`, and a fabrication zip **only when every net is routed**.
+
+### Order matters between two of them
+
+Electronics has to run before PCB. The schematic publishes `netlist.json`, and
+the layout reads it rather than importing the schematic, which keeps Schemdraw
+out of the fabrication toolchain and makes the contract between the two domains
+a file you can read. `./tools/check` and `make gen` both run them in that order.
 
 The toolchains ship in the development container (`/opt/blender`,
-`/opt/electronics`). Outside it they install into the ignored `.cache`
-directory: a virtual environment for Schemdraw, and a checksum-verified Blender
-build unless `BLENDER_BIN` already points at one.
+`/opt/electronics`, `/opt/pcb`). Outside it they install into the ignored
+`.cache` directory: virtual environments for Schemdraw and Gerbonara, and a
+checksum-verified Blender build unless `BLENDER_BIN` already points at one.
 
 ## Host workflow
 
@@ -83,9 +95,8 @@ Run the complete quality gate directly with:
 ```
 
 The gate runs `./tools/rust` (format, Clippy, tests), then the full CAD and
-electronics jobs, sequentially. The firmware application at `apps/firmware` is
-an independent embedded project, so embedded type-checking remains deferred
-until its runtime and linker setup exist.
+electronics jobs, sequentially. One workspace covers all the Rust in the
+repository; there is no separate embedded project to check.
 
 The pre-commit hook runs this gate without CAD generation so commits do not
 wait on Blender. GitHub

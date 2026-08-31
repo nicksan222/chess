@@ -90,6 +90,21 @@ jobs:
           name: electronics-generated
           path: hardware/electronics/generated
 
+  pcb:
+    needs: prebuild
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/run-in-devcontainer
+        with:
+          image: ${{ needs.prebuild.outputs.image }}
+          command: ./tools/pcb
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: pcb-generated
+          path: hardware/pcb/generated
+
   rust:
     needs: prebuild
     runs-on: ubuntu-latest

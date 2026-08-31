@@ -18,9 +18,9 @@ The image provides:
 
 - stable Rust with `rustfmt` and Clippy;
 - Schemdraw and matplotlib in `/opt/electronics`;
+- Gerbonara in `/opt/pcb`;
 - a checksum-verified Blender at `/opt/blender`;
 - X11/GL/EGL, Mesa, Xvfb, and `xauth` so headless Blender can render;
-- the `thumbv8m.main-none-eabihf` compilation target;
 - native build, USB, and udev development libraries;
 - rust-src, Pylance, YAML, ShellCheck, Docker, Cargo.toml, TOML, LLDB,
   Markdown, and GitHub Actions editor integration.
