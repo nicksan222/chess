@@ -28,6 +28,9 @@ dependencies = [
 [[package]]
 name = "chess-board-model"
 version = "0.0.0"
+dependencies = [
+ "chess",
+]
 
 [[package]]
 name = "chess-bridge"

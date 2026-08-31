@@ -10,7 +10,7 @@ use core::{
 ///
 /// The implementation uses safe Rust exclusively. Nodes are allocator-backed,
 /// so this collection is appropriate for host applications and embedded
-/// targets that provide a global allocator. Allocator-free firmware should use
+/// targets that provide a global allocator. Allocator-free callers should use
 /// a fixed-capacity collection instead.
 ///
 /// Insertion and removal at the front are `O(1)`. Operations involving the
