@@ -115,6 +115,7 @@ def two_pad_axial(
     pitch: float,
     lead_diameter: float,
     body: tuple[float, float],
+    pin_numbers: tuple[str, str],
 ) -> Footprint:
     """A leaded part lying flat, with its two holes on the X axis.
 
@@ -126,8 +127,8 @@ def two_pad_axial(
     drill = rules.drill_for_lead(lead_diameter)
     pad = rules.pad_for_drill(drill)
     pads = (
-        Pad("1", -pitch / 2.0, 0.0, pad, pad, RECT, drill),
-        Pad("2", pitch / 2.0, 0.0, pad, pad, ROUND, drill),
+        Pad(pin_numbers[0], -pitch / 2.0, 0.0, pad, pad, RECT, drill),
+        Pad(pin_numbers[1], pitch / 2.0, 0.0, pad, pad, ROUND, drill),
     )
     return Footprint(
         package=package,
@@ -145,6 +146,7 @@ def dual_inline(
     pitch: float = 2.54,
     lead_diameter: float = 0.5,
     body: tuple[float, float] | None = None,
+    pin_numbers: tuple[str, ...] = (),
 ) -> Footprint:
     """A DIP package with its long axis along Y and pin 1 at the top left.
 
@@ -155,6 +157,8 @@ def dual_inline(
 
     if ways % 2 != 0:
         raise ValueError(f"{package}: a dual-inline package needs an even pin count")
+    if len(pin_numbers) != ways:
+        raise ValueError(f"{package}: expected {ways} semantic pin numbers")
     per_side = ways // 2
     drill = rules.drill_for_lead(lead_diameter)
     pad = rules.pad_for_drill(drill)
@@ -165,7 +169,7 @@ def dual_inline(
         shape = RECT if index == 0 else ROUND
         pads.append(
             Pad(
-                str(index + 1),
+                pin_numbers[index],
                 -row_spacing / 2.0,
                 span / 2.0 - index * pitch,
                 pad,
@@ -177,7 +181,7 @@ def dual_inline(
     for index in range(per_side):
         pads.append(
             Pad(
-                str(ways - index),
+                pin_numbers[ways - index - 1],
                 row_spacing / 2.0,
                 span / 2.0 - index * pitch,
                 pad,
@@ -201,6 +205,7 @@ def pin_header(
     rows: int,
     pitch: float = 2.54,
     lead_diameter: float = 0.64,
+    pin_numbers: tuple[str, ...] = (),
 ) -> Footprint:
     """A pin header numbered the way a Raspberry Pi header is: odd, even, odd.
 
@@ -209,6 +214,9 @@ def pin_header(
     """
     from core import rules
 
+    count = columns * rows
+    if len(pin_numbers) != count:
+        raise ValueError(f"{package}: expected {count} semantic pin numbers")
     drill = rules.drill_for_lead(lead_diameter)
     pad = rules.pad_for_drill(drill)
     span_x = (rows - 1) * pitch
@@ -220,7 +228,7 @@ def pin_header(
             shape = RECT if number == 1 else ROUND
             pads.append(
                 Pad(
-                    str(number),
+                    pin_numbers[number - 1],
                     -span_x / 2.0 + row * pitch,
                     span_y / 2.0 - column * pitch,
                     pad,

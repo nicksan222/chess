@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from components.oled_header import OledHeaderPin
+from components.raspberry_pi_header import RaspberryPiHeaderPin
+
 from .base import pin_header
 
 # Two rows of twenty, numbered odd on one row and even on the other, matching
@@ -12,6 +15,7 @@ PI_HEADER = pin_header(
     "Raspberry Pi Zero 2 W GPIO socket",
     columns=20,
     rows=2,
+    pin_numbers=tuple(RaspberryPiHeaderPin),
 )
 
 OLED_HEADER = pin_header(
@@ -19,4 +23,5 @@ OLED_HEADER = pin_header(
     "SSD1306 OLED module connector",
     columns=4,
     rows=1,
+    pin_numbers=tuple(OledHeaderPin),
 )

@@ -7,6 +7,13 @@ restated per part.
 
 from __future__ import annotations
 
+from components.capacitor import CapacitorPin
+from components.fuse_holder import FuseHolderPin
+from components.power_switch import PowerSwitchPin
+from components.reed_switch import ReedSwitchPin
+from components.resistor import ResistorPin
+from components.tvs_diode import TvsDiodePin
+
 from .base import two_pad_axial
 
 CERAMIC_DISC = two_pad_axial(
@@ -15,6 +22,7 @@ CERAMIC_DISC = two_pad_axial(
     pitch=2.54,
     lead_diameter=0.5,
     body=(4.0, 4.0),
+    pin_numbers=tuple(CapacitorPin),
 )
 
 RESISTOR_AXIAL = two_pad_axial(
@@ -23,6 +31,7 @@ RESISTOR_AXIAL = two_pad_axial(
     pitch=10.16,
     lead_diameter=0.6,
     body=(6.5, 2.5),
+    pin_numbers=tuple(ResistorPin),
 )
 
 # The reed lies along the square it senses. A 14 mm glass body needs its leads
@@ -33,6 +42,7 @@ REED_AXIAL = two_pad_axial(
     pitch=17.78,
     lead_diameter=0.5,
     body=(17.78, 2.6),
+    pin_numbers=tuple(ReedSwitchPin),
 )
 
 TVS_AXIAL = two_pad_axial(
@@ -41,6 +51,7 @@ TVS_AXIAL = two_pad_axial(
     pitch=10.16,
     lead_diameter=0.8,
     body=(7.5, 3.0),
+    pin_numbers=tuple(TvsDiodePin),
 )
 
 ELECTROLYTIC_10MM = two_pad_axial(
@@ -49,6 +60,7 @@ ELECTROLYTIC_10MM = two_pad_axial(
     pitch=5.0,
     lead_diameter=0.8,
     body=(10.5, 10.5),
+    pin_numbers=tuple(CapacitorPin),
 )
 
 ELECTROLYTIC_5MM = two_pad_axial(
@@ -57,6 +69,7 @@ ELECTROLYTIC_5MM = two_pad_axial(
     pitch=2.5,
     lead_diameter=0.6,
     body=(5.5, 5.5),
+    pin_numbers=tuple(CapacitorPin),
 )
 
 # A 5x20 mm cartridge in clips. The pitch is the clip spacing, not the fuse.
@@ -66,6 +79,7 @@ FUSE_HOLDER = two_pad_axial(
     pitch=22.0,
     lead_diameter=1.0,
     body=(26.0, 8.0),
+    pin_numbers=tuple(FuseHolderPin),
 )
 
 ROCKER_SWITCH = two_pad_axial(
@@ -74,4 +88,5 @@ ROCKER_SWITCH = two_pad_axial(
     pitch=12.7,
     lead_diameter=1.2,
     body=(19.5, 13.0),
+    pin_numbers=tuple(PowerSwitchPin),
 )
