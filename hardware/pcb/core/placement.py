@@ -142,6 +142,10 @@ def build() -> list[Placement]:
                     centre[0] + shared.LED_POSITION_MM[0],
                     centre[1] + shared.LED_POSITION_MM[1],
                 )
+                # The chain serpentines: LEDs on even-numbered ranks face left
+                # so each output points toward the following square.
+                if int(extras["Square"][1:]) % 2 == 0:
+                    rotation = 180.0
             elif entry["lib"] == "REED":
                 position = centre
             elif entry["lib"] == "C":

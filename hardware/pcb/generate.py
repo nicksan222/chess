@@ -43,11 +43,14 @@ def connectivity() -> tuple[dict[tuple[str, str], str], list[str]]:
     return pad_nets, names
 
 
-def add_footprints(board: pcbnew.BOARD, net_by_name, pad_nets) -> None:
+def add_footprints(board: pcbnew.BOARD, net_by_name, pad_nets):
+    pads = {}
     for item in placement.build():
         module = pcbnew.FOOTPRINT(board)
         module.SetReference(item.reference)
         module.SetValue(item.package)
+        module.Reference().SetVisible(False)
+        module.Value().SetVisible(False)
         module.SetPosition(point(item.x, item.y))
         board.Add(module)
         for logical, number, (x, y), definition in item.pads():
@@ -71,6 +74,40 @@ def add_footprints(board: pcbnew.BOARD, net_by_name, pad_nets) -> None:
             if name:
                 pad.SetNet(net_by_name[name])
             module.Add(pad)
+            pads[(item.reference, logical)] = pad
+    return pads
+
+
+def add_trace(board, net, start, end, layer=pcbnew.F_Cu, width=0.4) -> None:
+    trace = pcbnew.PCB_TRACK(board)
+    trace.SetStart(start)
+    trace.SetEnd(end)
+    trace.SetWidth(pcbnew.FromMM(width))
+    trace.SetLayer(layer)
+    trace.SetNet(net)
+    board.Add(trace)
+
+
+def fanout_power(board, net_by_name) -> None:
+    """Connect surface-mount power pads to dedicated internal planes."""
+    for module in board.GetFootprints():
+        centre = module.GetPosition()
+        for pad in module.Pads():
+            name = pad.GetNetname()
+            if pad.GetAttribute() != pcbnew.PAD_ATTRIB_SMD or name not in {"GND", "+5V"}:
+                continue
+            at = pad.GetPosition()
+            dx, dy = at.x - centre.x, at.y - centre.y
+            length = max(1, round((dx * dx + dy * dy) ** 0.5))
+            distance = pcbnew.FromMM(1.0)
+            escaped = pcbnew.VECTOR2I(at.x + dx * distance // length, at.y + dy * distance // length)
+            add_trace(board, net_by_name[name], at, escaped)
+            via = pcbnew.PCB_VIA(board)
+            via.SetPosition(escaped)
+            via.SetWidth(pcbnew.FromMM(0.9))
+            via.SetDrill(pcbnew.FromMM(0.4))
+            via.SetNet(net_by_name[name])
+            board.Add(via)
 
 
 def add_outline(board: pcbnew.BOARD) -> None:
@@ -90,17 +127,46 @@ def add_outline(board: pcbnew.BOARD) -> None:
         board.Add(edge)
 
 
+def add_power_planes(board, net_by_name) -> None:
+    envelope = __import__("core.board", fromlist=["Board"]).Board()
+    corners = (
+        (envelope.x_min + 1, envelope.y_min + 1),
+        (envelope.x_max - 1, envelope.y_min + 1),
+        (envelope.x_max - 1, envelope.y_max - 1),
+        (envelope.x_min + 1, envelope.y_max - 1),
+    )
+    for name, layer in (("GND", pcbnew.In1_Cu), ("+5V", pcbnew.In2_Cu)):
+        zone = pcbnew.ZONE(board)
+        zone.SetNet(net_by_name[name])
+        zone.SetLayer(layer)
+        zone.Outline().NewOutline()
+        for x, y in corners:
+            at = point(x, y)
+            zone.Outline().Append(at.x, at.y)
+        board.Add(zone)
+
+
 def build() -> None:
     board = pcbnew.BOARD()
+    board.SetCopperLayerCount(4)
     pad_nets, names = connectivity()
     net_by_name = {}
     for code, name in enumerate(sorted(set(names)), 1):
         net = pcbnew.NETINFO_ITEM(board, name, code)
         board.Add(net)
         net_by_name[name] = net
-    add_footprints(board, net_by_name, pad_nets)
+    pads = add_footprints(board, net_by_name, pad_nets)
+    fanout_power(board, net_by_name)
     add_outline(board)
+    add_power_planes(board, net_by_name)
     pcbnew.SaveBoard(str(BOARD_PATH), board)
+
+    filled = pcbnew.LoadBoard(str(BOARD_PATH))
+    pcbnew.ZONE_FILLER(filled).Fill(filled.Zones())
+    temporary = BOARD_PATH.with_suffix(".filled.kicad_pcb")
+    pcbnew.SaveBoard(str(temporary), filled)
+    temporary.replace(BOARD_PATH)
+    board = pcbnew.LoadBoard(str(BOARD_PATH))
     DSN_PATH.parent.mkdir(parents=True, exist_ok=True)
     if not pcbnew.ExportSpecctraDSN(board, str(DSN_PATH)):
         raise RuntimeError("KiCad failed to export the autorouter design")
