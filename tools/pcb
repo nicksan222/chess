@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repository_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "${repository_root}"
+
+if [[ $# -ne 0 ]]; then
+    printf 'Usage: ./tools/pcb\n' >&2
+    exit 2
+fi
+
+domain_dir=hardware/pcb
+venv_dir="${repository_root}/.cache/pcb"
+
+# shellcheck source=tools/lib/pipeline.sh
+source tools/lib/pipeline.sh
+
+setup() {
+    if python3 -c "import gerbonara" >/dev/null 2>&1; then
+        return 0
+    fi
+    if [[ -x /opt/pcb/bin/python ]] \
+        && /opt/pcb/bin/python -c "import gerbonara" >/dev/null 2>&1; then
+        export PATH="/opt/pcb/bin:${PATH}"
+        return 0
+    fi
+    if [[ ! -x "${venv_dir}/bin/python" ]]; then
+        printf 'creating %s\n' "${venv_dir}" >&2
+        python3 -m venv "${venv_dir}"
+    fi
+    if ! "${venv_dir}/bin/python" -c "import gerbonara" > /dev/null 2>&1; then
+        "${venv_dir}/bin/pip" install --quiet -r "${domain_dir}/requirements.txt"
+    fi
+    export PATH="${venv_dir}/bin:${PATH}"
+}
+
+run_tests() {
+    printf '\n==> Validate pcb rules\n'
+    python3 "${domain_dir}/core/rules.py"
+    printf '\n==> Test pcb\n'
+    python3 -m unittest discover -s "${domain_dir}/tests"
+}
+
+generate() {
+    mkdir -p "${domain_dir}/generated"
+    find "${domain_dir}/generated" -maxdepth 1 -type f ! -name README.md -delete
+    local generator
+    while IFS= read -r generator; do
+        printf '\n==> Generate %s\n' "$(dirname -- "${generator}")"
+        python3 "${generator}"
+    done < <(list_projects)
+}
+
+setup
+run_tests
+generate
