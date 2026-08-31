@@ -4,11 +4,17 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import ClassVar, Generic, TypeVar
+from typing import ClassVar, Generic, NamedTuple, TypeVar
 
 
 PinType = TypeVar("PinType", bound=StrEnum)
-Endpoint = tuple[str, StrEnum]
+
+
+class Endpoint(NamedTuple):
+    """A named, tuple-compatible netlist endpoint."""
+
+    reference: str
+    pin: StrEnum
 
 
 class ComponentReference(StrEnum):
@@ -50,6 +56,6 @@ class BoardComponent(Generic[PinType]):
         except ValueError as error:
             raise KeyError(f"{self.reference} has no logical pin {number!r}") from error
 
-    def endpoint(self, pin: PinType) -> tuple[str, PinType]:
+    def endpoint(self, pin: PinType) -> Endpoint:
         """Return the typed netlist endpoint for ``pin``."""
-        return self.reference, self.get_pin(pin)
+        return Endpoint(self.reference, self.get_pin(pin))

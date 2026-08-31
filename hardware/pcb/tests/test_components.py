@@ -12,7 +12,7 @@ if str(PCB_ROOT) not in sys.path:
     sys.path.insert(0, str(PCB_ROOT))
 
 from components.barrel_jack import BarrelJackPin, DC_INPUT_JACK  # noqa: E402
-from components.base import ComponentReference  # noqa: E402
+from components.base import ComponentReference, Endpoint  # noqa: E402
 from components.catalog import for_netlist_entry, known_part_keys  # noqa: E402
 from components.dip_socket import Dip14Socket, Dip28Socket  # noqa: E402
 from components.fuse_holder import FuseHolderPin, INPUT_FUSE  # noqa: E402
@@ -20,6 +20,7 @@ from components.mcp23017 import Mcp23017Pin  # noqa: E402
 from components.ahct125 import Ahct125Pin  # noqa: E402
 from components.sk9822 import Sk9822, Sk9822Pin  # noqa: E402
 from core import sources  # noqa: E402
+import footprints  # noqa: E402
 
 
 class ComponentModelTest(unittest.TestCase):
@@ -37,6 +38,16 @@ class ComponentModelTest(unittest.TestCase):
                 self.assertEqual(
                     for_netlist_entry(reference, entry).reference,
                     reference,
+                )
+
+    def test_every_footprint_exposes_exactly_its_models_logical_pins(self) -> None:
+        for reference, entry in self.netlist["components"].items():
+            model = for_netlist_entry(reference, entry)
+            footprint = footprints.for_package(entry["package"])
+            with self.subTest(reference=reference):
+                self.assertEqual(
+                    {pad.net_number for pad in footprint.pads},
+                    set(model.get_pins()),
                 )
 
     def test_every_serialized_connection_pin_resolves_to_an_enum(self) -> None:
@@ -58,7 +69,9 @@ class ComponentModelTest(unittest.TestCase):
         )
 
     def test_power_endpoints_have_semantic_reference_and_pin_enums(self) -> None:
-        reference, pin = DC_INPUT_JACK.endpoint(BarrelJackPin.CENTRE_POSITIVE)
+        endpoint = DC_INPUT_JACK.endpoint(BarrelJackPin.CENTRE_POSITIVE)
+        self.assertIsInstance(endpoint, Endpoint)
+        reference, pin = endpoint
         self.assertIs(reference, ComponentReference.DC_INPUT_JACK)
         self.assertIs(pin, BarrelJackPin.CENTRE_POSITIVE)
 
