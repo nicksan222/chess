@@ -43,6 +43,13 @@ class BoardComponent(Generic[PinType]):
             )
         return pin
 
+    def get_pin_by_number(self, number: str) -> PinType:
+        """Translate a serialized datasheet number at the netlist boundary."""
+        try:
+            return self.pin_type(number)  # type: ignore[return-value]
+        except ValueError as error:
+            raise KeyError(f"{self.reference} has no logical pin {number!r}") from error
+
     def endpoint(self, pin: PinType) -> tuple[str, PinType]:
         """Return the typed netlist endpoint for ``pin``."""
         return self.reference, self.get_pin(pin)

@@ -13,11 +13,40 @@ if str(PCB_ROOT) not in sys.path:
 
 from components.barrel_jack import BarrelJackPin, DC_INPUT_JACK  # noqa: E402
 from components.base import ComponentReference  # noqa: E402
+from components.catalog import for_netlist_entry, known_part_keys  # noqa: E402
 from components.fuse_holder import FuseHolderPin, INPUT_FUSE  # noqa: E402
 from components.sk9822 import Sk9822, Sk9822Pin  # noqa: E402
+from core import sources  # noqa: E402
 
 
 class ComponentModelTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.netlist = sources.netlist()
+
+    def test_every_board_product_has_a_component_model(self) -> None:
+        used = {
+            entry["part_key"] for entry in self.netlist["components"].values()
+        }
+        self.assertEqual(used - known_part_keys(), set())
+        for reference, entry in self.netlist["components"].items():
+            with self.subTest(reference=reference):
+                self.assertEqual(
+                    for_netlist_entry(reference, entry).reference,
+                    reference,
+                )
+
+    def test_every_serialized_connection_pin_resolves_to_an_enum(self) -> None:
+        components = {
+            reference: for_netlist_entry(reference, entry)
+            for reference, entry in self.netlist["components"].items()
+        }
+        for connection in self.netlist["connections"]:
+            for reference, number in connection["pads"]:
+                with self.subTest(reference=reference, number=number):
+                    pin = components[reference].get_pin_by_number(number)
+                    self.assertIsInstance(pin, StrEnum)
+
     def test_power_endpoints_have_semantic_reference_and_pin_enums(self) -> None:
         reference, pin = DC_INPUT_JACK.endpoint(BarrelJackPin.CENTRE_POSITIVE)
         self.assertIs(reference, ComponentReference.DC_INPUT_JACK)
