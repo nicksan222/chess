@@ -23,7 +23,7 @@ impl fmt::Display for ParseSquareError {
     }
 }
 
-impl core::error::Error for ParseSquareError {}
+impl_error!(ParseSquareError);
 
 impl FromStr for Square {
     type Err = ParseSquareError;

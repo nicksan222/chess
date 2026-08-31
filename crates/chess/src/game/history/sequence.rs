@@ -40,7 +40,7 @@ impl fmt::Display for InvalidPly {
     }
 }
 
-impl core::error::Error for InvalidPly {}
+impl_error!(InvalidPly);
 
 /// The number of moves retained by a [`crate::MoveHistory`].
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]

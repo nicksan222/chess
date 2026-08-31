@@ -54,4 +54,4 @@ impl fmt::Display for HistoryError {
     }
 }
 
-impl core::error::Error for HistoryError {}
+impl_error!(HistoryError);

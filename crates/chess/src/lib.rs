@@ -3,6 +3,9 @@
 #![no_std]
 #![forbid(unsafe_code)]
 
+#[macro_use]
+mod macros;
+
 mod game;
 mod model;
 

@@ -86,4 +86,4 @@ impl fmt::Display for InvalidFullmoveNumber {
     }
 }
 
-impl core::error::Error for InvalidFullmoveNumber {}
+impl_error!(InvalidFullmoveNumber);

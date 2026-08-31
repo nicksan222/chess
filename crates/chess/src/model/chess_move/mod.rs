@@ -116,4 +116,4 @@ impl fmt::Display for InvalidPromotion {
     }
 }
 
-impl core::error::Error for InvalidPromotion {}
+impl_error!(InvalidPromotion);

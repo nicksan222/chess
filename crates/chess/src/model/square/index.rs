@@ -56,4 +56,4 @@ impl fmt::Display for InvalidSquare {
     }
 }
 
-impl core::error::Error for InvalidSquare {}
+impl_error!(InvalidSquare);

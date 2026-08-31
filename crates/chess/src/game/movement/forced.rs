@@ -47,7 +47,7 @@ impl fmt::Display for ForceMoveError {
     }
 }
 
-impl core::error::Error for ForceMoveError {}
+impl_error!(ForceMoveError);
 
 impl Board {
     /// Relocates a piece without checking movement rules or changing game
