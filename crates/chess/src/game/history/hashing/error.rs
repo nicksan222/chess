@@ -1,6 +1,6 @@
 use sha2::{Digest, Sha256};
 
-use crate::{GameSyncError, MoveError};
+use crate::{GameSyncError, HistoryEventKind, MoveError};
 
 use super::{
     super::HistoryError,
@@ -67,10 +67,38 @@ fn update_history_error(digest: &mut Sha256, error: HistoryError) {
             digest.update(expected.as_bytes());
             digest.update(actual.as_bytes());
         }
-        HistoryError::Tip { expected, actual } => {
+        HistoryError::InvalidTransition { current, incoming } => {
             digest.update([3]);
+            update_optional_event_marker(digest, current);
+            update_event_marker(digest, incoming);
+        }
+        HistoryError::NothingToResolve { current } => {
+            digest.update([4]);
+            update_optional_event_marker(digest, current);
+        }
+        HistoryError::Tip { expected, actual } => {
+            digest.update([5]);
             digest.update(expected.as_bytes());
             digest.update(actual.as_bytes());
         }
+    }
+}
+
+fn update_optional_event_marker(digest: &mut Sha256, event: Option<HistoryEventKind>) {
+    match event {
+        Some(event) => digest.update([1, event_kind_code(event)]),
+        None => digest.update([0]),
+    }
+}
+
+fn update_event_marker(digest: &mut Sha256, event: HistoryEventKind) {
+    digest.update([event_kind_code(event)]);
+}
+
+const fn event_kind_code(event: HistoryEventKind) -> u8 {
+    match event {
+        HistoryEventKind::Move => 0,
+        HistoryEventKind::Invalid => 1,
+        HistoryEventKind::Final => 2,
     }
 }

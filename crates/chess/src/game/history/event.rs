@@ -33,6 +33,17 @@ pub enum FinalState {
     },
 }
 
+/// The category of an authoritative history event.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub enum HistoryEventKind {
+    /// An accepted move.
+    Move,
+    /// An invalid state.
+    Invalid,
+    /// A terminal result.
+    Final,
+}
+
 /// One authoritative fact in a game's chronological history.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum HistoryEvent {
@@ -42,4 +53,16 @@ pub enum HistoryEvent {
     Invalid(InvalidState),
     /// The terminal result of the game.
     Final(FinalState),
+}
+
+impl HistoryEvent {
+    /// Returns this event's category.
+    #[must_use]
+    pub const fn kind(self) -> HistoryEventKind {
+        match self {
+            Self::Move(_) => HistoryEventKind::Move,
+            Self::Invalid(_) => HistoryEventKind::Invalid,
+            Self::Final(_) => HistoryEventKind::Final,
+        }
+    }
 }

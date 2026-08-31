@@ -1,6 +1,6 @@
 use core::fmt;
 
-use super::{MoveHash, Ply};
+use super::{HistoryEventKind, MoveHash, Ply};
 
 /// The reason a move-history link failed validation.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -30,6 +30,18 @@ pub enum HistoryError {
         /// The stored or received hash.
         actual: MoveHash,
     },
+    /// The event is not permitted after the current history tip.
+    InvalidTransition {
+        /// The current event category, if history is nonempty.
+        current: Option<HistoryEventKind>,
+        /// The event category that was rejected.
+        incoming: HistoryEventKind,
+    },
+    /// No invalid state is available to resolve.
+    NothingToResolve {
+        /// The current event category, if history is nonempty.
+        current: Option<HistoryEventKind>,
+    },
     /// The cached tip does not match the final element.
     Tip {
         /// The final element's hash.
@@ -48,8 +60,14 @@ impl fmt::Display for HistoryError {
             Self::PreviousHash { ply, .. } => {
                 write!(formatter, "move {ply} does not follow the local history")
             }
-            Self::Hash { ply, .. } => write!(formatter, "move {ply} has an invalid hash"),
-            Self::Tip { .. } => formatter.write_str("the cached move-history tip is invalid"),
+            Self::Hash { ply, .. } => write!(formatter, "history event {ply} has an invalid hash"),
+            Self::InvalidTransition { .. } => {
+                formatter.write_str("the event is not permitted after the current history tip")
+            }
+            Self::NothingToResolve { .. } => {
+                formatter.write_str("the latest history event is not an invalid state")
+            }
+            Self::Tip { .. } => formatter.write_str("the cached game-history tip is invalid"),
         }
     }
 }

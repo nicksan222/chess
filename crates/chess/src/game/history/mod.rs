@@ -6,7 +6,7 @@ mod sequence;
 mod step;
 
 pub use error::HistoryError;
-pub use event::{FinalState, HistoryEvent, InvalidState};
+pub use event::{FinalState, HistoryEvent, HistoryEventKind, InvalidState};
 pub use iter::{GameHistoryIter, MoveHistoryIter};
 pub use sequence::{InvalidPly, MoveCount, Ply};
 pub use step::{HistoryHash, HistoryStep, MoveHash, MoveStep};
@@ -86,13 +86,14 @@ impl GameHistory {
         GameHistoryIter::new(self.steps.iter())
     }
 
-    /// Creates and appends a local event step.
-    pub fn push(&mut self, event: HistoryEvent) -> HistoryStep {
+    /// Creates and appends a local event step when its transition is valid.
+    pub fn push(&mut self, event: HistoryEvent) -> Result<HistoryStep, HistoryError> {
+        self.validate_transition(event)?;
         let ply = self.next_ply();
         let step =
             HistoryStep::from_parts(ply, event, self.tip, calculate_hash(self.tip, ply, event));
         self.append_validated(step);
-        step
+        Ok(step)
     }
 
     /// Returns whether `incoming` is the valid next event.
@@ -108,11 +109,21 @@ impl GameHistory {
         Ok(())
     }
 
-    /// Removes the latest event and restores the preceding tip.
-    pub fn pop(&mut self) -> Option<HistoryStep> {
-        let step = self.steps.pop_back()?;
+    /// Resolves and removes the latest invalid state.
+    ///
+    /// Invalid states can only be resolved newest-first. Moves and final states
+    /// cannot be removed through this API.
+    pub fn resolve_latest_invalid(&mut self) -> Result<HistoryStep, HistoryError> {
+        let current = self.latest().map(|step| step.event().kind());
+        if current != Some(HistoryEventKind::Invalid) {
+            return Err(HistoryError::NothingToResolve { current });
+        }
+        let step = self
+            .steps
+            .pop_back()
+            .expect("the latest event proved that history is nonempty");
         self.tip = step.previous_hash();
-        Some(step)
+        Ok(step)
     }
 
     /// Recomputes every link and reports the first invalid step.
@@ -135,12 +146,30 @@ impl GameHistory {
     }
 
     pub(crate) fn validate_next(&self, incoming: HistoryStep) -> Result<(), HistoryError> {
-        validate_step(incoming, self.next_ply(), self.tip)
+        validate_step(incoming, self.next_ply(), self.tip)?;
+        self.validate_transition(incoming.event())
     }
 
     pub(crate) fn append_validated(&mut self, step: HistoryStep) {
         self.tip = step.hash();
         self.steps.push_back(step);
+    }
+
+    fn validate_transition(&self, incoming: HistoryEvent) -> Result<(), HistoryError> {
+        let current = self.latest().map(|step| step.event().kind());
+        let permitted = match current {
+            None | Some(HistoryEventKind::Move) => true,
+            Some(HistoryEventKind::Invalid) => incoming.kind() == HistoryEventKind::Invalid,
+            Some(HistoryEventKind::Final) => false,
+        };
+        if permitted {
+            Ok(())
+        } else {
+            Err(HistoryError::InvalidTransition {
+                current,
+                incoming: incoming.kind(),
+            })
+        }
     }
 
     fn next_ply(&self) -> Ply {

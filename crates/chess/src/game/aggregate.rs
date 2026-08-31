@@ -51,7 +51,7 @@ impl Game {
     /// Applies and records a locally initiated move.
     pub fn play(&mut self, chess_move: ChessMove) -> Result<MoveStep, MoveError> {
         let canonical = self.board.make_move(chess_move)?;
-        Ok(self.history.push(HistoryEvent::Move(canonical)))
+        Ok(self.history.push(HistoryEvent::Move(canonical)).expect("an active game accepts a valid move event"))
     }
 
     /// Verifies and accepts a history step received from a peer.

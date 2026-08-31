@@ -11,7 +11,7 @@ mod model;
 
 pub use game::{
     DrawClaim, DrawClaims, DrawReason, FinalState, ForceMoveError, ForcedMove, Game, GameHistory,
-    GameHistoryIter, GameStatus, GameSyncError, HistoryError, HistoryEvent, HistoryHash, HistoryStep,
+    GameHistoryIter, GameStatus, GameSyncError, HistoryError, HistoryEvent, HistoryEventKind, HistoryHash, HistoryStep,
     InvalidPly, InvalidState, MoveCount, MoveError, MoveHash, MoveHistory, MoveHistoryIter, MoveStep,
     Ply,
 };
