@@ -6,6 +6,7 @@
 - `board-top.png` and `board-bottom.png` — orthographic 3D board renders.
 - `board-3d.png` — high-quality perspective render with lighting and shadows.
 - `drc.rpt` and `drc.json` — complete KiCad validation results.
+- `audit.json` — BOM, MPN, schematic, DRC, connectivity, and prototype status.
 
 Gerber and drill files are generated only after the release gate proves there
 are no DRC exclusions, violations, parity errors, or unconnected items. If the

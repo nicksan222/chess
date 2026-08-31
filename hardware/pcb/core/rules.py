@@ -1,23 +1,21 @@
 """Fabrication limits and the geometry this board actually uses.
 
-There is no design-rule checker in this toolchain, so the rules live here as
-numbers and the tests assert the board stays inside them. That is a weaker
-guarantee than a real DRC over finished copper, and it is stated plainly rather
-than implied: these checks catch a geometry mistake, not a routing mistake.
+KiCad owns finished-copper DRC; this module owns the values injected into that
+native rules engine and independently checks them against fabrication capability.
 
 Two sets of numbers. `PCBWAY_*` are the manufacturer's stated capabilities for a
-standard two-layer board, and are not ours to choose. `TRACE_*`, `PAD_*` and the
+standard four-layer board, and are not ours to choose. `TRACE_*`, `PAD_*` and the
 rest are what this design uses, chosen with a wide margin so a prototype is never
 near a process limit. `validate()` refuses any choice that is not inside the
 capability, so raising a limit cannot silently produce an unmanufacturable board.
 
-Capabilities are from PCBWay's published two-layer capability table. Confirm them
+Capabilities are from PCBWay's published standard capability table. Confirm them
 against the current page before an order; a fab can change its process.
 """
 
 from __future__ import annotations
 
-# --- Manufacturer capability, standard two-layer process --------------------
+# --- Manufacturer capability, standard four-layer process -------------------
 PCBWAY_MIN_TRACE_WIDTH_MM = 0.1
 PCBWAY_MIN_CLEARANCE_MM = 0.1
 PCBWAY_MIN_DRILL_MM = 0.2
@@ -53,7 +51,7 @@ POUR_CLEARANCE_MM = 0.5
 POUR_TO_OUTLINE_MM = 0.5
 
 BOARD_THICKNESS_MM = 1.6
-COPPER_LAYERS = 2
+COPPER_LAYERS = 4
 
 
 def drill_for_lead(lead_diameter_mm: float) -> float:
@@ -92,8 +90,8 @@ def validate() -> None:
         raise ValueError("Silkscreen text is smaller than the process can hold")
     if OUTLINE_LINE_MM <= 0.0:
         raise ValueError("The board outline needs a drawn width")
-    if COPPER_LAYERS != 2:
-        raise ValueError("This design is two-layer; review every rule before changing")
+    if COPPER_LAYERS != 4:
+        raise ValueError("The dedicated GND and 5 V planes require four copper layers")
     if MASK_EXPANSION_MM <= 0.0:
         raise ValueError("Soldermask must open wider than the pad it clears")
 

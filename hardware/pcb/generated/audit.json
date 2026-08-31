@@ -1,0 +1,20 @@
+{
+  "approved_products": 23,
+  "bom_current": true,
+  "components": 233,
+  "connections": 241,
+  "drc_exclusions": 0,
+  "drc_violations": 0,
+  "explicit_no_connects": 27,
+  "ignored_drc_rules": [],
+  "implicit_no_connects": 0,
+  "native_schematic": false,
+  "package_mismatches": [],
+  "prototype_records": 0,
+  "release_ready": false,
+  "revision": "B-PROTOTYPE",
+  "schema": 1,
+  "schematic_parity_errors": 0,
+  "unconnected_items": 142,
+  "unknown_part_keys": []
+}

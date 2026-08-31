@@ -9,16 +9,32 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 PROJECT = ROOT / "chess-board.kicad_pro"
 CONNECTIVITY = ROOT / "design" / "netlist.json"
+SCHEMATIC = ROOT / "chess-board.kicad_sch"
 REPORT = ROOT / "generated" / "drc.json"
+BOM = ROOT / "design" / "bom.md"
 
 
 def validate() -> None:
+    if not SCHEMATIC.is_file():
+        raise SystemExit("release blocked: native KiCad schematic is missing")
+
     project = json.loads(PROJECT.read_text())
-    exclusions = project.get("board", {}).get("design_settings", {}).get(
-        "drc_exclusions", []
-    )
+    settings = project.get("board", {}).get("design_settings", {})
+    exclusions = settings.get("drc_exclusions", [])
     if exclusions:
         raise SystemExit(f"release blocked: {len(exclusions)} DRC exclusions")
+    ignored = sorted(
+        name for name, severity in settings.get("rule_severities", {}).items()
+        if severity == "ignore"
+    )
+    if ignored:
+        raise SystemExit(f"release blocked: ignored DRC rules: {', '.join(ignored)}")
+
+    from write_bom import render as render_bom
+
+    expected_bom = render_bom()
+    if BOM.read_text() != expected_bom:
+        raise SystemExit("release blocked: approved BOM is stale; run write_bom.py")
 
     source = json.loads(CONNECTIVITY.read_text())["projects"]["board"]
     for index, connection in enumerate(source["connections"], 1):

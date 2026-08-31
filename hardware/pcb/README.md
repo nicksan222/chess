@@ -11,8 +11,10 @@ The board is a native KiCad 9 project composed from Python:
 - `hardware/shared/` supplies dimensions, component identities, and wiring.
 - `chess-board.kicad_pro` and `chess-board.kicad_pcb` open directly in KiCad.
 
-Run `./tools/pcb` to regenerate the project, run KiCad DRC, and produce fitted
-SVG and high-quality 3D review renders in `generated/`.
+Run `./tools/pcb` to regenerate the exact-MPN BOM and native project, run KiCad
+DRC, audit every release dimension, and produce fitted SVG and high-quality 3D
+review renders in `generated/`. `AUDIT.md` is the human blocking-work list;
+`generated/audit.json` is its machine-readable status.
 
 ## Non-negotiable release policy
 

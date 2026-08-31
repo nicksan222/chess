@@ -29,7 +29,7 @@ no series protection diode, which at four amps would have to dissipate watts.
 | Raspberry Pi Zero 2 W | about 0.4 A |
 | Four expanders and the buffer | under 0.05 A |
 
-That is roughly 4.3 A worst case against a 5 A supply. In normal use it sits well
+That is roughly 4.3 A worst case against the approved 6 A supply. In normal use it sits well
 under 1.5 A, because SK9822 carries a five-bit brightness field per LED and the
 host caps it. Capping brightness is therefore part of the protocol rather than
 something the application has to remember.

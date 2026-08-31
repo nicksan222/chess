@@ -16,7 +16,7 @@ sys.path.insert(0, str(HARDWARE_ROOT))
 
 import footprints  # noqa: E402
 from footprints import base as footprint_base  # noqa: E402
-from core import placement, sources  # noqa: E402
+from core import placement, rules, sources  # noqa: E402
 from shared.components import COMPONENTS  # noqa: E402
 
 BOARD_PATH = PCB_ROOT / "chess-board.kicad_pcb"
@@ -63,6 +63,19 @@ def add_footprints(board: pcbnew.BOARD, net_by_name, pad_nets):
         module.Value().SetVisible(False)
         module.SetPosition(point(item.x, item.y))
         board.Add(module)
+        width, height = item.footprint.courtyard_at(item.rotation)
+        for layer, inset in ((pcbnew.F_CrtYd, 0.0), (pcbnew.F_Fab, 0.25)):
+            x0, x1 = item.x - width / 2 + inset, item.x + width / 2 - inset
+            y0, y1 = item.y - height / 2 + inset, item.y + height / 2 - inset
+            corners = ((x0, y0), (x1, y0), (x1, y1), (x0, y1))
+            for index, start in enumerate(corners):
+                line = pcbnew.PCB_SHAPE(module)
+                line.SetShape(pcbnew.SHAPE_T_SEGMENT)
+                line.SetStart(point(*start))
+                line.SetEnd(point(*corners[(index + 1) % 4]))
+                line.SetLayer(layer)
+                line.SetWidth(pcbnew.FromMM(0.05 if layer == pcbnew.F_CrtYd else 0.1))
+                module.Add(line)
         for logical, number, (x, y), definition in item.pads():
             pad = pcbnew.PAD(module)
             pad.SetNumber(number)
@@ -101,8 +114,8 @@ def add_trace(board, net, start, end, layer=pcbnew.F_Cu, width=0.4) -> None:
 def _via(board, net, at) -> None:
     via = pcbnew.PCB_VIA(board)
     via.SetPosition(at)
-    via.SetWidth(pcbnew.FromMM(0.9))
-    via.SetDrill(pcbnew.FromMM(0.4))
+    via.SetWidth(pcbnew.FromMM(rules.VIA_PAD_MM))
+    via.SetDrill(pcbnew.FromMM(rules.VIA_DRILL_MM))
     via.SetNet(net)
     board.Add(via)
 
@@ -144,7 +157,7 @@ def route_led_chain(board, net_by_name, pads) -> None:
         right_side = start.x > origin
         direction = 1 if right_side else -1
         is_clock = nodes[0][1] == "6"
-        distance_mm = (3.0 if right_side else 8.0) if is_clock else (2.0 if right_side else 7.0)
+        distance_mm = (3.0 if right_side else 8.0) if is_clock else (1.0 if right_side else 6.0)
         distance = pcbnew.FromMM(distance_mm)
         first = pcbnew.VECTOR2I(start.x + direction * distance, start.y)
         second = pcbnew.VECTOR2I(end.x + direction * distance, end.y)
@@ -176,10 +189,44 @@ def fanout_power(board, net_by_name) -> None:
             add_trace(board, net_by_name[name], at, escaped)
             via = pcbnew.PCB_VIA(board)
             via.SetPosition(escaped)
-            via.SetWidth(pcbnew.FromMM(0.9))
-            via.SetDrill(pcbnew.FromMM(0.4))
+            via.SetWidth(pcbnew.FromMM(rules.VIA_PAD_MM))
+            via.SetDrill(pcbnew.FromMM(rules.VIA_DRILL_MM))
             via.SetNet(net_by_name[name])
             board.Add(via)
+
+
+def add_mounting_holes(board: pcbnew.BOARD) -> None:
+    """Add one plated-copper-free screw clearance over every case boss."""
+    shared = sources.dimensions()
+    diameter = shared.PCB_MOUNTING_HOLE_DIAMETER_MM
+    for index, (x, y) in enumerate(shared.PCB_SUPPORT_POSITIONS_MM, 1):
+        module = pcbnew.FOOTPRINT(board)
+        module.SetReference(f"H{index}")
+        module.SetValue("M3 mounting hole")
+        module.Reference().SetVisible(False)
+        module.Value().SetVisible(False)
+        module.SetPosition(point(x, y))
+        board.Add(module)
+        pad = pcbnew.PAD(module)
+        pad.SetNumber("")
+        pad.SetPosition(point(x, y))
+        pad.SetAttribute(pcbnew.PAD_ATTRIB_NPTH)
+        size = pcbnew.FromMM(diameter)
+        pad.SetSize(pcbnew.VECTOR2I(size, size))
+        pad.SetDrillSize(pcbnew.VECTOR2I(size, size))
+        pad.SetShape(pcbnew.PAD_SHAPE_CIRCLE)
+        pad.SetLayerSet(pad.UnplatedHoleMask())
+        module.Add(pad)
+        radius = diameter / 2 + 0.5
+        corners = ((x - radius, y - radius), (x + radius, y - radius), (x + radius, y + radius), (x - radius, y + radius))
+        for corner_index, start in enumerate(corners):
+            line = pcbnew.PCB_SHAPE(module)
+            line.SetShape(pcbnew.SHAPE_T_SEGMENT)
+            line.SetStart(point(*start))
+            line.SetEnd(point(*corners[(corner_index + 1) % 4]))
+            line.SetLayer(pcbnew.F_CrtYd)
+            line.SetWidth(pcbnew.FromMM(0.05))
+            module.Add(line)
 
 
 def add_outline(board: pcbnew.BOARD) -> None:
@@ -223,7 +270,20 @@ def build() -> None:
     # project and every exported artifact reproducible in CI.
     pcbnew.KIID.SeedGenerator(0x43484553)
     board = pcbnew.BOARD()
-    board.SetCopperLayerCount(4)
+    board.SetCopperLayerCount(rules.COPPER_LAYERS)
+    settings = board.GetDesignSettings()
+    settings.m_MinClearance = pcbnew.FromMM(rules.CLEARANCE_MM)
+    settings.m_TrackMinWidth = pcbnew.FromMM(rules.TRACE_WIDTH_MM)
+    settings.m_HoleClearance = pcbnew.FromMM(0.25)
+    settings.m_HoleToHoleMin = pcbnew.FromMM(0.25)
+    settings.m_CopperEdgeClearance = pcbnew.FromMM(rules.POUR_TO_OUTLINE_MM)
+    settings.m_ViasMinSize = pcbnew.FromMM(rules.VIA_PAD_MM)
+    settings.m_ViasMinAnnularWidth = pcbnew.FromMM(
+        rules.annular_ring(rules.VIA_PAD_MM, rules.VIA_DRILL_MM)
+    )
+    settings.m_MinThroughDrill = pcbnew.FromMM(rules.PCBWAY_MIN_DRILL_MM)
+    settings.m_SilkClearance = pcbnew.FromMM(rules.PCBWAY_MIN_MASK_DAM_MM)
+    settings.m_SolderMaskMinWidth = pcbnew.FromMM(rules.PCBWAY_MIN_MASK_DAM_MM)
     pad_nets, names = connectivity()
     net_by_name = {}
     for code, name in enumerate(sorted(set(names)), 1):
@@ -233,6 +293,7 @@ def build() -> None:
     pads = add_footprints(board, net_by_name, pad_nets)
     route_led_chain(board, net_by_name, pads)
     fanout_power(board, net_by_name)
+    add_mounting_holes(board)
     add_outline(board)
     add_power_planes(board, net_by_name)
     pcbnew.SaveBoard(str(BOARD_PATH), board)

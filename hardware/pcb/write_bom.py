@@ -23,7 +23,7 @@ EXTRA_ASSEMBLY_PARTS = (
 )
 
 
-def write() -> None:
+def render() -> str:
     design = json.loads((PCB / "design/netlist.json").read_text())
     components = design["projects"]["board"]["components"]
     references: dict[str, list[str]] = defaultdict(list)
@@ -53,7 +53,11 @@ def write() -> None:
         *rows,
         "",
     ]
-    (PCB / "design/bom.md").write_text("\n".join(text))
+    return "\n".join(text)
+
+
+def write() -> None:
+    (PCB / "design/bom.md").write_text(render())
 
 
 if __name__ == "__main__":

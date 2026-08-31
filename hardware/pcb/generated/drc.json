@@ -1,7 +1,7 @@
 {
     "$schema": "https://schemas.kicad.org/drc.v1.json",
     "coordinate_units": "mm",
-    "date": "2026-08-31T13:32:35+0000",
+    "date": "2026-08-31T14:48:18+0000",
     "included_severities": [
         "error",
         "warning",
@@ -20,7 +20,7 @@
                         "x": 105.0,
                         "y": 390.73
                     },
-                    "uuid": "1b70cbee-b15b-44df-90fd-e4b6a449dee7"
+                    "uuid": "2461bd5d-5c54-436d-b5de-bb863856e1d4"
                 },
                 {
                     "description": "PTH pad 1 [+3V3] of R1",
@@ -28,7 +28,7 @@
                         "x": 144.92,
                         "y": 390.0
                     },
-                    "uuid": "ed9863ed-fc37-4abe-95b4-b4f8e5321c26"
+                    "uuid": "0079f63f-1077-478b-8b2d-4649966de184"
                 }
             ],
             "severity": "error",
@@ -43,7 +43,7 @@
                         "x": 130.19,
                         "y": 143.81
                     },
-                    "uuid": "ab82c5e7-ec9d-4836-b903-f1abe3f61217"
+                    "uuid": "70bf5ace-e46c-4deb-bfff-f62f230bb8ff"
                 },
                 {
                     "description": "PTH pad 18 [+3V3] of U3",
@@ -51,7 +51,7 @@
                         "x": 137.81,
                         "y": 148.89
                     },
-                    "uuid": "1bae687e-fa2a-432e-947c-75cfc4327975"
+                    "uuid": "4c3aa919-e915-4bbc-a916-51070beede22"
                 }
             ],
             "severity": "error",
@@ -66,7 +66,7 @@
                         "x": 137.81,
                         "y": 148.89
                     },
-                    "uuid": "1bae687e-fa2a-432e-947c-75cfc4327975"
+                    "uuid": "4c3aa919-e915-4bbc-a916-51070beede22"
                 },
                 {
                     "description": "PTH pad 16 [+3V3] of U3",
@@ -74,7 +74,7 @@
                         "x": 137.81,
                         "y": 153.97
                     },
-                    "uuid": "5fc2ccdd-7784-47fe-947c-54efc996ce49"
+                    "uuid": "33ed11b8-c055-41ad-a463-627568c5a181"
                 }
             ],
             "severity": "error",
@@ -89,7 +89,7 @@
                         "x": 137.81,
                         "y": 148.89
                     },
-                    "uuid": "1bae687e-fa2a-432e-947c-75cfc4327975"
+                    "uuid": "4c3aa919-e915-4bbc-a916-51070beede22"
                 },
                 {
                     "description": "PTH pad 1 [+3V3] of C5",
@@ -97,7 +97,7 @@
                         "x": 141.73,
                         "y": 140.0
                     },
-                    "uuid": "1ed4e373-7da4-4c5f-a6f2-d5eb6ab8bcbd"
+                    "uuid": "1fd93f8c-1941-40d4-801c-7cc037c4fa73"
                 }
             ],
             "severity": "error",
@@ -112,7 +112,7 @@
                         "x": 137.81,
                         "y": 308.89
                     },
-                    "uuid": "001766c0-f7e7-4748-8012-2d7132b628b7"
+                    "uuid": "4b2ad9db-16b3-46d3-8746-51c32769ac0e"
                 },
                 {
                     "description": "PTH pad 9 [+3V3] of U1",
@@ -120,7 +120,7 @@
                         "x": 130.19,
                         "y": 303.81
                     },
-                    "uuid": "b6b235a0-88b5-4ceb-9946-796db4fbc695"
+                    "uuid": "5aaa8f8a-3c3d-4695-89f2-d5a42307c22e"
                 }
             ],
             "severity": "error",
@@ -135,7 +135,7 @@
                         "x": 137.81,
                         "y": 308.89
                     },
-                    "uuid": "001766c0-f7e7-4748-8012-2d7132b628b7"
+                    "uuid": "4b2ad9db-16b3-46d3-8746-51c32769ac0e"
                 },
                 {
                     "description": "PTH pad 1 [+3V3] of C3",
@@ -143,7 +143,7 @@
                         "x": 141.73,
                         "y": 300.0
                     },
-                    "uuid": "f394b851-babb-4820-8233-0ea3c77b0abd"
+                    "uuid": "60a05033-d423-4763-a100-f66c3f437f08"
                 }
             ],
             "severity": "error",
@@ -158,7 +158,7 @@
                         "x": 141.73,
                         "y": 300.0
                     },
-                    "uuid": "f394b851-babb-4820-8233-0ea3c77b0abd"
+                    "uuid": "60a05033-d423-4763-a100-f66c3f437f08"
                 },
                 {
                     "description": "PTH pad 16 [+3V3] of U3",
@@ -166,7 +166,7 @@
                         "x": 137.81,
                         "y": 153.97
                     },
-                    "uuid": "5fc2ccdd-7784-47fe-947c-54efc996ce49"
+                    "uuid": "33ed11b8-c055-41ad-a463-627568c5a181"
                 }
             ],
             "severity": "error",
@@ -181,7 +181,7 @@
                         "x": 144.92,
                         "y": 390.0
                     },
-                    "uuid": "ed9863ed-fc37-4abe-95b4-b4f8e5321c26"
+                    "uuid": "0079f63f-1077-478b-8b2d-4649966de184"
                 },
                 {
                     "description": "PTH pad 1 [+3V3] of R2",
@@ -189,7 +189,7 @@
                         "x": 144.92,
                         "y": 396.0
                     },
-                    "uuid": "a5f2b27f-9d73-4116-93bf-26a2055f6441"
+                    "uuid": "d3f57fd5-30a1-499a-aa17-263ff9a9f804"
                 }
             ],
             "severity": "error",
@@ -204,7 +204,7 @@
                         "x": 144.92,
                         "y": 390.0
                     },
-                    "uuid": "ed9863ed-fc37-4abe-95b4-b4f8e5321c26"
+                    "uuid": "0079f63f-1077-478b-8b2d-4649966de184"
                 },
                 {
                     "description": "PTH pad 1 [+3V3] of J1",
@@ -212,7 +212,7 @@
                         "x": 175.87,
                         "y": 341.27
                     },
-                    "uuid": "99ce5c2f-8b6e-4a53-9276-42910d98a1b2"
+                    "uuid": "739de78f-9855-4c0c-9a29-3a17f2067872"
                 }
             ],
             "severity": "error",
@@ -227,7 +227,7 @@
                         "x": 175.87,
                         "y": 341.27
                     },
-                    "uuid": "99ce5c2f-8b6e-4a53-9276-42910d98a1b2"
+                    "uuid": "739de78f-9855-4c0c-9a29-3a17f2067872"
                 },
                 {
                     "description": "PTH pad 18 [+3V3] of U1",
@@ -235,7 +235,7 @@
                         "x": 137.81,
                         "y": 308.89
                     },
-                    "uuid": "001766c0-f7e7-4748-8012-2d7132b628b7"
+                    "uuid": "4b2ad9db-16b3-46d3-8746-51c32769ac0e"
                 }
             ],
             "severity": "error",
@@ -250,7 +250,7 @@
                         "x": 196.19,
                         "y": 341.27
                     },
-                    "uuid": "15c7b399-823f-45f9-a569-ade0ecbe1dee"
+                    "uuid": "835e57c7-cec8-4973-8bcd-ce00a358032c"
                 },
                 {
                     "description": "PTH pad 1 [+3V3] of J1",
@@ -258,7 +258,7 @@
                         "x": 175.87,
                         "y": 341.27
                     },
-                    "uuid": "99ce5c2f-8b6e-4a53-9276-42910d98a1b2"
+                    "uuid": "739de78f-9855-4c0c-9a29-3a17f2067872"
                 }
             ],
             "severity": "error",
@@ -273,7 +273,7 @@
                         "x": 196.19,
                         "y": 341.27
                     },
-                    "uuid": "15c7b399-823f-45f9-a569-ade0ecbe1dee"
+                    "uuid": "835e57c7-cec8-4973-8bcd-ce00a358032c"
                 },
                 {
                     "description": "PTH pad 9 [+3V3] of U2",
@@ -281,7 +281,7 @@
                         "x": 290.19,
                         "y": 303.81
                     },
-                    "uuid": "eae7a719-29e7-4a3e-ad02-74998a3a0b6f"
+                    "uuid": "90aba82e-bba2-4272-b06a-e08da5917ab0"
                 }
             ],
             "severity": "error",
@@ -296,7 +296,7 @@
                         "x": 290.19,
                         "y": 303.81
                     },
-                    "uuid": "eae7a719-29e7-4a3e-ad02-74998a3a0b6f"
+                    "uuid": "90aba82e-bba2-4272-b06a-e08da5917ab0"
                 },
                 {
                     "description": "PTH pad 18 [+3V3] of U2",
@@ -304,7 +304,7 @@
                         "x": 297.81,
                         "y": 308.89
                     },
-                    "uuid": "f17b46ea-7b69-4f66-abd6-6bb55c7cbb6a"
+                    "uuid": "089e8fb7-cdcb-410a-811f-10f5602bad1b"
                 }
             ],
             "severity": "error",
@@ -319,7 +319,7 @@
                         "x": 297.81,
                         "y": 148.89
                     },
-                    "uuid": "e560d295-3722-4e6b-b2af-4b2e64163497"
+                    "uuid": "600aa3f1-2abe-4d80-9223-7d066971e84a"
                 },
                 {
                     "description": "PTH pad 16 [+3V3] of U4",
@@ -327,7 +327,7 @@
                         "x": 297.81,
                         "y": 153.97
                     },
-                    "uuid": "8932fe9a-8550-4fca-83f9-2b5f59ad2f04"
+                    "uuid": "c8d6fb2a-b626-4234-9589-67f40d2ec460"
                 }
             ],
             "severity": "error",
@@ -342,7 +342,7 @@
                         "x": 297.81,
                         "y": 148.89
                     },
-                    "uuid": "e560d295-3722-4e6b-b2af-4b2e64163497"
+                    "uuid": "600aa3f1-2abe-4d80-9223-7d066971e84a"
                 },
                 {
                     "description": "PTH pad 9 [+3V3] of U4",
@@ -350,7 +350,7 @@
                         "x": 290.19,
                         "y": 143.81
                     },
-                    "uuid": "89b5f44c-5380-4437-8399-c25e59553fa8"
+                    "uuid": "328b12ef-76cb-408b-ac06-9cb245cb9fca"
                 }
             ],
             "severity": "error",
@@ -365,7 +365,7 @@
                         "x": 297.81,
                         "y": 156.51
                     },
-                    "uuid": "c1937a09-6791-4d1f-bd20-dfe4ed007928"
+                    "uuid": "0436a209-798e-4895-8655-954610b3a8ac"
                 },
                 {
                     "description": "PTH pad 16 [+3V3] of U4",
@@ -373,7 +373,7 @@
                         "x": 297.81,
                         "y": 153.97
                     },
-                    "uuid": "8932fe9a-8550-4fca-83f9-2b5f59ad2f04"
+                    "uuid": "c8d6fb2a-b626-4234-9589-67f40d2ec460"
                 }
             ],
             "severity": "error",
@@ -388,7 +388,7 @@
                         "x": 297.81,
                         "y": 308.89
                     },
-                    "uuid": "f17b46ea-7b69-4f66-abd6-6bb55c7cbb6a"
+                    "uuid": "089e8fb7-cdcb-410a-811f-10f5602bad1b"
                 },
                 {
                     "description": "PTH pad 15 [+3V3] of U2",
@@ -396,7 +396,7 @@
                         "x": 297.81,
                         "y": 316.51
                     },
-                    "uuid": "74631e4f-16af-4c5a-a84a-470f1aad9a4b"
+                    "uuid": "aacecb92-8020-4844-89bc-6e9a06b36b59"
                 }
             ],
             "severity": "error",
@@ -411,7 +411,7 @@
                         "x": 297.81,
                         "y": 308.89
                     },
-                    "uuid": "f17b46ea-7b69-4f66-abd6-6bb55c7cbb6a"
+                    "uuid": "089e8fb7-cdcb-410a-811f-10f5602bad1b"
                 },
                 {
                     "description": "PTH pad 1 [+3V3] of C4",
@@ -419,7 +419,7 @@
                         "x": 301.73,
                         "y": 300.0
                     },
-                    "uuid": "4006255e-491c-4036-8b07-901dd7bbc515"
+                    "uuid": "3f375e6b-ec6d-4ba9-a350-fcc57090f356"
                 }
             ],
             "severity": "error",
@@ -434,7 +434,7 @@
                         "x": 301.73,
                         "y": 140.0
                     },
-                    "uuid": "8b2bb09f-cbed-49f2-be01-96cbe817c47b"
+                    "uuid": "bb80223c-c7f3-4c16-a2b2-6b5d2153d9c2"
                 },
                 {
                     "description": "PTH pad 18 [+3V3] of U4",
@@ -442,7 +442,7 @@
                         "x": 297.81,
                         "y": 148.89
                     },
-                    "uuid": "e560d295-3722-4e6b-b2af-4b2e64163497"
+                    "uuid": "600aa3f1-2abe-4d80-9223-7d066971e84a"
                 }
             ],
             "severity": "error",
@@ -457,7 +457,7 @@
                         "x": 301.73,
                         "y": 300.0
                     },
-                    "uuid": "4006255e-491c-4036-8b07-901dd7bbc515"
+                    "uuid": "3f375e6b-ec6d-4ba9-a350-fcc57090f356"
                 },
                 {
                     "description": "PTH pad 15 [+3V3] of U4",
@@ -465,7 +465,7 @@
                         "x": 297.81,
                         "y": 156.51
                     },
-                    "uuid": "c1937a09-6791-4d1f-bd20-dfe4ed007928"
+                    "uuid": "0436a209-798e-4895-8655-954610b3a8ac"
                 }
             ],
             "severity": "error",
@@ -480,7 +480,7 @@
                         "x": 212.75,
                         "y": 389.75
                     },
-                    "uuid": "558f2566-381c-4e50-b75d-6db741345cc1"
+                    "uuid": "2838e8e1-d3ef-4da1-a1b9-7664cdcf1078"
                 },
                 {
                     "description": "PTH pad 1b [BTN_DOWN] of SW2",
@@ -488,7 +488,7 @@
                         "x": 212.75,
                         "y": 394.25
                     },
-                    "uuid": "b43d787b-5942-4ef9-b0ed-bb3cc5d158a8"
+                    "uuid": "0908ab7f-46b6-4afb-b58d-bdce7e19d385"
                 }
             ],
             "severity": "error",
@@ -503,7 +503,7 @@
                         "x": 213.97,
                         "y": 341.27
                     },
-                    "uuid": "6643c32a-5447-4ef6-ac37-09a22a312b2b"
+                    "uuid": "479f5d63-a682-48eb-8feb-8e33a0a6b71f"
                 },
                 {
                     "description": "PTH pad 1 [BTN_DOWN] of SW2",
@@ -511,7 +511,7 @@
                         "x": 212.75,
                         "y": 389.75
                     },
-                    "uuid": "558f2566-381c-4e50-b75d-6db741345cc1"
+                    "uuid": "2838e8e1-d3ef-4da1-a1b9-7664cdcf1078"
                 }
             ],
             "severity": "error",
@@ -526,7 +526,7 @@
                         "x": 212.75,
                         "y": 405.75
                     },
-                    "uuid": "59a60552-8fd9-4be0-96ea-7f98ef77dea0"
+                    "uuid": "31c6d1e5-df01-4a5e-a21e-ab7db19c24ac"
                 },
                 {
                     "description": "PTH pad 1b [BTN_F1] of SW8",
@@ -534,7 +534,7 @@
                         "x": 212.75,
                         "y": 410.25
                     },
-                    "uuid": "0db0fd7b-8982-4992-bd77-fedc7bba7fa6"
+                    "uuid": "f0920712-d2f2-43e6-a912-1d7cae530605"
                 }
             ],
             "severity": "error",
@@ -549,7 +549,7 @@
                         "x": 221.59,
                         "y": 338.73
                     },
-                    "uuid": "46831bf5-7e57-4572-8c58-4c4e4f16135e"
+                    "uuid": "49d609c8-51d6-4804-8235-ae138e2adbb4"
                 },
                 {
                     "description": "PTH pad 1 [BTN_F1] of SW8",
@@ -557,7 +557,7 @@
                         "x": 212.75,
                         "y": 405.75
                     },
-                    "uuid": "59a60552-8fd9-4be0-96ea-7f98ef77dea0"
+                    "uuid": "31c6d1e5-df01-4a5e-a21e-ab7db19c24ac"
                 }
             ],
             "severity": "error",
@@ -572,7 +572,7 @@
                         "x": 228.75,
                         "y": 405.75
                     },
-                    "uuid": "adda7062-35cc-476c-bc41-ab032bfaa741"
+                    "uuid": "c64fb493-0b97-4395-b96c-16fe4b886164"
                 },
                 {
                     "description": "PTH pad 40 [BTN_F2] of J1",
@@ -580,7 +580,7 @@
                         "x": 224.13,
                         "y": 338.73
                     },
-                    "uuid": "a6c9bd06-3307-4f2c-bdd0-e50d3c724cd9"
+                    "uuid": "8681a0db-c4d0-470c-a4e8-8c06f7bca71e"
                 }
             ],
             "severity": "error",
@@ -595,7 +595,7 @@
                         "x": 228.75,
                         "y": 410.25
                     },
-                    "uuid": "402e06be-060c-49c8-8ea8-2465d9431c6d"
+                    "uuid": "11a29cef-eb3f-414e-9914-ff59befeeeb9"
                 },
                 {
                     "description": "PTH pad 1 [BTN_F2] of SW9",
@@ -603,7 +603,7 @@
                         "x": 228.75,
                         "y": 405.75
                     },
-                    "uuid": "adda7062-35cc-476c-bc41-ab032bfaa741"
+                    "uuid": "c64fb493-0b97-4395-b96c-16fe4b886164"
                 }
             ],
             "severity": "error",
@@ -618,7 +618,7 @@
                         "x": 244.75,
                         "y": 405.75
                     },
-                    "uuid": "da65f311-e0f3-4779-aa40-835e1f407658"
+                    "uuid": "7b92a963-1e6d-4e9f-bf5c-7953f10200d1"
                 },
                 {
                     "description": "PTH pad 15 [BTN_F3] of J1",
@@ -626,7 +626,7 @@
                         "x": 193.65,
                         "y": 341.27
                     },
-                    "uuid": "2e585381-11af-4b24-a09e-dea4c8d125b6"
+                    "uuid": "f04259dc-05a1-4c63-bf47-a15aea157ae1"
                 }
             ],
             "severity": "error",
@@ -641,7 +641,7 @@
                         "x": 244.75,
                         "y": 410.25
                     },
-                    "uuid": "d9124ecb-bf70-4777-aaee-b96f12e9ef06"
+                    "uuid": "998e3713-56ab-4f9f-bf20-b9acc9b12260"
                 },
                 {
                     "description": "PTH pad 1 [BTN_F3] of SW10",
@@ -649,7 +649,7 @@
                         "x": 244.75,
                         "y": 405.75
                     },
-                    "uuid": "da65f311-e0f3-4779-aa40-835e1f407658"
+                    "uuid": "7b92a963-1e6d-4e9f-bf5c-7953f10200d1"
                 }
             ],
             "severity": "error",
@@ -664,7 +664,7 @@
                         "x": 260.75,
                         "y": 405.75
                     },
-                    "uuid": "d95a1141-d40b-4c7f-9cbc-468580f39616"
+                    "uuid": "52c8b2cf-9682-48a5-b68b-99aded44efdb"
                 },
                 {
                     "description": "PTH pad 16 [BTN_F4] of J1",
@@ -672,7 +672,7 @@
                         "x": 193.65,
                         "y": 338.73
                     },
-                    "uuid": "13f60c2a-841b-4c2d-841a-73edc2d55ff5"
+                    "uuid": "cece5cae-01b2-4f46-ace9-0b094e56ee29"
                 }
             ],
             "severity": "error",
@@ -687,7 +687,7 @@
                         "x": 260.75,
                         "y": 410.25
                     },
-                    "uuid": "18fbe3bd-07a8-498d-809d-4fe3c7798867"
+                    "uuid": "ea9afcea-2a0b-493a-92e1-b26b57aa63f7"
                 },
                 {
                     "description": "PTH pad 1 [BTN_F4] of SW11",
@@ -695,7 +695,7 @@
                         "x": 260.75,
                         "y": 405.75
                     },
-                    "uuid": "d95a1141-d40b-4c7f-9cbc-468580f39616"
+                    "uuid": "52c8b2cf-9682-48a5-b68b-99aded44efdb"
                 }
             ],
             "severity": "error",
@@ -710,7 +710,7 @@
                         "x": 276.75,
                         "y": 405.75
                     },
-                    "uuid": "3f56ff12-b095-4422-9c71-805273fb2f3f"
+                    "uuid": "d95a5bee-9cf4-4505-ba69-2ad1e7f416eb"
                 },
                 {
                     "description": "PTH pad 18 [BTN_F5] of J1",
@@ -718,7 +718,7 @@
                         "x": 196.19,
                         "y": 338.73
                     },
-                    "uuid": "d498c12d-43e4-4e79-b1f1-3989ea084f72"
+                    "uuid": "106cd2f2-dc92-4f27-99aa-7f6c4c440e71"
                 }
             ],
             "severity": "error",
@@ -733,7 +733,7 @@
                         "x": 276.75,
                         "y": 410.25
                     },
-                    "uuid": "668bc7c6-55b2-45ed-a79b-10ace1b386ae"
+                    "uuid": "efecd11f-6864-41ae-9b83-df0f86531b63"
                 },
                 {
                     "description": "PTH pad 1 [BTN_F5] of SW12",
@@ -741,7 +741,7 @@
                         "x": 276.75,
                         "y": 405.75
                     },
-                    "uuid": "3f56ff12-b095-4422-9c71-805273fb2f3f"
+                    "uuid": "d95a5bee-9cf4-4505-ba69-2ad1e7f416eb"
                 }
             ],
             "severity": "error",
@@ -756,7 +756,7 @@
                         "x": 228.75,
                         "y": 389.75
                     },
-                    "uuid": "aa184db7-a61b-4829-92e8-f257aabdf8a2"
+                    "uuid": "8c38b306-ed90-4351-bff0-3068f471d49c"
                 },
                 {
                     "description": "PTH pad 32 [BTN_LEFT] of J1",
@@ -764,7 +764,7 @@
                         "x": 213.97,
                         "y": 338.73
                     },
-                    "uuid": "7df3ba36-982c-4f18-af58-7ae92e1e7143"
+                    "uuid": "3f56ff12-b095-4422-9c71-805273fb2f3f"
                 }
             ],
             "severity": "error",
@@ -779,7 +779,7 @@
                         "x": 228.75,
                         "y": 394.25
                     },
-                    "uuid": "d5f66b42-2d9a-446f-a051-5b4f6e0063f4"
+                    "uuid": "a38eb413-a8a7-4e06-ad85-71dcc5381acd"
                 },
                 {
                     "description": "PTH pad 1 [BTN_LEFT] of SW3",
@@ -787,7 +787,7 @@
                         "x": 228.75,
                         "y": 389.75
                     },
-                    "uuid": "aa184db7-a61b-4829-92e8-f257aabdf8a2"
+                    "uuid": "8c38b306-ed90-4351-bff0-3068f471d49c"
                 }
             ],
             "severity": "error",
@@ -802,7 +802,7 @@
                         "x": 260.75,
                         "y": 389.75
                     },
-                    "uuid": "91f7c56a-4c3c-4e12-b49b-60eaae957f5e"
+                    "uuid": "2e49a704-ff01-436b-9d12-1944c7be4bc2"
                 },
                 {
                     "description": "PTH pad 36 [BTN_OK] of J1",
@@ -810,7 +810,7 @@
                         "x": 219.05,
                         "y": 338.73
                     },
-                    "uuid": "0d6b19c8-3b33-41d7-80ec-125d8d4c899c"
+                    "uuid": "bbfb79ac-69ed-4f5e-8597-ddba678ce59b"
                 }
             ],
             "severity": "error",
@@ -825,7 +825,7 @@
                         "x": 260.75,
                         "y": 394.25
                     },
-                    "uuid": "b9255ed3-18c5-445c-9dd6-72962c350348"
+                    "uuid": "b3226d18-90c0-4607-b4fb-1d82fb2fbb66"
                 },
                 {
                     "description": "PTH pad 1 [BTN_OK] of SW5",
@@ -833,7 +833,7 @@
                         "x": 260.75,
                         "y": 389.75
                     },
-                    "uuid": "91f7c56a-4c3c-4e12-b49b-60eaae957f5e"
+                    "uuid": "2e49a704-ff01-436b-9d12-1944c7be4bc2"
                 }
             ],
             "severity": "error",
@@ -848,7 +848,7 @@
                         "x": 196.75,
                         "y": 405.75
                     },
-                    "uuid": "4ece51f9-bdde-43e0-a54d-a509f3e02931"
+                    "uuid": "b31c01e1-05be-44cd-b1fb-12b52788c93a"
                 },
                 {
                     "description": "PTH pad 1b [BTN_PASS] of SW7",
@@ -856,7 +856,7 @@
                         "x": 196.75,
                         "y": 410.25
                     },
-                    "uuid": "5ec858be-d68f-4b60-8192-3158b0ec4baf"
+                    "uuid": "ec916ad2-47da-41f3-8366-8e17ceeac221"
                 }
             ],
             "severity": "error",
@@ -871,7 +871,7 @@
                         "x": 219.05,
                         "y": 341.27
                     },
-                    "uuid": "d8e39218-6397-4146-a318-500389cbf76f"
+                    "uuid": "2befd3bf-e289-40d6-86cf-baca2a121ba3"
                 },
                 {
                     "description": "PTH pad 1 [BTN_PASS] of SW7",
@@ -879,7 +879,7 @@
                         "x": 196.75,
                         "y": 405.75
                     },
-                    "uuid": "4ece51f9-bdde-43e0-a54d-a509f3e02931"
+                    "uuid": "b31c01e1-05be-44cd-b1fb-12b52788c93a"
                 }
             ],
             "severity": "error",
@@ -894,7 +894,7 @@
                         "x": 276.75,
                         "y": 389.75
                     },
-                    "uuid": "0079f63f-1077-478b-8b2d-4649966de184"
+                    "uuid": "063c00fb-8cb1-4ad7-9f27-841aaba85978"
                 },
                 {
                     "description": "PTH pad 11 [BTN_RESET] of J1",
@@ -902,7 +902,7 @@
                         "x": 188.57,
                         "y": 341.27
                     },
-                    "uuid": "c7a9bffe-34f7-4c5f-8501-c81735c191ea"
+                    "uuid": "0b3a8960-ad27-4257-9ace-38bd5cc3a554"
                 }
             ],
             "severity": "error",
@@ -917,7 +917,7 @@
                         "x": 276.75,
                         "y": 394.25
                     },
-                    "uuid": "6b1a4839-9b56-43c4-a273-f663e53b5d70"
+                    "uuid": "b11fa96c-58e0-45f8-b277-f4dae3be6810"
                 },
                 {
                     "description": "PTH pad 1 [BTN_RESET] of SW6",
@@ -925,7 +925,7 @@
                         "x": 276.75,
                         "y": 389.75
                     },
-                    "uuid": "0079f63f-1077-478b-8b2d-4649966de184"
+                    "uuid": "063c00fb-8cb1-4ad7-9f27-841aaba85978"
                 }
             ],
             "severity": "error",
@@ -940,7 +940,7 @@
                         "x": 244.75,
                         "y": 389.75
                     },
-                    "uuid": "7a88f938-a72e-411f-8cae-e563153d4e2e"
+                    "uuid": "15fa219a-6898-4823-be34-ba9f75de9bbe"
                 },
                 {
                     "description": "PTH pad 33 [BTN_RIGHT] of J1",
@@ -948,7 +948,7 @@
                         "x": 216.51,
                         "y": 341.27
                     },
-                    "uuid": "4f011270-849b-4755-88d3-385e490882f8"
+                    "uuid": "668bc7c6-55b2-45ed-a79b-10ace1b386ae"
                 }
             ],
             "severity": "error",
@@ -963,7 +963,7 @@
                         "x": 244.75,
                         "y": 394.25
                     },
-                    "uuid": "444b8019-e870-4116-b01c-3f97d4497001"
+                    "uuid": "0ad0c24f-2d40-4880-9a4a-5b4d742790ab"
                 },
                 {
                     "description": "PTH pad 1 [BTN_RIGHT] of SW4",
@@ -971,7 +971,7 @@
                         "x": 244.75,
                         "y": 389.75
                     },
-                    "uuid": "7a88f938-a72e-411f-8cae-e563153d4e2e"
+                    "uuid": "15fa219a-6898-4823-be34-ba9f75de9bbe"
                 }
             ],
             "severity": "error",
@@ -986,7 +986,7 @@
                         "x": 196.75,
                         "y": 389.75
                     },
-                    "uuid": "08da839d-dc9f-49fb-9023-8c8973fb2e24"
+                    "uuid": "8c6f81c3-d01c-453a-860e-2df1d3d32733"
                 },
                 {
                     "description": "PTH pad 1b [BTN_UP] of SW1",
@@ -994,7 +994,7 @@
                         "x": 196.75,
                         "y": 394.25
                     },
-                    "uuid": "fedd541e-9af6-4453-9ac9-464d53f84f05"
+                    "uuid": "6fa21225-0f28-46a0-8b11-f6c59169de6a"
                 }
             ],
             "severity": "error",
@@ -1009,7 +1009,7 @@
                         "x": 211.43,
                         "y": 341.27
                     },
-                    "uuid": "73e62bb0-fcbf-4024-ad88-a8c9183aa9e6"
+                    "uuid": "e5f364d1-7262-4bcf-b079-40525f4f4ef4"
                 },
                 {
                     "description": "PTH pad 1 [BTN_UP] of SW1",
@@ -1017,7 +1017,7 @@
                         "x": 196.75,
                         "y": 389.75
                     },
-                    "uuid": "08da839d-dc9f-49fb-9023-8c8973fb2e24"
+                    "uuid": "8c6f81c3-d01c-453a-860e-2df1d3d32733"
                 }
             ],
             "severity": "error",
@@ -1032,7 +1032,7 @@
                         "x": 67.0,
                         "y": 413.0
                     },
-                    "uuid": "a6b0b5bc-fd1f-46b2-a690-c7623e188b7a"
+                    "uuid": "5159814f-adeb-4a4c-a5e6-24dea84a3768"
                 },
                 {
                     "description": "PTH pad 1 [DC_FUSED] of SW13",
@@ -1040,7 +1040,7 @@
                         "x": 80.65,
                         "y": 410.0
                     },
-                    "uuid": "e345cdfd-8bd7-497f-9fd2-a146bd3c0f86"
+                    "uuid": "f85160d7-858c-4472-a6dd-e271c21c24dc"
                 }
             ],
             "severity": "error",
@@ -1055,7 +1055,7 @@
                         "x": 45.0,
                         "y": 413.0
                     },
-                    "uuid": "a5590259-7a39-4e05-84a2-d40b1a7e8fed"
+                    "uuid": "673cfdec-cd0e-4908-a757-4b5807fa804f"
                 },
                 {
                     "description": "PTH pad 1 [DC_IN] of J3",
@@ -1063,7 +1063,7 @@
                         "x": 45.5,
                         "y": 398.0
                     },
-                    "uuid": "5d6e0cec-7292-4645-8b3d-079e688a1c8d"
+                    "uuid": "def1c496-1c19-4304-8ec6-ec757204eb0e"
                 }
             ],
             "severity": "error",
@@ -1078,7 +1078,7 @@
                         "x": 105.0,
                         "y": 393.27
                     },
-                    "uuid": "99a27822-d0b2-42f2-9268-ca75a3f4089b"
+                    "uuid": "2466f359-42d1-4fdc-821b-0f6dd791ed62"
                 },
                 {
                     "description": "PTH pad 2 [I2C_SCL] of R2",
@@ -1086,7 +1086,7 @@
                         "x": 155.079999,
                         "y": 396.0
                     },
-                    "uuid": "fdf62ff6-56ff-4ec9-afd2-97290339ff5f"
+                    "uuid": "ca790e06-5fe5-4bac-9f2b-8ad9fa8c28a3"
                 }
             ],
             "severity": "error",
@@ -1101,7 +1101,7 @@
                         "x": 130.19,
                         "y": 151.43
                     },
-                    "uuid": "88e71fe5-cb0f-4d06-bbd5-2d737f07ac03"
+                    "uuid": "3afe9870-8ea2-4259-9899-1eb6c9e79c26"
                 },
                 {
                     "description": "PTH pad 12 [I2C_SCL] of U1",
@@ -1109,7 +1109,7 @@
                         "x": 130.19,
                         "y": 311.43
                     },
-                    "uuid": "f9f15d99-15ac-4b70-b0ee-7e9af3de7e6f"
+                    "uuid": "47966457-67b3-433f-a407-a8a91d22ecad"
                 }
             ],
             "severity": "error",
@@ -1124,7 +1124,7 @@
                         "x": 155.079999,
                         "y": 396.0
                     },
-                    "uuid": "fdf62ff6-56ff-4ec9-afd2-97290339ff5f"
+                    "uuid": "ca790e06-5fe5-4bac-9f2b-8ad9fa8c28a3"
                 },
                 {
                     "description": "PTH pad 5 [I2C_SCL] of J1",
@@ -1132,7 +1132,7 @@
                         "x": 180.95,
                         "y": 341.27
                     },
-                    "uuid": "e6055771-2d7d-4c8a-9f7b-96659799c1cd"
+                    "uuid": "35b278a0-8825-4432-8021-02f4ba98660b"
                 }
             ],
             "severity": "error",
@@ -1147,7 +1147,7 @@
                         "x": 180.95,
                         "y": 341.27
                     },
-                    "uuid": "e6055771-2d7d-4c8a-9f7b-96659799c1cd"
+                    "uuid": "35b278a0-8825-4432-8021-02f4ba98660b"
                 },
                 {
                     "description": "PTH pad 12 [I2C_SCL] of U1",
@@ -1155,7 +1155,7 @@
                         "x": 130.19,
                         "y": 311.43
                     },
-                    "uuid": "f9f15d99-15ac-4b70-b0ee-7e9af3de7e6f"
+                    "uuid": "47966457-67b3-433f-a407-a8a91d22ecad"
                 }
             ],
             "severity": "error",
@@ -1170,7 +1170,7 @@
                         "x": 290.19,
                         "y": 311.43
                     },
-                    "uuid": "a6e1a166-918d-4dce-bc0e-084915292df9"
+                    "uuid": "c92e7f52-948d-4246-99ed-7e1001c9f831"
                 },
                 {
                     "description": "PTH pad 5 [I2C_SCL] of J1",
@@ -1178,7 +1178,7 @@
                         "x": 180.95,
                         "y": 341.27
                     },
-                    "uuid": "e6055771-2d7d-4c8a-9f7b-96659799c1cd"
+                    "uuid": "35b278a0-8825-4432-8021-02f4ba98660b"
                 }
             ],
             "severity": "error",
@@ -1193,7 +1193,7 @@
                         "x": 290.19,
                         "y": 311.43
                     },
-                    "uuid": "a6e1a166-918d-4dce-bc0e-084915292df9"
+                    "uuid": "c92e7f52-948d-4246-99ed-7e1001c9f831"
                 },
                 {
                     "description": "PTH pad 12 [I2C_SCL] of U4",
@@ -1201,7 +1201,7 @@
                         "x": 290.19,
                         "y": 151.43
                     },
-                    "uuid": "63661b22-1492-4d72-9033-ef997875cd9a"
+                    "uuid": "3df0b86c-e38c-417c-b360-e2522d71a49f"
                 }
             ],
             "severity": "error",
@@ -1216,7 +1216,7 @@
                         "x": 105.0,
                         "y": 395.81
                     },
-                    "uuid": "738fb9b2-8bfc-4cfd-bba2-d3ee178a75ec"
+                    "uuid": "d83e8cf4-cd74-4837-be39-58730d4046b6"
                 },
                 {
                     "description": "PTH pad 2 [I2C_SDA] of R1",
@@ -1224,7 +1224,7 @@
                         "x": 155.079999,
                         "y": 390.0
                     },
-                    "uuid": "a6b25361-a33b-474a-9efa-9c6a43d7d513"
+                    "uuid": "6b1a4839-9b56-43c4-a273-f663e53b5d70"
                 }
             ],
             "severity": "error",
@@ -1239,7 +1239,7 @@
                         "x": 130.19,
                         "y": 313.97
                     },
-                    "uuid": "e3f4854e-ebbe-4eca-b7ea-d78e2c1f8dd8"
+                    "uuid": "b61d2e42-6c76-4744-87c6-233ba6653a89"
                 },
                 {
                     "description": "PTH pad 13 [I2C_SDA] of U3",
@@ -1247,7 +1247,7 @@
                         "x": 130.19,
                         "y": 153.97
                     },
-                    "uuid": "25e9444d-67c5-4567-a33d-eebde6afa252"
+                    "uuid": "c05af8aa-15ff-443d-851d-7de01d922007"
                 }
             ],
             "severity": "error",
@@ -1262,7 +1262,7 @@
                         "x": 155.079999,
                         "y": 390.0
                     },
-                    "uuid": "a6b25361-a33b-474a-9efa-9c6a43d7d513"
+                    "uuid": "6b1a4839-9b56-43c4-a273-f663e53b5d70"
                 },
                 {
                     "description": "PTH pad 3 [I2C_SDA] of J1",
@@ -1270,7 +1270,7 @@
                         "x": 178.41,
                         "y": 341.27
                     },
-                    "uuid": "981752ec-eac9-4fb3-8972-48c014049168"
+                    "uuid": "fedd541e-9af6-4453-9ac9-464d53f84f05"
                 }
             ],
             "severity": "error",
@@ -1285,7 +1285,7 @@
                         "x": 178.41,
                         "y": 341.27
                     },
-                    "uuid": "981752ec-eac9-4fb3-8972-48c014049168"
+                    "uuid": "fedd541e-9af6-4453-9ac9-464d53f84f05"
                 },
                 {
                     "description": "PTH pad 13 [I2C_SDA] of U1",
@@ -1293,7 +1293,7 @@
                         "x": 130.19,
                         "y": 313.97
                     },
-                    "uuid": "e3f4854e-ebbe-4eca-b7ea-d78e2c1f8dd8"
+                    "uuid": "b61d2e42-6c76-4744-87c6-233ba6653a89"
                 }
             ],
             "severity": "error",
@@ -1308,7 +1308,7 @@
                         "x": 290.19,
                         "y": 313.97
                     },
-                    "uuid": "d5ae1ce0-ea6a-4912-b10a-e7719e6d412f"
+                    "uuid": "605b4b60-7bbd-4190-b417-c94396b049c9"
                 },
                 {
                     "description": "PTH pad 3 [I2C_SDA] of J1",
@@ -1316,7 +1316,7 @@
                         "x": 178.41,
                         "y": 341.27
                     },
-                    "uuid": "981752ec-eac9-4fb3-8972-48c014049168"
+                    "uuid": "fedd541e-9af6-4453-9ac9-464d53f84f05"
                 }
             ],
             "severity": "error",
@@ -1331,7 +1331,7 @@
                         "x": 290.19,
                         "y": 313.97
                     },
-                    "uuid": "d5ae1ce0-ea6a-4912-b10a-e7719e6d412f"
+                    "uuid": "605b4b60-7bbd-4190-b417-c94396b049c9"
                 },
                 {
                     "description": "PTH pad 13 [I2C_SDA] of U4",
@@ -1339,7 +1339,7 @@
                         "x": 290.19,
                         "y": 153.97
                     },
-                    "uuid": "4e18a191-808c-41ca-ad7e-69139723e31c"
+                    "uuid": "080993f4-86eb-452b-a3d6-0b42b03766b1"
                 }
             ],
             "severity": "error",
@@ -1354,7 +1354,7 @@
                         "x": 70.5,
                         "y": 347.8
                     },
-                    "uuid": "3d78c4d3-04e6-4dba-adee-735dd99d3874"
+                    "uuid": "74114197-494f-492d-9406-5ef2c51b4618"
                 },
                 {
                     "description": "PTH pad 6 [LED_CLK_5V] of U5",
@@ -1362,7 +1362,7 @@
                         "x": 126.19,
                         "y": 405.08
                     },
-                    "uuid": "ccdb4026-0d9e-45ec-ab81-39ce4335e0ca"
+                    "uuid": "9ac88df5-da29-4c68-abd5-fe493727d0c2"
                 }
             ],
             "severity": "error",
@@ -1377,7 +1377,7 @@
                         "x": 126.19,
                         "y": 405.08
                     },
-                    "uuid": "ccdb4026-0d9e-45ec-ab81-39ce4335e0ca"
+                    "uuid": "9ac88df5-da29-4c68-abd5-fe493727d0c2"
                 },
                 {
                     "description": "PTH pad 1 [LED_CLK_5V] of TP4",
@@ -1385,7 +1385,7 @@
                         "x": 181.0,
                         "y": 385.0
                     },
-                    "uuid": "cf54b1f7-a48e-4458-b967-337f666949dc"
+                    "uuid": "f969d7a5-a3d4-456c-8df1-df3c8ef060a2"
                 }
             ],
             "severity": "error",
@@ -1400,7 +1400,7 @@
                         "x": 70.5,
                         "y": 346.2
                     },
-                    "uuid": "b8d48130-385d-40e0-ad03-2a58b5259964"
+                    "uuid": "757c31ca-b06a-4c9a-bc1b-75d0631f5265"
                 },
                 {
                     "description": "PTH pad 3 [LED_DATA_5V] of U5",
@@ -1408,7 +1408,7 @@
                         "x": 126.19,
                         "y": 397.46
                     },
-                    "uuid": "97b9d750-ac37-4cb6-beba-306b1e8bd9d5"
+                    "uuid": "f0049430-1a81-409e-83ca-ff05acdca359"
                 }
             ],
             "severity": "error",
@@ -1423,7 +1423,7 @@
                         "x": 126.19,
                         "y": 397.46
                     },
-                    "uuid": "97b9d750-ac37-4cb6-beba-306b1e8bd9d5"
+                    "uuid": "f0049430-1a81-409e-83ca-ff05acdca359"
                 },
                 {
                     "description": "PTH pad 1 [LED_DATA_5V] of TP3",
@@ -1431,7 +1431,7 @@
                         "x": 174.0,
                         "y": 385.0
                     },
-                    "uuid": "791ec684-6b07-4831-901b-4b97f620e0bb"
+                    "uuid": "c4da7d0a-1606-4bcd-999a-c06c8e62a1e7"
                 }
             ],
             "severity": "error",
@@ -1446,7 +1446,7 @@
                         "x": 195.5,
                         "y": 346.2
                     },
-                    "uuid": "5a669832-3b30-42f7-ac40-c4552769c1fb"
+                    "uuid": "d967c23a-15f3-4d45-bbec-9243d9844ffc"
                 },
                 {
                     "description": "Pad 3 [N$119] of U10 on F.Cu",
@@ -1454,7 +1454,7 @@
                         "x": 230.5,
                         "y": 346.2
                     },
-                    "uuid": "6c1cf314-ecd8-4f30-811d-fe9917affed1"
+                    "uuid": "6af021b5-f2a3-4bac-b0fb-96c1a98139f2"
                 }
             ],
             "severity": "error",
@@ -1469,7 +1469,7 @@
                         "x": 195.5,
                         "y": 347.8
                     },
-                    "uuid": "f0a4dc27-43b7-411f-8da5-8503e433cac7"
+                    "uuid": "69bb86f3-144d-420a-9fe6-a6c78e2812ba"
                 },
                 {
                     "description": "Pad 4 [N$120] of U10 on F.Cu",
@@ -1477,7 +1477,7 @@
                         "x": 230.5,
                         "y": 347.8
                     },
-                    "uuid": "fd1c0230-d8d2-40ba-a078-ac70648c6471"
+                    "uuid": "66b5e8d8-8c90-40ba-9b81-43ffaa2bec6c"
                 }
             ],
             "severity": "error",
@@ -1492,7 +1492,7 @@
                         "x": 275.5,
                         "y": 307.8
                     },
-                    "uuid": "630e5de3-f804-48f4-a28c-3255a4a3a6c0"
+                    "uuid": "b9d67d97-45e1-4a8a-8ff8-0189c95c7dea"
                 },
                 {
                     "description": "Pad 5 [N$129] of U15 on F.Cu",
@@ -1500,7 +1500,7 @@
                         "x": 310.5,
                         "y": 307.8
                     },
-                    "uuid": "105f617b-7e98-4159-8b90-a1a763a1e8b8"
+                    "uuid": "820b2ae0-e631-43c7-b0c3-ead5fbcdc74d"
                 }
             ],
             "severity": "error",
@@ -1515,7 +1515,7 @@
                         "x": 275.5,
                         "y": 306.2
                     },
-                    "uuid": "18d4a6a9-75ba-4b5c-8c83-af5709092acf"
+                    "uuid": "efae4cb1-8388-401b-a07a-9262a8d73335"
                 },
                 {
                     "description": "Pad 6 [N$130] of U15 on F.Cu",
@@ -1523,7 +1523,7 @@
                         "x": 310.5,
                         "y": 306.2
                     },
-                    "uuid": "f7b18361-e2bd-411b-b280-94c97067ae15"
+                    "uuid": "1ad32fdf-28ee-4784-9924-8dbaa5bb80e7"
                 }
             ],
             "severity": "error",
@@ -1538,7 +1538,7 @@
                         "x": 115.5,
                         "y": 307.8
                     },
-                    "uuid": "676bfa3f-3a9d-4d57-be51-ce2ce25c5684"
+                    "uuid": "b142df40-7c8c-4723-9482-6cc87905960d"
                 },
                 {
                     "description": "Pad 5 [N$137] of U19 on F.Cu",
@@ -1546,7 +1546,7 @@
                         "x": 150.5,
                         "y": 307.8
                     },
-                    "uuid": "cb284aa2-7b49-45e4-80ec-c92d13b5caee"
+                    "uuid": "2520d01e-cf62-4335-86dc-4912b0e10c82"
                 }
             ],
             "severity": "error",
@@ -1561,7 +1561,7 @@
                         "x": 115.5,
                         "y": 306.2
                     },
-                    "uuid": "28cb920f-6903-478b-a923-9ed07f300e5b"
+                    "uuid": "639f3011-35ac-4bcc-a1fa-c5b81b2e2425"
                 },
                 {
                     "description": "Pad 6 [N$138] of U19 on F.Cu",
@@ -1569,7 +1569,7 @@
                         "x": 150.5,
                         "y": 306.2
                     },
-                    "uuid": "22196573-3981-4df5-aabc-ab08a5aaba1e"
+                    "uuid": "c4b5c48f-0e97-45f3-9954-7e39cfd2d8f7"
                 }
             ],
             "severity": "error",
@@ -1584,7 +1584,7 @@
                         "x": 275.5,
                         "y": 147.8
                     },
-                    "uuid": "06e4ba14-e3a7-461b-a267-f3d21300e0dd"
+                    "uuid": "caca58a3-e979-4eda-a22e-4c853cc63357"
                 },
                 {
                     "description": "Pad 5 [N$194] of U47 on F.Cu",
@@ -1592,7 +1592,7 @@
                         "x": 310.5,
                         "y": 147.8
                     },
-                    "uuid": "9a0ece5c-2dda-4ca3-b90d-1b4b21e09882"
+                    "uuid": "4bedb9e3-1fd2-4773-be88-ae402972a0cd"
                 }
             ],
             "severity": "error",
@@ -1607,7 +1607,7 @@
                         "x": 275.5,
                         "y": 146.2
                     },
-                    "uuid": "a73cb2e8-8e2a-431c-99e6-3f395e1803c6"
+                    "uuid": "e00a3ac9-33e9-4a57-aaa6-621634fffeba"
                 },
                 {
                     "description": "Pad 6 [N$195] of U47 on F.Cu",
@@ -1615,7 +1615,7 @@
                         "x": 310.5,
                         "y": 146.2
                     },
-                    "uuid": "89a99ead-dd8a-46f7-905c-45f6088c853d"
+                    "uuid": "689f2643-28b2-4412-8a2b-e3e26ab6a3eb"
                 }
             ],
             "severity": "error",
@@ -1630,7 +1630,7 @@
                         "x": 115.5,
                         "y": 147.8
                     },
-                    "uuid": "c6ed70c7-da62-4bfe-a47c-045a9cb576f9"
+                    "uuid": "2a724610-e1e1-43d1-886c-2fd2967e8cda"
                 },
                 {
                     "description": "Pad 5 [N$204] of U51 on F.Cu",
@@ -1638,7 +1638,7 @@
                         "x": 150.5,
                         "y": 147.8
                     },
-                    "uuid": "5585829b-3031-4984-9e5a-fa9f6f8748d4"
+                    "uuid": "84f2f98d-3254-4d6a-a0f8-d75d5b1d6c8a"
                 }
             ],
             "severity": "error",
@@ -1653,7 +1653,7 @@
                         "x": 115.5,
                         "y": 146.2
                     },
-                    "uuid": "faa3a15b-a13a-49e5-9aa2-eb2909bad1f9"
+                    "uuid": "f9d77c33-7568-47df-9a75-294449ba4eba"
                 },
                 {
                     "description": "Pad 6 [N$205] of U51 on F.Cu",
@@ -1661,7 +1661,7 @@
                         "x": 150.5,
                         "y": 146.2
                     },
-                    "uuid": "bfa0b9e5-eab9-4203-85ff-074010a17493"
+                    "uuid": "fbc463e8-e2c2-4e28-af7d-5479b79f7c26"
                 }
             ],
             "severity": "error",
@@ -1676,7 +1676,7 @@
                         "x": 137.81,
                         "y": 143.81
                     },
-                    "uuid": "3a197d54-aafb-4b39-bae0-ea442270cc8e"
+                    "uuid": "53b5246e-6a5e-4577-b2d2-8493e13c762c"
                 },
                 {
                     "description": "PTH pad 20 [SENSE_IRQ] of U1",
@@ -1684,7 +1684,7 @@
                         "x": 137.81,
                         "y": 303.81
                     },
-                    "uuid": "29277e24-22f3-41f5-8df5-8d524667022e"
+                    "uuid": "f577b772-33fd-48fb-a5d8-38e9a7fb0a6f"
                 }
             ],
             "severity": "error",
@@ -1699,7 +1699,7 @@
                         "x": 137.81,
                         "y": 303.81
                     },
-                    "uuid": "29277e24-22f3-41f5-8df5-8d524667022e"
+                    "uuid": "f577b772-33fd-48fb-a5d8-38e9a7fb0a6f"
                 },
                 {
                     "description": "PTH pad 7 [SENSE_IRQ] of J1",
@@ -1707,7 +1707,7 @@
                         "x": 183.49,
                         "y": 341.27
                     },
-                    "uuid": "95bcc52f-fe2a-4cc3-82b6-eca61437848f"
+                    "uuid": "c6fe4068-2cf1-44bf-aecd-ee3b62609820"
                 }
             ],
             "severity": "error",
@@ -1722,7 +1722,7 @@
                         "x": 183.49,
                         "y": 341.27
                     },
-                    "uuid": "95bcc52f-fe2a-4cc3-82b6-eca61437848f"
+                    "uuid": "c6fe4068-2cf1-44bf-aecd-ee3b62609820"
                 },
                 {
                     "description": "PTH pad 20 [SENSE_IRQ] of U2",
@@ -1730,7 +1730,7 @@
                         "x": 297.81,
                         "y": 303.81
                     },
-                    "uuid": "cccda53a-c3ec-4a8b-9e9a-2d62a0026b10"
+                    "uuid": "24ba963f-0152-4eed-ada6-209ecb1b53df"
                 }
             ],
             "severity": "error",
@@ -1745,7 +1745,7 @@
                         "x": 297.81,
                         "y": 303.81
                     },
-                    "uuid": "cccda53a-c3ec-4a8b-9e9a-2d62a0026b10"
+                    "uuid": "24ba963f-0152-4eed-ada6-209ecb1b53df"
                 },
                 {
                     "description": "PTH pad 20 [SENSE_IRQ] of U4",
@@ -1753,7 +1753,7 @@
                         "x": 297.81,
                         "y": 143.81
                     },
-                    "uuid": "3bde1be8-563d-4303-a036-ff64edde9213"
+                    "uuid": "388e2c40-f789-435c-ab1e-62f6495e176c"
                 }
             ],
             "severity": "error",
@@ -1768,7 +1768,7 @@
                         "x": 126.19,
                         "y": 402.539999
                     },
-                    "uuid": "02fc2426-1283-42f9-a892-0f572bba3fd9"
+                    "uuid": "cfce5d70-e657-45be-ba33-a04739148af8"
                 },
                 {
                     "description": "PTH pad 23 [SPI_CLK_3V3] of J1",
@@ -1776,7 +1776,7 @@
                         "x": 203.81,
                         "y": 341.27
                     },
-                    "uuid": "115ad07e-49ec-408c-b890-764ddb94193b"
+                    "uuid": "18fbe3bd-07a8-498d-809d-4fe3c7798867"
                 }
             ],
             "severity": "error",
@@ -1791,7 +1791,7 @@
                         "x": 126.19,
                         "y": 394.919999
                     },
-                    "uuid": "1ec69e1b-530b-4dcc-8ed1-feb629d1b468"
+                    "uuid": "0724f37b-5800-47b1-bc4e-3da6e532a09f"
                 },
                 {
                     "description": "PTH pad 19 [SPI_DATA_3V3] of J1",
@@ -1799,7 +1799,7 @@
                         "x": 198.73,
                         "y": 341.27
                     },
-                    "uuid": "70061b45-2c8b-4e53-a5ec-8b0e56a9adea"
+                    "uuid": "bfa8cbcd-0d15-4cc6-b07e-5ec710a310b9"
                 }
             ],
             "severity": "error",
@@ -1814,7 +1814,7 @@
                         "x": 51.11,
                         "y": 360.0
                     },
-                    "uuid": "c01bec87-6357-47b9-bcc8-43ce2543376c"
+                    "uuid": "af3e597c-eb18-47f3-96a4-c63b255a1037"
                 },
                 {
                     "description": "PTH pad 21 [SQ_A1] of U1",
@@ -1822,7 +1822,7 @@
                         "x": 137.81,
                         "y": 301.27
                     },
-                    "uuid": "4b7c0bf7-4bed-4251-a8a2-4ae68a847c2b"
+                    "uuid": "bddb921b-ba2f-4970-8724-3a152e299096"
                 }
             ],
             "severity": "error",
@@ -1837,7 +1837,7 @@
                         "x": 51.11,
                         "y": 320.0
                     },
-                    "uuid": "b9ecff58-e181-4128-8531-059d2886ccd5"
+                    "uuid": "b500d152-23d3-4bbc-9eef-9c4968ba2859"
                 },
                 {
                     "description": "PTH pad 25 [SQ_A2] of U1",
@@ -1845,7 +1845,7 @@
                         "x": 137.81,
                         "y": 291.11
                     },
-                    "uuid": "dd755d8e-3edc-4240-983d-414acbdcda47"
+                    "uuid": "79531dcc-dd34-4265-8c0d-bf1d0eaf94e7"
                 }
             ],
             "severity": "error",
@@ -1860,7 +1860,7 @@
                         "x": 51.11,
                         "y": 280.0
                     },
-                    "uuid": "6d074166-237d-4b90-a602-89f58676b408"
+                    "uuid": "b5842e5c-2dee-4e1a-ab8f-42a96e5afa57"
                 },
                 {
                     "description": "PTH pad 1 [SQ_A3] of U1",
@@ -1868,7 +1868,7 @@
                         "x": 130.19,
                         "y": 283.49
                     },
-                    "uuid": "4ccc205b-12d1-4b27-a6a8-e0293c2d3feb"
+                    "uuid": "0bdc1a17-1dd7-4626-a1be-10839d6bbad4"
                 }
             ],
             "severity": "error",
@@ -1883,7 +1883,7 @@
                         "x": 51.11,
                         "y": 240.0
                     },
-                    "uuid": "5402ac82-f68c-4bfc-bf01-80a8ff9cf4b4"
+                    "uuid": "1817b133-5aa8-4da2-aa9d-5ab179271919"
                 },
                 {
                     "description": "PTH pad 5 [SQ_A4] of U1",
@@ -1891,7 +1891,7 @@
                         "x": 130.19,
                         "y": 293.65
                     },
-                    "uuid": "3660359e-bcfe-4dc2-b536-8274a3ab12b3"
+                    "uuid": "b6184233-f62a-46f3-9b7f-74fc4dddd87f"
                 }
             ],
             "severity": "error",
@@ -1906,7 +1906,7 @@
                         "x": 51.11,
                         "y": 200.0
                     },
-                    "uuid": "d65b38ca-82e1-45b4-8b12-0bf7a185dfdb"
+                    "uuid": "0b78904b-e188-44e7-b9dd-9c3fd81832ef"
                 },
                 {
                     "description": "PTH pad 21 [SQ_A5] of U3",
@@ -1914,7 +1914,7 @@
                         "x": 137.81,
                         "y": 141.269999
                     },
-                    "uuid": "8dcef864-3a20-414c-8be1-bdc138e72491"
+                    "uuid": "dc53c052-465c-4725-be69-457aba48bd7f"
                 }
             ],
             "severity": "error",
@@ -1929,7 +1929,7 @@
                         "x": 51.11,
                         "y": 160.0
                     },
-                    "uuid": "277b889d-982c-4664-a1c7-00dc64d88654"
+                    "uuid": "515640d7-d6b3-4bb2-996c-a43627d549d7"
                 },
                 {
                     "description": "PTH pad 25 [SQ_A6] of U3",
@@ -1937,7 +1937,7 @@
                         "x": 137.81,
                         "y": 131.11
                     },
-                    "uuid": "47ac7432-5ad4-4555-8903-2ca4809e38d9"
+                    "uuid": "695730a5-2dc2-4f4c-a09e-db1e8486e312"
                 }
             ],
             "severity": "error",
@@ -1952,7 +1952,7 @@
                         "x": 51.11,
                         "y": 120.0
                     },
-                    "uuid": "eb36d9ed-89e6-406a-a5f0-a029a35edce9"
+                    "uuid": "0985285b-f890-42c4-a5d5-9573a192e141"
                 },
                 {
                     "description": "PTH pad 1 [SQ_A7] of U3",
@@ -1960,7 +1960,7 @@
                         "x": 130.19,
                         "y": 123.49
                     },
-                    "uuid": "64acef98-b990-423f-8f50-5447561e6ea6"
+                    "uuid": "bfb61a1b-4883-415e-8f8e-59f45b9f6344"
                 }
             ],
             "severity": "error",
@@ -1975,7 +1975,7 @@
                         "x": 51.11,
                         "y": 80.0
                     },
-                    "uuid": "b1b30bcd-7e57-4b5e-9e2b-c408451d2e9e"
+                    "uuid": "d8786e5e-ee34-4911-8d49-6cffa558d556"
                 },
                 {
                     "description": "PTH pad 5 [SQ_A8] of U3",
@@ -1983,7 +1983,7 @@
                         "x": 130.19,
                         "y": 133.65
                     },
-                    "uuid": "6d789e60-28d5-4f2a-a197-96f9ffb4f5ad"
+                    "uuid": "abf6efb9-79f8-4deb-b5d3-cee4360016a3"
                 }
             ],
             "severity": "error",
@@ -1998,7 +1998,7 @@
                         "x": 91.11,
                         "y": 360.0
                     },
-                    "uuid": "00f2e7eb-84e5-405a-b592-1c3e7682d300"
+                    "uuid": "d324e4b2-42ed-463c-a668-8a724a97c611"
                 },
                 {
                     "description": "PTH pad 22 [SQ_B1] of U1",
@@ -2006,7 +2006,7 @@
                         "x": 137.81,
                         "y": 298.73
                     },
-                    "uuid": "17c67c0e-628c-4c88-9dff-6181e1238794"
+                    "uuid": "0818fcba-83e7-4e08-80ae-dffcc080b663"
                 }
             ],
             "severity": "error",
@@ -2021,7 +2021,7 @@
                         "x": 91.11,
                         "y": 320.0
                     },
-                    "uuid": "9f0c8963-277b-4d8d-9d73-277ebf3f65ab"
+                    "uuid": "0cd1c5f0-3e4f-4cbc-b8a3-82c53260babd"
                 },
                 {
                     "description": "PTH pad 26 [SQ_B2] of U1",
@@ -2029,7 +2029,7 @@
                         "x": 137.81,
                         "y": 288.57
                     },
-                    "uuid": "3aff9e52-ac9f-4b63-9c69-5d93820c559b"
+                    "uuid": "1fa7323a-5d6b-4398-a9e9-a2d2d60bb33e"
                 }
             ],
             "severity": "error",
@@ -2044,7 +2044,7 @@
                         "x": 91.11,
                         "y": 280.0
                     },
-                    "uuid": "d1cb0c25-725e-4bc4-9e0a-7cb633d7ca9e"
+                    "uuid": "9258d071-2781-474c-941a-f3cfc89b0789"
                 },
                 {
                     "description": "PTH pad 2 [SQ_B3] of U1",
@@ -2052,7 +2052,7 @@
                         "x": 130.19,
                         "y": 286.03
                     },
-                    "uuid": "679ca1fc-e04e-476f-a1e2-f230b13aa4af"
+                    "uuid": "ed52e788-d9cd-41a6-8da5-c63e51e5e93f"
                 }
             ],
             "severity": "error",
@@ -2067,7 +2067,7 @@
                         "x": 91.11,
                         "y": 240.0
                     },
-                    "uuid": "771bf32f-be19-44c9-9259-3684bef680ee"
+                    "uuid": "0ae67a14-bbdf-42fd-bd15-b659f83110e4"
                 },
                 {
                     "description": "PTH pad 6 [SQ_B4] of U1",
@@ -2075,7 +2075,7 @@
                         "x": 130.19,
                         "y": 296.19
                     },
-                    "uuid": "0e28a637-16e3-4b29-a047-307d1262fa77"
+                    "uuid": "358a8258-be3d-4407-b808-d482b3189297"
                 }
             ],
             "severity": "error",
@@ -2090,7 +2090,7 @@
                         "x": 91.11,
                         "y": 200.0
                     },
-                    "uuid": "28367f6f-206e-4889-a4c1-fd5ee9b34b2c"
+                    "uuid": "3df790d1-8ed9-4010-ba79-329aca137f20"
                 },
                 {
                     "description": "PTH pad 22 [SQ_B5] of U3",
@@ -2098,7 +2098,7 @@
                         "x": 137.81,
                         "y": 138.73
                     },
-                    "uuid": "e7c9d259-0717-4a54-b7ed-98cdbdaade4b"
+                    "uuid": "80e9a809-da2a-406a-a2b6-c30f7291b21c"
                 }
             ],
             "severity": "error",
@@ -2113,7 +2113,7 @@
                         "x": 91.11,
                         "y": 160.0
                     },
-                    "uuid": "41f9638d-f9b4-4e8a-9ac7-e0913ba65042"
+                    "uuid": "b598ea17-57a9-43be-9057-929f143fbd12"
                 },
                 {
                     "description": "PTH pad 26 [SQ_B6] of U3",
@@ -2121,7 +2121,7 @@
                         "x": 137.81,
                         "y": 128.57
                     },
-                    "uuid": "36320db0-ff54-4e29-97e8-ab59833a6456"
+                    "uuid": "b0815b03-42ab-43c7-996e-f6bca7564503"
                 }
             ],
             "severity": "error",
@@ -2136,7 +2136,7 @@
                         "x": 91.11,
                         "y": 120.0
                     },
-                    "uuid": "83888c79-f1ea-4d05-935b-108a2005e96a"
+                    "uuid": "1e699240-ca12-4e84-9df8-a2ac80c9f3a8"
                 },
                 {
                     "description": "PTH pad 2 [SQ_B7] of U3",
@@ -2144,7 +2144,7 @@
                         "x": 130.19,
                         "y": 126.03
                     },
-                    "uuid": "2962c617-d509-4e67-8dea-13fa6b7f0db3"
+                    "uuid": "a532de33-0065-4041-9f0c-d9f95a4465a3"
                 }
             ],
             "severity": "error",
@@ -2159,7 +2159,7 @@
                         "x": 91.11,
                         "y": 80.0
                     },
-                    "uuid": "8e964af7-c477-4d00-9328-b152949cc726"
+                    "uuid": "d2c70606-a746-469a-8412-d357656ee1ff"
                 },
                 {
                     "description": "PTH pad 6 [SQ_B8] of U3",
@@ -2167,7 +2167,7 @@
                         "x": 130.19,
                         "y": 136.19
                     },
-                    "uuid": "8794c5d7-17f7-4696-9182-744b7c3716cc"
+                    "uuid": "93b62f9c-4ab9-4fd2-8e19-dd17c06b8369"
                 }
             ],
             "severity": "error",
@@ -2182,7 +2182,7 @@
                         "x": 131.11,
                         "y": 360.0
                     },
-                    "uuid": "eabae9f1-c00e-4bcb-b48f-0be985afe184"
+                    "uuid": "ab82c5e7-ec9d-4836-b903-f1abe3f61217"
                 },
                 {
                     "description": "PTH pad 23 [SQ_C1] of U1",
@@ -2190,7 +2190,7 @@
                         "x": 137.81,
                         "y": 296.19
                     },
-                    "uuid": "5ca96e6d-6b63-4fed-be23-9afa0f4d26e6"
+                    "uuid": "03bbd644-aa0c-421d-b4d4-dfc807e96a8a"
                 }
             ],
             "severity": "error",
@@ -2205,7 +2205,7 @@
                         "x": 131.11,
                         "y": 320.0
                     },
-                    "uuid": "f8ffd57e-8734-478a-94ed-f6c2307e428d"
+                    "uuid": "3e03de9f-f180-4854-ae3c-55ed668b915a"
                 },
                 {
                     "description": "PTH pad 27 [SQ_C2] of U1",
@@ -2213,7 +2213,7 @@
                         "x": 137.81,
                         "y": 286.03
                     },
-                    "uuid": "00f9f16c-26d6-4408-a416-aabf507db21d"
+                    "uuid": "9bb9df73-3a50-4147-95bc-01342dd02d36"
                 }
             ],
             "severity": "error",
@@ -2228,7 +2228,7 @@
                         "x": 130.19,
                         "y": 288.57
                     },
-                    "uuid": "66119e03-cbf9-45fd-ba5d-452985b976c2"
+                    "uuid": "334564e6-6b8b-4e22-99b4-d5b74de7ecc3"
                 },
                 {
                     "description": "PTH pad 1 [SQ_C3] of RS11",
@@ -2236,7 +2236,7 @@
                         "x": 131.11,
                         "y": 280.0
                     },
-                    "uuid": "a883cb08-5197-4604-abfe-ec6023b2eff4"
+                    "uuid": "84bc5828-36e0-49d2-bc59-89a4f7abe67a"
                 }
             ],
             "severity": "error",
@@ -2251,7 +2251,7 @@
                         "x": 130.19,
                         "y": 298.73
                     },
-                    "uuid": "1fe5055e-2cdc-4141-9638-31e1e3cf2b5a"
+                    "uuid": "bcd8c35e-c4e6-46a0-9d9d-ba5afd6fb1ba"
                 },
                 {
                     "description": "PTH pad 1 [SQ_C4] of RS15",
@@ -2259,7 +2259,7 @@
                         "x": 131.11,
                         "y": 240.0
                     },
-                    "uuid": "083455b8-c7c5-4094-99ac-944dfd53037f"
+                    "uuid": "49424c17-c9e5-434d-a131-126a263ee262"
                 }
             ],
             "severity": "error",
@@ -2274,7 +2274,7 @@
                         "x": 131.11,
                         "y": 200.0
                     },
-                    "uuid": "c03a9ebd-8d5e-434f-a447-00a70244e487"
+                    "uuid": "8cd19486-d544-411e-9903-7f4887740cfe"
                 },
                 {
                     "description": "PTH pad 23 [SQ_C5] of U3",
@@ -2282,7 +2282,7 @@
                         "x": 137.81,
                         "y": 136.19
                     },
-                    "uuid": "e7108bc3-bdc2-412a-9cd7-ef3ddadb0960"
+                    "uuid": "9cc522ad-ce5d-4207-aa64-c8304d71f3d0"
                 }
             ],
             "severity": "error",
@@ -2297,7 +2297,7 @@
                         "x": 131.11,
                         "y": 160.0
                     },
-                    "uuid": "f6557cde-c702-4dd8-9c0d-f38920da96aa"
+                    "uuid": "ce5b2115-de7f-47ea-9ccd-b8d248cbcc21"
                 },
                 {
                     "description": "PTH pad 27 [SQ_C6] of U3",
@@ -2305,7 +2305,7 @@
                         "x": 137.81,
                         "y": 126.03
                     },
-                    "uuid": "02ec2b5c-40a9-434e-b7a1-991f392fc33b"
+                    "uuid": "e310e4cc-77f2-417d-98cd-42c6b165c071"
                 }
             ],
             "severity": "error",
@@ -2320,7 +2320,7 @@
                         "x": 130.19,
                         "y": 128.57
                     },
-                    "uuid": "f22f6714-f733-4e97-b8e6-78ea27ec7cec"
+                    "uuid": "979d4e2f-9305-4c5f-9b61-234aef718f94"
                 },
                 {
                     "description": "PTH pad 1 [SQ_C7] of RS43",
@@ -2328,7 +2328,7 @@
                         "x": 131.11,
                         "y": 120.0
                     },
-                    "uuid": "d0439921-d311-40b1-b15f-4ef4a5b54137"
+                    "uuid": "1cad0383-6463-45b4-9231-da62e6d8fad3"
                 }
             ],
             "severity": "error",
@@ -2343,7 +2343,7 @@
                         "x": 130.19,
                         "y": 138.73
                     },
-                    "uuid": "93668c5e-59c3-417f-a2f4-c60bc1adf03f"
+                    "uuid": "b56a824b-f9ed-4a67-b4ce-1b25d36f52dd"
                 },
                 {
                     "description": "PTH pad 1 [SQ_C8] of RS47",
@@ -2351,7 +2351,7 @@
                         "x": 131.11,
                         "y": 80.0
                     },
-                    "uuid": "c4391070-0309-4920-bcf7-25803ad1c4e6"
+                    "uuid": "02fc2426-1283-42f9-a892-0f572bba3fd9"
                 }
             ],
             "severity": "error",
@@ -2366,7 +2366,7 @@
                         "x": 137.81,
                         "y": 293.65
                     },
-                    "uuid": "4e4ad7d4-93f3-4f53-bb5b-c67676b9cb44"
+                    "uuid": "b244722a-0718-4417-9b93-65bca772cd92"
                 },
                 {
                     "description": "PTH pad 1 [SQ_D1] of RS4",
@@ -2374,7 +2374,7 @@
                         "x": 171.11,
                         "y": 360.0
                     },
-                    "uuid": "c013adcc-5af1-4170-b75b-0be91eeefc5f"
+                    "uuid": "54e27d23-709a-4374-a9fb-c31f81ecb911"
                 }
             ],
             "severity": "error",
@@ -2389,7 +2389,7 @@
                         "x": 137.81,
                         "y": 283.49
                     },
-                    "uuid": "3be2242a-73d4-4961-b0a5-e78f454ec7ca"
+                    "uuid": "66f2934e-1103-493a-a78c-7081ff28bec5"
                 },
                 {
                     "description": "PTH pad 1 [SQ_D2] of RS8",
@@ -2397,7 +2397,7 @@
                         "x": 171.11,
                         "y": 320.0
                     },
-                    "uuid": "5159814f-adeb-4a4c-a5e6-24dea84a3768"
+                    "uuid": "1e10cee2-4b7e-4bb7-8b18-03c5867f2d12"
                 }
             ],
             "severity": "error",
@@ -2412,7 +2412,7 @@
                         "x": 130.19,
                         "y": 291.11
                     },
-                    "uuid": "cdd6dc83-4209-47fe-a74e-b8a5c16049a4"
+                    "uuid": "af1247c9-43ec-4ffa-925a-b3c9768d2e63"
                 },
                 {
                     "description": "PTH pad 1 [SQ_D3] of RS12",
@@ -2420,7 +2420,7 @@
                         "x": 171.11,
                         "y": 280.0
                     },
-                    "uuid": "2c2b8e6b-8cdd-42a4-91bf-21a73156b746"
+                    "uuid": "e3f4854e-ebbe-4eca-b7ea-d78e2c1f8dd8"
                 }
             ],
             "severity": "error",
@@ -2435,7 +2435,7 @@
                         "x": 130.19,
                         "y": 301.27
                     },
-                    "uuid": "40e6e4c4-f941-45d4-be46-bf7f4283b970"
+                    "uuid": "df182896-d026-4aa6-9b19-1f6cc149a463"
                 },
                 {
                     "description": "PTH pad 1 [SQ_D4] of RS16",
@@ -2443,7 +2443,7 @@
                         "x": 171.11,
                         "y": 240.0
                     },
-                    "uuid": "e775a155-ac80-4701-96cf-3e5952ae1d81"
+                    "uuid": "cbc184b6-66b6-42e8-bca4-72d87f446f74"
                 }
             ],
             "severity": "error",
@@ -2458,7 +2458,7 @@
                         "x": 137.81,
                         "y": 133.65
                     },
-                    "uuid": "f20f4037-48bf-458f-b707-3595dfe75248"
+                    "uuid": "33f4d4d5-5ff7-4e4e-bca4-250bddca530e"
                 },
                 {
                     "description": "PTH pad 1 [SQ_D5] of RS36",
@@ -2466,7 +2466,7 @@
                         "x": 171.11,
                         "y": 200.0
                     },
-                    "uuid": "248560da-ac67-430b-8b31-d5cc9b5cb518"
+                    "uuid": "9033256f-3174-40b0-bd17-eb85ef023358"
                 }
             ],
             "severity": "error",
@@ -2481,7 +2481,7 @@
                         "x": 137.81,
                         "y": 123.49
                     },
-                    "uuid": "1567d85e-b9de-46b1-8853-44580c0d4503"
+                    "uuid": "0b0c64e3-0a1d-44f2-8c29-a9536c515c66"
                 },
                 {
                     "description": "PTH pad 1 [SQ_D6] of RS40",
@@ -2489,7 +2489,7 @@
                         "x": 171.11,
                         "y": 160.0
                     },
-                    "uuid": "777adc90-cd71-427a-a76d-7404303be3ab"
+                    "uuid": "080bdecb-ce7f-45c8-93ab-95d92ee8143b"
                 }
             ],
             "severity": "error",
@@ -2504,7 +2504,7 @@
                         "x": 130.19,
                         "y": 131.11
                     },
-                    "uuid": "c029f056-1d45-40d7-9f93-ec27be7d0d6b"
+                    "uuid": "f09317cf-142c-4bc3-86a5-70ecc322cdac"
                 },
                 {
                     "description": "PTH pad 1 [SQ_D7] of RS44",
@@ -2512,7 +2512,7 @@
                         "x": 171.11,
                         "y": 120.0
                     },
-                    "uuid": "0d87ed8d-5f9a-4bc4-8a16-edd506a49250"
+                    "uuid": "faf8183f-9728-4ba4-9a8f-4ee7876356b8"
                 }
             ],
             "severity": "error",
@@ -2527,7 +2527,7 @@
                         "x": 130.19,
                         "y": 141.269999
                     },
-                    "uuid": "874c9f6c-3f5d-43ca-82d3-477e2259d8cb"
+                    "uuid": "f3718f69-9489-4150-8115-d1b72864ff81"
                 },
                 {
                     "description": "PTH pad 1 [SQ_D8] of RS48",
@@ -2535,7 +2535,7 @@
                         "x": 171.11,
                         "y": 80.0
                     },
-                    "uuid": "27e7c87f-48d1-4e98-8104-a6394aebac8d"
+                    "uuid": "b03e297c-68bc-414b-83a0-2012c0d59377"
                 }
             ],
             "severity": "error",
@@ -2550,7 +2550,7 @@
                         "x": 211.11,
                         "y": 360.0
                     },
-                    "uuid": "fbb90226-08ba-4ff9-b394-eb914ffa6265"
+                    "uuid": "9c070258-35f4-43f4-b0a1-75c948df3aa7"
                 },
                 {
                     "description": "PTH pad 21 [SQ_E1] of U2",
@@ -2558,7 +2558,7 @@
                         "x": 297.81,
                         "y": 301.27
                     },
-                    "uuid": "39976126-6641-4299-b71e-c37c62a02861"
+                    "uuid": "1c7e0207-c0a2-4080-822b-d5a78587fd7b"
                 }
             ],
             "severity": "error",
@@ -2573,7 +2573,7 @@
                         "x": 211.11,
                         "y": 320.0
                     },
-                    "uuid": "1477f2ac-351d-4bbb-9064-a16e2c354cac"
+                    "uuid": "df36f011-259b-437d-9e46-511dda5ab89e"
                 },
                 {
                     "description": "PTH pad 25 [SQ_E2] of U2",
@@ -2581,7 +2581,7 @@
                         "x": 297.81,
                         "y": 291.11
                     },
-                    "uuid": "a0df8da2-68d9-4f20-be73-eb0b2c3fa5bb"
+                    "uuid": "d4dcfaa4-97c6-4b22-8060-49fa435d84ab"
                 }
             ],
             "severity": "error",
@@ -2596,7 +2596,7 @@
                         "x": 211.11,
                         "y": 280.0
                     },
-                    "uuid": "4253c560-be5b-4801-9a20-7f6e3a2d32e6"
+                    "uuid": "81779176-e066-4bf2-8a82-9c6cb3fd8b72"
                 },
                 {
                     "description": "PTH pad 1 [SQ_E3] of U2",
@@ -2604,7 +2604,7 @@
                         "x": 290.19,
                         "y": 283.49
                     },
-                    "uuid": "69c90fec-3097-4267-9a78-0d1c085ae7e4"
+                    "uuid": "ad592120-eb5b-4fce-98a9-c8ffdadfa8fd"
                 }
             ],
             "severity": "error",
@@ -2619,7 +2619,7 @@
                         "x": 211.11,
                         "y": 240.0
                     },
-                    "uuid": "739286cc-1e95-440f-9ee9-0a3962356c02"
+                    "uuid": "2863c166-3d25-4d1b-95f4-3734eaf08fdb"
                 },
                 {
                     "description": "PTH pad 5 [SQ_E4] of U2",
@@ -2627,7 +2627,7 @@
                         "x": 290.19,
                         "y": 293.65
                     },
-                    "uuid": "c15a169c-5743-4020-a0ce-e025cbe29a41"
+                    "uuid": "4d57d7f8-bf1c-43a3-adca-9edbe8800775"
                 }
             ],
             "severity": "error",
@@ -2642,7 +2642,7 @@
                         "x": 211.11,
                         "y": 200.0
                     },
-                    "uuid": "8974ed6e-fd9d-4244-8a31-fcf1906d787a"
+                    "uuid": "ce3cb834-2524-4897-8165-8b332394e459"
                 },
                 {
                     "description": "PTH pad 21 [SQ_E5] of U4",
@@ -2650,7 +2650,7 @@
                         "x": 297.81,
                         "y": 141.269999
                     },
-                    "uuid": "47216203-8c7a-4666-b108-cf9cb40d0b0f"
+                    "uuid": "dc46ba31-68c5-45c1-a268-b8cc34c3314b"
                 }
             ],
             "severity": "error",
@@ -2665,7 +2665,7 @@
                         "x": 211.11,
                         "y": 160.0
                     },
-                    "uuid": "936c894c-541d-4776-bc4b-a1c43affba38"
+                    "uuid": "318a1d3a-d22f-4595-9669-cbf10fe2ec20"
                 },
                 {
                     "description": "PTH pad 25 [SQ_E6] of U4",
@@ -2673,7 +2673,7 @@
                         "x": 297.81,
                         "y": 131.11
                     },
-                    "uuid": "88275cc0-757d-4414-9caf-2542f092b22b"
+                    "uuid": "a4498f10-7543-4c1d-97b5-9c5021c67037"
                 }
             ],
             "severity": "error",
@@ -2688,7 +2688,7 @@
                         "x": 211.11,
                         "y": 120.0
                     },
-                    "uuid": "4c87df41-18b9-4089-859d-56f695dedd65"
+                    "uuid": "4471c4b9-a941-499d-8211-6ad21765f894"
                 },
                 {
                     "description": "PTH pad 1 [SQ_E7] of U4",
@@ -2696,7 +2696,7 @@
                         "x": 290.19,
                         "y": 123.49
                     },
-                    "uuid": "7a3a5ef4-f8ed-4d9c-bab7-0f05f93dde63"
+                    "uuid": "6c2efbf7-19a8-471f-be22-01f31b9c3690"
                 }
             ],
             "severity": "error",
@@ -2711,7 +2711,7 @@
                         "x": 211.11,
                         "y": 80.0
                     },
-                    "uuid": "e8a72a3d-7b9a-4692-8f09-d647d10f5e96"
+                    "uuid": "7ec185d2-c683-4d42-8cb4-6c59961b7802"
                 },
                 {
                     "description": "PTH pad 5 [SQ_E8] of U4",
@@ -2719,7 +2719,7 @@
                         "x": 290.19,
                         "y": 133.65
                     },
-                    "uuid": "8ccc6b93-ed81-4065-8f00-25350c0602a2"
+                    "uuid": "ed9f0eb8-2110-4a19-a69b-3d1ef082f02a"
                 }
             ],
             "severity": "error",
@@ -2734,7 +2734,7 @@
                         "x": 251.11,
                         "y": 360.0
                     },
-                    "uuid": "9798fd9d-107d-48ba-827c-491160631937"
+                    "uuid": "732df45c-3e9c-401e-937f-678a70205d6a"
                 },
                 {
                     "description": "PTH pad 22 [SQ_F1] of U2",
@@ -2742,7 +2742,7 @@
                         "x": 297.81,
                         "y": 298.73
                     },
-                    "uuid": "d03f2158-ee8c-4f92-811a-4242489fc3b0"
+                    "uuid": "254c97d5-e0f4-4401-9a61-250b8fb8a336"
                 }
             ],
             "severity": "error",
@@ -2757,7 +2757,7 @@
                         "x": 251.11,
                         "y": 320.0
                     },
-                    "uuid": "71bf3fb8-0af0-4c1e-b390-65b9f8646bd6"
+                    "uuid": "676bfa3f-3a9d-4d57-be51-ce2ce25c5684"
                 },
                 {
                     "description": "PTH pad 26 [SQ_F2] of U2",
@@ -2765,7 +2765,7 @@
                         "x": 297.81,
                         "y": 288.57
                     },
-                    "uuid": "3990e4b0-fdbb-44ba-9aaf-2b15c0f31908"
+                    "uuid": "8de456ca-a1d2-43bc-a6dc-27fcbc4f9c25"
                 }
             ],
             "severity": "error",
@@ -2780,7 +2780,7 @@
                         "x": 251.11,
                         "y": 280.0
                     },
-                    "uuid": "ef6e7837-88dd-4079-a1a5-7bcca2f66d29"
+                    "uuid": "0c5e3b71-42ab-466a-a254-deb059299193"
                 },
                 {
                     "description": "PTH pad 2 [SQ_F3] of U2",
@@ -2788,7 +2788,7 @@
                         "x": 290.19,
                         "y": 286.03
                     },
-                    "uuid": "815d78d0-bfab-4667-a5e9-da633031faee"
+                    "uuid": "e35c2ae7-548f-42ab-a504-10efae0089ca"
                 }
             ],
             "severity": "error",
@@ -2803,7 +2803,7 @@
                         "x": 251.11,
                         "y": 240.0
                     },
-                    "uuid": "0018a277-7fd3-49ad-ac02-8e8594a3e691"
+                    "uuid": "1bae687e-fa2a-432e-947c-75cfc4327975"
                 },
                 {
                     "description": "PTH pad 6 [SQ_F4] of U2",
@@ -2811,7 +2811,7 @@
                         "x": 290.19,
                         "y": 296.19
                     },
-                    "uuid": "e3a8aed8-1518-4cd3-b7fa-a4ecf898f5f4"
+                    "uuid": "415270de-a39e-427d-9049-7466b4178168"
                 }
             ],
             "severity": "error",
@@ -2826,7 +2826,7 @@
                         "x": 251.11,
                         "y": 200.0
                     },
-                    "uuid": "bf836762-1112-4044-9449-8b5d39190260"
+                    "uuid": "28287a9e-826f-48e1-899e-2986285927b0"
                 },
                 {
                     "description": "PTH pad 22 [SQ_F5] of U4",
@@ -2834,7 +2834,7 @@
                         "x": 297.81,
                         "y": 138.73
                     },
-                    "uuid": "2f4a7410-8130-49e5-96e7-7c1a7e82fcd9"
+                    "uuid": "8c310df7-050a-423b-8834-f52b4339cc41"
                 }
             ],
             "severity": "error",
@@ -2849,7 +2849,7 @@
                         "x": 251.11,
                         "y": 160.0
                     },
-                    "uuid": "7c5bd5b9-d3e7-408f-add2-0b2a5c4562e4"
+                    "uuid": "ce6c8296-3fea-453a-b439-62a7c36022bb"
                 },
                 {
                     "description": "PTH pad 26 [SQ_F6] of U4",
@@ -2857,7 +2857,7 @@
                         "x": 297.81,
                         "y": 128.57
                     },
-                    "uuid": "fa3721d1-92ca-4edb-98be-ee7124e7cdb2"
+                    "uuid": "b1ad3f70-b6f7-47de-a26e-6911a76c419e"
                 }
             ],
             "severity": "error",
@@ -2872,7 +2872,7 @@
                         "x": 251.11,
                         "y": 120.0
                     },
-                    "uuid": "67be90a0-7c92-4897-a9ff-7b75aad14cd6"
+                    "uuid": "fa2fb59d-cbc7-44de-b4d0-2a9bbea4c775"
                 },
                 {
                     "description": "PTH pad 2 [SQ_F7] of U4",
@@ -2880,7 +2880,7 @@
                         "x": 290.19,
                         "y": 126.03
                     },
-                    "uuid": "d1b36c0c-1959-46b1-b517-3a677325ba96"
+                    "uuid": "edd94f5a-7d88-46ad-ad12-d9964ce76939"
                 }
             ],
             "severity": "error",
@@ -2895,7 +2895,7 @@
                         "x": 251.11,
                         "y": 80.0
                     },
-                    "uuid": "dae3ba56-ef23-4025-82ec-b637eea5e2bc"
+                    "uuid": "1e02e5ba-1e0f-4420-b925-1c04a46fc29a"
                 },
                 {
                     "description": "PTH pad 6 [SQ_F8] of U4",
@@ -2903,7 +2903,7 @@
                         "x": 290.19,
                         "y": 136.19
                     },
-                    "uuid": "c4e3802c-59eb-48aa-a25c-c7be2ba223b4"
+                    "uuid": "ecddc6ca-c127-466e-a234-71ba36caa56d"
                 }
             ],
             "severity": "error",
@@ -2918,7 +2918,7 @@
                         "x": 291.11,
                         "y": 360.0
                     },
-                    "uuid": "9dbf85de-6cf7-4695-a102-67bcc26ada33"
+                    "uuid": "70c44ea8-e120-4778-8f80-5f82e8eea2a1"
                 },
                 {
                     "description": "PTH pad 23 [SQ_G1] of U2",
@@ -2926,7 +2926,7 @@
                         "x": 297.81,
                         "y": 296.19
                     },
-                    "uuid": "59f29fc5-a08a-4f54-bd62-a9fceae59cbf"
+                    "uuid": "8033550d-0b68-4b8b-9e1d-943c61903945"
                 }
             ],
             "severity": "error",
@@ -2941,7 +2941,7 @@
                         "x": 291.11,
                         "y": 320.0
                     },
-                    "uuid": "c3c19f63-4db3-472b-a936-b75f8b0189d0"
+                    "uuid": "35304790-6dcc-493c-a880-4a0d50ff06a3"
                 },
                 {
                     "description": "PTH pad 27 [SQ_G2] of U2",
@@ -2949,7 +2949,7 @@
                         "x": 297.81,
                         "y": 286.03
                     },
-                    "uuid": "74df4638-5f97-4836-a418-05aaad9e69ae"
+                    "uuid": "6dad4d49-b77b-4cd4-8ce7-175ad01ed643"
                 }
             ],
             "severity": "error",
@@ -2964,7 +2964,7 @@
                         "x": 290.19,
                         "y": 288.57
                     },
-                    "uuid": "fea863ad-331f-456e-8bea-033e848aae2f"
+                    "uuid": "7544fc2b-e355-479d-8437-9dec4a30f965"
                 },
                 {
                     "description": "PTH pad 1 [SQ_G3] of RS27",
@@ -2972,7 +2972,7 @@
                         "x": 291.11,
                         "y": 280.0
                     },
-                    "uuid": "3029b79b-aba3-47fe-aaaf-b42cff84b471"
+                    "uuid": "1336ee23-e8f4-4320-a244-be15428f6d4b"
                 }
             ],
             "severity": "error",
@@ -2987,7 +2987,7 @@
                         "x": 290.19,
                         "y": 298.73
                     },
-                    "uuid": "05848488-782f-44b1-bd7a-81a7ef009868"
+                    "uuid": "72cff9d2-1d96-41a3-a609-976cbbf8df17"
                 },
                 {
                     "description": "PTH pad 1 [SQ_G4] of RS31",
@@ -2995,7 +2995,7 @@
                         "x": 291.11,
                         "y": 240.0
                     },
-                    "uuid": "3e705eab-513c-4598-bd13-a6f0af4e30c8"
+                    "uuid": "8165c889-cb82-448a-8edc-114e3403ac5b"
                 }
             ],
             "severity": "error",
@@ -3010,7 +3010,7 @@
                         "x": 291.11,
                         "y": 200.0
                     },
-                    "uuid": "b385c958-0507-4d47-9336-95da86a05f56"
+                    "uuid": "b7470417-25af-482c-9979-6f306bc9fea3"
                 },
                 {
                     "description": "PTH pad 23 [SQ_G5] of U4",
@@ -3018,7 +3018,7 @@
                         "x": 297.81,
                         "y": 136.19
                     },
-                    "uuid": "5fd61d22-2a40-46da-b044-f1edeba8faf9"
+                    "uuid": "b2ac48a2-ef2d-4d36-b04a-b69cd0df63dc"
                 }
             ],
             "severity": "error",
@@ -3033,7 +3033,7 @@
                         "x": 291.11,
                         "y": 160.0
                     },
-                    "uuid": "1b4bb1a3-d41c-4676-997a-81f56a370538"
+                    "uuid": "bf701006-7abb-4b1c-881a-ee2f12be6bec"
                 },
                 {
                     "description": "PTH pad 27 [SQ_G6] of U4",
@@ -3041,7 +3041,7 @@
                         "x": 297.81,
                         "y": 126.03
                     },
-                    "uuid": "9b1becca-e884-4e9e-8546-6cbf41921327"
+                    "uuid": "164f3a5b-904c-4f33-8e5e-dfcfe4e3b722"
                 }
             ],
             "severity": "error",
@@ -3056,7 +3056,7 @@
                         "x": 290.19,
                         "y": 128.57
                     },
-                    "uuid": "19e6141d-f2fd-4efc-a496-39905a13a752"
+                    "uuid": "bebef544-f23b-4f11-871c-fc259202b883"
                 },
                 {
                     "description": "PTH pad 1 [SQ_G7] of RS59",
@@ -3064,7 +3064,7 @@
                         "x": 291.11,
                         "y": 120.0
                     },
-                    "uuid": "ecf2c0b1-ae93-4660-97eb-0e0a51d91173"
+                    "uuid": "66613663-6405-4703-8d10-ae20120f4cd3"
                 }
             ],
             "severity": "error",
@@ -3079,7 +3079,7 @@
                         "x": 290.19,
                         "y": 138.73
                     },
-                    "uuid": "1f3d10dd-78e1-47e2-be7c-1d97f8a18c26"
+                    "uuid": "1b4d9299-dc84-42dc-81a4-7f0ddf989095"
                 },
                 {
                     "description": "PTH pad 1 [SQ_G8] of RS63",
@@ -3087,7 +3087,7 @@
                         "x": 291.11,
                         "y": 80.0
                     },
-                    "uuid": "f85bb4d9-e1a4-4102-a46a-e878caf871b7"
+                    "uuid": "b0777a84-74c9-499b-97db-b36cb9fa60ee"
                 }
             ],
             "severity": "error",
@@ -3102,7 +3102,7 @@
                         "x": 297.81,
                         "y": 293.65
                     },
-                    "uuid": "df36f011-259b-437d-9e46-511dda5ab89e"
+                    "uuid": "ba2c23fe-2b5d-4162-af1a-a689dcb233cc"
                 },
                 {
                     "description": "PTH pad 1 [SQ_H1] of RS20",
@@ -3110,7 +3110,7 @@
                         "x": 331.11,
                         "y": 360.0
                     },
-                    "uuid": "6814b90a-6211-4fdd-82a1-d57d5fa83d18"
+                    "uuid": "fea863ad-331f-456e-8bea-033e848aae2f"
                 }
             ],
             "severity": "error",
@@ -3125,7 +3125,7 @@
                         "x": 297.81,
                         "y": 283.49
                     },
-                    "uuid": "fa117da8-332e-45be-b2a1-2de6992e5af7"
+                    "uuid": "793c41f9-c8a8-4d86-9bf8-967e3c6ac053"
                 },
                 {
                     "description": "PTH pad 1 [SQ_H2] of RS24",
@@ -3133,7 +3133,7 @@
                         "x": 331.11,
                         "y": 320.0
                     },
-                    "uuid": "0efe837b-9596-4575-a92e-0d24dc8e626a"
+                    "uuid": "ddc24c22-612d-4d58-8e7a-a4d94f1c65a7"
                 }
             ],
             "severity": "error",
@@ -3148,7 +3148,7 @@
                         "x": 290.19,
                         "y": 291.11
                     },
-                    "uuid": "7c2993dd-1f19-4fc5-b891-d31db8383a7e"
+                    "uuid": "748072c2-8e16-4bf5-97fa-353d4a39b2db"
                 },
                 {
                     "description": "PTH pad 1 [SQ_H3] of RS28",
@@ -3156,7 +3156,7 @@
                         "x": 331.11,
                         "y": 280.0
                     },
-                    "uuid": "f26191c2-e7fb-48b0-b41e-c8095dad8e65"
+                    "uuid": "6eb08025-74aa-4756-8c61-5ffedfd267f3"
                 }
             ],
             "severity": "error",
@@ -3171,7 +3171,7 @@
                         "x": 290.19,
                         "y": 301.27
                     },
-                    "uuid": "42c69734-21ac-4a63-bf7c-43829014c1d9"
+                    "uuid": "a12d19c2-68d0-4250-9453-9c28fb88e14f"
                 },
                 {
                     "description": "PTH pad 1 [SQ_H4] of RS32",
@@ -3179,7 +3179,7 @@
                         "x": 331.11,
                         "y": 240.0
                     },
-                    "uuid": "6b4d06df-41be-46af-bcbd-fc765264f01d"
+                    "uuid": "c5410b03-ec8b-4e76-afca-cb0a52b05039"
                 }
             ],
             "severity": "error",
@@ -3194,7 +3194,7 @@
                         "x": 297.81,
                         "y": 133.65
                     },
-                    "uuid": "2fb0a0f2-7397-4292-86a3-d8f903fe81c4"
+                    "uuid": "3271c9ae-9957-4fb8-a6c3-4971e5d6ff16"
                 },
                 {
                     "description": "PTH pad 1 [SQ_H5] of RS52",
@@ -3202,7 +3202,7 @@
                         "x": 331.11,
                         "y": 200.0
                     },
-                    "uuid": "93d2b00f-d193-4f03-a013-2fcbaf8c04f4"
+                    "uuid": "5ca438ab-1a15-4e6c-a199-47e4a732367e"
                 }
             ],
             "severity": "error",
@@ -3217,7 +3217,7 @@
                         "x": 297.81,
                         "y": 123.49
                     },
-                    "uuid": "ce5b2115-de7f-47ea-9ccd-b8d248cbcc21"
+                    "uuid": "fdf878a2-1e68-46c1-ac31-7229387897f6"
                 },
                 {
                     "description": "PTH pad 1 [SQ_H6] of RS56",
@@ -3225,7 +3225,7 @@
                         "x": 331.11,
                         "y": 160.0
                     },
-                    "uuid": "2e76f216-4064-41d5-9b29-cdef77f07802"
+                    "uuid": "6350cd34-93ad-40fc-b507-422a0f8add54"
                 }
             ],
             "severity": "error",
@@ -3240,7 +3240,7 @@
                         "x": 290.19,
                         "y": 131.11
                     },
-                    "uuid": "1091b810-5599-4188-80c1-984d4e8bac15"
+                    "uuid": "f08bae1b-8104-4ac0-a4d3-1585f9044c6a"
                 },
                 {
                     "description": "PTH pad 1 [SQ_H7] of RS60",
@@ -3248,7 +3248,7 @@
                         "x": 331.11,
                         "y": 120.0
                     },
-                    "uuid": "f9ce04d9-76ba-4d69-8768-4f23b8bc9e80"
+                    "uuid": "77d9dbb5-cf79-4541-9dbb-eb7d96951879"
                 }
             ],
             "severity": "error",
@@ -3263,7 +3263,7 @@
                         "x": 290.19,
                         "y": 141.269999
                     },
-                    "uuid": "6e2a6387-5571-4467-b0aa-042a04f9a66e"
+                    "uuid": "bf93c433-ef89-485b-893a-1ca8c6e70da6"
                 },
                 {
                     "description": "PTH pad 1 [SQ_H8] of RS64",
@@ -3271,7 +3271,7 @@
                         "x": 331.11,
                         "y": 80.0
                     },
-                    "uuid": "0a1dc686-694e-4417-b46e-bde9b7962761"
+                    "uuid": "56f7f2df-6d45-4149-9ff3-049917deaf6c"
                 }
             ],
             "severity": "error",

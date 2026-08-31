@@ -16,6 +16,7 @@ PYTHONPATH=hardware:hardware/pcb python3 -m unittest discover \
 printf '\n==> Generate approved BOM and KiCad project\n'
 python3 hardware/pcb/write_bom.py
 python3 hardware/pcb/generate.py
+python3 hardware/pcb/configure_project.py
 
 out=hardware/pcb/generated
 rm -rf "${out}/gerber"
@@ -45,6 +46,9 @@ kicad-cli pcb render --quality high --width 1400 --height 1400 \
 kicad-cli pcb render --quality high --width 1400 --height 1400 \
     --background opaque --side bottom --zoom 0.82 \
     -o "${out}/board-bottom.png" hardware/pcb/chess-board.kicad_pcb
+
+printf '\n==> Audit complete hardware release\n'
+python3 hardware/pcb/audit.py
 
 printf '\n==> Enforce fabrication release gate\n'
 python3 hardware/pcb/validate_release.py

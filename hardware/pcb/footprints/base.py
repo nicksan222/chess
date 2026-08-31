@@ -144,6 +144,7 @@ def dual_inline(
     row_spacing: float = 7.62,
     pitch: float = 2.54,
     lead_diameter: float = 0.5,
+    body: tuple[float, float] | None = None,
 ) -> Footprint:
     """A DIP package with its long axis along Y and pin 1 at the top left.
 
@@ -189,7 +190,7 @@ def dual_inline(
         package=package,
         description=description,
         pads=tuple(pads),
-        courtyard=courtyard_for(tuple(pads)),
+        courtyard=courtyard_for(tuple(pads), body or (row_spacing, span)),
     )
 
 
