@@ -1,0 +1,13 @@
+[package]
+name = "menu"
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+version.workspace = true
+autotests = false
+
+[dependencies]
+
+[[test]]
+name = "unit"
+path = "tests/unit/main.rs"

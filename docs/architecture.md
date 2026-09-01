@@ -40,6 +40,8 @@ the two component choices that make it possible.
 - **`crates/chess`** is the game: board state, move generation, history. It has
   no idea a physical board exists.
 - **`crates/core`** holds small integration-neutral building blocks.
+- **`crates/menu`** owns reusable headless menu trees, cursors, and navigation
+  state. Input mapping and presentation remain adapters in the applications.
 - **`apps/firmware`** owns everything shipped to the Pi: the Rust process,
   Yocto configuration, character devices, display, buttons, network provisioning,
   and systemd units.
