@@ -2,7 +2,7 @@
 
 from enum import StrEnum
 
-from .base import BoardComponent
+from base.component import BoardComponent
 
 
 class Sk9822Pin(StrEnum):

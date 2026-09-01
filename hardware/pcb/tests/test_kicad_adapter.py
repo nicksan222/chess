@@ -13,13 +13,16 @@ for path in (PCB_ROOT, HARDWARE_ROOT):
         sys.path.insert(0, str(path))
 
 try:
-    import pcbnew
+    from base.kicad.api import pcbnew
 except ModuleNotFoundError:  # Host-only unit runs do not install KiCad.
     pcbnew = None
 
 if pcbnew is not None:
+    from base import rules, sources
+    from base.kicad import board as kicad
+    from board import definition
+    from board.wiring import geometry as board_builder
     from components.hall_sensor import HallSensorPin
-    from core import board_builder, connectivity, kicad, placement, rules, sources
 
 
 @unittest.skipUnless(pcbnew is not None, "KiCad pcbnew is not installed")
@@ -27,21 +30,17 @@ class KiCadBoardAdapterTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.contract = sources.netlist()
-        cls.placements = placement.build()
-        cls.graph = connectivity.ConnectionGraph.from_contract(
-            cls.contract["connections"],
-            cls.placements,
-        )
+        cls.design = definition.from_contract(cls.contract)
+        cls.placements = cls.design.placements
 
     def layout_for(self, references: set[str]):
-        layout = kicad.KiCadBoard(self.graph)
-        for item in self.placements:
-            if item.reference in references:
-                item.attach_to(layout, self.contract["components"][item.reference])
+        layout = kicad.KiCadBoard(self.design)
+        for reference in references:
+            layout.attach(self.design.component(reference))
         return layout
 
     def test_native_board_owns_reviewed_manufacturing_rules(self) -> None:
-        layout = kicad.KiCadBoard(self.graph)
+        layout = kicad.KiCadBoard(self.design)
         settings = layout.native.GetDesignSettings()
         self.assertEqual(layout.native.GetCopperLayerCount(), rules.COPPER_LAYERS)
         self.assertAlmostEqual(
@@ -54,7 +53,7 @@ class KiCadBoardAdapterTest(unittest.TestCase):
         )
 
     def test_native_outline_matches_shared_board_dimensions(self) -> None:
-        layout = kicad.KiCadBoard(self.graph)
+        layout = kicad.KiCadBoard(self.design)
         board_builder.BoardGeometry(layout).add_mechanical_features()
         bounds = layout.native.GetBoardEdgesBoundingBox()
         width, height, _thickness = sources.dimensions().PCB_SIZE_MM
@@ -69,7 +68,7 @@ class KiCadBoardAdapterTest(unittest.TestCase):
         )
 
     def test_native_mounting_holes_match_shared_supports(self) -> None:
-        layout = kicad.KiCadBoard(self.graph)
+        layout = kicad.KiCadBoard(self.design)
         board_builder.BoardGeometry(layout).add_mechanical_features()
         holes = [
             footprint

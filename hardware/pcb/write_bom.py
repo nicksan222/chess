@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import csv
 import io
-import json
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -14,6 +13,8 @@ PCB = Path(__file__).resolve().parent
 HARDWARE = PCB.parent
 sys.path.insert(0, str(HARDWARE))
 
+from base.design import BoardDesign
+from board import definition as board_definition
 from shared.components import COMPONENTS
 
 EXTRA_ASSEMBLY_PARTS = (
@@ -31,12 +32,11 @@ def reference_sort_key(reference: str) -> tuple[str, int]:
     return prefix, int(suffix) if suffix else 0
 
 
-def render() -> str:
-    design = json.loads((PCB / "design/netlist.json").read_text())
-    components = design["projects"]["board"]["components"]
+def render(design: BoardDesign | None = None) -> str:
+    design = design or board_definition.load()
     references: dict[str, list[str]] = defaultdict(list)
-    for reference, component in components.items():
-        references[component["part_key"]].append(reference)
+    for component in design.components.values():
+        references[component.spec.part_key].append(component.reference)
     for key in EXTRA_ASSEMBLY_PARTS:
         references[key].append("—")
 
@@ -64,13 +64,12 @@ def render() -> str:
     return "\n".join(text)
 
 
-def render_assembly_csv() -> str:
+def render_assembly_csv(design: BoardDesign | None = None) -> str:
     """Render a PCBWay-friendly BOM containing board-fitted parts only."""
-    design = json.loads((PCB / "design/netlist.json").read_text())
-    components = design["projects"]["board"]["components"]
+    design = design or board_definition.load()
     references: dict[str, list[str]] = defaultdict(list)
-    for reference, component in components.items():
-        references[component["part_key"]].append(reference)
+    for component in design.components.values():
+        references[component.spec.part_key].append(component.reference)
 
     output = io.StringIO(newline="")
     writer = csv.writer(output, lineterminator="\n")
@@ -97,8 +96,9 @@ def render_assembly_csv() -> str:
 def write() -> None:
     generated = PCB / "generated"
     generated.mkdir(exist_ok=True)
-    (generated / "bom.md").write_text(render())
-    (generated / "assembly-bom.csv").write_text(render_assembly_csv())
+    design = board_definition.load()
+    (generated / "bom.md").write_text(render(design))
+    (generated / "assembly-bom.csv").write_text(render_assembly_csv(design))
 
 
 if __name__ == "__main__":

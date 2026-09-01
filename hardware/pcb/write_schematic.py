@@ -13,8 +13,8 @@ GENERATED = ROOT / "generated"
 HARDWARE = ROOT.parent
 sys.path[:0] = [str(ROOT), str(HARDWARE)]
 
-from core import connectivity as connection_model
-from core import placement, sources
+from base.design import BoardDesign
+from board import definition as board_definition
 from shared.components import COMPONENTS
 
 DESTINATION = GENERATED / "chess-board.kicad_sch"
@@ -33,14 +33,11 @@ def uid(name: str) -> str:
     return str(uuid.uuid5(NAMESPACE, name))
 
 
-def connectivity() -> tuple[dict[EndpointKey, str], set[EndpointKey]]:
+def connectivity(
+    design: BoardDesign,
+) -> tuple[dict[EndpointKey, str], set[EndpointKey]]:
     """Index schematic endpoints through the shared validated connection graph."""
-    placed = placement.build()
-    contract = sources.netlist()
-    graph = connection_model.ConnectionGraph.from_contract(
-        contract["connections"],
-        placed,
-    )
+    graph = design.connections
     nets: dict[EndpointKey, str] = {}
     no_connects: set[EndpointKey] = set()
     for connection in graph.connections:
@@ -67,10 +64,10 @@ def row_centres(pin_counts: list[int]) -> list[float]:
     return centres
 
 
-def render() -> str:
-    nets, no_connects = connectivity()
-    components = sources.netlist()["components"]
-    placed = placement.build()
+def render(design: BoardDesign | None = None) -> str:
+    design = design or board_definition.load()
+    nets, no_connects = connectivity(design)
+    placed = design.placements
     lines = [
         "(kicad_sch",
         "  (version 20250114)",
@@ -82,7 +79,7 @@ def render() -> str:
         '    (title "Code-composed chess board")',
         '    (rev "B-PROTOTYPE")',
         '    (company "Chess")',
-        '    (comment 1 "Generated from design/netlist.json; do not hand edit")',
+        '    (comment 1 "Generated from board/netlist.json; do not hand edit")',
         "  )",
         "  (lib_symbols",
     ]
@@ -144,8 +141,8 @@ def render() -> str:
     row_y_positions = row_centres([len(layouts[item.reference][0]) for item in placed])
 
     for item_index, item in enumerate(placed):
-        entry = components[item.reference]
-        spec = COMPONENTS[entry["part_key"]]
+        component = design.component(item.reference)
+        spec = COMPONENTS[component.spec.part_key]
         pads, offsets = layouts[item.reference]
         column = item_index % SYMBOL_COLUMNS
         row = item_index // SYMBOL_COLUMNS

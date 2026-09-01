@@ -2,7 +2,7 @@
 
 from enum import StrEnum
 
-from .base import BoardComponent, ComponentReference
+from base.component import BoardComponent, ComponentReference
 
 
 class TvsDiodePin(StrEnum):

@@ -8,7 +8,7 @@
     (title "Code-composed chess board")
     (rev "B-PROTOTYPE")
     (company "Chess")
-    (comment 1 "Generated from design/netlist.json; do not hand edit")
+    (comment 1 "Generated from board/netlist.json; do not hand edit")
   )
   (lib_symbols
     (symbol "Generated:C1"

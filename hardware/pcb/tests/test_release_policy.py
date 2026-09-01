@@ -4,7 +4,7 @@ import json
 import unittest
 from pathlib import Path
 
-import footprints
+from components import footprints
 from configure_project import render as render_project
 from shared.components import COMPONENTS
 from write_bom import render as render_bom
@@ -17,7 +17,7 @@ PCB = Path(__file__).resolve().parents[1]
 
 class ReleasePolicyTest(unittest.TestCase):
     def test_every_single_pad_group_is_an_explicit_no_connect(self):
-        design = json.loads((PCB / "design/netlist.json").read_text())
+        design = json.loads((PCB / "board/netlist.json").read_text())
         for connection in design["projects"]["board"]["connections"]:
             with self.subTest(connection=connection):
                 self.assertEqual(
@@ -25,7 +25,7 @@ class ReleasePolicyTest(unittest.TestCase):
                 )
 
     def test_every_placed_part_resolves_to_an_approved_product(self):
-        design = json.loads((PCB / "design/netlist.json").read_text())
+        design = json.loads((PCB / "board/netlist.json").read_text())
         for reference, component in design["projects"]["board"]["components"].items():
             with self.subTest(reference=reference):
                 spec = COMPONENTS[component["part_key"]]

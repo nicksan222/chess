@@ -15,9 +15,9 @@ PCB_ROOT = Path(__file__).resolve().parents[1]
 if str(PCB_ROOT) not in sys.path:
     sys.path.insert(0, str(PCB_ROOT))
 
-import footprints
-from core import rules, sources
-from footprints.base import RECT, SHAPES
+from base import rules, sources
+from base.footprint import RECT, SHAPES
+from components import footprints
 
 
 class CoverageTest(unittest.TestCase):

@@ -11,10 +11,11 @@ PCB_ROOT = Path(__file__).resolve().parents[1]
 if str(PCB_ROOT) not in sys.path:
     sys.path.insert(0, str(PCB_ROOT))
 
+from base import board_placement as placement
+from base import connectivity, sources
+from board.wiring.nets import Net
 from components.catalog import for_netlist_entry
 from components.hall_sensor import HallSensor, HallSensorPin
-from core import connectivity, placement, sources
-from core.nets import Net
 
 
 class ConnectionGraphTest(unittest.TestCase):

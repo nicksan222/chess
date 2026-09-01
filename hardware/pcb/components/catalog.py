@@ -4,9 +4,10 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
+from base.component import BoardComponent
+
 from .ahct125 import Ahct125
 from .barrel_jack import BarrelJack
-from .base import BoardComponent
 from .capacitor import Capacitor
 from .fuse import Fuse
 from .hall_sensor import HallSensor

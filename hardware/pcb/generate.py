@@ -11,14 +11,10 @@ HARDWARE_ROOT = PCB_ROOT.parent
 sys.path.insert(0, str(PCB_ROOT))
 sys.path.insert(0, str(HARDWARE_ROOT))
 
-from core import (
-    board_builder,
-    connectivity,
-    kicad,
-    placement,
-    routing,
-    sources,
-)
+from base.kicad import board as kicad
+from board import definition
+from board.wiring import geometry as board_builder
+from board.wiring import router
 
 GENERATED = PCB_ROOT / "generated"
 BOARD_PATH = GENERATED / "chess-board.kicad_pcb"
@@ -29,24 +25,18 @@ class ChessBoardProject:
     """Compose, route, and save one complete native KiCad project board."""
 
     def __init__(self) -> None:
-        self.contract = sources.netlist()
-        self.placements = placement.build()
-        self.connections = connectivity.ConnectionGraph.from_contract(
-            self.contract["connections"],
-            self.placements,
-        )
-        self.layout = kicad.KiCadBoard(self.connections)
+        self.design = definition.load()
+        self.layout = kicad.KiCadBoard(self.design)
         self.geometry = board_builder.BoardGeometry(self.layout)
         self.writer = board_builder.NativeBoardWriter(self.layout)
 
     def compose(self) -> None:
-        components = self.contract["components"]
-        for item in self.placements:
-            item.attach_to(self.layout, components[item.reference])
+        for component in self.design.components.values():
+            self.layout.attach(component)
         self.geometry.add_mechanical_features()
 
     def route(self) -> None:
-        routing.ChessBoardRouter(self.layout).route()
+        router.ChessBoardRouter(self.layout).route()
         self.geometry.add_power_planes()
 
     def write(self) -> None:

@@ -10,5 +10,5 @@ mechanical design:
 - **`cad/`** — printable enclosure and tile plate generated with Blender.
 
 There is intentionally no separate electronics/schematic domain. The PCB is the
-electrical design, and `pcb/design/netlist.json` is its explicit connectivity
+electrical design, and `pcb/board/netlist.json` is its explicit connectivity
 contract. Run `./tools/pcb` to validate and generate manufacturing artifacts.

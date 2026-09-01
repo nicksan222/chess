@@ -17,8 +17,9 @@ and wiring. `hardware/cad` adapts the physical contract into Blender models.
 `hardware/pcb` owns electrical connectivity, footprints, placement, routing, and
 fabrication output. There is no separate schematic domain.
 
-The PCB's reviewed sources are `hardware/pcb/design/netlist.json` and `bom.md`.
-Generation validates those sources against every footprint and copper connection.
+The PCB's reviewed sources are `hardware/pcb/board/netlist.json` and the
+component catalog. Generation validates them against every footprint and copper
+connection, then writes the BOM under `hardware/pcb/generated/`.
 CAD and PCB both consume `hardware/shared`, preventing the mechanical and
 electrical layouts from independently copying dimensions or mappings.
 

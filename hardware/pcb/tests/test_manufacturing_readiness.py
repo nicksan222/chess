@@ -35,7 +35,7 @@ class ProductSelectionTest(unittest.TestCase):
 class ElectricalReadinessTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.board = json.loads((PCB / "design/netlist.json").read_text())["projects"][
+        cls.board = json.loads((PCB / "board/netlist.json").read_text())["projects"][
             "board"
         ]
         cls.connections = {
@@ -69,12 +69,15 @@ class ElectricalReadinessTest(unittest.TestCase):
         self.assertEqual(attached, expected)
 
     def test_power_limit_and_pcbway_order_requirements_are_recorded(self):
-        power = (PCB / "design/power-budget.md").read_text()
-        fabrication = (PCB / "design/pcbway-fabrication.md").read_text()
-        self.assertIn("3/31", power)
-        self.assertIn("320 x 360 mm", fabrication)
-        self.assertIn("1.00 x 1.60 mm", fabrication)
-        self.assertIn("Controlled impedance | Not required", fabrication)
+        manufacturing = json.loads((PCB / "board/manufacturing.json").read_text())
+        self.assertEqual(
+            manufacturing["power"]["led_global_brightness_max"],
+            "3/31",
+        )
+        fabrication = manufacturing["fabrication"]
+        self.assertEqual(fabrication["board_size_mm"], [320.0, 360.0])
+        self.assertEqual(fabrication["plated_component_slot_mm"], [1.0, 1.6])
+        self.assertIs(fabrication["controlled_impedance"], False)
 
 
 @unittest.skipUnless(
@@ -83,7 +86,7 @@ class ElectricalReadinessTest(unittest.TestCase):
 )
 class PhysicalReleaseEvidenceTest(unittest.TestCase):
     def test_hall_sensor_operates_with_both_magnet_poles_at_final_spacing(self):
-        evidence_path = PCB / "prototype/hall-magnet.json"
+        evidence_path = PCB / "board/prototype/hall-magnet.json"
         self.assertTrue(evidence_path.is_file(), f"missing {evidence_path}")
         record = json.loads(evidence_path.read_text())
         self.assertEqual(record.get("schema"), 1)

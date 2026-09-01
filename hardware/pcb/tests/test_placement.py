@@ -15,8 +15,9 @@ PCB_ROOT = Path(__file__).resolve().parents[1]
 if str(PCB_ROOT) not in sys.path:
     sys.path.insert(0, str(PCB_ROOT))
 
-from core import placement, sources
-from core.board import Board
+from base import board_placement as placement
+from base import sources
+from board import definition as board_definition
 
 
 class PlacementTest(unittest.TestCase):
@@ -25,7 +26,7 @@ class PlacementTest(unittest.TestCase):
         cls.shared = sources.dimensions()
         cls.netlist = sources.netlist()
         cls.placements = placement.build()
-        cls.board = Board()
+        cls.board = board_definition.envelope()
         cls.by_reference = {p.reference: p for p in cls.placements}
 
     def test_every_board_part_is_placed(self) -> None:

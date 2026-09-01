@@ -11,8 +11,8 @@ force-exclude = true
 ignore = ["TRY004"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["blocks", "components", "core", "footprints", "shared"]
+known-first-party = ["base", "blocks", "board", "components", "shared"]
 
 [tool.ruff.lint.per-file-ignores]
 # Footprints are discovered at import time, so __all__ cannot be a static list.
-"hardware/pcb/footprints/__init__.py" = ["PLE0604", "PLE0605"]
+"hardware/pcb/components/footprints/__init__.py" = ["PLE0604", "PLE0605"]

@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-TEMPLATE = ROOT / "design" / "project-template.json"
+TEMPLATE = ROOT / "board" / "project-template.json"
 PROJECT = ROOT / "generated" / "chess-board.kicad_pro"
 STRICT_RULES = (
     "footprint_filters_mismatch",

@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "revision": "C-PROTOTYPE",
+  "power": {
+    "supply_volts": 5.0,
+    "supply_amps": 2.0,
+    "led_global_brightness_max": "3/31"
+  },
+  "fabrication": {
+    "vendor": "PCBWay",
+    "board_size_mm": [320.0, 360.0],
+    "layers": 8,
+    "finished_thickness_mm": 1.6,
+    "outer_copper_oz_min": 1,
+    "inner_copper_oz_min": 1,
+    "material": "FR-4 Tg150+",
+    "surface_finish": "Lead-free HASL",
+    "solder_mask": "Green",
+    "silkscreen": "White",
+    "controlled_impedance": false,
+    "plated_component_slot_mm": [1.0, 1.6],
+    "mounting_hole_mm": 3.4
+  }
+}
