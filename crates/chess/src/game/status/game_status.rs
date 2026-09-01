@@ -36,6 +36,9 @@ impl From<FinalState> for GameStatus {
             FinalState::Checkmate { winner } => Self::Checkmate { winner },
             FinalState::Stalemate => Self::Stalemate,
             FinalState::Draw { reason } => Self::Draw { reason },
+            FinalState::DrawAfter { claim, .. } => Self::Draw {
+                reason: DrawReason::Claimed(claim),
+            },
         }
     }
 }

@@ -1,5 +1,5 @@
 use chess::{
-    Board, ChessMove, Color, FinalState, Game, GameHistory, GameSyncError, HistoryError,
+    Board, ChessMove, Color, DrawClaim, FinalState, Game, GameHistory, GameSyncError, HistoryError,
     HistoryEvent, HistoryHash, HistoryStep, InvalidState, Piece, PieceKind, Ply, Square,
 };
 
@@ -48,6 +48,25 @@ fn every_event_kind_participates_in_the_hash_chain() {
     assert_ne!(moved, invalid);
     assert_ne!(invalid, final_hash);
     assert_ne!(moved, final_hash);
+}
+
+#[test]
+fn announced_draw_evidence_participates_in_the_hash_chain() {
+    let event_hash = |chess_move| {
+        let mut history = GameHistory::new();
+        history
+            .push(HistoryEvent::Final(FinalState::DrawAfter {
+                claim: DrawClaim::ThreefoldRepetition,
+                chess_move,
+            }))
+            .unwrap()
+            .hash()
+    };
+
+    assert_ne!(
+        event_hash(ChessMove::new(Square::G1, Square::F3)),
+        event_hash(ChessMove::new(Square::B1, Square::C3)),
+    );
 }
 
 #[test]

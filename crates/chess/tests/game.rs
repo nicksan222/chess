@@ -39,6 +39,54 @@ fn initial_legal_move_tree_matches_standard_perft_counts() {
 }
 
 #[test]
+fn kiwipete_legal_move_tree_matches_standard_perft_counts() {
+    use Color::{Black, White};
+    use PieceKind::{Bishop, King, Knight, Pawn, Queen, Rook};
+
+    // r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1
+    let mut board = board_with([
+        Piece::new(White, King, Square::E1),
+        Piece::new(White, Queen, Square::F3),
+        Piece::new(White, Rook, Square::A1),
+        Piece::new(White, Rook, Square::H1),
+        Piece::new(White, Bishop, Square::D2),
+        Piece::new(White, Bishop, Square::E2),
+        Piece::new(White, Knight, Square::C3),
+        Piece::new(White, Knight, Square::E5),
+        Piece::new(White, Pawn, Square::A2),
+        Piece::new(White, Pawn, Square::B2),
+        Piece::new(White, Pawn, Square::C2),
+        Piece::new(White, Pawn, Square::D5),
+        Piece::new(White, Pawn, Square::E4),
+        Piece::new(White, Pawn, Square::F2),
+        Piece::new(White, Pawn, Square::G2),
+        Piece::new(White, Pawn, Square::H2),
+        Piece::new(Black, King, Square::E8),
+        Piece::new(Black, Queen, Square::E7),
+        Piece::new(Black, Rook, Square::A8),
+        Piece::new(Black, Rook, Square::H8),
+        Piece::new(Black, Bishop, Square::A6),
+        Piece::new(Black, Bishop, Square::G7),
+        Piece::new(Black, Knight, Square::B6),
+        Piece::new(Black, Knight, Square::F6),
+        Piece::new(Black, Pawn, Square::A7),
+        Piece::new(Black, Pawn, Square::B4),
+        Piece::new(Black, Pawn, Square::C7),
+        Piece::new(Black, Pawn, Square::D7),
+        Piece::new(Black, Pawn, Square::E6),
+        Piece::new(Black, Pawn, Square::F7),
+        Piece::new(Black, Pawn, Square::G6),
+        Piece::new(Black, Pawn, Square::H3),
+    ]);
+    board.set_castling_rights(CastlingRights::ALL);
+    let game = Game::from_board(board);
+
+    assert_eq!(perft(&game, 1), 48);
+    assert_eq!(perft(&game, 2), 2_039);
+    assert_eq!(perft(&game, 3), 97_862);
+}
+
+#[test]
 fn pieces_report_legal_destinations_and_move_themselves() {
     let mut game = Game::new();
     let pawn = game.piece_at(Square::E2).unwrap();

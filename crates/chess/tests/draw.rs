@@ -197,19 +197,24 @@ fn a_repetition_can_be_claimed_by_announcing_the_next_move() {
     assert!(claims.contains(DrawClaim::ThreefoldRepetition));
     assert_eq!(game.history().len().value(), 7, "the probe must be pure");
 
+    let mut receiver = game.clone();
     game.claim_draw_after(
         ChessMove::new(Square::F6, Square::G8),
         DrawClaim::ThreefoldRepetition,
     )
     .unwrap();
-    assert_eq!(
-        game.status(),
-        GameStatus::Draw {
-            reason: DrawReason::Claimed(DrawClaim::ThreefoldRepetition),
-        }
-    );
+    let expected = GameStatus::Draw {
+        reason: DrawReason::Claimed(DrawClaim::ThreefoldRepetition),
+    };
+    assert_eq!(game.status(), expected);
     assert_eq!(game.history().len().value(), 8);
     assert_eq!(game.piece_at(Square::F6).unwrap().kind(), PieceKind::Knight);
+    assert_eq!(game.verify(), Ok(()));
+
+    receiver.accept(game.history().latest().unwrap()).unwrap();
+    assert_eq!(receiver.status(), expected);
+    assert_eq!(receiver.verify(), Ok(()));
+    assert_eq!(receiver.board(), game.board());
 }
 
 #[test]
@@ -243,13 +248,23 @@ fn fifty_moves_are_claimable_and_seventy_five_are_automatic() {
 fn the_fifty_move_rule_can_be_claimed_by_announcing_the_next_move() {
     let mut board = kings_and(Some(Piece::new(Color::White, PieceKind::Rook, Square::B1)));
     board.set_halfmove_clock(HalfmoveClock::new(99));
-    let game = Game::from_board(board);
+    let mut game = Game::from_board(board);
 
     assert_eq!(game.draw_claims(), DrawClaims::NONE);
-    let claims = game
-        .draw_claims_after(ChessMove::new(Square::B1, Square::B2))
-        .unwrap();
+    let chess_move = ChessMove::new(Square::B1, Square::B2);
+    let claims = game.draw_claims_after(chess_move).unwrap();
     assert!(claims.contains(DrawClaim::FiftyMoveRule));
+    assert_eq!(game.piece_at(Square::B1).unwrap().kind(), PieceKind::Rook);
+
+    game.claim_draw_after(chess_move, DrawClaim::FiftyMoveRule)
+        .unwrap();
+    assert_eq!(game.verify(), Ok(()));
+    assert_eq!(
+        game.status(),
+        GameStatus::Draw {
+            reason: DrawReason::Claimed(DrawClaim::FiftyMoveRule),
+        }
+    );
     assert_eq!(game.piece_at(Square::B1).unwrap().kind(), PieceKind::Rook);
 }
 

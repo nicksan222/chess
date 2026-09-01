@@ -1,6 +1,6 @@
 //! Fifty-move, seventy-five-move, and repetition draw thresholds.
 
-use crate::{DrawClaim, DrawClaims, DrawReason, FinalState, Game};
+use crate::{ChessMove, DrawClaim, DrawClaims, DrawReason, FinalState, Game, MoveError};
 
 use super::{material, repetition};
 
@@ -20,6 +20,25 @@ impl Game {
             claims = claims.with(DrawClaim::FiftyMoveRule);
         }
         claims
+    }
+
+    pub(in crate::game) fn draw_claims_after_move(
+        &self,
+        chess_move: ChessMove,
+    ) -> Result<DrawClaims, MoveError> {
+        let mut board = *self.board();
+        board.make_move(chess_move)?;
+
+        let mut claims = DrawClaims::NONE;
+        let repetitions =
+            repetition::count(self.initial_board(), self.history(), &board).saturating_add(1);
+        if repetitions >= THREEFOLD_REPETITIONS {
+            claims = claims.with(DrawClaim::ThreefoldRepetition);
+        }
+        if board.halfmove_clock().value() >= FIFTY_MOVE_PLIES {
+            claims = claims.with(DrawClaim::FiftyMoveRule);
+        }
+        Ok(claims)
     }
 
     pub(in crate::game) fn automatic_draw(&self) -> Option<FinalState> {

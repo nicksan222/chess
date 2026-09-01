@@ -63,12 +63,15 @@ impl Game {
         if self.calculated_final_state() == Some(final_state) {
             return true;
         }
-        matches!(
-            final_state,
+        match final_state {
             FinalState::Draw {
-                reason: DrawReason::Claimed(claim)
-            } if self.current_draw_claims().contains(claim)
-        )
+                reason: DrawReason::Claimed(claim),
+            } => self.current_draw_claims().contains(claim),
+            FinalState::DrawAfter { claim, chess_move } => self
+                .draw_claims_after_move(chess_move)
+                .is_ok_and(|claims| claims.contains(claim)),
+            FinalState::Checkmate { .. } | FinalState::Stalemate | FinalState::Draw { .. } => false,
+        }
     }
 
     /// Returns the newest unresolved invalid state.

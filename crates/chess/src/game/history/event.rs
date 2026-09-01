@@ -28,10 +28,20 @@ pub enum FinalState {
     },
     /// The side to move had no legal move and was not in check.
     Stalemate,
-    /// The game ended under a draw rule.
+    /// The game ended under a draw rule available in the current position.
     Draw {
         /// The rule that ended the game.
         reason: DrawReason,
+    },
+    /// The player claimed a draw by announcing a legal move that would make it available.
+    ///
+    /// The move is evidence for the claim but is not played: under the Laws of
+    /// Chess, a valid claim ends the game immediately.
+    DrawAfter {
+        /// The draw rule made available by the announced move.
+        claim: DrawClaim,
+        /// The legal move the player announced.
+        chess_move: ChessMove,
     },
 }
 

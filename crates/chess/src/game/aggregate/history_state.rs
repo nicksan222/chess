@@ -35,7 +35,7 @@ impl Game {
         }
     }
 
-    pub(super) fn blocking_move_error(&self) -> Option<MoveError> {
+    pub(in crate::game) fn blocking_move_error(&self) -> Option<MoveError> {
         match self.history.latest().map(HistoryStep::event) {
             Some(HistoryEvent::Invalid(_)) => Some(MoveError::PendingInvalid),
             Some(HistoryEvent::Final(final_state)) => Some(MoveError::GameOver { final_state }),

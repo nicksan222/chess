@@ -67,8 +67,8 @@ impl Game {
 
     /// Claims a draw by announcing a legal move that would make it available.
     ///
-    /// The announced move is evaluated on a clone and is not retained once the
-    /// claim succeeds.
+    /// The announced move is retained as evidence for the claim but is not
+    /// applied to the board.
     pub fn claim_draw_after(
         &mut self,
         chess_move: ChessMove,
@@ -85,24 +85,18 @@ impl Game {
             self.record_invalid(InvalidState::DrawClaim { claim });
             return Err(DrawClaimError::Unavailable { claim });
         }
-        self.append_final(FinalState::Draw {
-            reason: DrawReason::Claimed(claim),
-        });
+        self.append_final(FinalState::DrawAfter { claim, chess_move });
         Ok(())
     }
 
     /// Returns draws made claimable by `chess_move` without changing this game.
     ///
-    /// The complete game is cloned, the move is processed through normal play,
-    /// and claims are read from the resulting position. Invalid and final
-    /// events created during that simulation remain confined to the clone.
+    /// The move is validated and evaluated as the player's announced move, but
+    /// neither the board nor authoritative history is changed.
     pub fn draw_claims_after(&self, chess_move: ChessMove) -> Result<DrawClaims, MoveError> {
-        let mut next = self.clone();
-        next.play(chess_move)?;
-        if next.status().is_terminal() {
-            Ok(DrawClaims::NONE)
-        } else {
-            Ok(next.current_draw_claims())
+        if let Some(error) = self.blocking_move_error() {
+            return Err(error);
         }
+        self.draw_claims_after_move(chess_move)
     }
 }

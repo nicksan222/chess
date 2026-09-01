@@ -73,5 +73,9 @@ pub(super) fn update_final_state(digest: &mut Sha256, final_state: FinalState) {
             digest.update([2]);
             update_draw_reason(digest, reason);
         }
+        FinalState::DrawAfter { claim, chess_move } => {
+            digest.update([3, draw_claim_code(claim)]);
+            update_move(digest, chess_move);
+        }
     }
 }
