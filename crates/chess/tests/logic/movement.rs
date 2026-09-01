@@ -1,8 +1,6 @@
 use chess::{Board, Color, Piece, PieceKind, Square};
 
-fn board_with(pieces: impl IntoIterator<Item = Piece>) -> Board {
-    Board::from_pieces(pieces)
-}
+use crate::common::board_with;
 
 fn destinations(board: &Board, square: Square) -> Vec<Square> {
     board

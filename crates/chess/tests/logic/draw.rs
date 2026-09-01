@@ -3,13 +3,7 @@ use chess::{
     HalfmoveClock, MoveError, Piece, PieceKind, Square,
 };
 
-fn board_with(pieces: impl IntoIterator<Item = Piece>) -> Board {
-    Board::from_pieces(pieces)
-}
-
-fn play(game: &mut Game, from: Square, to: Square) {
-    ChessMove::new(from, to).play(game).expect("legal move");
-}
+use crate::common::{board_with, play};
 
 fn kings_and(piece: Option<Piece>) -> Board {
     board_with(

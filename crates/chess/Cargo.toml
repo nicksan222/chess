@@ -4,7 +4,30 @@ edition.workspace = true
 license.workspace = true
 rust-version.workspace = true
 version.workspace = true
+autotests = false
+autobenches = false
 
 [dependencies]
 chess-core = { path = "../core" }
 sha2 = { version = "0.10.9", default-features = false }
+
+[[test]]
+name = "unit"
+path = "tests/unit/main.rs"
+
+[[test]]
+name = "logic"
+path = "tests/logic/main.rs"
+
+[[test]]
+name = "e2e"
+path = "tests/e2e/main.rs"
+
+[[test]]
+name = "perft"
+path = "tests/perft/main.rs"
+
+[[bench]]
+name = "perft"
+path = "benches/performance/perft.rs"
+harness = false
