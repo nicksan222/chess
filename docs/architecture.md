@@ -40,9 +40,9 @@ the two component choices that make it possible.
 - **`crates/chess`** is the game: board state, move generation, history. It has
   no idea a physical board exists.
 - **`crates/core`** holds small integration-neutral building blocks.
-- **`apps/bridge`** is the program that runs on the Pi. It owns everything
-  platform-specific: the character devices, the display, the buttons, the network
-  provisioning and the systemd units.
+- **`apps/firmware`** owns everything shipped to the Pi: the Rust process,
+  Yocto configuration, character devices, display, buttons, network provisioning,
+  and systemd units.
 - **`crates/protocol`** describes messages between the bridge and its adapters.
   It is *not* a hardware protocol; there is no second processor to agree with.
 

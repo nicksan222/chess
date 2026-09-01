@@ -1,0 +1,10 @@
+[Unit]
+Description=Firmware
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/firmware
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

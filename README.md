@@ -27,9 +27,8 @@ engineer can review it and assemble it by hand at a kitchen table:
   display, power inlet, and controls retain practical through-hole connectors.
 - **Two printed parts**: a case and a single plate with the checkerboard engraved
   into it. The previous revision needed 129 prints to cover a board.
-- **No firmware.** The board has no microcontroller, so there is no second
-  toolchain, no cross-compilation target and no flashing step — just one Linux
-  binary on the Pi.
+- **One firmware target.** There is no second processor or microcontroller
+  toolchain. Yocto builds the Pi application and its flashable Linux system.
 
 That last point is only possible because of two component choices: every Hall
 sensor gets its own pin on an I2C expander instead of being scanned as a matrix,
@@ -44,7 +43,7 @@ printable CAD needed to build the board. Python composes a native KiCad project
 from reviewed shared definitions and connectivity. Run `make gen` to regenerate everything, or see
 [`docs/development.md`](docs/development.md) for the complete development
 workflow. [`docs/assembly.md`](docs/assembly.md) covers what to order and the
-order to solder it in.
+order to solder it in. [`apps/firmware`](apps/firmware) contains the Pi firmware.
 
 ## Status
 
@@ -55,5 +54,6 @@ The automated KiCad ERC, DRC, connectivity, and schematic-parity gates pass.
 Physical Hall-sensor/magnet range at the final plate spacing remains unproven;
 test one square on prototyping board before ordering the full board.
 
-The host application is not written. The board model that turns sensor bytes into
-chess squares is, and so is the chess engine behind it.
+The firmware app boots as a supervised process, but its hardware and
+provisioning workers are not written. The board model that
+turns sensor bytes into chess squares is, and so is the chess engine behind it.

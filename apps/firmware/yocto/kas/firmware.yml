@@ -1,0 +1,59 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/siemens/kas/master/kas/schema-kas.json
+header:
+  version: 21
+
+machine: raspberrypi0-2w-64
+distro: poky
+target: firmware-image
+
+env:
+  FIRMWARE_SOURCE_DIR: null
+
+repos:
+  firmware:
+    layers:
+      apps/firmware/yocto/meta-firmware:
+
+  bitbake:
+    url: https://git.openembedded.org/bitbake
+    path: layers/bitbake
+    branch: "2.18"
+    commit: acfe02fa38b5da9e6a36c6cedcf91d4fcbefbfbd
+    layers:
+      bitbake: disabled
+
+  openembedded-core:
+    url: https://git.openembedded.org/openembedded-core
+    path: layers/openembedded-core
+    branch: wrynose
+    commit: 5d1aa5c806c061a2994f4decb59016610f093213
+    layers:
+      meta:
+
+  meta-yocto:
+    url: https://git.yoctoproject.org/meta-yocto
+    path: layers/meta-yocto
+    branch: wrynose
+    commit: 24c24cef5d1523fefe43a3e3d34667b37ae551f3
+    layers:
+      meta-poky:
+
+  meta-raspberrypi:
+    url: https://github.com/agherzan/meta-raspberrypi.git
+    path: layers/meta-raspberrypi
+    branch: wrynose
+    commit: f62c67921474370829d24a4fa01ef88543f3906b
+
+local_conf_header:
+  firmware: |
+    CONF_VERSION = "2"
+    ENABLE_I2C = "1"
+    ENABLE_SPI_BUS = "1"
+    KERNEL_MODULE_AUTOLOAD:rpi += "i2c-dev"
+    DISTRO_FEATURES:append = " systemd usrmerge"
+    DISTRO_FEATURES:remove = "sysvinit"
+    DISTRO_FEATURES_OPTED_OUT += "sysvinit"
+    VIRTUAL-RUNTIME_init_manager = "systemd"
+    VIRTUAL-RUNTIME_initscripts = ""
+    INHERIT += "rm_work"
+    LICENSE_FLAGS_ACCEPTED += "synaptics-killswitch"

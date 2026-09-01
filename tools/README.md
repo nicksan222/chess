@@ -9,6 +9,7 @@ Run commands from the repository root:
 - `./tools/shared-hardware` — validate shared dimensions, wiring, and mappings.
 - `./tools/cad` — validate, test, and generate Blender models and renders.
 - `./tools/pcb` — validate, test, and generate PCB fabrication output.
+- `./tools/firmware` — check, build, or clean the Raspberry Pi firmware.
 
 CAD and PCB runners install ignored local toolchains when container-provided ones
 are unavailable. The PCB connectivity and BOM are reviewed sources under

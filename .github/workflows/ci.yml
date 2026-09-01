@@ -142,3 +142,53 @@ jobs:
         with:
           image: ${{ needs.prebuild.outputs.image }}
           command: ./tools/rust test ${{ matrix.package }}
+
+  firmware-check:
+    name: Firmware configuration
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./tools/firmware check
+
+  firmware:
+    name: Firmware
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc
+          docker system prune --all --force
+      - run: ./tools/firmware build
+      - run: |
+          xz --test dist/firmware/firmware-rpi-zero-2w.img.xz
+          (cd dist/firmware && sha256sum --check SHA256SUMS)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: firmware-${{ github.sha }}
+          path: dist/firmware
+          if-no-files-found: error
+
+  firmware-release:
+    name: Firmware release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: firmware
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: firmware-${{ github.sha }}
+          path: dist/firmware
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1 \
+            || gh release create "${GITHUB_REF_NAME}" --generate-notes
+          gh release upload "${GITHUB_REF_NAME}" dist/firmware/* --clobber

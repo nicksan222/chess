@@ -8,8 +8,8 @@ how the board joins a network, and what the player sees when something is wrong.
 ## One binary
 
 The Pi is the only processor, so the whole product is one Rust program in
-`apps/bridge`, built for `aarch64-unknown-linux-gnu`. There is no firmware and no
-second toolchain.
+`apps/firmware`, built for `aarch64-unknown-linux-gnu`. The app also owns the
+Yocto definition for its flashable Linux system.
 
 It reaches the hardware through Linux character devices:
 
@@ -86,5 +86,5 @@ clocked, scheduler jitter makes a frame late rather than corrupt.
 
 ## TODO
 
-None of this is implemented. The board and the mapping exist; the application
-does not.
+The systemd-supervised process and Yocto packaging exist. Physical I/O, display,
+network provisioning, and game coordination are not implemented yet.
