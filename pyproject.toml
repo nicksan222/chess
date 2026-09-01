@@ -1,0 +1,18 @@
+[tool.ruff]
+required-version = "==0.16.5"
+target-version = "py312"
+src = ["hardware/cad", "hardware/pcb", "hardware/shared"]
+extend-exclude = ["**/generated"]
+force-exclude = true
+
+[tool.ruff.lint]
+# Keep contract validation raising ValueError; TRY004 would switch those to
+# TypeError at isinstance gates and change caller-visible exceptions.
+ignore = ["TRY004"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["blocks", "components", "core", "footprints", "shared"]
+
+[tool.ruff.lint.per-file-ignores]
+# Footprints are discovered at import time, so __all__ cannot be a static list.
+"hardware/pcb/footprints/__init__.py" = ["PLE0604", "PLE0605"]

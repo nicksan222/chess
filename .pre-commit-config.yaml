@@ -1,0 +1,8 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.5
+    hooks:
+      - id: ruff-check
+        files: ^hardware/(cad|pcb|shared)/
+      - id: ruff-format
+        files: ^hardware/(cad|pcb|shared)/

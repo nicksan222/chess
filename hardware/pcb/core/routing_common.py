@@ -47,6 +47,7 @@ def signal_escape(board, net, pad, *, add_via=False):
         kicad.add_via(board, net, escaped)
     return escaped
 
+
 def nearest_tree_edges(nodes, route_points):
     """Yield deterministic nearest-neighbour edges connecting every node."""
     connected = {0}
@@ -55,20 +56,15 @@ def nearest_tree_edges(nodes, route_points):
         left, right = min(
             ((left, right) for left in connected for right in remaining),
             key=lambda pair: (
-                abs(
-                    route_points[nodes[pair[0]]].x
-                    - route_points[nodes[pair[1]]].x
-                )
-                + abs(
-                    route_points[nodes[pair[0]]].y
-                    - route_points[nodes[pair[1]]].y
-                ),
+                abs(route_points[nodes[pair[0]]].x - route_points[nodes[pair[1]]].x)
+                + abs(route_points[nodes[pair[0]]].y - route_points[nodes[pair[1]]].y),
                 pair,
             ),
         )
         yield nodes[left], nodes[right]
         connected.add(right)
         remaining.remove(right)
+
 
 def prune_unused_signal_vias(board: pcbnew.BOARD) -> None:
     """Remove optional escape vias from routes that stayed on one layer."""

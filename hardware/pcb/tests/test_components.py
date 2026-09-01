@@ -12,17 +12,17 @@ PCB_ROOT = Path(__file__).resolve().parents[1]
 if str(PCB_ROOT) not in sys.path:
     sys.path.insert(0, str(PCB_ROOT))
 
-from components.barrel_jack import BarrelJackPin, DC_INPUT_JACK  # noqa: E402
-from components.base import ComponentReference, Endpoint  # noqa: E402
-from components.catalog import for_netlist_entry, known_part_keys  # noqa: E402
-from components.capacitor import CapacitorPin  # noqa: E402
-from components.fuse import FusePin, INPUT_FUSE  # noqa: E402
-from components.hall_sensor import HallSensorPin  # noqa: E402
-from components.mcp23017 import Mcp23017Pin  # noqa: E402
-from components.ahct125 import Ahct125Pin  # noqa: E402
-from components.sk9822 import Sk9822, Sk9822Pin  # noqa: E402
-from core import sources  # noqa: E402
-import footprints  # noqa: E402
+import footprints
+from components.ahct125 import Ahct125Pin
+from components.barrel_jack import DC_INPUT_JACK, BarrelJackPin
+from components.base import ComponentReference, Endpoint
+from components.capacitor import CapacitorPin
+from components.catalog import for_netlist_entry, known_part_keys
+from components.fuse import INPUT_FUSE, FusePin
+from components.hall_sensor import HallSensorPin
+from components.mcp23017 import Mcp23017Pin
+from components.sk9822 import Sk9822, Sk9822Pin
+from core import sources
 
 
 class ComponentModelTest(unittest.TestCase):
@@ -31,9 +31,7 @@ class ComponentModelTest(unittest.TestCase):
         cls.netlist = sources.netlist()
 
     def test_every_board_product_has_a_component_model(self) -> None:
-        used = {
-            entry["part_key"] for entry in self.netlist["components"].values()
-        }
+        used = {entry["part_key"] for entry in self.netlist["components"].values()}
         self.assertEqual(used - known_part_keys(), set())
         for reference, entry in self.netlist["components"].items():
             with self.subTest(reference=reference):
@@ -111,9 +109,7 @@ class ComponentModelTest(unittest.TestCase):
             for pad in connection["pads"]
         )
         duplicates = {
-            endpoint: count
-            for endpoint, count in endpoints.items()
-            if count > 1
+            endpoint: count for endpoint, count in endpoints.items() if count > 1
         }
         self.assertEqual(duplicates, {})
 
@@ -142,8 +138,7 @@ class ComponentModelTest(unittest.TestCase):
         hall_caps = {
             reference
             for reference, entry in self.netlist["components"].items()
-            if entry["part_key"] == "CAP_100N"
-            and "Sensor" in entry["extras"]
+            if entry["part_key"] == "CAP_100N" and "Sensor" in entry["extras"]
         }
         self.assertEqual(len(sensors), 64)
         self.assertEqual(len(hall_caps), 64)
@@ -204,9 +199,7 @@ class ComponentModelTest(unittest.TestCase):
             self.assertIn((reference, Mcp23017Pin.GROUND), pads_by_net["GND"])
         self.assertIn(("U5", Ahct125Pin.SUPPLY), pads_by_net["+5V"])
         self.assertIn(("U5", Ahct125Pin.GROUND), pads_by_net["GND"])
-        self.assertIn(
-            ("J3", BarrelJackPin.SWITCHED_SLEEVE_GROUND), pads_by_net["GND"]
-        )
+        self.assertIn(("J3", BarrelJackPin.SWITCHED_SLEEVE_GROUND), pads_by_net["GND"])
 
     def test_power_endpoints_have_semantic_reference_and_pin_enums(self) -> None:
         endpoint = DC_INPUT_JACK.endpoint(BarrelJackPin.CENTRE_POSITIVE)

@@ -6,15 +6,15 @@ from __future__ import annotations
 import csv
 import io
 import json
+import sys
 from collections import defaultdict
 from pathlib import Path
-import sys
 
 PCB = Path(__file__).resolve().parent
 HARDWARE = PCB.parent
 sys.path.insert(0, str(HARDWARE))
 
-from shared.components import COMPONENTS  # noqa: E402
+from shared.components import COMPONENTS
 
 EXTRA_ASSEMBLY_PARTS = (
     "PI_ZERO_2_W",
@@ -27,7 +27,7 @@ EXTRA_ASSEMBLY_PARTS = (
 def reference_sort_key(reference: str) -> tuple[str, int]:
     """Sort references naturally, including multi-letter prefixes such as HS."""
     prefix = reference.rstrip("0123456789")
-    suffix = reference[len(prefix):]
+    suffix = reference[len(prefix) :]
     return prefix, int(suffix) if suffix else 0
 
 
@@ -81,7 +81,15 @@ def render_assembly_csv() -> str:
         spec = COMPONENTS[key]
         refs = sorted(references[key], key=reference_sort_key)
         writer.writerow(
-            (item, len(refs), ",".join(refs), spec.description, spec.package, spec.manufacturer, spec.mpn)
+            (
+                item,
+                len(refs),
+                ",".join(refs),
+                spec.description,
+                spec.package,
+                spec.manufacturer,
+                spec.mpn,
+            )
         )
     return output.getvalue()
 

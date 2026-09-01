@@ -91,9 +91,7 @@ def _add_text(
     label.SetText(text)
     label.SetPosition(kicad.point(*at))
     label.SetLayer(pcbnew.F_SilkS)
-    label.SetTextSize(
-        pcbnew.VECTOR2I(pcbnew.FromMM(height), pcbnew.FromMM(height))
-    )
+    label.SetTextSize(pcbnew.VECTOR2I(pcbnew.FromMM(height), pcbnew.FromMM(height)))
     label.SetTextThickness(pcbnew.FromMM(rules.SILK_LINE_MM))
     board.Add(label)
 

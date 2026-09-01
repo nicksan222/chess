@@ -6,7 +6,8 @@ import pcbnew
 
 from components.base import ComponentReference
 from components.tactile_switch import TactileSwitchPad
-from core import grid_router, kicad, routing_common as common, sources
+from core import grid_router, kicad, sources
+from core import routing_common as common
 from core.nets import ButtonNet, Net
 
 
@@ -23,7 +24,9 @@ def route_control_signals(board, net_by_name, pads) -> None:
         name = connection["name"]
         net = net_by_name[name]
         reserved_points[name] = {
-            tuple(node): common.signal_escape(board, net, pads[tuple(node)], add_via=True)
+            tuple(node): common.signal_escape(
+                board, net, pads[tuple(node)], add_via=True
+            )
             for node in connection["pads"]
         }
 
@@ -57,9 +60,7 @@ def route_control_signals(board, net_by_name, pads) -> None:
 
 def route_internal_buses(board, net_by_name, pads) -> None:
     """Route shared low-speed buses across the three internal signal layers."""
-    connections = {
-        item["name"]: item for item in sources.netlist()["connections"]
-    }
+    connections = {item["name"]: item for item in sources.netlist()["connections"]}
     preferred_layer_indices = {
         Net.I2C_SDA: 0,
         Net.I2C_SCL: 1,
@@ -114,13 +115,12 @@ def route_buttons(board, net_by_name, pads) -> None:
     for index, name in enumerate(names):
         nodes = [tuple(node) for node in connections[name]["pads"]]
         pi = next(
-            node
-            for node in nodes
-            if node[0] == ComponentReference.HOST_GPIO_HEADER
+            node for node in nodes if node[0] == ComponentReference.HOST_GPIO_HEADER
         )
         switch_node = next(node for node in nodes if node[0].startswith("SW"))
         module = next(
-            footprint for footprint in board.GetFootprints()
+            footprint
+            for footprint in board.GetFootprints()
             if footprint.GetReference() == switch_node[0]
         )
         primary = next(
@@ -168,9 +168,8 @@ def route_buttons(board, net_by_name, pads) -> None:
             start = pads[pi].GetPosition()
             direction = 1 if pcbnew.ToMM(start.y) > 340.0 else -1
             launch = pcbnew.VECTOR2I(
-                start.x + pcbnew.FromMM(
-                    0.8 if name == ButtonNet.F3 or index % 2 else -0.8
-                ),
+                start.x
+                + pcbnew.FromMM(0.8 if name == ButtonNet.F3 or index % 2 else -0.8),
                 start.y + direction * pcbnew.FromMM(4.5),
             )
             for layer in candidates:
@@ -191,9 +190,7 @@ def route_buttons(board, net_by_name, pads) -> None:
             else:
                 raise RuntimeError(f"no internal button route for {name}")
             kicad.add_trace(board, net, start, launch, layer)
-            grid_router.apply_route(
-                board, net, launch, primary.GetPosition(), route
-            )
+            grid_router.apply_route(board, net, launch, primary.GetPosition(), route)
         else:
             grid_router.apply_route(
                 board, net, pads[pi].GetPosition(), primary.GetPosition(), route

@@ -4,10 +4,11 @@ from __future__ import annotations
 
 import pcbnew
 
-from components.barrel_jack import BarrelJackPin, DC_INPUT_JACK
-from components.fuse import FusePin, INPUT_FUSE
+from components.barrel_jack import DC_INPUT_JACK, BarrelJackPin
+from components.fuse import INPUT_FUSE, FusePin
 from components.power_switch import MAIN_POWER_SWITCH, PowerSwitchPin
-from core import kicad, routing_common as common, rules
+from core import kicad, rules
+from core import routing_common as common
 from core.nets import Net
 
 
@@ -50,14 +51,10 @@ def _power_escape_position(module, pad):
         # Stagger adjacent SOIC vias instead of building a solid via wall.
         escape_mm = 2.0 + (int(pad.GetNumber()) - 1) % 4
         distance = pcbnew.FromMM(escape_mm)
-        escaped = pcbnew.VECTOR2I(
-            at.x + (distance if dx >= 0 else -distance), at.y
-        )
+        escaped = pcbnew.VECTOR2I(at.x + (distance if dx >= 0 else -distance), at.y)
     elif reference == "U5":
         distance = pcbnew.FromMM(1.2)
-        escaped = pcbnew.VECTOR2I(
-            at.x + (distance if dx >= 0 else -distance), at.y
-        )
+        escaped = pcbnew.VECTOR2I(at.x + (distance if dx >= 0 else -distance), at.y)
     else:
         length = max(1, round((dx * dx + dy * dy) ** 0.5))
         distance = pcbnew.FromMM(0.4)
@@ -68,10 +65,9 @@ def _power_escape_position(module, pad):
 
     # The Pi/header bay is unusually dense. Push these vias beyond its parallel
     # launch lanes rather than leaving them in the normal 0.4 mm fanout ring.
-    if (
-        pcbnew.FromMM(170) < at.x < pcbnew.FromMM(230)
-        and pcbnew.FromMM(340) < at.y < pcbnew.FromMM(350)
-    ):
+    if pcbnew.FromMM(170) < at.x < pcbnew.FromMM(230) and pcbnew.FromMM(
+        340
+    ) < at.y < pcbnew.FromMM(350):
         escaped = pcbnew.VECTOR2I(
             at.x + (pcbnew.FromMM(6.0) if dx > 0 else -pcbnew.FromMM(6.0)),
             at.y,
@@ -85,10 +81,7 @@ def fanout_power(board, net_by_name) -> None:
     for module in board.GetFootprints():
         for pad in module.Pads():
             name = pad.GetNetname()
-            if (
-                pad.GetAttribute() != pcbnew.PAD_ATTRIB_SMD
-                or name not in rail_names
-            ):
+            if pad.GetAttribute() != pcbnew.PAD_ATTRIB_SMD or name not in rail_names:
                 continue
             at = pad.GetPosition()
             escaped = _power_escape_position(module, pad)

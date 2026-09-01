@@ -98,3 +98,7 @@ error, so `core/modeling.py` guards against them:
 `.cache` directory if one is not already there. Set `BLENDER_BIN` to use an
 existing install instead, which is required on platforms without a published
 Linux x86_64 build. Manufacturing exports remain deliberately separate.
+
+CAD Python is linted and format-checked with Ruff. From the repository root,
+`./tools/python` is the check; it also runs from `./tools/check`, the
+pre-commit hook, and CI.

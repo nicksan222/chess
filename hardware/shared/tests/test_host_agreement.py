@@ -25,7 +25,7 @@ BOARD_MODEL = REPOSITORY_ROOT / "crates" / "board-model" / "src"
 if str(HARDWARE) not in sys.path:
     sys.path.insert(0, str(HARDWARE))
 
-from shared.wiring import (  # noqa: E402
+from shared.wiring import (
     EXPANDER_BASE_ADDRESS,
     EXPANDER_COUNT,
     expander_of,

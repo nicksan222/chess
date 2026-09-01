@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from core import grid_router, routing_common as common, sources
+from core import grid_router, sources
+from core import routing_common as common
 
 
 def reserve_square_sensor_breakouts(board, net_by_name, pads):

@@ -11,10 +11,10 @@ PCB_ROOT = Path(__file__).resolve().parents[1]
 if str(PCB_ROOT) not in sys.path:
     sys.path.insert(0, str(PCB_ROOT))
 
-from components.catalog import for_netlist_entry  # noqa: E402
-from components.hall_sensor import HallSensor, HallSensorPin  # noqa: E402
-from core import connectivity, placement, sources  # noqa: E402
-from core.nets import Net  # noqa: E402
+from components.catalog import for_netlist_entry
+from components.hall_sensor import HallSensor, HallSensorPin
+from core import connectivity, placement, sources
+from core.nets import Net
 
 
 class ConnectionGraphTest(unittest.TestCase):

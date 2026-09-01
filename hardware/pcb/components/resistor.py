@@ -1,6 +1,7 @@
 """Two-terminal board resistors."""
 
 from enum import StrEnum
+
 from .base import BoardComponent
 
 

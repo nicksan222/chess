@@ -50,6 +50,10 @@ Manufacturing requirements are executable tests in
 `tests/test_manufacturing_readiness.py`; release-only physical-evidence tests run
 with `PCB_RELEASE=1` immediately before fabrication export.
 
+PCB Python is linted and format-checked with Ruff. From the repository root,
+`./tools/python` is the check; it also runs from `./tools/check`, the
+pre-commit hook, and CI.
+
 ## Product reality and readiness
 
 Every fitted electrical part resolves to an explicit manufacturer and part

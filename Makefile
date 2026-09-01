@@ -1,4 +1,4 @@
-.PHONY: all cad check gen pcb regen-all rust
+.PHONY: all cad check gen pcb python regen-all rust
 
 all: check
 
@@ -10,6 +10,9 @@ cad:
 
 pcb:
 	./tools/pcb
+
+python:
+	./tools/python
 
 rust:
 	./tools/rust

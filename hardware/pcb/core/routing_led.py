@@ -17,10 +17,7 @@ def route_led_chain(board, net_by_name, pads, *, obstructed_only=False) -> None:
             node in pads and node[0].startswith("U") for node in nodes
         ):
             continue
-        if (
-            nodes[0][1] in Sk9822.input_pins()
-            and nodes[1][1] in Sk9822.output_pins()
-        ):
+        if nodes[0][1] in Sk9822.input_pins() and nodes[1][1] in Sk9822.output_pins():
             nodes.reverse()
         if (
             nodes[0][1] not in Sk9822.output_pins()
@@ -72,9 +69,7 @@ def route_led_chain(board, net_by_name, pads, *, obstructed_only=False) -> None:
         direction = 1 if right_side else -1
         is_clock = nodes[0][1] == Sk9822Pin.CLOCK_OUT
         distance_mm = (
-            (3.0 if right_side else 8.0)
-            if is_clock
-            else (1.0 if right_side else 6.0)
+            (3.0 if right_side else 8.0) if is_clock else (1.0 if right_side else 6.0)
         )
         distance = pcbnew.FromMM(distance_mm)
         first = pcbnew.VECTOR2I(start.x + direction * distance, start.y)

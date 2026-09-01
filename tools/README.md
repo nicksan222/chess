@@ -3,6 +3,7 @@
 Run commands from the repository root:
 
 - `./tools/check` — complete repository validation.
+- `./tools/python` — lint and format-check CAD, PCB, and shared Python with Ruff.
 - `./tools/rust` — format, check, lint, test, and document Rust.
 - `./tools/shared-hardware` — validate shared dimensions, wiring, and mappings.
 - `./tools/cad` — validate, test, and generate Blender models and renders.

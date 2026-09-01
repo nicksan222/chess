@@ -69,7 +69,9 @@ class ConnectionGraph:
                 try:
                     physical = physical_numbers[(reference, logical)]
                 except KeyError as error:
-                    raise ValueError(f"unknown endpoint {(reference, logical)}") from error
+                    raise ValueError(
+                        f"unknown endpoint {(reference, logical)}"
+                    ) from error
                 name = f"unconnected-({reference}-Pad{physical})"
             else:
                 name = raw_name or f"N${index}"
@@ -80,7 +82,9 @@ class ConnectionGraph:
         unknown = actual_endpoints - expected_endpoints
         missing = expected_endpoints - actual_endpoints
         if unknown:
-            raise ValueError(f"connections contain unknown endpoints: {sorted(unknown)}")
+            raise ValueError(
+                f"connections contain unknown endpoints: {sorted(unknown)}"
+            )
         if missing:
             raise ValueError(f"component endpoints lack connections: {sorted(missing)}")
         return graph

@@ -15,9 +15,9 @@ PCB_ROOT = Path(__file__).resolve().parents[1]
 if str(PCB_ROOT) not in sys.path:
     sys.path.insert(0, str(PCB_ROOT))
 
-import footprints  # noqa: E402
-from core import rules, sources  # noqa: E402
-from footprints.base import RECT, SHAPES  # noqa: E402
+import footprints
+from core import rules, sources
+from footprints.base import RECT, SHAPES
 
 
 class CoverageTest(unittest.TestCase):
@@ -26,17 +26,13 @@ class CoverageTest(unittest.TestCase):
         cls.netlist = sources.netlist()
 
     def test_every_package_in_the_bom_has_a_footprint(self) -> None:
-        packages = {
-            entry["package"] for entry in self.netlist["components"].values()
-        }
+        packages = {entry["package"] for entry in self.netlist["components"].values()}
         missing = sorted(packages - set(footprints.CATALOG))
         self.assertEqual(missing, [], f"no footprint for {missing}")
 
     def test_every_footprint_is_used(self) -> None:
         """An unused footprint is dead weight; delete it or place the part."""
-        packages = {
-            entry["package"] for entry in self.netlist["components"].values()
-        }
+        packages = {entry["package"] for entry in self.netlist["components"].values()}
         unused = sorted(set(footprints.CATALOG) - packages)
         self.assertEqual(unused, [], f"unused footprints: {unused}")
 
@@ -90,9 +86,7 @@ class GeometryTest(unittest.TestCase):
                     gap_x = abs(a.x - b.x) - (a.width + b.width) / 2.0
                     gap_y = abs(a.y - b.y) - (a.height + b.height) / 2.0
                     with self.subTest(package=package, pads=(a.number, b.number)):
-                        self.assertGreater(
-                            max(gap_x, gap_y), 0.0, "two pads overlap"
-                        )
+                        self.assertGreater(max(gap_x, gap_y), 0.0, "two pads overlap")
 
     def test_pads_fit_inside_their_courtyard(self) -> None:
         for package, footprint in footprints.CATALOG.items():

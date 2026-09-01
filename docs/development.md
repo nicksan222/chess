@@ -1,13 +1,13 @@
 # Development
 
-Use the development container for the pinned Rust, Blender, and KiCad 9
+Use the development container for the pinned Rust, Ruff, Blender, and KiCad 9
 toolchains. From the repository root:
 
 ```sh
 ./tools/check
 ```
 
-Individual workflows are available through `./tools/rust`,
+Individual workflows are available through `./tools/python`, `./tools/rust`,
 `./tools/shared-hardware`, `./tools/cad`, and `./tools/pcb`.
 
 ## Hardware domains
@@ -27,5 +27,9 @@ artifacts remain under each domain's `generated/` directory.
 
 ## CI
 
-CI prebuilds the development image, then runs Rust, shared hardware, CAD, and PCB
+CI prebuilds the development image, then runs Python, Rust, shared hardware, CAD, and PCB
 validation. Use the same runners locally so local and CI behavior remain aligned.
+
+CAD, PCB, and shared Python are linted and format-checked with [Ruff](https://docs.astral.sh/ruff/).
+`./tools/python` is the repository check; `.pre-commit-config.yaml` is the same
+gate for `pre-commit run`.

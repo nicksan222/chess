@@ -20,9 +20,7 @@ def new_collection(name: str) -> bpy.types.Collection:
     return collection
 
 
-def move_to_collection(
-    obj: bpy.types.Object, collection: bpy.types.Collection
-) -> None:
+def move_to_collection(obj: bpy.types.Object, collection: bpy.types.Collection) -> None:
     for source in list(obj.users_collection):
         source.objects.unlink(obj)
     collection.objects.link(obj)

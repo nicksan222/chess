@@ -49,6 +49,8 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+RUN pip3 install --break-system-packages --no-cache-dir ruff==0.16.5
+
 RUN archive="blender-${BLENDER_VERSION}-linux-x64.tar.xz" \
     && curl --fail --location --retry 3 --show-error \
         --output "/tmp/${archive}" \

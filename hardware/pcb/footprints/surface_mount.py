@@ -12,7 +12,7 @@ from components.mcp23017 import Mcp23017Pin
 from components.test_point import TestPointPin
 from components.tvs_diode import TvsDiodePin
 
-from .base import OBLONG, Footprint, Pad, RECT, courtyard_for
+from .base import OBLONG, RECT, Footprint, Pad, courtyard_for
 
 SOIC_PIN_PITCH_MM = 1.27
 SOIC_PAD_SIZE_MM = (1.55, 0.60)

@@ -13,7 +13,9 @@ class WiringTest(unittest.TestCase):
         for rank in range(dimensions.GRID_COUNT):
             for file_index in range(dimensions.GRID_COUNT):
                 position = (file_index, rank)
-                self.assertEqual(wiring.parse_square(wiring.square(*position)), position)
+                self.assertEqual(
+                    wiring.parse_square(wiring.square(*position)), position
+                )
 
     def test_square_mappings_are_bijective(self):
         positions = [
@@ -21,7 +23,9 @@ class WiringTest(unittest.TestCase):
             for rank in range(dimensions.GRID_COUNT)
             for file_index in range(dimensions.GRID_COUNT)
         ]
-        self.assertEqual(len({wiring.expander_of(*p) for p in positions}), len(positions))
+        self.assertEqual(
+            len({wiring.expander_of(*p) for p in positions}), len(positions)
+        )
         self.assertEqual(len(wiring.led_chain_order()), len(positions))
 
 

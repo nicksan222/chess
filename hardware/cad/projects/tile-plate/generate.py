@@ -9,11 +9,10 @@ Geometry is built in assembly coordinates: the plate occupies the top
 case without moving either of them.
 """
 
-from pathlib import Path
 import sys
+from pathlib import Path
 
 import bpy
-
 
 PROJECT_DIR = Path(__file__).parent
 CAD_ROOT = PROJECT_DIR.parents[1]
@@ -21,12 +20,13 @@ sys.path.insert(0, str(CAD_ROOT))
 GENERATED = CAD_ROOT / "generated"
 GENERATED.mkdir(parents=True, exist_ok=True)
 
-from core import dimensions as shared  # noqa: E402
-from core import materials  # noqa: E402
-from core import modeling  # noqa: E402
-from core import presentation  # noqa: E402
-from core import validation  # noqa: E402
-
+from core import dimensions as shared
+from core import (
+    materials,
+    modeling,
+    presentation,
+    validation,
+)
 
 NAME = "tile-plate"
 OUTPUT_PATH = GENERATED / f"{NAME}.blend"
@@ -175,9 +175,7 @@ def _cut_dark_squares(
     modeling.cut_batch(plate, cutters, "Cutter_All_Dark_Squares")
 
 
-def _cut_screws(
-    plate: bpy.types.Object, construction: bpy.types.Collection
-) -> None:
+def _cut_screws(plate: bpy.types.Object, construction: bpy.types.Collection) -> None:
     """Through-holes with a recessed head, so nothing stands above the surface."""
     through = shared.TILE_PLATE_THICKNESS_MM + 2.0 * shared.BOOLEAN_THROUGH_OVERLAP_MM
     head_depth = shared.TILE_PLATE_SCREW_HEAD_DEPTH_MM

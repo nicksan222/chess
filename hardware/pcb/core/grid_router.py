@@ -10,6 +10,7 @@ from __future__ import annotations
 import heapq
 import math
 from dataclasses import dataclass
+from itertools import pairwise
 
 import pcbnew
 
@@ -97,7 +98,9 @@ def _blocked(
                 if pad.GetShape() == pcbnew.PAD_SHAPE_CIRCLE:
                     size = pad.GetSize()
                     mark_circle(
-                        pad.GetPosition(), max(_mm(size.x), _mm(size.y)) / 2, copper_layers
+                        pad.GetPosition(),
+                        max(_mm(size.x), _mm(size.y)) / 2,
+                        copper_layers,
                     )
                 else:
                     mark_box(pad.GetBoundingBox(), copper_layers)
@@ -246,9 +249,11 @@ def find_route(
             cell = (nx, ny)
             if cell in blocked[layers[nl]]:
                 continue
-            if diagonals and nx != x and ny != y and (
-                (nx, y) in blocked[layers[nl]]
-                or (x, ny) in blocked[layers[nl]]
+            if (
+                diagonals
+                and nx != x
+                and ny != y
+                and ((nx, y) in blocked[layers[nl]] or (x, ny) in blocked[layers[nl]])
             ):
                 continue
             # A through via needs clearance on its source and destination. The
@@ -303,7 +308,7 @@ def apply_route(board: pcbnew.BOARD, net, start, end, route: Route) -> None:
         board.Add(item)
 
     trace(start, first, points[0][2])
-    for left, right in zip(points, points[1:]):
+    for left, right in pairwise(points):
         at = _position(left[:2])
         destination = _position(right[:2])
         if left[2] == right[2]:

@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import sys
 import uuid
+from itertools import pairwise
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -12,9 +13,9 @@ GENERATED = ROOT / "generated"
 HARDWARE = ROOT.parent
 sys.path[:0] = [str(ROOT), str(HARDWARE)]
 
-from core import connectivity as connection_model  # noqa: E402
-from core import placement, sources  # noqa: E402
-from shared.components import COMPONENTS  # noqa: E402
+from core import connectivity as connection_model
+from core import placement, sources
+from shared.components import COMPONENTS
 
 DESTINATION = GENERATED / "chess-board.kicad_sch"
 SYMBOL_LIBRARY = GENERATED / "generated-symbols.kicad_sym"
@@ -47,8 +48,7 @@ def connectivity() -> tuple[dict[EndpointKey, str], set[EndpointKey]]:
             no_connects.update(connection.endpoints)
         else:
             nets.update(
-                (endpoint, connection.name)
-                for endpoint in connection.endpoints
+                (endpoint, connection.name) for endpoint in connection.endpoints
             )
     return nets, no_connects
 
@@ -58,14 +58,12 @@ def row_centres(pin_counts: list[int]) -> list[float]:
     if not pin_counts:
         return []
     row_pin_counts = [
-        max(pin_counts[start:start + SYMBOL_COLUMNS])
+        max(pin_counts[start : start + SYMBOL_COLUMNS])
         for start in range(0, len(pin_counts), SYMBOL_COLUMNS)
     ]
     centres = [25.4]
-    for previous, current in zip(row_pin_counts, row_pin_counts[1:]):
-        centres.append(
-            centres[-1] + (previous + current) * 1.27 + SYMBOL_ROW_GAP_MM
-        )
+    for previous, current in pairwise(row_pin_counts):
+        centres.append(centres[-1] + (previous + current) * 1.27 + SYMBOL_ROW_GAP_MM)
     return centres
 
 
@@ -143,9 +141,7 @@ def render() -> str:
         lines.extend(["      )", "      (embedded_fonts no)", "    )"])
     lines.append("  )")
 
-    row_y_positions = row_centres(
-        [len(layouts[item.reference][0]) for item in placed]
-    )
+    row_y_positions = row_centres([len(layouts[item.reference][0]) for item in placed])
 
     for item_index, item in enumerate(placed):
         entry = components[item.reference]
@@ -200,13 +196,13 @@ def render() -> str:
                 f'    (uuid "{symbol_uuid}")',
                 (
                     f'    (property "Reference" "{item.reference}" (at '
-                    f'{x + 1.27:.3f} {y - 2.54:.3f} 0)'
+                    f"{x + 1.27:.3f} {y - 2.54:.3f} 0)"
                 ),
                 "      (effects (font (size 1.27 1.27)))",
                 "    )",
                 (
                     f'    (property "Value" "{spec.mpn}" (at '
-                    f'{x + 1.27:.3f} {y + 2.54:.3f} 0)'
+                    f"{x + 1.27:.3f} {y + 2.54:.3f} 0)"
                 ),
                 "      (effects (font (size 1.27 1.27)))",
                 "    )",
@@ -256,7 +252,7 @@ def render_symbol_library(schematic: str) -> str:
     lines = schematic.splitlines()
     start = lines.index("  (lib_symbols") + 1
     end = next(index for index in range(start, len(lines)) if lines[index] == "  )")
-    symbols = [line[2:] if line.startswith("  ") else line for line in lines[start:end]]
+    symbols = [line.removeprefix("  ") for line in lines[start:end]]
     return "\n".join(
         [
             "(kicad_symbol_lib",
@@ -276,11 +272,11 @@ def write() -> None:
     DESTINATION.write_text(schematic)
     SYMBOL_LIBRARY.write_text(render_symbol_library(schematic))
     SYMBOL_TABLE.write_text(
-        '(sym_lib_table\n'
-        '  (version 7)\n'
+        "(sym_lib_table\n"
+        "  (version 7)\n"
         '  (lib (name "Generated")(type "KiCad")'
         '(uri "${KIPRJMOD}/generated-symbols.kicad_sym")(options "")(descr ""))\n'
-        ')\n'
+        ")\n"
     )
     print(f"wrote {DESTINATION}")
     print(f"wrote {SYMBOL_LIBRARY}")

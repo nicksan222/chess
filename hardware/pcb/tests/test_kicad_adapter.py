@@ -98,11 +98,14 @@ class KiCadBoardAdapterTest(unittest.TestCase):
         references = {item.reference for item in self.placements}
         layout = self.layout_for(references)
         self.assertEqual(len(layout.native.GetFootprints()), len(references))
-        self.assertEqual(set(layout.pads), {
-            (item.reference, logical)
-            for item in self.placements
-            for logical, _physical, _position, _definition in item.pads()
-        })
+        self.assertEqual(
+            set(layout.pads),
+            {
+                (item.reference, logical)
+                for item in self.placements
+                for logical, _physical, _position, _definition in item.pads()
+            },
+        )
         for footprint in layout.native.GetFootprints():
             for pad in footprint.Pads():
                 with self.subTest(
@@ -119,8 +122,7 @@ class KiCadBoardAdapterTest(unittest.TestCase):
         }
         layout = self.layout_for(references)
         native_references = {
-            footprint.GetReference()
-            for footprint in layout.native.GetFootprints()
+            footprint.GetReference() for footprint in layout.native.GetFootprints()
         }
         self.assertEqual(native_references, references)
         self.assertEqual(len(layout.pads), 13)

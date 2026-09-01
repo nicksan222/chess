@@ -1,6 +1,7 @@
 """SN74AHCT125 quad level-shifting buffer U5."""
 
 from enum import StrEnum
+
 from .base import BoardComponent, ComponentReference
 
 

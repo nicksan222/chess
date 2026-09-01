@@ -11,7 +11,7 @@ HARDWARE_ROOT = PCB_ROOT.parent
 sys.path.insert(0, str(PCB_ROOT))
 sys.path.insert(0, str(HARDWARE_ROOT))
 
-from core import (  # noqa: E402
+from core import (
     board_builder,
     connectivity,
     kicad,

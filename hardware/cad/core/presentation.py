@@ -5,7 +5,6 @@ from mathutils import Vector
 
 from core import modeling
 
-
 TILE_STUDIO_LIGHTS = (
     ("Key_Light", (22.0, -28.0, 34.0), 82_000.0, 32.0, (1.0, 0.78, 0.58)),
     ("Fill_Light", (-32.0, 18.0, 24.0), 58_000.0, 28.0, (0.62, 0.78, 1.0)),

@@ -1,6 +1,7 @@
 """Single-terminal board test points."""
 
 from enum import StrEnum
+
 from .base import BoardComponent
 
 

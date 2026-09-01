@@ -20,7 +20,6 @@ from .tactile_switch import TactileSwitch
 from .test_point import TestPoint
 from .tvs_diode import TvsDiode
 
-
 # Product identity, rather than reference-prefix guessing, determines pinout.
 _MODELS: dict[str, type[BoardComponent]] = {
     "AHCT125": Ahct125,
@@ -42,9 +41,7 @@ _MODELS: dict[str, type[BoardComponent]] = {
 }
 
 
-def for_netlist_entry(
-    reference: str, entry: Mapping[str, object]
-) -> BoardComponent:
+def for_netlist_entry(reference: str, entry: Mapping[str, object]) -> BoardComponent:
     """Build the typed model selected by a netlist component's product key."""
     part_key = entry.get("part_key")
     if not isinstance(part_key, str):

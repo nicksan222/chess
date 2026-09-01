@@ -1,6 +1,7 @@
 """Unidirectional input transient suppressor D1."""
 
 from enum import StrEnum
+
 from .base import BoardComponent, ComponentReference
 
 

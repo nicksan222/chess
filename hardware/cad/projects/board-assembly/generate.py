@@ -9,12 +9,11 @@ the case and the plate ever stop meeting, that is a real dimension error rather
 than a positioning mistake in this file.
 """
 
-from pathlib import Path
 import sys
+from pathlib import Path
 
 import bpy
 from mathutils import Vector
-
 
 PROJECT_DIR = Path(__file__).parent
 CAD_ROOT = PROJECT_DIR.parents[1]
@@ -22,10 +21,9 @@ sys.path.insert(0, str(CAD_ROOT))
 GENERATED = CAD_ROOT / "generated"
 GENERATED.mkdir(parents=True, exist_ok=True)
 
-from blocks import pcb_proxy  # noqa: E402
-from core import dimensions as shared  # noqa: E402
-from core import modeling  # noqa: E402
-
+from blocks import pcb_proxy
+from core import dimensions as shared
+from core import modeling
 
 NAME = "board-assembly"
 OUTPUT_PATH = GENERATED / f"{NAME}.blend"

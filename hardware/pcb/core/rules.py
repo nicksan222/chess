@@ -84,9 +84,7 @@ def validate() -> None:
     if annular_ring(VIA_PAD_MM, VIA_DRILL_MM) < PCBWAY_MIN_ANNULAR_RING_MM:
         raise ValueError("Via annular ring is thinner than the process allows")
     if THT_ANNULAR_RING_MM < PCBWAY_MIN_ANNULAR_RING_MM:
-        raise ValueError(
-            "Through-hole annular ring is thinner than the process allows"
-        )
+        raise ValueError("Through-hole annular ring is thinner than the process allows")
     if SILK_LINE_MM < PCBWAY_MIN_SILK_LINE_MM:
         raise ValueError("Silkscreen line is thinner than the process allows")
     if SILK_TEXT_HEIGHT_MM < PCBWAY_MIN_SILK_TEXT_HEIGHT_MM:

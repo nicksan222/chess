@@ -35,9 +35,9 @@ class ProductSelectionTest(unittest.TestCase):
 class ElectricalReadinessTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.board = json.loads((PCB / "design/netlist.json").read_text())[
-            "projects"
-        ]["board"]
+        cls.board = json.loads((PCB / "design/netlist.json").read_text())["projects"][
+            "board"
+        ]
         cls.connections = {
             connection["name"]: connection
             for connection in cls.board["connections"]
@@ -101,7 +101,10 @@ class PhysicalReleaseEvidenceTest(unittest.TestCase):
                 self.assertIsInstance(values, list)
                 self.assertGreaterEqual(len(values), 5)
                 self.assertTrue(
-                    all(isinstance(value, (int, float)) and value > 0 for value in values)
+                    all(
+                        isinstance(value, (int, float)) and value > 0
+                        for value in values
+                    )
                 )
             self.assertGreaterEqual(min(measurements["operate_mm"]), final_gap + 0.5)
         self.assertTrue(str(record.get("notes", "")).strip())
@@ -117,11 +120,7 @@ class GeneratedOutputPolicyTest(unittest.TestCase):
             "*.kicad_sym",
             "sym-lib-table",
         )
-        found = sorted(
-            path.name
-            for pattern in forbidden
-            for path in PCB.glob(pattern)
-        )
+        found = sorted(path.name for pattern in forbidden for path in PCB.glob(pattern))
         self.assertEqual(found, [])
 
     def test_complete_native_project_lives_under_generated(self):
@@ -145,7 +144,9 @@ class GeneratedOutputPolicyTest(unittest.TestCase):
     def test_pick_and_place_excludes_mechanical_hole_footprints(self):
         with (GENERATED / "positions.csv").open(newline="") as source:
             references = {row["Ref"] for row in csv.DictReader(source)}
-        self.assertFalse(any(ref[1:].isdigit() for ref in references if ref.startswith("H")))
+        self.assertFalse(
+            any(ref[1:].isdigit() for ref in references if ref.startswith("H"))
+        )
 
 
 if __name__ == "__main__":

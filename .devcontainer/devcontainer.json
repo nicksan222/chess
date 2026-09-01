@@ -22,6 +22,7 @@
   "customizations": {
     "vscode": {
       "extensions": [
+        "charliermarsh.ruff",
         "DavidAnson.vscode-markdownlint",
         "fill-labs.dependi",
         "GitHub.vscode-github-actions",
@@ -37,7 +38,12 @@
       ],
       "settings": {
         "[python]": {
-          "editor.formatOnSave": false
+          "editor.codeActionsOnSave": {
+            "source.fixAll.ruff": "explicit",
+            "source.organizeImports.ruff": "explicit"
+          },
+          "editor.defaultFormatter": "charliermarsh.ruff",
+          "editor.formatOnSave": true
         },
         "[rust]": {
           "editor.defaultFormatter": "rust-lang.rust-analyzer",

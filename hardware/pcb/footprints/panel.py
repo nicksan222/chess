@@ -16,10 +16,42 @@ _TACT_PAD = rules.pad_for_drill(_TACT_DRILL)
 # models the part as two terminals while the footprint has four pads. The `b`
 # suffix is what tells the netlist check they share a pin.
 _TACT_PADS = (
-    Pad(TactileSwitchPad.SIGNAL_PRIMARY, -3.25, 2.25, _TACT_PAD, _TACT_PAD, RECT, _TACT_DRILL),
-    Pad(TactileSwitchPad.SIGNAL_DUPLICATE, -3.25, -2.25, _TACT_PAD, _TACT_PAD, ROUND, _TACT_DRILL),
-    Pad(TactileSwitchPad.GROUND_PRIMARY, 3.25, 2.25, _TACT_PAD, _TACT_PAD, ROUND, _TACT_DRILL),
-    Pad(TactileSwitchPad.GROUND_DUPLICATE, 3.25, -2.25, _TACT_PAD, _TACT_PAD, ROUND, _TACT_DRILL),
+    Pad(
+        TactileSwitchPad.SIGNAL_PRIMARY,
+        -3.25,
+        2.25,
+        _TACT_PAD,
+        _TACT_PAD,
+        RECT,
+        _TACT_DRILL,
+    ),
+    Pad(
+        TactileSwitchPad.SIGNAL_DUPLICATE,
+        -3.25,
+        -2.25,
+        _TACT_PAD,
+        _TACT_PAD,
+        ROUND,
+        _TACT_DRILL,
+    ),
+    Pad(
+        TactileSwitchPad.GROUND_PRIMARY,
+        3.25,
+        2.25,
+        _TACT_PAD,
+        _TACT_PAD,
+        ROUND,
+        _TACT_DRILL,
+    ),
+    Pad(
+        TactileSwitchPad.GROUND_DUPLICATE,
+        3.25,
+        -2.25,
+        _TACT_PAD,
+        _TACT_PAD,
+        ROUND,
+        _TACT_DRILL,
+    ),
 )
 
 TACTILE_6MM = Footprint(

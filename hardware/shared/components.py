@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Generic, TypeVar
 
 
 @dataclass(frozen=True)
@@ -31,10 +30,7 @@ class ComponentSpec:
         return self.body_mm
 
 
-Implementation = TypeVar("Implementation")
-
-
-class ComponentImplementation(ABC, Generic[Implementation]):
+class ComponentImplementation[Implementation](ABC):
     spec: ComponentSpec
 
     def __init__(self, spec: ComponentSpec) -> None:

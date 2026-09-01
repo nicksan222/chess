@@ -4,10 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import ClassVar, Generic, NamedTuple, Protocol, TypeVar, cast
-
-
-PinType = TypeVar("PinType", bound=StrEnum)
+from typing import ClassVar, NamedTuple, Protocol, cast
 
 
 class Endpoint(NamedTuple):
@@ -36,7 +33,7 @@ class ComponentReference(StrEnum):
 
 
 @dataclass(frozen=True)
-class BoardComponent(Generic[PinType]):
+class BoardComponent[PinType: StrEnum]:
     """A physical board component whose logical pins have semantic names."""
 
     reference: str
@@ -69,6 +66,5 @@ class BoardComponent(Generic[PinType]):
     def attachments(self, connections: NetLookup) -> dict[PinType, str]:
         """Resolve every semantic component pin to its attached net."""
         return {
-            pin: connections.net_name(self.endpoint(pin))
-            for pin in self.get_pins()
+            pin: connections.net_name(self.endpoint(pin)) for pin in self.get_pins()
         }

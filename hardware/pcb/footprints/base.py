@@ -26,7 +26,7 @@ COURTYARD_MARGIN_MM = 0.25
 
 
 def courtyard_for(
-    pads: tuple["Pad", ...], body: tuple[float, float] = (0.0, 0.0)
+    pads: tuple[Pad, ...], body: tuple[float, float] = (0.0, 0.0)
 ) -> tuple[float, float]:
     """A keep-out that contains every pad, and the part body if it is larger."""
     reach_x = max(abs(pad.x) + pad.width / 2.0 for pad in pads)
@@ -85,7 +85,9 @@ class Pad:
             height=self.width if swap else self.height,
             shape=self.shape,
             drill=(self.drill_height or self.drill) if swap else self.drill,
-            drill_height=self.drill if swap and self.drill_height else self.drill_height,
+            drill_height=self.drill
+            if swap and self.drill_height
+            else self.drill_height,
         )
 
 

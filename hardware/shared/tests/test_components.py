@@ -6,8 +6,8 @@ from shared.components import (
     APPROVED_COMPONENTS,
     COMPONENTS,
     POWER_SUPPLY,
-    ComponentImplementation,
     SK9822,
+    ComponentImplementation,
 )
 
 

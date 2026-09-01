@@ -5,16 +5,15 @@ tests cover what that cannot: product-level facts a reader would want stated, an
 the relationships between the two printed parts and the board between them.
 """
 
-from math import isclose
-from pathlib import Path
 import sys
 import unittest
-
+from math import isclose
+from pathlib import Path
 
 CAD_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(CAD_ROOT))
 
-from core import dimensions as cad  # noqa: E402
+from core import dimensions as cad
 
 
 class UnitContractTest(unittest.TestCase):
@@ -50,9 +49,7 @@ class ProductScaleTest(unittest.TestCase):
 
     def test_the_case_is_deeper_than_it_is_wide_by_the_control_strip(self) -> None:
         self.assertTrue(
-            isclose(
-                cad.CASE_DEPTH_MM - cad.CASE_WIDTH_MM, cad.PANEL_STRIP_DEPTH_MM
-            )
+            isclose(cad.CASE_DEPTH_MM - cad.CASE_WIDTH_MM, cad.PANEL_STRIP_DEPTH_MM)
         )
 
 
@@ -131,9 +128,7 @@ class VerticalStackTest(unittest.TestCase):
         self.assertTrue(isclose(plate_top, cad.CASE_HEIGHT_MM))
 
     def test_the_cavity_clears_the_pi_on_its_header(self) -> None:
-        needed = (
-            cad.PI_HEADER_HEIGHT_MM + cad.PI_BOARD_SIZE_MM[2] + cad.PI_CLEARANCE_MM
-        )
+        needed = cad.PI_HEADER_HEIGHT_MM + cad.PI_BOARD_SIZE_MM[2] + cad.PI_CLEARANCE_MM
         self.assertGreaterEqual(cad.PI_BAY_HEIGHT_MM, needed)
 
     def test_the_plate_clears_the_tallest_thing_on_the_board(self) -> None:
@@ -150,9 +145,7 @@ class FdmFeatureTest(unittest.TestCase):
         self.assertGreaterEqual(
             cad.TILE_PLATE_CLEARANCE_MM, cad.FDM_MIN_FIT_CLEARANCE_MM
         )
-        self.assertLessEqual(
-            cad.TILE_PLATE_CLEARANCE_MM, cad.FDM_MAX_FIT_CLEARANCE_MM
-        )
+        self.assertLessEqual(cad.TILE_PLATE_CLEARANCE_MM, cad.FDM_MAX_FIT_CLEARANCE_MM)
 
     def test_structural_features_exceed_minimums(self) -> None:
         for name, value in (
@@ -169,9 +162,7 @@ class FdmFeatureTest(unittest.TestCase):
     def test_engraved_lines_are_at_least_two_nozzle_widths(self) -> None:
         """A narrower slot does not resolve when printed."""
         self.assertTrue(
-            cad.meets(
-                cad.TILE_PLATE_GROOVE_WIDTH_MM, 2.0 * cad.FDM_REFERENCE_NOZZLE_MM
-            )
+            cad.meets(cad.TILE_PLATE_GROOVE_WIDTH_MM, 2.0 * cad.FDM_REFERENCE_NOZZLE_MM)
         )
 
     def test_a_dark_square_over_an_led_keeps_a_printable_skin(self) -> None:
@@ -199,9 +190,7 @@ class PerSquareFeatureTest(unittest.TestCase):
             ("hall", cad.BOARD_HALL_POSITIONS_MM),
         ):
             with self.subTest(table=name):
-                self.assertEqual(
-                    len({(x, y) for _r, _c, x, y in table}), len(table)
-                )
+                self.assertEqual(len({(x, y) for _r, _c, x, y in table}), len(table))
 
     def test_every_feature_lands_inside_the_playing_area(self) -> None:
         limit = cad.PLAYING_SPAN_MM / 2.0
@@ -252,9 +241,7 @@ class BoardSupportTest(unittest.TestCase):
     def test_the_board_spans_the_playing_area_and_the_strip(self) -> None:
         self.assertTrue(isclose(cad.PCB_SIZE_MM[0], cad.PLAYING_SPAN_MM))
         self.assertTrue(
-            isclose(
-                cad.PCB_SIZE_MM[1], cad.PLAYING_SPAN_MM + cad.PANEL_STRIP_DEPTH_MM
-            )
+            isclose(cad.PCB_SIZE_MM[1], cad.PLAYING_SPAN_MM + cad.PANEL_STRIP_DEPTH_MM)
         )
 
     def test_a_320_mm_panel_gets_interior_support(self) -> None:
@@ -276,9 +263,7 @@ class BoardSupportTest(unittest.TestCase):
 
     def test_supports_reach_the_underside_of_the_board(self) -> None:
         self.assertTrue(
-            isclose(
-                cad.CASE_FLOOR_MM + cad.PI_BAY_HEIGHT_MM, cad.PCB_UNDERSIDE_Z_MM
-            )
+            isclose(cad.CASE_FLOOR_MM + cad.PI_BAY_HEIGHT_MM, cad.PCB_UNDERSIDE_Z_MM)
         )
 
 
@@ -332,9 +317,7 @@ class PlateFixingTest(unittest.TestCase):
         self.assertEqual(len(set(cad.TILE_PLATE_SCREW_POSITIONS_MM)), 8)
 
     def test_screw_heads_sit_below_the_playing_surface(self) -> None:
-        self.assertLess(
-            cad.TILE_PLATE_SCREW_HEAD_DEPTH_MM, cad.TILE_PLATE_THICKNESS_MM
-        )
+        self.assertLess(cad.TILE_PLATE_SCREW_HEAD_DEPTH_MM, cad.TILE_PLATE_THICKNESS_MM)
         self.assertGreater(
             cad.TILE_PLATE_SCREW_HEAD_DIAMETER_MM,
             cad.TILE_PLATE_SCREW_CLEARANCE_DIAMETER_MM,

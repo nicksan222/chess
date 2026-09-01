@@ -4,12 +4,12 @@ Each physical component type owns a class and pin enum in its own module. Board
 routing uses these models rather than unlabelled ``(reference, pin)`` strings.
 """
 
-from .ahct125 import Ahct125, Ahct125Pin, LED_LEVEL_SHIFTER
-from .barrel_jack import BarrelJack, BarrelJackPad, BarrelJackPin, DC_INPUT_JACK
+from .ahct125 import LED_LEVEL_SHIFTER, Ahct125, Ahct125Pin
+from .barrel_jack import DC_INPUT_JACK, BarrelJack, BarrelJackPad, BarrelJackPin
 from .base import BoardComponent, ComponentReference, Endpoint
 from .capacitor import Capacitor, CapacitorPin
 from .catalog import for_netlist_entry, known_part_keys
-from .fuse import Fuse, FusePin, INPUT_FUSE
+from .fuse import INPUT_FUSE, Fuse, FusePin
 from .hall_sensor import HallSensor, HallSensorPin
 from .mcp23017 import Mcp23017, Mcp23017Pin
 from .oled_header import DISPLAY_HEADER, OledHeader, OledHeaderPin
@@ -26,6 +26,13 @@ from .test_point import TestPoint, TestPointPin
 from .tvs_diode import INPUT_TVS, TvsDiode, TvsDiodePin
 
 __all__ = [
+    "DC_INPUT_JACK",
+    "DISPLAY_HEADER",
+    "HOST_GPIO_HEADER",
+    "INPUT_FUSE",
+    "INPUT_TVS",
+    "LED_LEVEL_SHIFTER",
+    "MAIN_POWER_SWITCH",
     "Ahct125",
     "Ahct125Pin",
     "BarrelJack",
@@ -35,18 +42,11 @@ __all__ = [
     "Capacitor",
     "CapacitorPin",
     "ComponentReference",
-    "DC_INPUT_JACK",
-    "DISPLAY_HEADER",
     "Endpoint",
     "Fuse",
     "FusePin",
     "HallSensor",
     "HallSensorPin",
-    "HOST_GPIO_HEADER",
-    "INPUT_FUSE",
-    "INPUT_TVS",
-    "LED_LEVEL_SHIFTER",
-    "MAIN_POWER_SWITCH",
     "Mcp23017",
     "Mcp23017Pin",
     "OledHeader",

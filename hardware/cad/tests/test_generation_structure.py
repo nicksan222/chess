@@ -1,8 +1,7 @@
 """Tests for CAD generator ownership, reuse, and main-runner ordering."""
 
-from pathlib import Path
 import unittest
-
+from pathlib import Path
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 CAD_ROOT = REPOSITORY_ROOT / "hardware" / "cad"

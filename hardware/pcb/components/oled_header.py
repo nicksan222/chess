@@ -1,6 +1,7 @@
 """Four-pin I2C OLED connector J2."""
 
 from enum import StrEnum
+
 from .base import BoardComponent, ComponentReference
 
 

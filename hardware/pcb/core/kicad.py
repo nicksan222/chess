@@ -101,9 +101,7 @@ class KiCadBoard:
         module = pcbnew.FOOTPRINT(self.native)
         module.SetReference(item.reference)
         module.SetValue(spec.mpn)
-        module.SetLibDescription(
-            f"{spec.manufacturer} {spec.mpn}: {spec.description}"
-        )
+        module.SetLibDescription(f"{spec.manufacturer} {spec.mpn}: {spec.description}")
         module.Reference().SetVisible(False)
         module.Value().SetVisible(False)
         module.SetPosition(point(item.x, item.y))
@@ -130,9 +128,7 @@ class KiCadBoard:
                 line.SetStart(point(*start))
                 line.SetEnd(point(*corners[(index + 1) % 4]))
                 line.SetLayer(layer)
-                line.SetWidth(
-                    pcbnew.FromMM(0.05 if layer == pcbnew.F_CrtYd else 0.1)
-                )
+                line.SetWidth(pcbnew.FromMM(0.05 if layer == pcbnew.F_CrtYd else 0.1))
                 module.Add(line)
 
     @staticmethod

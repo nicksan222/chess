@@ -1,6 +1,7 @@
 """MCP23017 GPIO expander pins."""
 
 from enum import StrEnum
+
 from .base import BoardComponent
 
 
