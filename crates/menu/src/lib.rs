@@ -1,4 +1,4 @@
-//! A `no_std`, integration-neutral menu model.
+//! A `no_std` headless menu model and the chessboard's menu definition.
 //!
 //! Menus define labels, entries, and five-button behavior without knowing about
 //! GPIO or pixels. [`MenuState`] applies input and exposes a read-only
@@ -26,24 +26,16 @@
 //! ```
 //!
 //! Every entry may instead open another menu. Submenus use their own entries and
-//! controls, and may contain further submenus up to [`MAX_MENU_DEPTH`].
+//! controls, and may contain further submenus up to [`MAX_MENU_DEPTH`]. The
+//! chessboard's [`MAIN_MENU`] demonstrates this directly.
 //!
 //! ```
-//! use menu::{Event, Input, Menu, MenuItem, MenuState};
+//! use menu::{Event, Input, MAIN_MENU, MenuState, START_GAME_MENU};
 //!
-//! #[derive(Debug, Eq, PartialEq)]
-//! enum Action {
-//!     ToggleVoice,
-//! }
-//!
-//! let voice_items = [MenuItem::action("Enabled", Action::ToggleVoice)];
-//! let voice = Menu::new("Voice", &voice_items);
-//! let settings_items = [MenuItem::submenu("Voice", &voice)];
-//! let settings = Menu::new("Settings", &settings_items);
-//! let mut state = MenuState::new(&settings);
+//! let mut state = MenuState::new(&MAIN_MENU);
 //!
 //! assert_eq!(state.handle(Input::Ok), Event::Opened { depth: 1 });
-//! assert_eq!(state.current_menu().title(), "Voice");
+//! assert_eq!(state.current_menu(), &START_GAME_MENU);
 //! ```
 //!
 //! Display drivers, button polling, chess rules, and action execution remain
@@ -53,8 +45,13 @@
 #![forbid(unsafe_code)]
 #![warn(missing_docs)]
 
+mod chessboard;
 mod model;
 mod navigation;
 
+pub use chessboard::{
+    ChessboardAction, FORGET_NETWORK_MENU, MAIN_MENU, NETWORK_MENU, RESET_GAME_MENU,
+    START_GAME_MENU,
+};
 pub use model::{Command, Input, Menu, MenuControls, MenuDefinition, MenuItem};
 pub use navigation::{Event, ExternalBehavior, MAX_MENU_DEPTH, MenuSnapshot, MenuState};

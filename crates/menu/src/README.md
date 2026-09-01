@@ -6,10 +6,12 @@ crate:
 - `model/` contains immutable menu definitions, entries, physical inputs,
   headless commands, and reusable control bindings;
 - `navigation/` owns cursor state, bounded submenu history, read-only snapshots,
-  emitted events, and optional external input behavior.
+  emitted events, and optional external input behavior;
+- `chessboard.rs` declares the product's concrete menu tree and typed actions.
 
-`navigation` depends on `model`; menu definitions never depend on traversal,
-rendering, hardware, application state, or the chess engine.
+`navigation` and the chessboard definition depend on `model`; model values
+never depend on traversal, rendering, hardware, application state, or the chess
+engine.
 
 ## Ownership boundary
 

@@ -14,14 +14,38 @@ Bindings can navigate, activate the selected item, return to a parent, emit an
 application action, or intentionally do nothing.
 
 Every `MenuItem` is either an action or a submenu. A submenu is a complete
-`Menu`, with its own entries and controls, so trees can be nested—for example,
-`Settings > Voice > Volume`. Returning to a parent restores its previous cursor.
+`Menu`, with its own entries and controls. The chessboard tree nests game
+choices and destructive confirmations, and returning to a parent restores its
+previous cursor.
 
 For behavior that depends on the running application, `ExternalBehavior` can
 optionally override a press. `MenuState::handle_with` passes it an immutable
 external context and a read-only menu snapshot. A chess game can therefore be
 borrowed directly while a behavior object separately owns mutable hardware or
 adapter state. Returning `None` falls back to the menu's normal controls.
+
+## Chessboard definition
+
+The concrete product menu is intentionally small:
+
+```text
+Main Menu
+├── Start Game
+│   ├── 1 vs 1
+│   └── 1 vs Online
+├── Network
+│   ├── Status
+│   ├── Set Up Network
+│   └── Forget Network
+│       └── Confirm Forget
+└── Reset Game
+    └── Confirm Reset
+```
+
+The menu emits typed `ChessboardAction` values. Firmware owns game startup,
+network status and provisioning, forgetting credentials, and game reset. The
+destructive actions require confirmation; pressing left cancels by returning to
+the parent menu.
 
 ## Effects and ownership
 
