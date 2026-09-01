@@ -1,14 +1,15 @@
-//! A tiny, headless logging facade with explicit dependency injection.
+//! A tiny, headless logging facade with optional global registration.
 //!
-//! This crate owns no global logger and performs no I/O. Applications implement
-//! [`Logger`] for their platform and pass that implementation to code which
-//! emits records. Messages are allocation-free [`core::fmt::Arguments`], making
-//! the same interface suitable for a Raspberry Pi, simulator, or test double.
+//! This crate performs no I/O by itself. Applications implement [`Logger`] for
+//! their platform and permanently [`register`] one shared instance. [`get`]
+//! returns `None` until registration. Messages are allocation-free
+//! [`core::fmt::Arguments`], making the same interface suitable for a Raspberry
+//! Pi, simulator, or test double.
 //! The optional `std` feature supplies ready-made stderr and systemd backends
 //! under [`implementations`].
 //!
 //! ```
-//! use logger::{Level, Logger, Metadata, Record, info};
+//! use logger::{Level, Logger, Record, info, register};
 //!
 //! struct Sink;
 //!
@@ -19,7 +20,10 @@
 //!     }
 //! }
 //!
-//! info!(Sink, "ready");
+//! static LOGGER: Sink = Sink;
+//! register(&LOGGER)?;
+//! info!("ready");
+//! # Ok::<(), logger::RegistrationError>(())
 //! ```
 
 #![no_std]
@@ -36,6 +40,7 @@ mod level;
 mod logger;
 mod metadata;
 mod record;
+mod registry;
 
 #[macro_use]
 mod macros;
@@ -44,3 +49,4 @@ pub use level::{Level, LevelFilter};
 pub use logger::{Logger, NopLogger};
 pub use metadata::Metadata;
 pub use record::Record;
+pub use registry::{RegistrationError, flush, get, register};

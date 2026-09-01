@@ -6,6 +6,10 @@ use crate::{Metadata, Record};
 /// and I/O. Methods use shared references so callers can pass a logger through
 /// read-only application context; stateful backends can use their platform's
 /// interior-mutability or synchronization primitive.
+///
+/// Backends should not panic or emit another record through this facade from
+/// inside [`Logger::enabled`], [`Logger::log`], or [`Logger::flush`]. Logging is
+/// diagnostic and must not interrupt the operation being observed.
 pub trait Logger {
     /// Returns whether a record with `metadata` should be constructed.
     ///

@@ -8,7 +8,8 @@ The source tree is organized around one-way dependencies:
 - `game/history/` owns the authoritative linked event timeline and all stable
   SHA-256 encodings;
 - `game/aggregate/` coordinates local play, peer synchronization, invalid-state
-  resolution, finalization, replay, and cache verification;
+  resolution, finalization, replay, cache verification, and centralized
+  lifecycle logging;
 - `game/draw/` derives claims and automatic draws from the board and history;
 - `game/status/` presents the lifecycle state represented by the latest event.
 
@@ -32,5 +33,6 @@ already sealed.
 
 The crate is `no_std` and forbids unsafe code. Movement and board calculations
 are allocation-free. Linked history is the deliberate allocation boundary.
-Internal debugging uses assertions rather than a logging facade, so behavior
-depends only on the target's selected panic strategy.
+Internal invariants use assertions and still depend only on the target's panic
+strategy. Lifecycle diagnostics additionally use the optional global logger;
+without registration, the engine stays silent.

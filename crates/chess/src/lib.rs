@@ -28,7 +28,8 @@
 //! ```
 //!
 //! Hardware observation, persistence, transport, authentication, user
-//! interfaces, and logging remain outside this crate.
+//! interfaces, and logging backends remain outside this crate. Lifecycle
+//! diagnostics are emitted only when an application has registered a logger.
 
 #![no_std]
 #![forbid(unsafe_code)]

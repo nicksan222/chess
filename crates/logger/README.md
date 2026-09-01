@@ -1,9 +1,8 @@
 # Logger crate
 
 This `no_std` crate is the project's headless logging contract. It performs no
-I/O, owns no global state, and selects no platform backend. Firmware, the
-simulator, and tests implement `Logger` and explicitly pass that value to the
-code they run.
+I/O and selects no platform backend. Firmware, the simulator, and tests
+implement `Logger` and register one process-wide instance during startup.
 
 Records contain a severity, routing target, source module/file/line, and
 allocation-free `core::fmt::Arguments`. The `error!`, `warn!`, `info!`,
@@ -11,7 +10,7 @@ allocation-free `core::fmt::Arguments`. The `error!`, `warn!`, `info!`,
 arguments only when the backend enables the record.
 
 ```rust
-use logger::{Logger, Record, info};
+use logger::{Logger, Record, info, register};
 
 struct RaspberryPiLogger;
 
@@ -22,12 +21,30 @@ impl Logger for RaspberryPiLogger {
     }
 }
 
-let logger = RaspberryPiLogger;
-info!(logger, target: "firmware", "board ready");
+static LOGGER: RaspberryPiLogger = RaspberryPiLogger;
+register(&LOGGER)?;
+info!(target: "firmware", "board ready");
+# Ok::<(), logger::RegistrationError>(())
 ```
 
 Backends own filtering, formatting, synchronization, buffering, and flushing.
 `NopLogger` is supplied for callers that deliberately discard all diagnostics.
+
+## Registration
+
+A hosted application can register one static logger during startup:
+
+```rust
+use logger::{LevelFilter, implementations::SystemdLogger, register};
+
+static LOGGER: SystemdLogger = SystemdLogger::new(LevelFilter::Info);
+register(&LOGGER)?;
+# Ok::<(), logger::RegistrationError>(())
+```
+
+Shared crates use the same logging macros. Before registration they do nothing,
+so logging remains optional. Registration is thread-safe, allocation-free,
+`no_std`, and permanent; a different logger cannot replace the first one.
 
 ## Hosted implementations
 

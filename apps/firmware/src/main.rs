@@ -1,6 +1,8 @@
 use std::{env, thread};
 
-use logger::{LevelFilter, implementations::SystemdLogger, info};
+use logger::{LevelFilter, implementations::SystemdLogger, info, register};
+
+static LOGGER: SystemdLogger = SystemdLogger::new(LevelFilter::Info);
 
 fn main() {
     if env::args().nth(1).as_deref() == Some("--version") {
@@ -8,8 +10,8 @@ fn main() {
         return;
     }
 
-    let logger = SystemdLogger::new(LevelFilter::Info);
-    info!(logger, "starting firmware {}", env!("CARGO_PKG_VERSION"));
+    register(&LOGGER).expect("the firmware registers its logger only once");
+    info!("starting firmware {}", env!("CARGO_PKG_VERSION"));
 
     // Hardware and provisioning workers will be added behind this supervised
     // process. SIGTERM retains its default behavior, allowing systemd to stop

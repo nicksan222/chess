@@ -9,7 +9,9 @@ use super::Game;
 impl Game {
     /// Resolves the newest invalid state, preserving strict reverse order.
     pub fn resolve_latest_invalid(&mut self) -> Result<HistoryStep, HistoryError> {
-        self.history.resolve_latest_invalid()
+        let step = self.history.resolve_latest_invalid()?;
+        self.log_invalid_resolved(step);
+        Ok(step)
     }
 
     pub(in crate::game) fn record_invalid(&mut self, invalid: InvalidState) -> Option<HistoryStep> {
@@ -17,15 +19,13 @@ impl Game {
             return None;
         }
         Some(
-            self.history
-                .push(HistoryEvent::Invalid(invalid))
+            self.push_event(HistoryEvent::Invalid(invalid))
                 .expect("invalid events may follow active or invalid history"),
         )
     }
 
     pub(in crate::game) fn append_final(&mut self, final_state: FinalState) -> HistoryStep {
-        self.history
-            .push(HistoryEvent::Final(final_state))
+        self.push_event(HistoryEvent::Final(final_state))
             .expect("a final event may seal active history")
     }
 
@@ -33,6 +33,20 @@ impl Game {
         if let Some(final_state) = self.calculated_final_state() {
             self.append_final(final_state);
         }
+    }
+
+    pub(in crate::game) fn push_event(
+        &mut self,
+        event: HistoryEvent,
+    ) -> Result<HistoryStep, HistoryError> {
+        let step = self.history.push(event)?;
+        self.log_history_step(step);
+        Ok(step)
+    }
+
+    pub(in crate::game) fn append_validated_step(&mut self, step: HistoryStep) {
+        self.history.append_validated(step);
+        self.log_history_step(step);
     }
 
     pub(in crate::game) fn blocking_move_error(&self) -> Option<MoveError> {

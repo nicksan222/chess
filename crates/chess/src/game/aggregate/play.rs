@@ -49,8 +49,7 @@ impl Game {
             }
         };
         let step = self
-            .history
-            .push(HistoryEvent::Move(canonical))
+            .push_event(HistoryEvent::Move(canonical))
             .expect("an active game accepts a valid move event");
         self.finalize_if_terminal();
         Ok(step)

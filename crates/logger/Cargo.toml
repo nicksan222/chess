@@ -11,7 +11,12 @@ default = []
 std = []
 
 [dependencies]
+spin = { version = "0.12.3", default-features = false, features = ["once"] }
 
 [[test]]
 name = "unit"
 path = "tests/unit/main.rs"
+
+[[test]]
+name = "unregistered"
+path = "tests/unregistered/main.rs"

@@ -9,6 +9,7 @@ autobenches = false
 
 [dependencies]
 chess-core = { path = "../core" }
+logger = { path = "../logger" }
 sha2 = { version = "0.10.9", default-features = false }
 
 [[test]]
@@ -26,6 +27,10 @@ path = "tests/e2e/main.rs"
 [[test]]
 name = "perft"
 path = "tests/perft/main.rs"
+
+[[test]]
+name = "logging"
+path = "tests/logging/main.rs"
 
 [[bench]]
 name = "perft"

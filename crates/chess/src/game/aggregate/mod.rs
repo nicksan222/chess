@@ -1,6 +1,7 @@
 //! The game aggregate and its immutable public state views.
 
 mod history_state;
+mod logging;
 mod play;
 mod sync;
 mod verification;
@@ -34,6 +35,7 @@ impl Game {
             board,
             history: GameHistory::for_board(&board),
         };
+        game.log_created();
         game.finalize_if_terminal();
         game
     }

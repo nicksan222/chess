@@ -28,7 +28,7 @@ impl Game {
         match step.event() {
             HistoryEvent::Move(chess_move) => self.accept_move(step, chess_move),
             HistoryEvent::Invalid(_) => {
-                self.history.append_validated(step);
+                self.append_validated_step(step);
                 Ok(())
             }
             HistoryEvent::Final(final_state) => {
@@ -41,7 +41,7 @@ impl Game {
                     self.record_invalid(InvalidState::Synchronization(sync));
                     return Err(sync);
                 }
-                self.history.append_validated(step);
+                self.append_validated_step(step);
                 Ok(())
             }
         }
@@ -67,7 +67,7 @@ impl Game {
             return Err(sync);
         }
         self.board = next;
-        self.history.append_validated(step);
+        self.append_validated_step(step);
         self.finalize_if_terminal();
         Ok(())
     }

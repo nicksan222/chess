@@ -45,6 +45,25 @@ Position identity includes placement, side to move, castling rights, and an
 en-passant target only when a legal en-passant capture is actually available.
 Halfmove and fullmove counters do not affect repetition identity.
 
+## Optional logging
+
+The engine checks the logger crate's singleton at each lifecycle event. With no
+registered logger, `Game::new()` and every game operation remain silent. A
+hosted application can opt in once during startup:
+
+```rust
+use logger::{LevelFilter, implementations::SystemdLogger, register};
+
+static LOGGER: SystemdLogger = SystemdLogger::new(LevelFilter::Info);
+register(&LOGGER)?;
+# Ok::<(), logger::RegistrationError>(())
+```
+
+Creation, accepted moves, invalid states and their resolution, synchronized
+events, and terminal results all pass through one centralized logging module.
+History mutation remains centralized separately, ensuring every authoritative
+event follows the same logging path.
+
 ## Embedded behavior
 
 Board values and movement rules are allocation-free. Authoritative history uses
