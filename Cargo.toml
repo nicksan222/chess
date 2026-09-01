@@ -5,6 +5,7 @@ members = [
     "crates/board-model",
     "crates/chess",
     "crates/core",
+    "crates/logger",
     "crates/protocol",
     "tools/xtask",
 ]
