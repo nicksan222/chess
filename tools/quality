@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repository_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "${repository_root}"
+
+if [[ $# -ne 0 ]]; then
+    printf 'Usage: ./tools/quality\n' >&2
+    exit 2
+fi
+
+./tools/python
+./tools/rust quality

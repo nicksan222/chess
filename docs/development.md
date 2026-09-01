@@ -27,8 +27,9 @@ artifacts remain under each domain's `generated/` directory.
 
 ## CI
 
-CI prebuilds the development image, then runs Python, Rust, shared hardware, CAD, and PCB
-validation. Use the same runners locally so local and CI behavior remain aligned.
+CI prebuilds the development image, then runs code-quality checks, one parallel test job
+per discovered workspace crate, and hardware validation. Use the same runners locally so
+local and CI behavior remain aligned.
 
 CAD, PCB, and shared Python are linted and format-checked with [Ruff](https://docs.astral.sh/ruff/).
 `./tools/python` is the repository check; `.pre-commit-config.yaml` is the same

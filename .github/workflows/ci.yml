@@ -60,6 +60,20 @@ jobs:
             docker push "${LATEST}"
           fi
 
+  crates:
+    name: Discover crates
+    runs-on: ubuntu-latest
+    outputs:
+      packages: ${{ steps.packages.outputs.packages }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: packages
+        name: Read workspace packages
+        run: |
+          packages="$(cargo metadata --format-version 1 --no-deps \
+            | jq --compact-output '[.packages[].name]')"
+          echo "packages=${packages}" >> "${GITHUB_OUTPUT}"
+
   cad:
     needs: prebuild
     runs-on: ubuntu-latest
@@ -90,17 +104,8 @@ jobs:
           name: pcb-generated
           path: hardware/pcb/generated
 
-  python:
-    needs: prebuild
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/run-in-devcontainer
-        with:
-          image: ${{ needs.prebuild.outputs.image }}
-          command: ./tools/python
-
-  rust:
+  code-quality:
+    name: Code quality
     needs: prebuild
     runs-on: ubuntu-latest
     steps:
@@ -108,10 +113,32 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-quality-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
       - uses: ./.github/actions/run-in-devcontainer
         with:
           image: ${{ needs.prebuild.outputs.image }}
-          command: ./tools/rust
+          command: ./tools/quality
+
+  crate-test:
+    name: Crate test (${{ matrix.package }})
+    needs: [prebuild, crates]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJSON(needs.crates.outputs.packages) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: target
+          key: ${{ runner.os }}-crate-${{ matrix.package }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-crate-${{ matrix.package }}-
+            ${{ runner.os }}-cargo-
+      - uses: ./.github/actions/run-in-devcontainer
+        with:
+          image: ${{ needs.prebuild.outputs.image }}
+          command: ./tools/rust test ${{ matrix.package }}
