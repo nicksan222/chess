@@ -4,12 +4,9 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Protocol
+from typing import Protocol
 
 from base.footprint import Footprint
-
-if TYPE_CHECKING:
-    from base.kicad.board import KiCadBoard
 
 
 @dataclass(frozen=True)
@@ -33,14 +30,6 @@ class Placement:
                 (round(self.x + turned.x, 4), round(self.y + turned.y, 4)),
                 turned,
             )
-
-    def attach_to(
-        self,
-        board: KiCadBoard,
-        component_entry: Mapping[str, object],
-    ) -> None:
-        """Compatibility helper for callers holding a raw component contract."""
-        board.attach_component(self, component_entry)
 
     def courtyard(self) -> tuple[float, float, float, float]:
         """Bounding box as ``(x_min, y_min, x_max, y_max)``."""

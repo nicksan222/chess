@@ -4,6 +4,8 @@ import json
 import unittest
 from pathlib import Path
 
+from base import rules
+from board import definition as board_definition
 from components import footprints
 from configure_project import render as render_project
 from shared.components import COMPONENTS
@@ -42,7 +44,10 @@ class ReleasePolicyTest(unittest.TestCase):
         self.assertGreater(centres[1] - centres[0], 40.0)
 
     def test_native_schematic_and_symbol_library_are_current(self):
-        schematic = render_schematic()
+        design = board_definition.load()
+        schematic = render_schematic(design)
+        self.assertIn(f'(title "{design.title}")', schematic)
+        self.assertIn(f'(rev "{design.revision}")', schematic)
         self.assertEqual(
             (PCB / "generated/chess-board.kicad_sch").read_text(), schematic
         )
@@ -73,6 +78,24 @@ class ReleasePolicyTest(unittest.TestCase):
         self.assertEqual(project_text, render_project())
         project = json.loads(project_text)
         settings = project["board"]["design_settings"]
+        defaults = settings["defaults"]
+        constraints = settings["rules"]
+        self.assertEqual(defaults["board_outline_line_width"], rules.OUTLINE_LINE_MM)
+        self.assertEqual(defaults["courtyard_line_width"], rules.COURTYARD_LINE_MM)
+        self.assertEqual(defaults["fab_line_width"], rules.FAB_LINE_MM)
+        self.assertEqual(defaults["silk_line_width"], rules.SILK_LINE_MM)
+        self.assertEqual(defaults["silk_text_size_h"], rules.SILK_TEXT_HEIGHT_MM)
+        self.assertEqual(defaults["silk_text_size_v"], rules.SILK_TEXT_HEIGHT_MM)
+        self.assertEqual(defaults["silk_text_thickness"], rules.SILK_LINE_MM)
+        self.assertEqual(defaults["zones"]["min_clearance"], rules.POUR_CLEARANCE_MM)
+        self.assertEqual(constraints["min_clearance"], rules.CLEARANCE_MM)
+        self.assertEqual(
+            constraints["min_copper_edge_clearance"], rules.POUR_TO_OUTLINE_MM
+        )
+        self.assertEqual(constraints["min_hole_clearance"], rules.HOLE_CLEARANCE_MM)
+        self.assertEqual(constraints["min_hole_to_hole"], rules.HOLE_TO_HOLE_MM)
+        self.assertEqual(constraints["min_track_width"], rules.TRACE_WIDTH_MM)
+        self.assertEqual(constraints["min_via_diameter"], rules.VIA_PAD_MM)
         self.assertEqual(settings.get("drc_exclusions", []), [])
         self.assertNotIn("ignore", settings["rule_severities"].values())
 

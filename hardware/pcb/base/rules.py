@@ -35,6 +35,8 @@ CLEARANCE_MM = 0.30
 
 VIA_DRILL_MM = 0.4
 VIA_PAD_MM = 0.9
+HOLE_CLEARANCE_MM = 0.25
+HOLE_TO_HOLE_MM = 0.25
 
 # Through-hole pads: the drill clears the lead, and the ring is generous because
 # a hand-soldered joint gets reworked more than a machine-placed one.
@@ -43,8 +45,10 @@ THT_ANNULAR_RING_MM = 0.4
 
 MASK_EXPANSION_MM = 0.05
 SILK_LINE_MM = 0.2
-SILK_TEXT_HEIGHT_MM = 2.0
-OUTLINE_LINE_MM = 0.15
+SILK_TEXT_HEIGHT_MM = 1.0
+OUTLINE_LINE_MM = 0.05
+COURTYARD_LINE_MM = 0.05
+FAB_LINE_MM = 0.1
 
 # Copper pours pull back further than the signal clearance, because a pour edge
 # is the one place a small etching error meets a large amount of copper.

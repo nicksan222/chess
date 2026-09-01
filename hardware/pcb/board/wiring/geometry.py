@@ -12,7 +12,6 @@ from base.kicad.api import pcbnew
 from board import definition as board_definition
 from board.wiring.nets import Net
 
-BOARD_EDGE_WIDTH_MM = 0.05
 SQUARE_LABEL_OFFSET_MM = (-12.0, 0.0)
 SQUARE_GRID_DOT_PITCH_MM = 8.0
 SQUARE_GRID_DOT_DIAMETER_MM = 0.6
@@ -103,7 +102,7 @@ def _add_mounting_holes(board: pcbnew.BOARD) -> None:
             line.SetStart(kicad.point(*start))
             line.SetEnd(kicad.point(*corners[(corner_index + 1) % 4]))
             line.SetLayer(pcbnew.F_CrtYd)
-            line.SetWidth(pcbnew.FromMM(0.05))
+            line.SetWidth(pcbnew.FromMM(rules.COURTYARD_LINE_MM))
             module.Add(line)
 
 
@@ -153,7 +152,7 @@ def _add_text(
     text: str,
     at: tuple[float, float],
     *,
-    height: float = 1.0,
+    height: float = rules.SILK_TEXT_HEIGHT_MM,
 ) -> None:
     label = pcbnew.PCB_TEXT(board)
     label.SetText(text)
@@ -223,7 +222,7 @@ def _add_outline(board: pcbnew.BOARD) -> None:
         edge.SetStart(kicad.point(*start))
         edge.SetEnd(kicad.point(*corners[(index + 1) % 4]))
         edge.SetLayer(pcbnew.Edge_Cuts)
-        edge.SetWidth(pcbnew.FromMM(BOARD_EDGE_WIDTH_MM))
+        edge.SetWidth(pcbnew.FromMM(rules.OUTLINE_LINE_MM))
         board.Add(edge)
 
 

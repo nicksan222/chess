@@ -5,8 +5,8 @@
   (uuid "4f2a1dae-a80e-5de8-9cc0-3c9201cadfb0")
   (paper "A0")
   (title_block
-    (title "Code-composed chess board")
-    (rev "B-PROTOTYPE")
+    (title "Chess Smart Board - Single Board Electronics")
+    (rev "C-PROTOTYPE")
     (company "Chess")
     (comment 1 "Generated from board/netlist.json; do not hand edit")
   )

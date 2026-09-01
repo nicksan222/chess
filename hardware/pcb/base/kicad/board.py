@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
 from typing import TYPE_CHECKING
 
 from base import footprint as footprint_base
@@ -69,10 +68,11 @@ class KiCadBoard:
     def _configure_rules(self) -> None:
         self.native.SetCopperLayerCount(rules.COPPER_LAYERS)
         settings = self.native.GetDesignSettings()
+        settings.SetBoardThickness(pcbnew.FromMM(rules.BOARD_THICKNESS_MM))
         settings.m_MinClearance = pcbnew.FromMM(rules.CLEARANCE_MM)
         settings.m_TrackMinWidth = pcbnew.FromMM(rules.TRACE_WIDTH_MM)
-        settings.m_HoleClearance = pcbnew.FromMM(0.25)
-        settings.m_HoleToHoleMin = pcbnew.FromMM(0.25)
+        settings.m_HoleClearance = pcbnew.FromMM(rules.HOLE_CLEARANCE_MM)
+        settings.m_HoleToHoleMin = pcbnew.FromMM(rules.HOLE_TO_HOLE_MM)
         settings.m_CopperEdgeClearance = pcbnew.FromMM(rules.POUR_TO_OUTLINE_MM)
         settings.m_ViasMinSize = pcbnew.FromMM(rules.VIA_PAD_MM)
         settings.m_ViasMinAnnularWidth = pcbnew.FromMM(
@@ -97,14 +97,6 @@ class KiCadBoard:
             component.spec.part_key,
             component.spec.package,
         )
-
-    def attach_component(self, item, entry: Mapping[str, object]) -> None:
-        """Compatibility boundary for callers holding a raw contract entry."""
-        part_key = entry.get("part_key")
-        package = entry.get("package")
-        if not isinstance(package, str):
-            raise ValueError(f"{item.reference}: missing package")
-        self._attach_placement(item, part_key, package)
 
     def _attach_placement(self, item, part_key: object, package: str) -> None:
         """The only component-to-pcbnew materialization implementation."""
@@ -137,7 +129,10 @@ class KiCadBoard:
 
     def _add_package_outlines(self, module, item) -> None:
         width, height = item.footprint.courtyard_at(item.rotation)
-        for layer, inset in ((pcbnew.F_CrtYd, 0.0), (pcbnew.F_Fab, 0.25)):
+        for layer, inset in (
+            (pcbnew.F_CrtYd, 0.0),
+            (pcbnew.F_Fab, footprint_base.COURTYARD_MARGIN_MM),
+        ):
             x0, x1 = item.x - width / 2 + inset, item.x + width / 2 - inset
             y0, y1 = item.y - height / 2 + inset, item.y + height / 2 - inset
             corners = ((x0, y0), (x1, y0), (x1, y1), (x0, y1))
@@ -147,7 +142,12 @@ class KiCadBoard:
                 line.SetStart(point(*start))
                 line.SetEnd(point(*corners[(index + 1) % 4]))
                 line.SetLayer(layer)
-                line.SetWidth(pcbnew.FromMM(0.05 if layer == pcbnew.F_CrtYd else 0.1))
+                width = (
+                    rules.COURTYARD_LINE_MM
+                    if layer == pcbnew.F_CrtYd
+                    else rules.FAB_LINE_MM
+                )
+                line.SetWidth(pcbnew.FromMM(width))
                 module.Add(line)
 
     @staticmethod
@@ -183,6 +183,7 @@ class KiCadBoard:
         else:
             pad.SetAttribute(pcbnew.PAD_ATTRIB_SMD)
             pad.SetLayerSet(pad.SMDMask())
+        pad.SetLocalSolderMaskMargin(pcbnew.FromMM(rules.MASK_EXPANSION_MM))
         return pad
 
     def net(self, name: str):

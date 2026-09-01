@@ -44,6 +44,10 @@ class KiCadBoardAdapterTest(unittest.TestCase):
         settings = layout.native.GetDesignSettings()
         self.assertEqual(layout.native.GetCopperLayerCount(), rules.COPPER_LAYERS)
         self.assertAlmostEqual(
+            pcbnew.ToMM(settings.GetBoardThickness()),
+            rules.BOARD_THICKNESS_MM,
+        )
+        self.assertAlmostEqual(
             pcbnew.ToMM(settings.m_MinClearance),
             rules.CLEARANCE_MM,
         )
@@ -60,11 +64,11 @@ class KiCadBoardAdapterTest(unittest.TestCase):
         # KiCad's native edge bounding box includes the Edge.Cuts stroke.
         self.assertAlmostEqual(
             pcbnew.ToMM(bounds.GetWidth()),
-            width + board_builder.BOARD_EDGE_WIDTH_MM,
+            width + rules.OUTLINE_LINE_MM,
         )
         self.assertAlmostEqual(
             pcbnew.ToMM(bounds.GetHeight()),
-            height + board_builder.BOARD_EDGE_WIDTH_MM,
+            height + rules.OUTLINE_LINE_MM,
         )
 
     def test_native_mounting_holes_match_shared_supports(self) -> None:
@@ -168,6 +172,10 @@ class KiCadBoardAdapterTest(unittest.TestCase):
                     pad=pad.GetNumber(),
                 ):
                     self.assertNotEqual(pad.GetNetCode(), 0)
+                    self.assertAlmostEqual(
+                        pcbnew.ToMM(pad.GetLocalSolderMaskMargin()),
+                        rules.MASK_EXPANSION_MM,
+                    )
 
     def test_one_square_materializes_as_four_native_footprints(self) -> None:
         references = {
