@@ -1,9 +1,0 @@
-[package]
-name = "chess-board-model"
-edition.workspace = true
-license.workspace = true
-rust-version.workspace = true
-version.workspace = true
-
-[dependencies]
-chess = { path = "../chess" }

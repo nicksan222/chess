@@ -2,12 +2,10 @@
 members = [
     "apps/firmware",
     "apps/simulator",
-    "crates/board-model",
     "crates/chess",
     "crates/core",
     "crates/menu",
     "crates/logger",
-    "crates/protocol",
     "tools/xtask",
 ]
 resolver = "3"

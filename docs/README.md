@@ -12,5 +12,4 @@ code or hardware areas. Component-local instructions stay with their component.
 - [`cad.md`](cad.md) — the two printed parts and mechanical conventions
 - [`host.md`](host.md) — the software on the Raspberry Pi, including WiFi setup
 - [`assembly.md`](assembly.md) — what to order and the order to solder it in
-- [`protocol.md`](protocol.md) — bridge-to-adapter messages, not a wire protocol
 - [`development.md`](development.md) — the supported repository workflow

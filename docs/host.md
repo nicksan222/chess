@@ -38,9 +38,9 @@ pull the line low and the host reads all of them to find out which did.
 Contact bounce is filtered in software, because the board carries no RC networks
 on its 64 sense lines. On an interrupt: mask further interrupts, wait about 25 ms,
 read the port registers — which also clears the expanders' interrupt latch — diff
-against the last known state, then unmask. `crates/board-model`'s `Debouncer`
-holds the state machine; it requires a square to read the same way for several
-consecutive samples before believing it, so a chattering contact never settles.
+against the last known state, then unmask. The host requires a square to read the
+same way for several consecutive samples before believing it, so a chattering
+contact never settles.
 
 ## Joining a WiFi network
 
