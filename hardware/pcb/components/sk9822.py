@@ -6,12 +6,14 @@ from .base import BoardComponent
 
 
 class Sk9822Pin(StrEnum):
-    FIVE_VOLTS = "1"
-    GROUND = "2"
-    DATA_IN = "3"
-    CLOCK_IN = "4"
-    DATA_OUT = "5"
-    CLOCK_OUT = "6"
+    """5050 pinout from the manufacturer's SK9822 specification, section 5."""
+
+    DATA_IN = "1"
+    CLOCK_IN = "2"
+    GROUND = "3"
+    FIVE_VOLTS = "4"
+    CLOCK_OUT = "5"
+    DATA_OUT = "6"
 
 
 class Sk9822(BoardComponent[Sk9822Pin]):

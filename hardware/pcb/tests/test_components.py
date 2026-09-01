@@ -68,6 +68,42 @@ class ComponentModelTest(unittest.TestCase):
             Ahct125Pin.BUFFER_1_INPUT,
         )
 
+    def test_datasheet_pinouts_do_not_regress_to_logical_numbering(self) -> None:
+        # Same Sky PJ-102A mechanical drawing.
+        self.assertEqual(BarrelJackPin.CENTRE_POSITIVE, "1")
+        self.assertEqual(BarrelJackPin.SLEEVE_GROUND, "2")
+        self.assertEqual(BarrelJackPin.SWITCHED_SLEEVE_GROUND, "3")
+
+        # Microchip DS20001952D table 2-1 (SPDIP column).
+        self.assertEqual(Mcp23017Pin.GPIO_B0, "1")
+        self.assertEqual(Mcp23017Pin.INTERRUPT_B, "19")
+        self.assertEqual(Mcp23017Pin.INTERRUPT_A, "20")
+        self.assertEqual(Mcp23017Pin.GPIO_A7, "28")
+        self.assertEqual(Mcp23017Pin.SUPPLY, "9")
+
+        # SK9822 manufacturer specification section 5.
+        self.assertEqual(Sk9822Pin.DATA_IN, "1")
+        self.assertEqual(Sk9822Pin.CLOCK_IN, "2")
+        self.assertEqual(Sk9822Pin.GROUND, "3")
+        self.assertEqual(Sk9822Pin.FIVE_VOLTS, "4")
+        self.assertEqual(Sk9822Pin.CLOCK_OUT, "5")
+        self.assertEqual(Sk9822Pin.DATA_OUT, "6")
+
+    def test_critical_ic_rails_use_datasheet_pins(self) -> None:
+        pads_by_net = {
+            connection.get("name"): {tuple(pad) for pad in connection["pads"]}
+            for connection in self.netlist["connections"]
+            if connection.get("name")
+        }
+        for reference in ("U1", "U2", "U3", "U4"):
+            self.assertIn((reference, Mcp23017Pin.SUPPLY), pads_by_net["+3V3"])
+            self.assertIn((reference, Mcp23017Pin.GROUND), pads_by_net["GND"])
+        self.assertIn(("U5", Ahct125Pin.SUPPLY), pads_by_net["+5V"])
+        self.assertIn(("U5", Ahct125Pin.GROUND), pads_by_net["GND"])
+        self.assertIn(
+            ("J3", BarrelJackPin.SWITCHED_SLEEVE_GROUND), pads_by_net["GND"]
+        )
+
     def test_power_endpoints_have_semantic_reference_and_pin_enums(self) -> None:
         endpoint = DC_INPUT_JACK.endpoint(BarrelJackPin.CENTRE_POSITIVE)
         self.assertIsInstance(endpoint, Endpoint)

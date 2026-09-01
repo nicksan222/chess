@@ -6,14 +6,17 @@ from .base import BoardComponent, ComponentReference
 
 
 class BarrelJackPin(StrEnum):
+    """PJ-102A terminal numbering from the Same Sky mechanical drawing."""
+
     CENTRE_POSITIVE = "1"
     SLEEVE_GROUND = "2"
+    SWITCHED_SLEEVE_GROUND = "3"
 
 
 class BarrelJackPad(StrEnum):
     CENTRE_POSITIVE = "1"
     SLEEVE_GROUND = "2"
-    SWITCHED_SLEEVE_GROUND = "2b"
+    SWITCHED_SLEEVE_GROUND = "3"
 
 
 class BarrelJack(BoardComponent[BarrelJackPin]):

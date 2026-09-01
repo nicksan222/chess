@@ -56,7 +56,7 @@ DIP28_SOCKET = part("DIP28_SOCKET", "28-pin turned-pin DIP socket", "DIP-28", "M
 DIP14_SOCKET = part("DIP14_SOCKET", "14-pin turned-pin DIP socket", "DIP-14", "Mill-Max", "110-44-314-41-001000")
 FUSE_HOLDER = part("FUSE_HOLDER", "5x20 mm PCB fuse holder", "5x20 mm holder THT", "Keystone Electronics", "3557")
 FUSE_5A = part("FUSE_5A", "5 A time-delay 5x20 mm fuse", "5x20 mm fuse", "Littelfuse", "0218005.MXP")
-BARREL_JACK = part("BARREL_JACK", "5.5x2.1 mm centre-positive DC jack", "5.5x2.1 mm THT", "Same Sky", "PJ-102A")
+BARREL_JACK = part("BARREL_JACK", "5.5x2.0 mm centre-positive DC jack", "5.5x2.0 mm THT", "Same Sky", "PJ-102A", datasheet="https://www.sameskydevices.com/product/resource/pj-102a.pdf")
 TVS_6V8 = part("TVS_6V8", "6.8 V unidirectional TVS diode", "axial DO-15", "Littelfuse", "P6KE6.8A")
 POWER_SWITCH = part("POWER_SWITCH", "PCB SPST rocker switch", "SPST rocker THT", "E-Switch", "RA11131100")
 TEST_POINT = part("TEST_POINT", "1.6 mm turret test point", "turret 1.6 mm THT", "Keystone Electronics", "1502-2")

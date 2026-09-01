@@ -3057,8 +3057,8 @@
           (number "2" (effects (font (size 1.27 1.27))))
         )
         (pin bidirectional line (at -5.08 2.540 0) (length 3.81)
-          (name "2b" (effects (font (size 1.27 1.27))))
-          (number "2b" (effects (font (size 1.27 1.27))))
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -6467,28 +6467,28 @@
       )
       (symbol "U10_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -6521,28 +6521,28 @@
       )
       (symbol "U11_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -6575,28 +6575,28 @@
       )
       (symbol "U12_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -6629,28 +6629,28 @@
       )
       (symbol "U13_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -6683,28 +6683,28 @@
       )
       (symbol "U14_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -6737,28 +6737,28 @@
       )
       (symbol "U15_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -6791,28 +6791,28 @@
       )
       (symbol "U16_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -6845,28 +6845,28 @@
       )
       (symbol "U17_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -6899,28 +6899,28 @@
       )
       (symbol "U18_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -6953,28 +6953,28 @@
       )
       (symbol "U19_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -7149,28 +7149,28 @@
       )
       (symbol "U20_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -7203,28 +7203,28 @@
       )
       (symbol "U21_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -7257,28 +7257,28 @@
       )
       (symbol "U22_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -7311,28 +7311,28 @@
       )
       (symbol "U23_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -7365,28 +7365,28 @@
       )
       (symbol "U24_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -7419,28 +7419,28 @@
       )
       (symbol "U25_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -7473,28 +7473,28 @@
       )
       (symbol "U26_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -7527,28 +7527,28 @@
       )
       (symbol "U27_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -7581,28 +7581,28 @@
       )
       (symbol "U28_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -7635,28 +7635,28 @@
       )
       (symbol "U29_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -7831,28 +7831,28 @@
       )
       (symbol "U30_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -7885,28 +7885,28 @@
       )
       (symbol "U31_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -7939,28 +7939,28 @@
       )
       (symbol "U32_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -7993,28 +7993,28 @@
       )
       (symbol "U33_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -8047,28 +8047,28 @@
       )
       (symbol "U34_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -8101,28 +8101,28 @@
       )
       (symbol "U35_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -8155,28 +8155,28 @@
       )
       (symbol "U36_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -8209,28 +8209,28 @@
       )
       (symbol "U37_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -8263,28 +8263,28 @@
       )
       (symbol "U38_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -8317,28 +8317,28 @@
       )
       (symbol "U39_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -8513,28 +8513,28 @@
       )
       (symbol "U40_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -8567,28 +8567,28 @@
       )
       (symbol "U41_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -8621,28 +8621,28 @@
       )
       (symbol "U42_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -8675,28 +8675,28 @@
       )
       (symbol "U43_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -8729,28 +8729,28 @@
       )
       (symbol "U44_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -8783,28 +8783,28 @@
       )
       (symbol "U45_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -8837,28 +8837,28 @@
       )
       (symbol "U46_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -8891,28 +8891,28 @@
       )
       (symbol "U47_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -8945,28 +8945,28 @@
       )
       (symbol "U48_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -8999,28 +8999,28 @@
       )
       (symbol "U49_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -9139,28 +9139,28 @@
       )
       (symbol "U50_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -9193,28 +9193,28 @@
       )
       (symbol "U51_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -9247,28 +9247,28 @@
       )
       (symbol "U52_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -9301,28 +9301,28 @@
       )
       (symbol "U53_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -9355,28 +9355,28 @@
       )
       (symbol "U54_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -9409,28 +9409,28 @@
       )
       (symbol "U55_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -9463,28 +9463,28 @@
       )
       (symbol "U56_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -9517,28 +9517,28 @@
       )
       (symbol "U57_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -9571,28 +9571,28 @@
       )
       (symbol "U58_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -9625,28 +9625,28 @@
       )
       (symbol "U59_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -9679,28 +9679,28 @@
       )
       (symbol "U6_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -9733,28 +9733,28 @@
       )
       (symbol "U60_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -9787,28 +9787,28 @@
       )
       (symbol "U61_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -9841,28 +9841,28 @@
       )
       (symbol "U62_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -9895,28 +9895,28 @@
       )
       (symbol "U63_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -9949,28 +9949,28 @@
       )
       (symbol "U64_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -10003,28 +10003,28 @@
       )
       (symbol "U65_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -10057,28 +10057,28 @@
       )
       (symbol "U66_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -10111,28 +10111,28 @@
       )
       (symbol "U67_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -10165,28 +10165,28 @@
       )
       (symbol "U68_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -10219,28 +10219,28 @@
       )
       (symbol "U69_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -10273,28 +10273,28 @@
       )
       (symbol "U7_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -10327,28 +10327,28 @@
       )
       (symbol "U8_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -10381,28 +10381,28 @@
       )
       (symbol "U9_1_1"
         (pin bidirectional line (at -5.08 -6.350 0) (length 3.81)
-          (name "3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
-          (name "4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
-          (name "5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
-          (name "6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+        (pin bidirectional line (at -5.08 -3.810 0) (length 3.81)
           (name "2" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 -1.270 0) (length 3.81)
+          (name "6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 1.270 0) (length 3.81)
+          (name "5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 3.810 0) (length 3.81)
+          (name "4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at -5.08 6.350 0) (length 3.81)
+          (name "3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
       (embedded_fonts no)
@@ -14928,10 +14928,10 @@
     (property "Footprint" "" (at 807.720 238.760 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (property "Datasheet" "" (at 807.720 238.760 0)
+    (property "Datasheet" "https://www.sameskydevices.com/product/resource/pj-102a.pdf" (at 807.720 238.760 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (property "Description" "5.5x2.1 mm centre-positive DC jack" (at 807.720 238.760 0)
+    (property "Description" "5.5x2.0 mm centre-positive DC jack" (at 807.720 238.760 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
     (pin "1"
@@ -14940,7 +14940,7 @@
     (pin "2"
       (uuid "e1a19672-ff8f-5003-995c-27a1604301b9")
     )
-    (pin "2b"
+    (pin "3"
       (uuid "b509e121-116e-5ab1-b639-c72b0dd3fab9")
     )
     (instances
@@ -20100,22 +20100,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 25.400 558.800 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "807b8977-4e28-55ac-ab86-0ea1dd67ee1c")
     )
-    (pin "4"
+    (pin "2"
       (uuid "bbc3c0ac-2b40-5c0f-b248-3a89e3fe001c")
     )
-    (pin "5"
+    (pin "6"
       (uuid "1de97a98-f1ac-58f1-a732-5262843a8616")
     )
-    (pin "6"
+    (pin "5"
       (uuid "5dd92046-5989-53c7-9968-74709c9beb8c")
     )
-    (pin "1"
+    (pin "4"
       (uuid "61dff8ed-018d-5289-ac59-f3fe7bc1168d")
     )
-    (pin "2"
+    (pin "3"
       (uuid "f6d346b0-0ff5-5d9c-b822-fb88fedc3ed3")
     )
     (instances
@@ -20202,22 +20202,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 96.520 558.800 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "bfe47fb2-3483-5280-ad7c-a924ba250d43")
     )
-    (pin "4"
+    (pin "2"
       (uuid "9610d83b-d772-577f-a942-9b21cb7fc2e3")
     )
-    (pin "5"
+    (pin "6"
       (uuid "56576e1a-6812-5097-a3a3-1de9bf3262ca")
     )
-    (pin "6"
+    (pin "5"
       (uuid "d713e56e-9a6c-5727-9ee9-7780d3b06546")
     )
-    (pin "1"
+    (pin "4"
       (uuid "21a01917-c2c6-52c5-a197-00a03a1cd028")
     )
-    (pin "2"
+    (pin "3"
       (uuid "10a9d6df-3a0f-5f59-a5bb-53e4b70d15bd")
     )
     (instances
@@ -20304,22 +20304,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 167.640 558.800 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "713754db-97a8-56df-ae0d-6814edf41338")
     )
-    (pin "4"
+    (pin "2"
       (uuid "8d105c7b-88e6-5392-9af9-5bc3647137df")
     )
-    (pin "5"
+    (pin "6"
       (uuid "20153bd1-4b1a-54c4-8250-768c912340e2")
     )
-    (pin "6"
+    (pin "5"
       (uuid "0b019ae0-e730-5df1-8eb7-25f0aa3002cb")
     )
-    (pin "1"
+    (pin "4"
       (uuid "441446bd-2cc4-5f1e-b249-7e00807c8a44")
     )
-    (pin "2"
+    (pin "3"
       (uuid "c6760a21-8665-5401-ae9d-e46fb67ae4a7")
     )
     (instances
@@ -20406,22 +20406,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 238.760 558.800 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "6054ce8d-c63a-526a-bc07-11b0f06f630c")
     )
-    (pin "4"
+    (pin "2"
       (uuid "ac881149-df52-55c1-a6de-62db6ffa8bad")
     )
-    (pin "5"
+    (pin "6"
       (uuid "e8ea53b1-32d5-5f7a-bdfd-e8601de53569")
     )
-    (pin "6"
+    (pin "5"
       (uuid "66902717-3f26-5367-a4f3-703ae93a586d")
     )
-    (pin "1"
+    (pin "4"
       (uuid "96210350-3af3-5262-8f8f-09aa47b12bd1")
     )
-    (pin "2"
+    (pin "3"
       (uuid "c54321d4-84b9-5e0b-8515-9c3d17f3c6bc")
     )
     (instances
@@ -20508,22 +20508,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 309.880 558.800 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "178b14e1-180c-57d2-b85d-82899f3e0ac8")
     )
-    (pin "4"
+    (pin "2"
       (uuid "9c6f7945-7e1c-51a2-af26-31b90a43a8b2")
     )
-    (pin "5"
+    (pin "6"
       (uuid "09e64ce7-c7da-594b-b964-82da1394fd22")
     )
-    (pin "6"
+    (pin "5"
       (uuid "f3fdc83a-78eb-52b5-89c8-0a84787b9a51")
     )
-    (pin "1"
+    (pin "4"
       (uuid "b7c7cc01-bddb-566f-a825-4709bf8128bf")
     )
-    (pin "2"
+    (pin "3"
       (uuid "9ad6381e-94b8-5954-b954-ce18b4c3e1d9")
     )
     (instances
@@ -20610,22 +20610,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 381.000 558.800 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "44dcd2ff-a053-5cd1-b076-421b1eb0f578")
     )
-    (pin "4"
+    (pin "2"
       (uuid "2e9d39e1-c2ba-594a-ba6c-35555f0542aa")
     )
-    (pin "5"
+    (pin "6"
       (uuid "9db2bb42-0906-5ea1-8893-1a92dbca6210")
     )
-    (pin "6"
+    (pin "5"
       (uuid "407d99fc-67d9-5a65-9f34-db6035a1cd08")
     )
-    (pin "1"
+    (pin "4"
       (uuid "3f431852-b261-5183-8291-f4de5b9a7aee")
     )
-    (pin "2"
+    (pin "3"
       (uuid "d6e97f39-984e-5864-9329-1c56083633eb")
     )
     (instances
@@ -20712,22 +20712,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 452.120 558.800 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "38cfe2d8-ad6b-5286-8277-9f50dd2a733a")
     )
-    (pin "4"
+    (pin "2"
       (uuid "ffa22aa6-2672-56b6-9671-e4612bc3ea5f")
     )
-    (pin "5"
+    (pin "6"
       (uuid "3de25680-128c-54d4-81c2-4a48da1fcca9")
     )
-    (pin "6"
+    (pin "5"
       (uuid "7ff4d1bd-192d-54ad-a6aa-cd916c2a3ea2")
     )
-    (pin "1"
+    (pin "4"
       (uuid "261a2faf-5c85-56f0-87e3-ca99bf0fec5b")
     )
-    (pin "2"
+    (pin "3"
       (uuid "c5b22ef7-8a41-5424-b2fa-f1ee4641ba24")
     )
     (instances
@@ -20814,22 +20814,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 523.240 558.800 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "64745dcc-9ed9-5c24-95b1-efc2a736f0b8")
     )
-    (pin "4"
+    (pin "2"
       (uuid "dbe65ea2-759c-5f48-a419-296d1bfa064d")
     )
-    (pin "5"
+    (pin "6"
       (uuid "7830774b-9100-590a-8a88-1b8da871fa61")
     )
-    (pin "6"
+    (pin "5"
       (uuid "ead1a0ab-8ef0-573f-96a9-70848ea5132a")
     )
-    (pin "1"
+    (pin "4"
       (uuid "b5b745d0-f8e4-5a43-8825-4cef75d31124")
     )
-    (pin "2"
+    (pin "3"
       (uuid "e6aa1cc5-7597-5bde-9372-87924828ba6d")
     )
     (instances
@@ -20916,22 +20916,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 594.360 558.800 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "2ae8441c-863e-5b88-a057-70ab2f054590")
     )
-    (pin "4"
+    (pin "2"
       (uuid "bfc4200b-fe86-5279-a0cf-8a50de39f525")
     )
-    (pin "5"
+    (pin "6"
       (uuid "e6de9506-b682-5db4-9be5-d9c190637097")
     )
-    (pin "6"
+    (pin "5"
       (uuid "7dcceb6d-b72d-5ad2-ad02-12ed15d73b0b")
     )
-    (pin "1"
+    (pin "4"
       (uuid "5a0eca9e-57eb-5d71-9e16-178794324427")
     )
-    (pin "2"
+    (pin "3"
       (uuid "3ab4b2ba-8a88-5be0-bfc7-1777b8116ec7")
     )
     (instances
@@ -21018,22 +21018,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 665.480 558.800 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "340c5ddf-9b60-56c2-9304-5220796887d8")
     )
-    (pin "4"
+    (pin "2"
       (uuid "c2af4335-0b3c-5318-be5b-c0d4b843a2b3")
     )
-    (pin "5"
+    (pin "6"
       (uuid "df494aff-3e93-5275-84c8-81e6145bc6e9")
     )
-    (pin "6"
+    (pin "5"
       (uuid "1c13bbc2-06d7-54e1-a9e2-5490c0ea4bc9")
     )
-    (pin "1"
+    (pin "4"
       (uuid "1267d5d1-f73e-5734-bc7f-b3913874fb33")
     )
-    (pin "2"
+    (pin "3"
       (uuid "8a3e09bf-9b61-5832-87ce-126a88df4608")
     )
     (instances
@@ -21471,22 +21471,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 807.720 558.800 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "71d14cb5-405e-596e-95db-eb33cd580733")
     )
-    (pin "4"
+    (pin "2"
       (uuid "b0ac4412-6c32-5fad-8aac-ce01c2c4f918")
     )
-    (pin "5"
+    (pin "6"
       (uuid "f557d98b-e361-5ed8-8cbe-9f8313f2b6d8")
     )
-    (pin "6"
+    (pin "5"
       (uuid "e58413b2-5120-56b4-a625-0684e9dbd5a2")
     )
-    (pin "1"
+    (pin "4"
       (uuid "19c5b790-6e68-55aa-8ae6-ff923afc72c8")
     )
-    (pin "2"
+    (pin "3"
       (uuid "1efa50d8-318e-509b-ac07-67c53466a698")
     )
     (instances
@@ -21573,22 +21573,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 878.840 558.800 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "29fcb82b-6e18-5d00-8746-3776de2a9955")
     )
-    (pin "4"
+    (pin "2"
       (uuid "f30bf9d4-0f01-5d7c-99b0-71651e5feef2")
     )
-    (pin "5"
+    (pin "6"
       (uuid "928f3e60-90f9-5041-88ef-4b1d488c8e5b")
     )
-    (pin "6"
+    (pin "5"
       (uuid "592108f5-5aee-5464-a0b3-891e422c931c")
     )
-    (pin "1"
+    (pin "4"
       (uuid "37b64497-ffc5-5c19-9a48-052638ec78ed")
     )
-    (pin "2"
+    (pin "3"
       (uuid "cb0b792b-73c7-51f8-bfe4-7845d68a3d57")
     )
     (instances
@@ -21675,22 +21675,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 949.960 558.800 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "f344862f-afe8-5605-869e-1e401966b087")
     )
-    (pin "4"
+    (pin "2"
       (uuid "7c072346-ca5e-5d75-942f-6a01a7d25e54")
     )
-    (pin "5"
+    (pin "6"
       (uuid "670ec31c-280d-59f0-bb73-59e0ed5e0617")
     )
-    (pin "6"
+    (pin "5"
       (uuid "de3cc0c6-9d5e-5f2f-8eb6-b746856cf19e")
     )
-    (pin "1"
+    (pin "4"
       (uuid "53e7d35c-d3e9-5e38-a36d-4f560661e196")
     )
-    (pin "2"
+    (pin "3"
       (uuid "2bb369cd-3a71-58fa-9d93-21e2be698e79")
     )
     (instances
@@ -21777,22 +21777,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 1021.080 558.800 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "b3d6ac3a-af11-5b79-9c50-11132c044d76")
     )
-    (pin "4"
+    (pin "2"
       (uuid "c484ac6b-5e50-5d2e-9bad-203bd2177836")
     )
-    (pin "5"
+    (pin "6"
       (uuid "055205f8-d2ce-5c66-b02c-721a8542061e")
     )
-    (pin "6"
+    (pin "5"
       (uuid "330ba78a-1ffc-57e8-a7b3-a923e63f8213")
     )
-    (pin "1"
+    (pin "4"
       (uuid "50f46b8e-ec53-5345-ae2d-52bee11ee8f8")
     )
-    (pin "2"
+    (pin "3"
       (uuid "16caf3a9-bce9-5ad6-ab3d-257d291c1d8f")
     )
     (instances
@@ -21879,22 +21879,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 1092.200 558.800 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "a0d9c6a6-05bf-57fb-ab3c-a5c7ac52e5f0")
     )
-    (pin "4"
+    (pin "2"
       (uuid "6bfefc66-3d4a-5658-a3db-27462914b9e9")
     )
-    (pin "5"
+    (pin "6"
       (uuid "91f4ed1b-fa59-58dd-abc6-6e50d1c1bba9")
     )
-    (pin "6"
+    (pin "5"
       (uuid "335c36ee-7875-5ba5-b7e9-2d54fafede9b")
     )
-    (pin "1"
+    (pin "4"
       (uuid "c5615c4d-a39d-579b-bc17-9973eb0da892")
     )
-    (pin "2"
+    (pin "3"
       (uuid "a5e098f0-9e3f-5424-a65b-445a35a05961")
     )
     (instances
@@ -21981,22 +21981,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 25.400 612.140 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "a7bd26f8-3183-55f6-b50d-9c2ebdd06b55")
     )
-    (pin "4"
+    (pin "2"
       (uuid "bb09b284-4d6d-5b05-a080-c5c4948c8309")
     )
-    (pin "5"
+    (pin "6"
       (uuid "b7568b49-2248-5879-b013-f3976c2062a7")
     )
-    (pin "6"
+    (pin "5"
       (uuid "b7529d9a-3713-5ed7-b765-0a8ca6d38136")
     )
-    (pin "1"
+    (pin "4"
       (uuid "d1d89296-c5cc-5aab-ac9e-d0b4393ade8b")
     )
-    (pin "2"
+    (pin "3"
       (uuid "85cfad08-e9df-5de9-b809-1b3969217018")
     )
     (instances
@@ -22083,22 +22083,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 96.520 612.140 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "18ff9f05-6137-55bd-beaf-27f83fb48631")
     )
-    (pin "4"
+    (pin "2"
       (uuid "794a5bf5-50ec-582a-9911-0afb44e3e076")
     )
-    (pin "5"
+    (pin "6"
       (uuid "56952bc1-a9ca-5ee5-bbe6-9c2fc0af5931")
     )
-    (pin "6"
+    (pin "5"
       (uuid "c0637667-7d74-52c4-995a-1fe94b4695a1")
     )
-    (pin "1"
+    (pin "4"
       (uuid "4f42476d-6b36-5411-9b64-b765e16a6e9c")
     )
-    (pin "2"
+    (pin "3"
       (uuid "2087014d-f448-533f-a557-3be9088ae640")
     )
     (instances
@@ -22185,22 +22185,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 167.640 612.140 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "265bfb5d-9189-5ee0-b373-289b1fa529f2")
     )
-    (pin "4"
+    (pin "2"
       (uuid "b4534849-b5dc-5f48-8fe7-19249d4f23c5")
     )
-    (pin "5"
+    (pin "6"
       (uuid "6e3323ef-823e-5379-ac39-5640b02c6b51")
     )
-    (pin "6"
+    (pin "5"
       (uuid "b8413100-25f5-5ea4-9a9b-44e5dab3e28a")
     )
-    (pin "1"
+    (pin "4"
       (uuid "4ad0503f-312a-52f7-9f56-459d196f183d")
     )
-    (pin "2"
+    (pin "3"
       (uuid "359abd59-1883-5c9f-8c4d-50e0c753f360")
     )
     (instances
@@ -22287,22 +22287,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 238.760 612.140 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "fd5e558d-7e21-58fe-a4e0-604dd2090ec4")
     )
-    (pin "4"
+    (pin "2"
       (uuid "6af690bd-4489-58e7-ac4e-2ff68e15b1c9")
     )
-    (pin "5"
+    (pin "6"
       (uuid "563e5a40-90aa-52ba-b90c-3a02d046dfcd")
     )
-    (pin "6"
+    (pin "5"
       (uuid "dbf0ed40-a265-5e3a-93e7-cd98b95ccb70")
     )
-    (pin "1"
+    (pin "4"
       (uuid "214432c3-9e45-5fb4-8383-b17af3b3a827")
     )
-    (pin "2"
+    (pin "3"
       (uuid "94a80598-261d-5b56-855f-e0f23e5dffed")
     )
     (instances
@@ -22389,22 +22389,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 309.880 612.140 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "3c067089-8d02-5ffe-9a78-dad83ce565a8")
     )
-    (pin "4"
+    (pin "2"
       (uuid "0d72edcd-403b-5b5b-848b-7623eca5c74b")
     )
-    (pin "5"
+    (pin "6"
       (uuid "46d8e230-4898-5b8c-ae82-11e00191a8fb")
     )
-    (pin "6"
+    (pin "5"
       (uuid "24d3649c-6621-56d9-89bd-acdb4c5ad868")
     )
-    (pin "1"
+    (pin "4"
       (uuid "56e23c9f-3c7f-5a22-b2d4-73e5d4cf232a")
     )
-    (pin "2"
+    (pin "3"
       (uuid "933a7fce-f93b-5e7b-affe-9cbde091f8fc")
     )
     (instances
@@ -22842,22 +22842,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 452.120 612.140 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "3a974d2d-a348-53b6-96af-ebac427a3889")
     )
-    (pin "4"
+    (pin "2"
       (uuid "8c8d3e4d-9e58-509b-9747-273fe66374bb")
     )
-    (pin "5"
+    (pin "6"
       (uuid "4af6428f-2640-5373-9c55-5bac2a45eac7")
     )
-    (pin "6"
+    (pin "5"
       (uuid "9c1175e8-cb5d-5ede-bd69-c4e4babc4aeb")
     )
-    (pin "1"
+    (pin "4"
       (uuid "d2b90ef6-7923-58e6-968f-770bd3985d7a")
     )
-    (pin "2"
+    (pin "3"
       (uuid "81164ec7-2af6-5b8e-8b8c-a338397ef60a")
     )
     (instances
@@ -22944,22 +22944,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 523.240 612.140 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "75a596c0-503b-58fe-ae76-785d4713474e")
     )
-    (pin "4"
+    (pin "2"
       (uuid "71b444e5-b04a-5a5a-b68c-1ecd06683e38")
     )
-    (pin "5"
+    (pin "6"
       (uuid "60554a14-a310-56bf-a096-52c5d70c12ec")
     )
-    (pin "6"
+    (pin "5"
       (uuid "cfb18d42-65ee-551f-8f9e-9c6b50e91e8f")
     )
-    (pin "1"
+    (pin "4"
       (uuid "7c1d5899-884e-556d-baee-8b6cc0b7552c")
     )
-    (pin "2"
+    (pin "3"
       (uuid "3dcfcaf3-6e6c-5729-bf29-8967bc2c1a6d")
     )
     (instances
@@ -23046,22 +23046,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 594.360 612.140 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "aa93aa7a-0190-5521-8a56-ba224a93079a")
     )
-    (pin "4"
+    (pin "2"
       (uuid "2c51d32d-4d15-557f-a3c0-cd54f693e3a9")
     )
-    (pin "5"
+    (pin "6"
       (uuid "2d6c8745-afd2-56e4-b48e-8a966babe1c8")
     )
-    (pin "6"
+    (pin "5"
       (uuid "f325178a-ab29-5771-84e6-7e75a6fa3c42")
     )
-    (pin "1"
+    (pin "4"
       (uuid "b952b7a7-8ec7-54d5-964b-b6e22f74ba1b")
     )
-    (pin "2"
+    (pin "3"
       (uuid "50bdf30a-dde7-53e1-8d5d-f5a89041cb3e")
     )
     (instances
@@ -23148,22 +23148,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 665.480 612.140 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "693677e2-4830-5252-8576-78cbf1803251")
     )
-    (pin "4"
+    (pin "2"
       (uuid "462b8ee0-ff6c-5d17-9259-08324c61b370")
     )
-    (pin "5"
+    (pin "6"
       (uuid "91451581-ee80-55f8-b9ac-b7a59278e943")
     )
-    (pin "6"
+    (pin "5"
       (uuid "fe16e517-8d51-5ae4-a14b-9ad5cbab2e77")
     )
-    (pin "1"
+    (pin "4"
       (uuid "c9018a5f-7c5e-5ade-8b0a-346258ebb642")
     )
-    (pin "2"
+    (pin "3"
       (uuid "46bbc914-8e18-55fc-92b8-c3cdddd1b076")
     )
     (instances
@@ -23250,22 +23250,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 736.600 612.140 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "2f51d9db-61da-522b-a1b0-4fd2a1682428")
     )
-    (pin "4"
+    (pin "2"
       (uuid "17e9d926-d69b-56a6-8b66-121f8b66bad2")
     )
-    (pin "5"
+    (pin "6"
       (uuid "e878e182-2bc0-50d4-b450-6f81342e4558")
     )
-    (pin "6"
+    (pin "5"
       (uuid "e2d7a931-2ab3-5527-b8b6-3b19f13dc722")
     )
-    (pin "1"
+    (pin "4"
       (uuid "e55a68c0-290e-553f-ab7f-1bf0dbcd021f")
     )
-    (pin "2"
+    (pin "3"
       (uuid "a952709d-bb24-5262-b7cf-6db8c8af849d")
     )
     (instances
@@ -23352,22 +23352,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 807.720 612.140 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "89d9a4b8-d83e-513b-b6b5-31beba97d113")
     )
-    (pin "4"
+    (pin "2"
       (uuid "3c61f5c8-eff2-5233-86cd-fec4c17bdb6b")
     )
-    (pin "5"
+    (pin "6"
       (uuid "38ac5796-31d1-5ddd-8c12-ffce1bf2b5a0")
     )
-    (pin "6"
+    (pin "5"
       (uuid "e8290935-1489-56ee-b779-27af62409571")
     )
-    (pin "1"
+    (pin "4"
       (uuid "c6013954-7e00-57b2-be80-be73a7cdcaf0")
     )
-    (pin "2"
+    (pin "3"
       (uuid "fcc28e10-8003-53c8-81ee-edfef2b3eb9d")
     )
     (instances
@@ -23454,22 +23454,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 878.840 612.140 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "c3729f63-ba77-56a1-bb93-f48cdfecdd8f")
     )
-    (pin "4"
+    (pin "2"
       (uuid "7e7dc7a6-4cab-5ceb-9fe5-2661e6c0fc89")
     )
-    (pin "5"
+    (pin "6"
       (uuid "8e48577f-5b51-596c-9706-013860821aa1")
     )
-    (pin "6"
+    (pin "5"
       (uuid "3c2b0782-94b0-5c7c-9392-5cfb937c998a")
     )
-    (pin "1"
+    (pin "4"
       (uuid "3379a9ff-4471-5fe5-9ade-5bb8717f0309")
     )
-    (pin "2"
+    (pin "3"
       (uuid "b6162e94-42fc-50fc-ac29-893682b3f998")
     )
     (instances
@@ -23556,22 +23556,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 949.960 612.140 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "69443088-a6f3-540f-862e-f28cd48bf1de")
     )
-    (pin "4"
+    (pin "2"
       (uuid "2fec5c95-90b7-57a4-83e3-ea266246e5af")
     )
-    (pin "5"
+    (pin "6"
       (uuid "6da575b3-ea3b-56ff-8784-a762fd41448a")
     )
-    (pin "6"
+    (pin "5"
       (uuid "fe3c6d9f-2fc2-5946-a0e3-43deb0709baa")
     )
-    (pin "1"
+    (pin "4"
       (uuid "de7c88b3-ee31-5c59-a769-b81fb319133f")
     )
-    (pin "2"
+    (pin "3"
       (uuid "3e2dbff9-4daf-5f3a-9a1a-c0eecf51971d")
     )
     (instances
@@ -23658,22 +23658,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 1021.080 612.140 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "b015efeb-2221-596f-a8c8-6cfcceb76809")
     )
-    (pin "4"
+    (pin "2"
       (uuid "05a28d12-3071-5aba-b363-e4a588e51670")
     )
-    (pin "5"
+    (pin "6"
       (uuid "09cf5763-762f-5882-b9d1-017444f718a8")
     )
-    (pin "6"
+    (pin "5"
       (uuid "163e4c7b-3f9d-52b1-9189-661f1c41e023")
     )
-    (pin "1"
+    (pin "4"
       (uuid "13f36408-40c6-50aa-9bd0-0ee13c94dadf")
     )
-    (pin "2"
+    (pin "3"
       (uuid "d173ad9e-7f99-5350-964f-8c5389f41a44")
     )
     (instances
@@ -23760,22 +23760,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 1092.200 612.140 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "eea69afc-3983-5611-bd7f-bd4aa170b9d5")
     )
-    (pin "4"
+    (pin "2"
       (uuid "c45c9508-5ca2-56fb-971f-730e623d3572")
     )
-    (pin "5"
+    (pin "6"
       (uuid "e1780459-bff5-58bb-820c-bcbbeb9fe648")
     )
-    (pin "6"
+    (pin "5"
       (uuid "b2694804-d7e8-5446-87ce-816a58901f32")
     )
-    (pin "1"
+    (pin "4"
       (uuid "86e5b7fc-aa7d-58ea-9c5b-97dafa74fa65")
     )
-    (pin "2"
+    (pin "3"
       (uuid "42fafa2f-a014-5cb3-86dc-5669d3044bda")
     )
     (instances
@@ -24213,22 +24213,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 96.520 665.480 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "06b1b2fb-c5c9-51cb-9e82-a488040adc7a")
     )
-    (pin "4"
+    (pin "2"
       (uuid "c3e35747-5cdf-5e6a-9786-e7fd8193cc78")
     )
-    (pin "5"
+    (pin "6"
       (uuid "30a647a1-39ea-57ef-b6d1-1fc874bb9e12")
     )
-    (pin "6"
+    (pin "5"
       (uuid "929bb95e-7794-5e24-843f-bd244953a450")
     )
-    (pin "1"
+    (pin "4"
       (uuid "c89cd318-d557-5398-94ec-516d27a390bb")
     )
-    (pin "2"
+    (pin "3"
       (uuid "09a4c41c-bd68-5d64-a14a-7b241c339249")
     )
     (instances
@@ -24315,22 +24315,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 167.640 665.480 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "7085da63-5f4a-50cd-98a5-229d83729acf")
     )
-    (pin "4"
+    (pin "2"
       (uuid "64cb31e7-cf42-56d1-ab35-a0ee1424a075")
     )
-    (pin "5"
+    (pin "6"
       (uuid "d0cb7b67-6b34-50ee-a1c1-ad337a45d411")
     )
-    (pin "6"
+    (pin "5"
       (uuid "745a6d05-300f-52e0-b72e-a3ac62bc97be")
     )
-    (pin "1"
+    (pin "4"
       (uuid "bc57baae-b652-5d4b-b50f-c5c36c538a30")
     )
-    (pin "2"
+    (pin "3"
       (uuid "cecd6cee-279c-5bf8-b827-8cd3d4fff0a6")
     )
     (instances
@@ -24417,22 +24417,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 238.760 665.480 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "368de37b-a840-5bae-b78b-ac5596e04772")
     )
-    (pin "4"
+    (pin "2"
       (uuid "cde3e36e-b0eb-5f7c-9509-36ab21cbb5ea")
     )
-    (pin "5"
+    (pin "6"
       (uuid "bd5b3645-fdab-51d9-a58a-bf9b690dc651")
     )
-    (pin "6"
+    (pin "5"
       (uuid "7498b88e-aa60-5c1c-964f-68a1743e9083")
     )
-    (pin "1"
+    (pin "4"
       (uuid "312ad03c-3ba2-58e8-8363-1b0cd44c3331")
     )
-    (pin "2"
+    (pin "3"
       (uuid "c9f80164-c773-5239-952f-9eb221001711")
     )
     (instances
@@ -24519,22 +24519,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 309.880 665.480 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "edcc58ea-e0e6-5757-8e0b-897187f605ce")
     )
-    (pin "4"
+    (pin "2"
       (uuid "35f7501f-daa5-517d-983a-93b06039a9aa")
     )
-    (pin "5"
+    (pin "6"
       (uuid "bcba4f38-91c3-5a8a-ad46-d9fda78949af")
     )
-    (pin "6"
+    (pin "5"
       (uuid "e7c8c433-77bb-58b5-bdaf-665f75785d9d")
     )
-    (pin "1"
+    (pin "4"
       (uuid "55af3613-cc97-51a7-a7fd-8008ebea9848")
     )
-    (pin "2"
+    (pin "3"
       (uuid "d2f2777b-f5fd-5015-8507-a5110adfeb2f")
     )
     (instances
@@ -24621,22 +24621,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 381.000 665.480 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "3ed29996-6205-58fb-aa4c-0a1b3ffde66f")
     )
-    (pin "4"
+    (pin "2"
       (uuid "e6c863ca-260b-579c-8414-41fdf84bb1bf")
     )
-    (pin "5"
+    (pin "6"
       (uuid "b6678500-0a4c-5633-9ceb-8b446f0eda9d")
     )
-    (pin "6"
+    (pin "5"
       (uuid "74393ebb-0bbd-53a1-97dd-421f211eacde")
     )
-    (pin "1"
+    (pin "4"
       (uuid "5b21ed6a-bf4a-5241-95b4-7cb86a6cb8a8")
     )
-    (pin "2"
+    (pin "3"
       (uuid "d7d9e4b6-fdde-5e22-b0ab-5e37e25aa57f")
     )
     (instances
@@ -24723,22 +24723,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 452.120 665.480 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "29f30556-a8ed-5de1-95f2-043a02ce8783")
     )
-    (pin "4"
+    (pin "2"
       (uuid "044b0fdd-fded-550a-98f7-a4bf6e6b8409")
     )
-    (pin "5"
+    (pin "6"
       (uuid "206b364c-240e-54b4-b04a-1a9902e659ac")
     )
-    (pin "6"
+    (pin "5"
       (uuid "f71dae4a-a02b-54aa-9c04-986591fdccbb")
     )
-    (pin "1"
+    (pin "4"
       (uuid "34d567e9-e950-56b5-b128-df90685e524d")
     )
-    (pin "2"
+    (pin "3"
       (uuid "ad39f6ae-5275-52c5-8c3e-2e25a7ff4904")
     )
     (instances
@@ -24825,22 +24825,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 523.240 665.480 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "3195b4f5-8d24-5b59-8764-51354f24c815")
     )
-    (pin "4"
+    (pin "2"
       (uuid "38487579-8601-58a8-94a9-2b1e69efba06")
     )
-    (pin "5"
+    (pin "6"
       (uuid "4dd7ac4a-5aa7-5d97-a111-13652351c73b")
     )
-    (pin "6"
+    (pin "5"
       (uuid "e100ec7d-f8c2-5853-b024-5ff5f9afc99d")
     )
-    (pin "1"
+    (pin "4"
       (uuid "a81c32ba-46bb-5c59-bc5c-fd10147ee662")
     )
-    (pin "2"
+    (pin "3"
       (uuid "89fee39b-ccc8-5882-b162-0c06f1366401")
     )
     (instances
@@ -24927,22 +24927,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 594.360 665.480 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "582b117d-9311-57cf-aa56-ff302cb60448")
     )
-    (pin "4"
+    (pin "2"
       (uuid "79891d0e-76be-5f09-af77-c6cad2b0368d")
     )
-    (pin "5"
+    (pin "6"
       (uuid "da003357-8540-5bd7-8282-3a06aaab05b4")
     )
-    (pin "6"
+    (pin "5"
       (uuid "df07ffc0-0d32-55cb-aa65-d9a1e4fe1600")
     )
-    (pin "1"
+    (pin "4"
       (uuid "18ad5d7d-2ca9-5764-95f4-91ac36f15601")
     )
-    (pin "2"
+    (pin "3"
       (uuid "0e6fbcc5-0edc-5c15-8e32-df4edf0b5da9")
     )
     (instances
@@ -25029,22 +25029,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 665.480 665.480 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "d76e14f4-bb36-5f47-bd9b-38c40f45ea0d")
     )
-    (pin "4"
+    (pin "2"
       (uuid "66fd76a2-b20f-5374-8fbf-eb5c1b3320d2")
     )
-    (pin "5"
+    (pin "6"
       (uuid "173b7a85-119b-5102-91d2-ce99f8dd3872")
     )
-    (pin "6"
+    (pin "5"
       (uuid "5b16343a-d2e6-51a2-847f-fdc0b3fd5920")
     )
-    (pin "1"
+    (pin "4"
       (uuid "5c9e284a-ab38-5059-ad10-b872b2c1f987")
     )
-    (pin "2"
+    (pin "3"
       (uuid "601319f1-532d-5813-9a2c-24d2b435e1a7")
     )
     (instances
@@ -25131,22 +25131,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 736.600 665.480 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "e31ab7c3-9838-5d5c-8831-1c2b533778ca")
     )
-    (pin "4"
+    (pin "2"
       (uuid "cc7e3899-38b5-542e-b71e-6ddb13777951")
     )
-    (pin "5"
+    (pin "6"
       (uuid "fe3bd2d0-c9a8-568e-a183-402eddfa8838")
     )
-    (pin "6"
+    (pin "5"
       (uuid "f26d28af-5e0b-56ef-ba5a-c6463ea334f4")
     )
-    (pin "1"
+    (pin "4"
       (uuid "b5541e5c-016b-5b0b-9c44-42d170ee588c")
     )
-    (pin "2"
+    (pin "3"
       (uuid "19246036-d057-5150-b06b-79924c3c7714")
     )
     (instances
@@ -25421,22 +25421,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 878.840 665.480 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "df774b1d-a29a-5067-ba76-47b56650d3f6")
     )
-    (pin "4"
+    (pin "2"
       (uuid "b065a55f-af1b-5a5e-8878-73f0eef0ec18")
     )
-    (pin "5"
+    (pin "6"
       (uuid "8c7d461b-fda5-5597-9818-48cc41821125")
     )
-    (pin "6"
+    (pin "5"
       (uuid "54c46b4a-3c12-5f31-b712-4e175c5fe41a")
     )
-    (pin "1"
+    (pin "4"
       (uuid "6297ccd0-79fe-5a76-8848-d73058bf6a40")
     )
-    (pin "2"
+    (pin "3"
       (uuid "220628c4-6bb3-5f88-8464-bc0601080f92")
     )
     (instances
@@ -25523,22 +25523,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 949.960 665.480 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "b12ca911-fb23-534e-9ec8-e3ffa7736968")
     )
-    (pin "4"
+    (pin "2"
       (uuid "15ab772d-6beb-5b6a-b410-544a57a56a3f")
     )
-    (pin "5"
+    (pin "6"
       (uuid "56aa890c-007a-5685-82cd-ac4f6535025b")
     )
-    (pin "6"
+    (pin "5"
       (uuid "f1fbf149-3c2d-52a1-b65d-497c6e799add")
     )
-    (pin "1"
+    (pin "4"
       (uuid "4dedf4a2-3d5c-597a-9c7f-4ba59a60ab85")
     )
-    (pin "2"
+    (pin "3"
       (uuid "2b1d9758-0fcd-5df2-8ab8-6e26fa9fd6d9")
     )
     (instances
@@ -25625,22 +25625,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 1021.080 665.480 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "3d292487-e9d5-5d89-a580-4edf2bd49185")
     )
-    (pin "4"
+    (pin "2"
       (uuid "e226a8c5-a27a-5ff6-9c30-a5cf66aa2ecf")
     )
-    (pin "5"
+    (pin "6"
       (uuid "403d14ae-19f5-50b4-a087-1cc51cc8f55e")
     )
-    (pin "6"
+    (pin "5"
       (uuid "7249c4e7-f56d-5255-9f17-cc737b016533")
     )
-    (pin "1"
+    (pin "4"
       (uuid "668c5c95-7e51-58d7-87ad-0679e9d675d2")
     )
-    (pin "2"
+    (pin "3"
       (uuid "a5cf1937-7d1e-5a10-933a-a88eac22f338")
     )
     (instances
@@ -25727,22 +25727,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 1092.200 665.480 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "47b10c4a-c1cd-559f-a233-1790b9d41c3f")
     )
-    (pin "4"
+    (pin "2"
       (uuid "646dd38e-5a4e-5523-91b0-9bfcaa8b085f")
     )
-    (pin "5"
+    (pin "6"
       (uuid "4907a15f-46c2-5f4f-a3f9-550d5d9b32e8")
     )
-    (pin "6"
+    (pin "5"
       (uuid "1683693b-f715-56d4-b218-5b118a03a1f6")
     )
-    (pin "1"
+    (pin "4"
       (uuid "02b4d1f5-bd55-5d3f-9af3-999a1eccdbb8")
     )
-    (pin "2"
+    (pin "3"
       (uuid "9173b275-2dce-5905-8b89-5e59240cda73")
     )
     (instances
@@ -25829,22 +25829,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 25.400 718.820 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "66346b36-89e7-5b84-ad9d-06a32f8d4009")
     )
-    (pin "4"
+    (pin "2"
       (uuid "41d01c05-1221-5626-b1fd-1c586db69c74")
     )
-    (pin "5"
+    (pin "6"
       (uuid "4ae6394d-e457-5aee-9516-b47ece557511")
     )
-    (pin "6"
+    (pin "5"
       (uuid "f026d98e-4040-55e4-b056-8816b39c7bd3")
     )
-    (pin "1"
+    (pin "4"
       (uuid "0b770076-d653-5e9b-b2b1-df345c0fc57b")
     )
-    (pin "2"
+    (pin "3"
       (uuid "cfc2268f-fee6-5f96-bf9b-8ce1d25d2f7f")
     )
     (instances
@@ -25931,22 +25931,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 96.520 718.820 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "0608e395-4cbf-5585-a411-28aa76cadb19")
     )
-    (pin "4"
+    (pin "2"
       (uuid "f1ff648c-3b3b-5059-ad68-06726e085e9f")
     )
-    (pin "5"
+    (pin "6"
       (uuid "83085636-0a78-5cbc-8b15-d566ee6d8c81")
     )
-    (pin "6"
+    (pin "5"
       (uuid "b4710576-1475-56c0-9afb-59178430a99a")
     )
-    (pin "1"
+    (pin "4"
       (uuid "81804fb2-9b82-5e68-8863-5e21ea635c06")
     )
-    (pin "2"
+    (pin "3"
       (uuid "60c3dbe8-ecdf-5b4b-bfff-3f0573e0c2e8")
     )
     (instances
@@ -26033,22 +26033,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 167.640 718.820 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "e38728e4-c262-501e-90f2-431437ad2549")
     )
-    (pin "4"
+    (pin "2"
       (uuid "ffb3cb02-9eaf-5766-904f-e5e518f3ab5b")
     )
-    (pin "5"
+    (pin "6"
       (uuid "c43f614d-a87e-5e2d-9c7f-ffd1ae238928")
     )
-    (pin "6"
+    (pin "5"
       (uuid "d75db901-4adc-56c2-b470-e9f4bc06f559")
     )
-    (pin "1"
+    (pin "4"
       (uuid "69747a04-bd98-5e6f-9e1f-5fba9a23117b")
     )
-    (pin "2"
+    (pin "3"
       (uuid "808a316f-2f52-52ca-bb68-a06a2412fad1")
     )
     (instances
@@ -26135,22 +26135,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 238.760 718.820 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "dbf0df2f-8171-5431-8421-5fed2c7f679e")
     )
-    (pin "4"
+    (pin "2"
       (uuid "c5d39f3d-90ec-5abb-b986-e8690879289a")
     )
-    (pin "5"
+    (pin "6"
       (uuid "f4e7c357-fff2-5fbb-85c7-4a5516a7045d")
     )
-    (pin "6"
+    (pin "5"
       (uuid "8d774a76-2d13-535b-89db-2519e9df320f")
     )
-    (pin "1"
+    (pin "4"
       (uuid "14a347c3-11b4-5347-a502-d6c96e49cfcd")
     )
-    (pin "2"
+    (pin "3"
       (uuid "53bd43bc-7889-50d7-a255-28c002ab888a")
     )
     (instances
@@ -26237,22 +26237,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 309.880 718.820 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "a654cac8-46fc-5ef3-b689-eac3875f3a42")
     )
-    (pin "4"
+    (pin "2"
       (uuid "997dd3e2-2acd-5180-83cc-75e8370b35e6")
     )
-    (pin "5"
+    (pin "6"
       (uuid "a7176fca-6b0d-5b68-ae8c-a94945c06a2f")
     )
-    (pin "6"
+    (pin "5"
       (uuid "df5ceb9b-0f49-569f-a31b-d926669f8c3c")
     )
-    (pin "1"
+    (pin "4"
       (uuid "85acd443-c59e-5077-965e-fd35f3039e54")
     )
-    (pin "2"
+    (pin "3"
       (uuid "46df63f9-f6b9-507c-9b49-0c6afa6f139b")
     )
     (instances
@@ -26339,22 +26339,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 381.000 718.820 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "549a87ea-8b43-5f50-9466-18f9e9e2cd10")
     )
-    (pin "4"
+    (pin "2"
       (uuid "9139cb66-0869-5d99-86f5-1b218171c7d7")
     )
-    (pin "5"
+    (pin "6"
       (uuid "3d0a730c-8b34-5b47-a25b-cd5d60aa526c")
     )
-    (pin "6"
+    (pin "5"
       (uuid "ea172f88-867a-5a1b-9e9a-8e72cf7f7ba9")
     )
-    (pin "1"
+    (pin "4"
       (uuid "5448d471-3204-5001-9784-4363e06d2a9d")
     )
-    (pin "2"
+    (pin "3"
       (uuid "b74e1c18-dac6-5c2f-a889-8967aaa71d1d")
     )
     (instances
@@ -26441,22 +26441,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 452.120 718.820 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "24e2abea-1a96-54fb-abae-895f40922421")
     )
-    (pin "4"
+    (pin "2"
       (uuid "9028c904-dbfa-5554-b113-bb97b19e8c0f")
     )
-    (pin "5"
+    (pin "6"
       (uuid "8d09d964-47ce-5dc1-925c-b8d73ac2beb9")
     )
-    (pin "6"
+    (pin "5"
       (uuid "bc50b7df-9bf1-5749-b7dd-c327e1e1f4e4")
     )
-    (pin "1"
+    (pin "4"
       (uuid "08112eb8-79d7-5232-9e18-efd29a7de104")
     )
-    (pin "2"
+    (pin "3"
       (uuid "70451b29-62e9-53df-9e47-4dc7f1cc28f5")
     )
     (instances
@@ -26543,22 +26543,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 523.240 718.820 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "f953395c-746f-5f57-b3e3-1b46365ed69f")
     )
-    (pin "4"
+    (pin "2"
       (uuid "e9177651-06f9-53ef-b755-f5bab7c8fd87")
     )
-    (pin "5"
+    (pin "6"
       (uuid "8d386c58-04bd-529f-89f3-250da4f85f77")
     )
-    (pin "6"
+    (pin "5"
       (uuid "c1752fcd-7477-53c7-bdfc-56af6be83f50")
     )
-    (pin "1"
+    (pin "4"
       (uuid "75dc340c-51aa-5eca-8471-014b1ac86e6a")
     )
-    (pin "2"
+    (pin "3"
       (uuid "994bd3d4-7014-58ec-a62d-611bbd739365")
     )
     (instances
@@ -26645,22 +26645,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 594.360 718.820 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "1219f80d-ef0a-5dc4-85c5-f5e1413d59b7")
     )
-    (pin "4"
+    (pin "2"
       (uuid "88c7ecb4-3612-5da5-91e9-95f5a8abc072")
     )
-    (pin "5"
+    (pin "6"
       (uuid "f11f1faf-90f5-54a6-9758-c3072ad89e72")
     )
-    (pin "6"
+    (pin "5"
       (uuid "7623e633-9a8a-50aa-ba85-ebd371037b02")
     )
-    (pin "1"
+    (pin "4"
       (uuid "02722700-40bb-5454-92c4-861a62e33033")
     )
-    (pin "2"
+    (pin "3"
       (uuid "9b015339-3bb5-569a-a043-cd688d81ca69")
     )
     (instances
@@ -26747,22 +26747,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 665.480 718.820 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "78c05ff4-9987-56a1-b28d-ac5f7658f661")
     )
-    (pin "4"
+    (pin "2"
       (uuid "9a604463-196e-5aae-9841-6e277807b811")
     )
-    (pin "5"
+    (pin "6"
       (uuid "94f5c0b2-8127-555b-9e53-aae2f176ee0d")
     )
-    (pin "6"
+    (pin "5"
       (uuid "b02e58ab-f0c0-5ee2-9249-a39a75b94b5a")
     )
-    (pin "1"
+    (pin "4"
       (uuid "10035b51-8445-54d6-98a2-9ff04726a4c2")
     )
-    (pin "2"
+    (pin "3"
       (uuid "f6599011-e250-5375-ae9c-4cfa160dd872")
     )
     (instances
@@ -26849,22 +26849,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 736.600 718.820 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "f82f4b00-0d9d-59df-8f9a-71a6b05756bf")
     )
-    (pin "4"
+    (pin "2"
       (uuid "b5ef46ad-e136-54e3-855e-cce21c8f4079")
     )
-    (pin "5"
+    (pin "6"
       (uuid "eae17511-fe5e-51d1-9d94-47d4017cf051")
     )
-    (pin "6"
+    (pin "5"
       (uuid "2ee21f4a-01de-531e-90f0-0e9280628cbc")
     )
-    (pin "1"
+    (pin "4"
       (uuid "cf78bae5-99d9-563c-a3c1-5c44e9eac25c")
     )
-    (pin "2"
+    (pin "3"
       (uuid "2a556641-98c1-5d03-8282-211dacba0a90")
     )
     (instances
@@ -26951,22 +26951,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 807.720 718.820 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "08535551-822b-56e2-b04a-f594a4cb9afc")
     )
-    (pin "4"
+    (pin "2"
       (uuid "fb752f3d-b922-545b-91da-a4b0a0976ce5")
     )
-    (pin "5"
+    (pin "6"
       (uuid "c0905728-6809-5136-be52-4eb07a2faadb")
     )
-    (pin "6"
+    (pin "5"
       (uuid "498cd945-393a-54b4-a0a5-cacd36c8775d")
     )
-    (pin "1"
+    (pin "4"
       (uuid "a2458b25-e9d9-5999-86ed-977c107320b4")
     )
-    (pin "2"
+    (pin "3"
       (uuid "73d04933-574f-5c43-928e-60114ca20c19")
     )
     (instances
@@ -27053,22 +27053,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 878.840 718.820 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "b8dee140-3f0f-5c82-b2b0-6d9b1b659065")
     )
-    (pin "4"
+    (pin "2"
       (uuid "52c21df0-263b-529c-b677-9a725c553ec6")
     )
-    (pin "5"
+    (pin "6"
       (uuid "e426c85e-41b3-5a4f-9a49-82d4bb41b1c6")
     )
-    (pin "6"
+    (pin "5"
       (uuid "9c3aeb25-9133-510e-8049-87db5b530526")
     )
-    (pin "1"
+    (pin "4"
       (uuid "8b475c7c-ec11-5210-9546-a3077de2a773")
     )
-    (pin "2"
+    (pin "3"
       (uuid "9f163e1f-b72c-51d5-8717-40caad2b1fa2")
     )
     (instances
@@ -27155,22 +27155,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 949.960 718.820 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "91b0d5a1-c0c6-5d71-a872-0d5abd2be4b7")
     )
-    (pin "4"
+    (pin "2"
       (uuid "3afe2bf7-67f0-5fc7-a849-3657cd2aee97")
     )
-    (pin "5"
+    (pin "6"
       (uuid "2e664227-68a0-5cda-9b30-24f0bb83fdf2")
     )
-    (pin "6"
+    (pin "5"
       (uuid "763adc00-6a68-5d65-b230-ab3fd6f6f4a4")
     )
-    (pin "1"
+    (pin "4"
       (uuid "86f05c33-5e68-5d44-bcf8-bee689f3260c")
     )
-    (pin "2"
+    (pin "3"
       (uuid "c5eb3d40-c05f-5a37-9b3b-e997a72d6276")
     )
     (instances
@@ -27257,22 +27257,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 1021.080 718.820 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "7e2f7620-60f0-50bf-a90f-b084a3477849")
     )
-    (pin "4"
+    (pin "2"
       (uuid "2b85919e-028d-561a-b971-8fdaf606f470")
     )
-    (pin "5"
+    (pin "6"
       (uuid "cae93bff-5c02-54d5-9db0-727fc88a579f")
     )
-    (pin "6"
+    (pin "5"
       (uuid "45e5ccb5-a581-5682-8f23-b43a06cbd433")
     )
-    (pin "1"
+    (pin "4"
       (uuid "43dfd76c-0b68-5d90-b519-6eb136e437b1")
     )
-    (pin "2"
+    (pin "3"
       (uuid "321fdc6a-f27c-5817-84c9-d7256dceab86")
     )
     (instances
@@ -27359,22 +27359,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 1092.200 718.820 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "13054dfa-c7b7-5063-a87a-6bd365830447")
     )
-    (pin "4"
+    (pin "2"
       (uuid "b42e6a9f-cdc0-5724-a05d-5b5779ed8d27")
     )
-    (pin "5"
+    (pin "6"
       (uuid "44825ade-5eda-5eba-b53d-b69473e75cdb")
     )
-    (pin "6"
+    (pin "5"
       (uuid "9fcedeb5-c4a9-5ff3-9e9c-3a38bdee3f1a")
     )
-    (pin "1"
+    (pin "4"
       (uuid "ce2344d4-0e5e-5554-9e9f-8961a1dc1fee")
     )
-    (pin "2"
+    (pin "3"
       (uuid "a6e4b9a7-f740-5fd3-8a10-abbaf426c907")
     )
     (instances
@@ -27451,22 +27451,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 25.400 772.160 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "8e69aa12-ab4e-5643-b245-77fcae40307f")
     )
-    (pin "4"
+    (pin "2"
       (uuid "6a33994e-163b-5651-a1c6-5e67139ef1d9")
     )
-    (pin "5"
+    (pin "6"
       (uuid "6e095dd4-ca72-5eda-ade5-c3d4a1f482f1")
     )
-    (pin "6"
+    (pin "5"
       (uuid "5da2f7ca-d5bb-57f6-885c-0b181d85866f")
     )
-    (pin "1"
+    (pin "4"
       (uuid "6aaccf6a-cc38-5f27-90aa-3a0d3b168167")
     )
-    (pin "2"
+    (pin "3"
       (uuid "b34fc628-e0da-5806-9db4-4f26b63ce806")
     )
     (instances
@@ -27553,22 +27553,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 96.520 772.160 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "f234bfa3-ac6f-5dca-9ba3-faf13fc9f0e5")
     )
-    (pin "4"
+    (pin "2"
       (uuid "bbbfcbcd-0936-5f9c-ab30-1d17ec7b6442")
     )
-    (pin "5"
+    (pin "6"
       (uuid "b11b8302-6e88-588f-bbd3-0caf12bc72c6")
     )
-    (pin "6"
+    (pin "5"
       (uuid "f74df314-f4f3-50fd-ab95-2d1f25b5ec53")
     )
-    (pin "1"
+    (pin "4"
       (uuid "b8f00cc1-247f-579e-b618-00115e1cf290")
     )
-    (pin "2"
+    (pin "3"
       (uuid "48c60dba-3cd7-5fe4-b072-b9943268ff11")
     )
     (instances
@@ -27655,22 +27655,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 167.640 772.160 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "46cb3341-a335-5692-bc12-f67f924b781e")
     )
-    (pin "4"
+    (pin "2"
       (uuid "9d3819d9-03d7-594a-915e-26f4794c09ef")
     )
-    (pin "5"
+    (pin "6"
       (uuid "ea2ee1ce-8921-595d-9ee7-d180e351e61d")
     )
-    (pin "6"
+    (pin "5"
       (uuid "b61434ee-a57c-5be1-ad56-d6e5120e7b24")
     )
-    (pin "1"
+    (pin "4"
       (uuid "83232b6b-c246-5ce4-8f49-1b694cba723b")
     )
-    (pin "2"
+    (pin "3"
       (uuid "c38655da-78af-5ab3-8cc7-3078102b5e94")
     )
     (instances
@@ -27757,22 +27757,22 @@
     (property "Description" "Clocked 5050 RGB LED" (at 238.760 772.160 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "1"
       (uuid "27b35ffa-8261-5331-aff0-4ac68505e172")
     )
-    (pin "4"
+    (pin "2"
       (uuid "3020f30e-423b-5cfb-85d4-df412f3e614b")
     )
-    (pin "5"
+    (pin "6"
       (uuid "b468052d-c1ea-54e8-82f0-eda7fc8710f3")
     )
-    (pin "6"
+    (pin "5"
       (uuid "3a28dee0-dc3a-5a34-a2c6-4ff1b6add130")
     )
-    (pin "1"
+    (pin "4"
       (uuid "1c547154-cca4-5d78-8459-b448199d4e40")
     )
-    (pin "2"
+    (pin "3"
       (uuid "d9af4829-bf46-525f-8729-01bcfbce5c58")
     )
     (instances

@@ -43,9 +43,8 @@ TESTPOINT_TURRET = Footprint(
     courtyard=courtyard_for(_TURRET_PADS),
 )
 
-# A DC-005 style jack has three terminals: the centre pin, the sleeve, and a
-# switched sleeve contact that is unused here. The design contract models two nets, so
-# the third pad carries the sleeve net rather than being left floating.
+# The PJ-102A has three terminals: the centre pin, the sleeve, and its normally
+# closed switched sleeve contact. Both sleeve terminals are intentionally grounded.
 _JACK_DRILL = rules.drill_for_lead(1.5)
 _JACK_PAD = rules.pad_for_drill(_JACK_DRILL)
 _JACK_PADS = (
@@ -55,8 +54,8 @@ _JACK_PADS = (
 )
 
 BARREL_JACK = Footprint(
-    package="5.5x2.1 mm THT",
-    description="5.5 x 2.1 mm DC jack, centre positive",
+    package="5.5x2.0 mm THT",
+    description="Same Sky PJ-102A 5.5 x 2.0 mm DC jack, centre positive",
     pads=_JACK_PADS,
     courtyard=courtyard_for(_JACK_PADS, (13.0, 11.0)),
 )

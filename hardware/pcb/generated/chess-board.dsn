@@ -1,4 +1,4 @@
-(pcb "/work/hardware/pcb/generated/chess-board.dsn"
+(pcb "/workspaces/chess/hardware/pcb/generated/chess-board.dsn"
   (parser
     (string_quote ")
     (space_in_quoted_tokens on)
@@ -371,12 +371,12 @@
       (outline (path signal 100  -3250 -3250  3250 -3250))
       (outline (path signal 100  3250 3250  -3250 3250))
       (outline (path signal 100  3250 -3250  3250 3250))
-      (pin Rect[T]Pad_1000.000000x1500.000000_um 1 0 2500)
-      (pin Rect[T]Pad_1000.000000x1500.000000_um 2 0 -2500)
-      (pin Rect[T]Pad_1500.000000x1000.000000_um 3 -2500 800)
-      (pin Rect[T]Pad_1500.000000x1000.000000_um 4 -2500 -800)
-      (pin Rect[T]Pad_1500.000000x1000.000000_um 5 2500 800)
-      (pin Rect[T]Pad_1500.000000x1000.000000_um 6 2500 -800)
+      (pin Rect[T]Pad_1500.000000x1000.000000_um 1 -2500 800)
+      (pin Rect[T]Pad_1500.000000x1000.000000_um 2 -2500 -800)
+      (pin Rect[T]Pad_1000.000000x1500.000000_um 3 0 -2500)
+      (pin Rect[T]Pad_1000.000000x1500.000000_um 4 0 2500)
+      (pin Rect[T]Pad_1500.000000x1000.000000_um 5 2500 -800)
+      (pin Rect[T]Pad_1500.000000x1000.000000_um 6 2500 800)
     )
     (image ::1
       (outline (path signal 50  -4400 3400  -4400 -3400))
@@ -477,12 +477,12 @@
       (outline (path signal 100  -3250 -3250  3250 -3250))
       (outline (path signal 100  3250 3250  -3250 3250))
       (outline (path signal 100  3250 -3250  3250 3250))
-      (pin Rect[T]Pad_1000.000000x1500.000000_um 1 0 -2500)
-      (pin Rect[T]Pad_1000.000000x1500.000000_um 2 0 2500)
-      (pin Rect[T]Pad_1500.000000x1000.000000_um 3 2500 -800)
-      (pin Rect[T]Pad_1500.000000x1000.000000_um 4 2500 800)
-      (pin Rect[T]Pad_1500.000000x1000.000000_um 5 -2500 -800)
-      (pin Rect[T]Pad_1500.000000x1000.000000_um 6 -2500 800)
+      (pin Rect[T]Pad_1500.000000x1000.000000_um 1 2500 -800)
+      (pin Rect[T]Pad_1500.000000x1000.000000_um 2 2500 800)
+      (pin Rect[T]Pad_1000.000000x1500.000000_um 3 0 2500)
+      (pin Rect[T]Pad_1000.000000x1500.000000_um 4 0 -2500)
+      (pin Rect[T]Pad_1500.000000x1000.000000_um 5 -2500 800)
+      (pin Rect[T]Pad_1500.000000x1000.000000_um 6 -2500 -800)
     )
     (image ::7
       (outline (path signal 50  -3000 3000  -3000 -3000))
@@ -505,12 +505,12 @@
       (outline (path signal 100  -3250 -3250  3250 -3250))
       (outline (path signal 100  3250 3250  -3250 3250))
       (outline (path signal 100  3250 -3250  3250 3250))
-      (pin Rect[T]Pad_1000.000000x1500.000000_um 1 0 -2500)
-      (pin Rect[T]Pad_1000.000000x1500.000000_um 2 0 2500)
-      (pin Rect[T]Pad_1500.000000x1000.000000_um 3 2500 -800)
-      (pin Rect[T]Pad_1500.000000x1000.000000_um 4 2500 800.001)
-      (pin Rect[T]Pad_1500.000000x1000.000000_um 5 -2500 -800)
-      (pin Rect[T]Pad_1500.000000x1000.000000_um 6 -2500 800.001)
+      (pin Rect[T]Pad_1500.000000x1000.000000_um 1 2500 -800)
+      (pin Rect[T]Pad_1500.000000x1000.000000_um 2 2500 800.001)
+      (pin Rect[T]Pad_1000.000000x1500.000000_um 3 0 2500)
+      (pin Rect[T]Pad_1000.000000x1500.000000_um 4 0 -2500)
+      (pin Rect[T]Pad_1500.000000x1000.000000_um 5 -2500 800.001)
+      (pin Rect[T]Pad_1500.000000x1000.000000_um 6 -2500 -800)
     )
     (image ::9
       (outline (path signal 50  -6180 1500  -6180 -1500))
@@ -682,7 +682,7 @@
       (outline (path signal 100  6500 -6150  6500 6150))
       (pin Rect[A]Pad_2600.000000x2600.000000_um 1 -4500 0)
       (pin Round[A]Pad_2600.000000_um 2 0 -4850)
-      (pin Round[A]Pad_2600.000000_um 2b 4500 0)
+      (pin Round[A]Pad_2600.000000_um 3 4500 0)
     )
     (padstack Round[A]Pad_1600.000000_um
       (shape (circle F.Cu 1600))
@@ -897,17 +897,17 @@
         J1-1 J1-17 R2-1 U2-9 U2-15 U2-18 C3-1 C4-1)
     )
     (net +5V
-      (pins U39-1 U12-1 U57-1 U36-1 C2-1 U7-1 U23-1 U9-1 U17-1 U19-1 U29-1 U65-1 U59-1
-        U46-1 C63-1 U41-1 U61-1 U63-1 U44-1 C58-1 U66-1 C40-1 C28-1 U34-1 C62-1 C66-1
-        C48-1 C52-1 C61-1 U67-1 C29-1 C69-1 U15-1 C55-1 C38-1 U37-1 U13-1 C50-1 C16-1
-        C24-1 U21-1 U10-1 C65-1 C41-1 C51-1 C21-1 U18-1 C46-1 C35-1 C42-1 C70-1 U60-1
-        U43-1 U24-1 U25-1 C13-1 C19-1 C39-1 C44-1 U54-1 C22-1 C14-1 C64-1 C68-1 D1-1
-        C25-1 U11-1 C30-1 C23-1 U27-1 C60-1 U8-1 C37-1 C10-1 J1-2 J1-4 U30-1 TP1-1
-        U51-1 C43-1 SW13-2 C9-1 U28-1 C49-1 C31-1 U45-1 U35-1 U20-1 C47-1 C59-1 C12-1
-        U26-1 C71-1 C17-1 C54-1 C15-1 C53-1 U55-1 U48-1 U14-1 C57-1 U69-1 C56-1 U62-1
-        U68-1 C20-1 U58-1 C18-1 C11-1 U53-1 U40-1 U49-1 C45-1 U33-1 U47-1 U22-1 U42-1
-        C26-1 U56-1 C1-1 C7-1 C8-1 U52-1 C32-1 C67-1 U64-1 C34-1 C27-1 U31-1 U50-1
-        C36-1 U5-10 U5-13 U5-14 U32-1 U16-1 U38-1 U6-1 C33-1)
+      (pins U39-4 U12-4 U57-4 U36-4 C2-1 U7-4 U23-4 U9-4 U17-4 U19-4 U29-4 U65-4 U59-4
+        U46-4 C63-1 U41-4 U61-4 U63-4 U44-4 C58-1 U66-4 C40-1 C28-1 U34-4 C62-1 C66-1
+        C48-1 C52-1 C61-1 U67-4 C29-1 C69-1 U15-4 C55-1 C38-1 U37-4 U13-4 C50-1 C16-1
+        C24-1 U21-4 U10-4 C65-1 C41-1 C51-1 C21-1 U18-4 C46-1 C35-1 C42-1 C70-1 U60-4
+        U43-4 U24-4 U25-4 C13-1 C19-1 C39-1 C44-1 U54-4 C22-1 C14-1 C64-1 C68-1 D1-1
+        C25-1 U11-4 C30-1 C23-1 U27-4 C60-1 U8-4 C37-1 C10-1 J1-2 J1-4 U30-4 TP1-1
+        U51-4 C43-1 SW13-2 C9-1 U28-4 C49-1 C31-1 U45-4 U35-4 U20-4 C47-1 C59-1 C12-1
+        U26-4 C71-1 C17-1 C54-1 C15-1 C53-1 U55-4 U48-4 U14-4 C57-1 U69-4 C56-1 U62-4
+        U68-4 C20-1 U58-4 C18-1 C11-1 U53-4 U40-4 U49-4 C45-1 U33-4 U47-4 U22-4 U42-4
+        C26-1 U56-4 C1-1 C7-1 C8-1 U52-4 C32-1 C67-1 U64-4 C34-1 C27-1 U31-4 U50-4
+        C36-1 U5-10 U5-13 U5-14 U32-4 U16-4 U38-4 U6-4 C33-1)
     )
     (net BTN_DOWN
       (pins J1-31 SW2-1 SW2-1b)
@@ -952,27 +952,27 @@
       (pins F1-1 J3-1)
     )
     (net GND
-      (pins U39-2 SW10-2 SW10-2b U12-2 RS7-2 U57-2 RS24-2 RS60-2 RS54-2 RS46-2 RS63-2
-        C6-2 RS55-2 U4-10 U4-17 U36-2 RS12-2 C2-2 U7-2 U3-10 U3-15 U3-17 RS25-2 U23-2
-        U9-2 RS2-2 U17-2 U19-2 RS36-2 RS59-2 U29-2 RS29-2 U65-2 U59-2 RS44-2 SW12-2
-        SW12-2b RS34-2 U46-2 RS14-2 SW5-2 SW5-2b C63-2 U41-2 U61-2 U63-2 U44-2 C58-2
-        RS64-2 U66-2 RS45-2 C40-2 C28-2 U34-2 C62-2 C66-2 C48-2 C52-2 RS41-2 C61-2
-        RS38-2 RS27-2 U67-2 RS47-2 C29-2 SW7-2 SW7-2b RS13-2 C69-2 SW11-2 SW11-2b
-        U15-2 C55-2 C38-2 U37-2 U13-2 C50-2 C16-2 RS35-2 RS15-2 RS20-2 RS1-2 C24-2
-        J2-1 RS5-2 U21-2 C5-2 U10-2 RS51-2 C65-2 C41-2 C51-2 C21-2 RS52-2 U18-2 C46-2
-        RS31-2 C35-2 RS37-2 C42-2 C70-2 RS26-2 U60-2 U43-2 U24-2 U25-2 C13-2 C19-2
-        C39-2 RS16-2 SW3-2 SW3-2b C44-2 RS19-2 U54-2 C22-2 C14-2 C64-2 C68-2 SW6-2
-        SW6-2b D1-2 C25-2 RS33-2 U11-2 RS39-2 RS28-2 C30-2 C23-2 U27-2 TP2-1 RS8-2
-        RS50-2 C60-2 U8-2 SW9-2 SW9-2b U1-10 U1-15 U1-16 U1-17 C37-2 RS32-2 RS43-2
-        C10-2 J1-6 J1-9 J1-14 J1-20 J1-25 J1-30 J1-34 J1-39 RS11-2 U30-2 RS17-2 RS62-2
-        U51-2 C43-2 C9-2 U28-2 C49-2 C31-2 RS58-2 SW4-2 SW4-2b U45-2 U35-2 U20-2 C47-2
-        C59-2 C12-2 U26-2 C71-2 RS23-2 RS9-2 RS3-2 C17-2 RS6-2 RS18-2 C54-2 RS30-2
-        C15-2 C53-2 U55-2 U48-2 U14-2 RS21-2 C57-2 U69-2 SW2-2 SW2-2b RS61-2 C56-2
-        RS48-2 U62-2 U68-2 C20-2 U58-2 C18-2 C11-2 U2-10 U2-16 U2-17 RS22-2 RS49-2
-        U53-2 U40-2 U49-2 RS57-2 C45-2 U33-2 U47-2 U22-2 U42-2 C26-2 U56-2 SW8-2 SW8-2b
-        C1-2 RS42-2 C7-2 C8-2 C3-2 U52-2 C32-2 RS53-2 C67-2 U64-2 C34-2 C27-2 U31-2
-        U50-2 C36-2 C4-2 U5-1 U5-4 U5-7 U5-9 U5-12 J3-2 J3-2b RS10-2 RS56-2 U32-2
-        U16-2 U38-2 RS4-2 RS40-2 U6-2 SW1-2 SW1-2b C33-2)
+      (pins U39-3 SW10-2 SW10-2b U12-3 RS7-2 U57-3 RS24-2 RS60-2 RS54-2 RS46-2 RS63-2
+        C6-2 RS55-2 U4-10 U4-17 U36-3 RS12-2 C2-2 U7-3 U3-10 U3-15 U3-17 RS25-2 U23-3
+        U9-3 RS2-2 U17-3 U19-3 RS36-2 RS59-2 U29-3 RS29-2 U65-3 U59-3 RS44-2 SW12-2
+        SW12-2b RS34-2 U46-3 RS14-2 SW5-2 SW5-2b C63-2 U41-3 U61-3 U63-3 U44-3 C58-2
+        RS64-2 U66-3 RS45-2 C40-2 C28-2 U34-3 C62-2 C66-2 C48-2 C52-2 RS41-2 C61-2
+        RS38-2 RS27-2 U67-3 RS47-2 C29-2 SW7-2 SW7-2b RS13-2 C69-2 SW11-2 SW11-2b
+        U15-3 C55-2 C38-2 U37-3 U13-3 C50-2 C16-2 RS35-2 RS15-2 RS20-2 RS1-2 C24-2
+        J2-1 RS5-2 U21-3 C5-2 U10-3 RS51-2 C65-2 C41-2 C51-2 C21-2 RS52-2 U18-3 C46-2
+        RS31-2 C35-2 RS37-2 C42-2 C70-2 RS26-2 U60-3 U43-3 U24-3 U25-3 C13-2 C19-2
+        C39-2 RS16-2 SW3-2 SW3-2b C44-2 RS19-2 U54-3 C22-2 C14-2 C64-2 C68-2 SW6-2
+        SW6-2b D1-2 C25-2 RS33-2 U11-3 RS39-2 RS28-2 C30-2 C23-2 U27-3 TP2-1 RS8-2
+        RS50-2 C60-2 U8-3 SW9-2 SW9-2b U1-10 U1-15 U1-16 U1-17 C37-2 RS32-2 RS43-2
+        C10-2 J1-6 J1-9 J1-14 J1-20 J1-25 J1-30 J1-34 J1-39 RS11-2 U30-3 RS17-2 RS62-2
+        U51-3 C43-2 C9-2 U28-3 C49-2 C31-2 RS58-2 SW4-2 SW4-2b U45-3 U35-3 U20-3 C47-2
+        C59-2 C12-2 U26-3 C71-2 RS23-2 RS9-2 RS3-2 C17-2 RS6-2 RS18-2 C54-2 RS30-2
+        C15-2 C53-2 U55-3 U48-3 U14-3 RS21-2 C57-2 U69-3 SW2-2 SW2-2b RS61-2 C56-2
+        RS48-2 U62-3 U68-3 C20-2 U58-3 C18-2 C11-2 U2-10 U2-16 U2-17 RS22-2 RS49-2
+        U53-3 U40-3 U49-3 RS57-2 C45-2 U33-3 U47-3 U22-3 U42-3 C26-2 U56-3 SW8-2 SW8-2b
+        C1-2 RS42-2 C7-2 C8-2 C3-2 U52-3 C32-2 RS53-2 C67-2 U64-3 C34-2 C27-2 U31-3
+        U50-3 C36-2 C4-2 U5-1 U5-4 U5-7 U5-9 U5-12 J3-2 J3-3 RS10-2 RS56-2 U32-3 U16-3
+        U38-3 RS4-2 RS40-2 U6-3 SW1-2 SW1-2b C33-2)
     )
     (net I2C_SCL
       (pins U4-12 U3-12 J2-3 U1-12 J1-5 R2-2 U2-12)
@@ -981,388 +981,388 @@
       (pins U4-13 U3-13 R1-2 J2-4 U1-13 J1-3 U2-13)
     )
     (net LED_C16
-      (pins U21-6 U22-4)
+      (pins U21-5 U22-2)
     )
     (net LED_C24
-      (pins U29-6 U30-4)
+      (pins U29-5 U30-2)
     )
     (net LED_C32
-      (pins U37-6 U38-4)
+      (pins U37-5 U38-2)
     )
     (net LED_C40
-      (pins U46-4 U45-6)
+      (pins U46-2 U45-5)
     )
     (net LED_C48
-      (pins U54-4 U53-6)
+      (pins U54-2 U53-5)
     )
     (net LED_C56
-      (pins U61-6 U62-4)
+      (pins U61-5 U62-2)
     )
     (net LED_C8
-      (pins U13-6 U14-4)
+      (pins U13-5 U14-2)
     )
     (net LED_CLK_5V
-      (pins TP4-1 U5-6 U6-4)
+      (pins TP4-1 U5-6 U6-2)
     )
     (net LED_D16
-      (pins U21-5 U22-3)
+      (pins U21-6 U22-1)
     )
     (net LED_D24
-      (pins U29-5 U30-3)
+      (pins U29-6 U30-1)
     )
     (net LED_D32
-      (pins U37-5 U38-3)
+      (pins U37-6 U38-1)
     )
     (net LED_D40
-      (pins U46-3 U45-5)
+      (pins U46-1 U45-6)
     )
     (net LED_D48
-      (pins U54-3 U53-5)
+      (pins U54-1 U53-6)
     )
     (net LED_D56
-      (pins U61-5 U62-3)
+      (pins U61-6 U62-1)
     )
     (net LED_D8
-      (pins U13-5 U14-3)
+      (pins U13-6 U14-1)
     )
     (net LED_DATA_5V
-      (pins TP3-1 U5-3 U6-3)
+      (pins TP3-1 U5-3 U6-1)
     )
     (net N$119
-      (pins U9-5 U10-3)
+      (pins U9-6 U10-1)
     )
     (net N$120
-      (pins U9-6 U10-4)
+      (pins U9-5 U10-2)
     )
     (net N$121
-      (pins U10-5 U11-3)
+      (pins U10-6 U11-1)
     )
     (net N$122
-      (pins U10-6 U11-4)
+      (pins U10-5 U11-2)
     )
     (net N$123
-      (pins U12-3 U11-5)
+      (pins U12-1 U11-6)
     )
     (net N$124
-      (pins U12-4 U11-6)
+      (pins U12-2 U11-5)
     )
     (net N$125
-      (pins U12-5 U13-3)
+      (pins U12-6 U13-1)
     )
     (net N$126
-      (pins U12-6 U13-4)
+      (pins U12-5 U13-2)
     )
     (net N$127
-      (pins U15-3 U14-5)
+      (pins U15-1 U14-6)
     )
     (net N$128
-      (pins U15-4 U14-6)
+      (pins U15-2 U14-5)
     )
     (net N$129
-      (pins U15-5 U16-3)
+      (pins U15-6 U16-1)
     )
     (net N$130
-      (pins U15-6 U16-4)
+      (pins U15-5 U16-2)
     )
     (net N$131
-      (pins U17-3 U16-5)
+      (pins U17-1 U16-6)
     )
     (net N$132
-      (pins U17-4 U16-6)
+      (pins U17-2 U16-5)
     )
     (net N$133
-      (pins U17-5 U18-3)
+      (pins U17-6 U18-1)
     )
     (net N$134
-      (pins U17-6 U18-4)
+      (pins U17-5 U18-2)
     )
     (net N$135
-      (pins U19-3 U18-5)
+      (pins U19-1 U18-6)
     )
     (net N$136
-      (pins U19-4 U18-6)
+      (pins U19-2 U18-5)
     )
     (net N$137
-      (pins U19-5 U20-3)
+      (pins U19-6 U20-1)
     )
     (net N$138
-      (pins U19-6 U20-4)
+      (pins U19-5 U20-2)
     )
     (net N$142
-      (pins U21-3 U20-5)
+      (pins U21-1 U20-6)
     )
     (net N$143
-      (pins U21-4 U20-6)
+      (pins U21-2 U20-5)
     )
     (net N$144
-      (pins U23-3 U22-5)
+      (pins U23-1 U22-6)
     )
     (net N$145
-      (pins U23-4 U22-6)
+      (pins U23-2 U22-5)
     )
     (net N$146
-      (pins U23-5 U24-3)
+      (pins U23-6 U24-1)
     )
     (net N$147
-      (pins U23-6 U24-4)
+      (pins U23-5 U24-2)
     )
     (net N$148
-      (pins U24-5 U25-3)
+      (pins U24-6 U25-1)
     )
     (net N$149
-      (pins U24-6 U25-4)
+      (pins U24-5 U25-2)
     )
     (net N$150
-      (pins U25-5 U26-3)
+      (pins U25-6 U26-1)
     )
     (net N$151
-      (pins U25-6 U26-4)
+      (pins U25-5 U26-2)
     )
     (net N$152
-      (pins U27-3 U26-5)
+      (pins U27-1 U26-6)
     )
     (net N$153
-      (pins U27-4 U26-6)
+      (pins U27-2 U26-5)
     )
     (net N$154
-      (pins U27-5 U28-3)
+      (pins U27-6 U28-1)
     )
     (net N$155
-      (pins U27-6 U28-4)
+      (pins U27-5 U28-2)
     )
     (net N$156
-      (pins U29-3 U28-5)
+      (pins U29-1 U28-6)
     )
     (net N$157
-      (pins U29-4 U28-6)
+      (pins U29-2 U28-5)
     )
     (net N$161
-      (pins U30-5 U31-3)
+      (pins U30-6 U31-1)
     )
     (net N$162
-      (pins U30-6 U31-4)
+      (pins U30-5 U31-2)
     )
     (net N$163
-      (pins U31-5 U32-3)
+      (pins U31-6 U32-1)
     )
     (net N$164
-      (pins U31-6 U32-4)
+      (pins U31-5 U32-2)
     )
     (net N$165
-      (pins U33-3 U32-5)
+      (pins U33-1 U32-6)
     )
     (net N$166
-      (pins U33-4 U32-6)
+      (pins U33-2 U32-5)
     )
     (net N$167
-      (pins U34-3 U33-5)
+      (pins U34-1 U33-6)
     )
     (net N$168
-      (pins U34-4 U33-6)
+      (pins U34-2 U33-5)
     )
     (net N$169
-      (pins U34-5 U35-3)
+      (pins U34-6 U35-1)
     )
     (net N$170
-      (pins U34-6 U35-4)
+      (pins U34-5 U35-2)
     )
     (net N$171
-      (pins U36-3 U35-5)
+      (pins U36-1 U35-6)
     )
     (net N$172
-      (pins U36-4 U35-6)
+      (pins U36-2 U35-5)
     )
     (net N$173
-      (pins U36-5 U37-3)
+      (pins U36-6 U37-1)
     )
     (net N$174
-      (pins U36-6 U37-4)
+      (pins U36-5 U37-2)
     )
     (net N$175
-      (pins U39-3 U38-5)
+      (pins U39-1 U38-6)
     )
     (net N$176
-      (pins U39-4 U38-6)
+      (pins U39-2 U38-5)
     )
     (net N$177
-      (pins U39-5 U40-3)
+      (pins U39-6 U40-1)
     )
     (net N$178
-      (pins U39-6 U40-4)
+      (pins U39-5 U40-2)
     )
     (net N$182
-      (pins U41-3 U40-5)
+      (pins U41-1 U40-6)
     )
     (net N$183
-      (pins U41-4 U40-6)
+      (pins U41-2 U40-5)
     )
     (net N$184
-      (pins U41-5 U42-3)
+      (pins U41-6 U42-1)
     )
     (net N$185
-      (pins U41-6 U42-4)
+      (pins U41-5 U42-2)
     )
     (net N$186
-      (pins U43-3 U42-5)
+      (pins U43-1 U42-6)
     )
     (net N$187
-      (pins U43-4 U42-6)
+      (pins U43-2 U42-5)
     )
     (net N$188
-      (pins U44-3 U43-5)
+      (pins U44-1 U43-6)
     )
     (net N$189
-      (pins U44-4 U43-6)
+      (pins U44-2 U43-5)
     )
     (net N$190
-      (pins U44-5 U45-3)
+      (pins U44-6 U45-1)
     )
     (net N$191
-      (pins U44-6 U45-4)
+      (pins U44-5 U45-2)
     )
     (net N$192
-      (pins U46-5 U47-3)
+      (pins U46-6 U47-1)
     )
     (net N$193
-      (pins U46-6 U47-4)
+      (pins U46-5 U47-2)
     )
     (net N$194
-      (pins U48-3 U47-5)
+      (pins U48-1 U47-6)
     )
     (net N$195
-      (pins U48-4 U47-6)
+      (pins U48-2 U47-5)
     )
     (net N$196
-      (pins U48-5 U49-3)
+      (pins U48-6 U49-1)
     )
     (net N$197
-      (pins U48-6 U49-4)
+      (pins U48-5 U49-2)
     )
     (net N$198
-      (pins U49-5 U50-3)
+      (pins U49-6 U50-1)
     )
     (net N$199
-      (pins U49-6 U50-4)
+      (pins U49-5 U50-2)
     )
     (net N$202
-      (pins U51-3 U50-5)
+      (pins U51-1 U50-6)
     )
     (net N$203
-      (pins U51-4 U50-6)
+      (pins U51-2 U50-5)
     )
     (net N$204
-      (pins U51-5 U52-3)
+      (pins U51-6 U52-1)
     )
     (net N$205
-      (pins U51-6 U52-4)
+      (pins U51-5 U52-2)
     )
     (net N$206
-      (pins U53-3 U52-5)
+      (pins U53-1 U52-6)
     )
     (net N$207
-      (pins U53-4 U52-6)
+      (pins U53-2 U52-5)
     )
     (net N$208
-      (pins U54-5 U55-3)
+      (pins U54-6 U55-1)
     )
     (net N$209
-      (pins U54-6 U55-4)
+      (pins U54-5 U55-2)
     )
     (net N$210
-      (pins U55-5 U56-3)
+      (pins U55-6 U56-1)
     )
     (net N$211
-      (pins U55-6 U56-4)
+      (pins U55-5 U56-2)
     )
     (net N$212
-      (pins U57-3 U56-5)
+      (pins U57-1 U56-6)
     )
     (net N$213
-      (pins U57-4 U56-6)
+      (pins U57-2 U56-5)
     )
     (net N$214
-      (pins U57-5 U58-3)
+      (pins U57-6 U58-1)
     )
     (net N$215
-      (pins U57-6 U58-4)
+      (pins U57-5 U58-2)
     )
     (net N$216
-      (pins U59-3 U58-5)
+      (pins U59-1 U58-6)
     )
     (net N$217
-      (pins U59-4 U58-6)
+      (pins U59-2 U58-5)
     )
     (net N$218
-      (pins U59-5 U60-3)
+      (pins U59-6 U60-1)
     )
     (net N$219
-      (pins U59-6 U60-4)
+      (pins U59-5 U60-2)
     )
     (net N$220
-      (pins U7-3 U6-5)
+      (pins U7-1 U6-6)
     )
     (net N$221
-      (pins U7-4 U6-6)
+      (pins U7-2 U6-5)
     )
     (net N$222
-      (pins U61-3 U60-5)
+      (pins U61-1 U60-6)
     )
     (net N$223
-      (pins U61-4 U60-6)
+      (pins U61-2 U60-5)
     )
     (net N$224
-      (pins U63-3 U62-5)
+      (pins U63-1 U62-6)
     )
     (net N$225
-      (pins U63-4 U62-6)
+      (pins U63-2 U62-5)
     )
     (net N$226
-      (pins U63-5 U64-3)
+      (pins U63-6 U64-1)
     )
     (net N$227
-      (pins U63-6 U64-4)
+      (pins U63-5 U64-2)
     )
     (net N$228
-      (pins U65-3 U64-5)
+      (pins U65-1 U64-6)
     )
     (net N$229
-      (pins U65-4 U64-6)
+      (pins U65-2 U64-5)
     )
     (net N$230
-      (pins U65-5 U66-3)
+      (pins U65-6 U66-1)
     )
     (net N$231
-      (pins U65-6 U66-4)
+      (pins U65-5 U66-2)
     )
     (net N$232
-      (pins U66-5 U67-3)
+      (pins U66-6 U67-1)
     )
     (net N$233
-      (pins U66-6 U67-4)
+      (pins U66-5 U67-2)
     )
     (net N$234
-      (pins U67-5 U68-3)
+      (pins U67-6 U68-1)
     )
     (net N$235
-      (pins U67-6 U68-4)
+      (pins U67-5 U68-2)
     )
     (net N$236
-      (pins U69-3 U68-5)
+      (pins U69-1 U68-6)
     )
     (net N$237
-      (pins U69-4 U68-6)
+      (pins U69-2 U68-5)
     )
     (net N$238
-      (pins U7-5 U8-3)
+      (pins U7-6 U8-1)
     )
     (net N$239
-      (pins U7-6 U8-4)
+      (pins U7-5 U8-2)
     )
     (net N$240
-      (pins U9-3 U8-5)
+      (pins U9-1 U8-6)
     )
     (net N$241
-      (pins U9-4 U8-6)
+      (pins U9-2 U8-5)
     )
     (net SENSE_IRQ
       (pins U4-20 U3-20 U1-20 J1-7 U2-20)

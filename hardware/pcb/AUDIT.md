@@ -5,6 +5,17 @@ not be weakened to clear an item.
 
 ## Blocking
 
+- **Display and connector are incompatible.** Waveshare SKU 10444 (`1.3inch
+  OLED (A)`) has a seven-pin SPI/I2C interface and a 40.5 x 37.5 mm PCB; this
+  design provides a four-pin I2C socket and models a 35.5 x 33.5 mm module.
+  Select a real four-pin module or redesign J2 and the panel around SKU 10444.
+- **Input protection exceeds the jack rating.** Same Sky rates PJ-102A for
+  2.5 A, but the selected supply is 6 A and F1 is a 5 A time-delay fuse. Select
+  an adequately rated jack or lower the protected input current.
+- **PJ-102A footprint needs replacement.** Its manufacturer drawing specifies
+  a 2.0 mm centre pin and an asymmetric three-terminal PCB pattern; the current
+  footprint still uses a generic symmetric DC-jack hole pattern. Do not order
+  it until the exact drawing, including terminal shapes, is implemented.
 - **Reed/magnet stack unproven.** The selected KSK-1A66-1015 lies horizontally
   below a vertical magnet. One-square testing at the final CAD spacing is still
   mandatory before buying the large board. Record the evidence in `prototype/`;
