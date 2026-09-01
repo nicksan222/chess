@@ -10,8 +10,7 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from enum import StrEnum
 
-LED_BYPASS_OFFSET_MM = (0.0, -8.0)
-HALL_BYPASS_OFFSET_MM = (0.0, -3.0)
+from shared import dimensions as shared
 
 
 class SquareRole(StrEnum):
@@ -92,13 +91,15 @@ class SquareAssembly:
         )
         hall_bypass = select(
             SquareRole.HALL_BYPASS,
-            lambda entry: entry.get("part_key") == "CAP_100N"
-            and "Sensor" in _extras(entry),
+            lambda entry: (
+                entry.get("part_key") == "CAP_100N" and "Sensor" in _extras(entry)
+            ),
         )
         led_bypass = select(
             SquareRole.LED_BYPASS,
-            lambda entry: entry.get("part_key") == "CAP_100N"
-            and "Sensor" not in _extras(entry),
+            lambda entry: (
+                entry.get("part_key") == "CAP_100N" and "Sensor" not in _extras(entry)
+            ),
         )
 
         selected_references = {
@@ -154,14 +155,14 @@ class SquareAssembly:
             SquarePartPlacement(
                 self.led_bypass.reference,
                 self.led_bypass.package,
-                led_x + LED_BYPASS_OFFSET_MM[0],
-                led_y + LED_BYPASS_OFFSET_MM[1],
+                led_x + shared.LED_BYPASS_OFFSET_MM[0],
+                led_y + shared.LED_BYPASS_OFFSET_MM[1],
             ),
             SquarePartPlacement(
                 self.hall_bypass.reference,
                 self.hall_bypass.package,
-                x + HALL_BYPASS_OFFSET_MM[0],
-                y + HALL_BYPASS_OFFSET_MM[1],
+                x + shared.HALL_BYPASS_OFFSET_MM[0],
+                y + shared.HALL_BYPASS_OFFSET_MM[1],
             ),
         )
 

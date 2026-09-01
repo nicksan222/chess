@@ -14,8 +14,7 @@ that origin.
 from math import isclose
 from types import MappingProxyType
 
-from .components import HALL_SENSOR, MCP23017, OLED_MODULE, SK9822
-
+from .components import BUTTON, HALL_SENSOR, MCP23017, OLED_MODULE, SK9822
 
 # Unit contract. One Blender unit represents one millimetre in generated files.
 MILLIMETRES_PER_METRE = 1_000.0
@@ -79,6 +78,8 @@ HALL_SENSOR_BODY_MM = HALL_SENSOR_PACKAGE_MM[:2]
 HALL_SENSOR_HEIGHT_MM = HALL_SENSOR_PACKAGE_MM[2]
 HALL_SENSOR_POSITION_MM = (0.0, 0.0)
 HALL_SENSOR_STANDOFF_MM = 0.0
+LED_BYPASS_OFFSET_MM = (0.0, -8.0)
+HALL_BYPASS_OFFSET_MM = (0.0, -3.0)
 
 # Expander package orientation and centres are shared because the CAD proxy must
 # depict the same physical obstructions that PCB placement and routing use.
@@ -88,12 +89,15 @@ EXPANDER_BODY_MM = (
     _EXPANDER_PACKAGE_MM[0],
     _EXPANDER_PACKAGE_MM[2],
 )
-EXPANDER_POSITIONS_BY_QUADRANT_MM = MappingProxyType({
-    "A1-D4": (-66.0, -80.0),
-    "E1-H4": (94.0, -80.0),
-    "A5-D8": (-66.0, 80.0),
-    "E5-H8": (94.0, 80.0),
-})
+EXPANDER_POSITIONS_BY_QUADRANT_MM = MappingProxyType(
+    {
+        "A1-D4": (-66.0, -80.0),
+        "E1-H4": (94.0, -80.0),
+        "A5-D8": (-66.0, 80.0),
+        "E5-H8": (94.0, 80.0),
+    }
+)
+EXPANDER_CAP_OFFSET_MM = (0.0, -12.0)
 
 # --- Printed circuit board --------------------------------------------------
 # One board spans the playing area plus a 40 mm control strip along the front,
@@ -117,9 +121,7 @@ CASE_PLATE_LEDGE_MM = 8.0
 CASE_HEIGHT_MM = 30.0
 CASE_OUTER_RADIUS_MM = 2.2
 CASE_WIDTH_MM = PLAYING_SPAN_MM + 2.0 * CASE_FRAME_WIDTH_MM
-CASE_DEPTH_MM = (
-    PLAYING_SPAN_MM + PANEL_STRIP_DEPTH_MM + 2.0 * CASE_FRAME_WIDTH_MM
-)
+CASE_DEPTH_MM = PLAYING_SPAN_MM + PANEL_STRIP_DEPTH_MM + 2.0 * CASE_FRAME_WIDTH_MM
 CASE_CENTER_OFFSET_Y_MM = PCB_CENTER_OFFSET_Y_MM
 CASE_OUTER_SIZE_MM = (CASE_WIDTH_MM, CASE_DEPTH_MM, CASE_HEIGHT_MM)
 
@@ -147,6 +149,8 @@ PCB_SUPPORT_POSITIONS_MM = tuple(
 # Raspberry Pi Zero 2 W hangs under the board on its header.
 PI_BOARD_SIZE_MM = (65.0, 30.0, 1.4)
 PI_HEADER_HEIGHT_MM = 8.5
+PI_HEADER_BODY_MM = (51.0, 5.0, PI_HEADER_HEIGHT_MM)
+PI_HEADER_ROTATION_DEG = 90.0
 PI_CLEARANCE_MM = 2.0
 PI_BAY_CENTER_MM = (0.0, -PLAYING_SPAN_MM / 2.0 + 40.0)
 CASE_SD_SLOT_MM = (14.0, 3.5)
@@ -182,6 +186,35 @@ PANEL_OLED_MODULE_MM = OLED_MODULE.require_body_mm()
 PANEL_OLED_WINDOW_MM = (32.0, 18.0)
 PANEL_OLED_RECESS_DEPTH_MM = 2.0
 PANEL_OLED_CENTER_MM = (-110.0, PANEL_ORIGIN_Y_MM)
+PANEL_BUTTON_BODY_MM = (*BUTTON.require_body_mm()[:2], 5.0)
+PANEL_BUTTON_ACTUATOR_DIAMETER_MM = 3.5
+
+# One-off electrical parts whose positions also govern enclosure access and
+# populated-board collision proxies. Values are (x, y, rotation_degrees).
+PCB_STRIP_PLACEMENTS_MM = MappingProxyType(
+    {
+        "J3": (-150.0, -178.0, -90.0),
+        "F1": (-138.0, -178.0, 0.0),
+        "D1": (-150.0, -165.0, 0.0),
+        "SW13": (-113.0, -190.0, 0.0),
+        "C1": (-128.0, -170.0, 0.0),
+        "C2": (-116.0, -168.0, 0.0),
+        "J2": (-95.0, -172.0, 0.0),
+        "U5": (-70.0, -180.0, 0.0),
+        "C7": (-58.0, -180.0, 0.0),
+        "R1": (-50.0, -170.0, 0.0),
+        "R2": (-50.0, -176.0, 0.0),
+        "R3": (-19.0, -173.0, 0.0),
+        "TP1": (-47.0, -165.0, 0.0),
+        "TP2": (-40.0, -165.0, 0.0),
+        "TP3": (-33.0, -165.0, 0.0),
+        "TP4": (-26.0, -165.0, 0.0),
+        "TP5": (-19.0, -165.0, 0.0),
+        "TP6": (-12.0, -165.0, 0.0),
+        "TP7": (-47.0, -196.0, 0.0),
+        "TP8": (-40.0, -196.0, 0.0),
+    }
+)
 
 # --- Tile plate -------------------------------------------------------------
 # One flat overlay with the checkerboard engraved into it, sitting in a rebate
@@ -279,9 +312,7 @@ def usable_build_volume(
     build_volume_mm: tuple[float, float, float],
 ) -> tuple[float, float, float]:
     """Return the build volume after reserving an edge margin on every side."""
-    return tuple(
-        axis - 2.0 * PRINT_BED_EDGE_MARGIN_MM for axis in build_volume_mm
-    )
+    return tuple(axis - 2.0 * PRINT_BED_EDGE_MARGIN_MM for axis in build_volume_mm)
 
 
 def fits_build_volume(
@@ -328,7 +359,9 @@ def validate() -> None:
     ):
         raise ValueError("Case height must equal the sum of the internal stack")
     if PI_BAY_HEIGHT_MM < PI_HEADER_HEIGHT_MM + PI_BOARD_SIZE_MM[2] + PI_CLEARANCE_MM:
-        raise ValueError("Cavity below the board is too shallow for the Pi on its header")
+        raise ValueError(
+            "Cavity below the board is too shallow for the Pi on its header"
+        )
     tallest_playing_area_component = max(
         HALL_SENSOR_HEIGHT_MM + HALL_SENSOR_STANDOFF_MM,
         LED_PACKAGE_MAX_SIZE_MM[2],
@@ -337,8 +370,10 @@ def validate() -> None:
     if PCB_TO_PLATE_GAP_MM < tallest_playing_area_component:
         raise ValueError("Plate would foul a component in the playing area")
 
-    if not FDM_MIN_FIT_CLEARANCE_MM <= TILE_PLATE_CLEARANCE_MM <= (
-        FDM_MAX_FIT_CLEARANCE_MM
+    if (
+        not FDM_MIN_FIT_CLEARANCE_MM
+        <= TILE_PLATE_CLEARANCE_MM
+        <= (FDM_MAX_FIT_CLEARANCE_MM)
     ):
         raise ValueError("Tile plate clearance is outside the prototype fit range")
 
@@ -379,7 +414,9 @@ def validate() -> None:
     )
     if any(
         pocket < required
-        for pocket, required in zip(TILE_PLATE_LED_POCKET_MM[:2], required_led_pocket_xy)
+        for pocket, required in zip(
+            TILE_PLATE_LED_POCKET_MM[:2], required_led_pocket_xy
+        )
     ):
         raise ValueError("LED pocket does not clear the maximum 5050 package")
     if any(
@@ -500,7 +537,9 @@ def validate() -> None:
 
     for part_size in PRINTED_PART_SIZES_MM:
         if not fits_build_volume(part_size, REFERENCE_SERVICE_BUILD_VOLUME_MM):
-            raise ValueError("A printed part exceeds the print-service reference volume")
+            raise ValueError(
+                "A printed part exceeds the print-service reference volume"
+            )
 
 
 def describe(domain: str = "Shared hardware") -> str:

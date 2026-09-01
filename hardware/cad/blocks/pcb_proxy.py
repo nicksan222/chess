@@ -12,22 +12,17 @@ thickness changes, the proxy moves with it.
 import bpy
 
 from core import dimensions as shared
-from core import materials
-from core import modeling
+from core import materials, modeling
 
 EXPANDER_BODY_MM = shared.EXPANDER_BODY_MM
 EXPANDER_POSITIONS_MM = tuple(shared.EXPANDER_POSITIONS_BY_QUADRANT_MM.values())
-BUTTON_BODY_MM = (6.0, 6.0, 5.0)
-BUTTON_ACTUATOR_DIAMETER_MM = 3.5
 
 
 def create_materials() -> dict[str, bpy.types.Material]:
     return {
         "pcb": materials.solid("Circuit board", (0.02, 0.16, 0.07, 1.0), 0.38),
         "body": materials.solid("Component body", (0.10, 0.10, 0.11, 1.0), 0.34),
-        "emitter": materials.solid(
-            "RGB emitter window", (0.78, 0.86, 0.92, 1.0), 0.10
-        ),
+        "emitter": materials.solid("RGB emitter window", (0.78, 0.86, 0.92, 1.0), 0.10),
         "host": materials.solid("Raspberry Pi board", (0.16, 0.05, 0.10, 1.0), 0.42),
         "display": materials.solid("OLED glass", (0.02, 0.02, 0.03, 1.0), 0.08),
     }
@@ -133,7 +128,7 @@ def _add_host(
 
     header = modeling.rounded_box(
         "Proxy_Pi_Header",
-        (51.0, 5.0, shared.PI_HEADER_HEIGHT_MM),
+        shared.PI_HEADER_BODY_MM,
         (
             *shared.PI_BAY_CENTER_MM,
             top + shared.PI_HEADER_HEIGHT_MM / 2.0,
@@ -150,8 +145,12 @@ def _add_panel(
     for index, (x, y) in enumerate(shared.PANEL_BUTTON_POSITIONS_MM):
         body = modeling.rounded_box(
             f"Proxy_Button_{index:02d}",
-            BUTTON_BODY_MM,
-            (x, y, shared.PCB_TOP_Z_MM + BUTTON_BODY_MM[2] / 2.0),
+            shared.PANEL_BUTTON_BODY_MM,
+            (
+                x,
+                y,
+                shared.PCB_TOP_Z_MM + shared.PANEL_BUTTON_BODY_MM[2] / 2.0,
+            ),
             0.4,
             collection,
         )
@@ -160,7 +159,7 @@ def _add_panel(
         reach = shared.CASE_HEIGHT_MM - shared.PCB_TOP_Z_MM
         actuator = modeling.cylinder(
             f"Proxy_Button_Actuator_{index:02d}",
-            BUTTON_ACTUATOR_DIAMETER_MM,
+            shared.PANEL_BUTTON_ACTUATOR_DIAMETER_MM,
             reach,
             (x, y, shared.PCB_TOP_Z_MM + reach / 2.0),
             collection,

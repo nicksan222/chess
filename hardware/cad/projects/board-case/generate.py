@@ -10,11 +10,10 @@ top face at `CASE_HEIGHT_MM`, so the assembly view can load this part and the
 plate without moving either of them.
 """
 
-from pathlib import Path
 import sys
+from pathlib import Path
 
 import bpy
-
 
 PROJECT_DIR = Path(__file__).parent
 CAD_ROOT = PROJECT_DIR.parents[1]
@@ -22,20 +21,18 @@ sys.path.insert(0, str(CAD_ROOT))
 GENERATED = CAD_ROOT / "generated"
 GENERATED.mkdir(parents=True, exist_ok=True)
 
-from core import dimensions as shared  # noqa: E402
-from core import materials  # noqa: E402
-from core import modeling  # noqa: E402
-from core import presentation  # noqa: E402
-from core import validation  # noqa: E402
-
+from core import dimensions as shared
+from core import (
+    materials,
+    modeling,
+    presentation,
+    validation,
+)
 
 NAME = "board-case"
 OUTPUT_PATH = GENERATED / f"{NAME}.blend"
 PART_NAME = "Printable_Board_Case"
 
-# Rear-wall aperture positions, measured across the case width.
-JACK_CENTER_X_MM = -60.0
-ROCKER_CENTER_X_MM = 60.0
 FLOOR_VENT_COUNT = 5
 FLOOR_VENT_PITCH_MM = 8.0
 
@@ -66,9 +63,7 @@ def add_case(
     return case
 
 
-def _hollow_cavity(
-    case: bpy.types.Object, construction: bpy.types.Collection
-) -> None:
+def _hollow_cavity(case: bpy.types.Object, construction: bpy.types.Collection) -> None:
     """Remove the interior, leaving a ledge for the plate to rest on.
 
     The cavity is inset from the playing area by the plate ledge rather than by
@@ -196,7 +191,7 @@ def _cut_rear_apertures(
         "Cutter_Jack_Aperture",
         shared.CASE_JACK_APERTURE_DIAMETER_MM,
         depth,
-        (JACK_CENTER_X_MM, center_y, z),
+        (shared.PCB_STRIP_PLACEMENTS_MM["J3"][0], center_y, z),
         construction,
         vertices=48,
     )
@@ -204,16 +199,14 @@ def _cut_rear_apertures(
     rocker = modeling.rounded_box(
         "Cutter_Rocker_Aperture",
         (shared.CASE_ROCKER_APERTURE_MM[0], depth, shared.CASE_ROCKER_APERTURE_MM[1]),
-        (ROCKER_CENTER_X_MM, center_y, z),
+        (shared.PCB_STRIP_PLACEMENTS_MM["SW13"][0], center_y, z),
         0.6,
         construction,
     )
     modeling.cut_batch(case, [jack, rocker], "Cutter_All_Rear_Apertures")
 
 
-def _cut_side_slot(
-    case: bpy.types.Object, construction: bpy.types.Collection
-) -> None:
+def _cut_side_slot(case: bpy.types.Object, construction: bpy.types.Collection) -> None:
     """A slot on the right wall reaches the Pi's memory card."""
     wall_x = shared.PLAYING_SPAN_MM / 2.0 + shared.CASE_FRAME_WIDTH_MM
     depth = 2.0 * shared.CASE_FRAME_WIDTH_MM
