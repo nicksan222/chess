@@ -20,7 +20,7 @@ PI_HEADER = pin_header(
 
 OLED_HEADER = pin_header(
     "1x4 2.54 mm THT",
-    "SSD1306 OLED module connector",
+    "Four-pin SH1106 I2C OLED module connector",
     columns=4,
     rows=1,
     pin_numbers=tuple(OledHeaderPin),

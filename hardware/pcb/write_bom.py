@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+import csv
+import io
 import json
 from collections import defaultdict
 from pathlib import Path
@@ -62,8 +64,33 @@ def render() -> str:
     return "\n".join(text)
 
 
+def render_assembly_csv() -> str:
+    """Render a PCBWay-friendly BOM containing board-fitted parts only."""
+    design = json.loads((PCB / "design/netlist.json").read_text())
+    components = design["projects"]["board"]["components"]
+    references: dict[str, list[str]] = defaultdict(list)
+    for reference, component in components.items():
+        references[component["part_key"]].append(reference)
+
+    output = io.StringIO(newline="")
+    writer = csv.writer(output, lineterminator="\n")
+    writer.writerow(
+        ("Item", "Quantity", "Reference", "Value", "Footprint", "Manufacturer", "MPN")
+    )
+    for item, key in enumerate(sorted(references), 1):
+        spec = COMPONENTS[key]
+        refs = sorted(references[key], key=reference_sort_key)
+        writer.writerow(
+            (item, len(refs), ",".join(refs), spec.description, spec.package, spec.manufacturer, spec.mpn)
+        )
+    return output.getvalue()
+
+
 def write() -> None:
-    (PCB / "design/bom.md").write_text(render())
+    generated = PCB / "generated"
+    generated.mkdir(exist_ok=True)
+    (generated / "bom.md").write_text(render())
+    (generated / "assembly-bom.csv").write_text(render_assembly_csv())
 
 
 if __name__ == "__main__":

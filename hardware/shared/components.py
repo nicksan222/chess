@@ -158,21 +158,23 @@ OLED_HEADER = part(
     "Sullins Connector Solutions",
     "PPPC041LFBN-RC",
 )
-FUSE_5A = part(
-    "FUSE_5A",
-    "5 A time-delay surface-mount fuse",
+FUSE_2A = part(
+    "FUSE_2A",
+    "2 A time-delay surface-mount fuse",
     "2410 fuse",
     "Littelfuse",
-    "0453005.MR",
+    "0453002.MR",
     (6.1, 2.7, 2.7),
+    "https://www.littelfuse.com/assetdocs/littelfuse-fuse-453-datasheet",
 )
 BARREL_JACK = part(
     "BARREL_JACK",
-    "5.5x2.0 mm centre-positive DC jack",
+    "5.5x2.0 mm centre-positive DC jack, 2.5 A rated",
     "5.5x2.0 mm THT",
     "Same Sky",
     "PJ-102A",
-    datasheet="https://www.sameskydevices.com/product/resource/pj-102a.pdf",
+    (14.4, 11.0, 11.0),
+    "https://www.sameskydevices.com/product/resource/pj-102a.pdf",
 )
 TVS_6V8 = part(
     "TVS_6V8",
@@ -207,18 +209,20 @@ PI_ZERO_2_W = part(
 )
 OLED_MODULE = part(
     "OLED_MODULE",
-    "1.3 inch 128x64 I2C OLED module",
-    "35.5x33.5 mm module",
-    "Waveshare",
-    "1.3inch OLED (A) 10444",
-    (35.5, 33.5, 4.0),
+    "1.3 inch 128x64 SH1106 four-pin I2C OLED module",
+    "36x34 mm module",
+    "AZ-Delivery",
+    "A 1-6",
+    (36.0, 34.0, 3.0),
+    "https://www.az-delivery.de/products/1-3zoll-i2c-oled-display",
 )
 POWER_SUPPLY = part(
     "POWER_SUPPLY",
-    "5 V 6 A regulated desktop supply",
+    "5 V 2 A regulated desktop supply with 5.5x2.1 mm plug",
     "external PSU",
     "MEAN WELL",
-    "GST40A05-P1J",
+    "GST12A05-P1J",
+    datasheet="https://www.meanwell.com/Upload/PDF/GST12A/GST12A-SPEC.PDF",
 )
 MICRO_SD = part(
     "MICRO_SD",
@@ -240,7 +244,7 @@ APPROVED_COMPONENTS = (
     BUTTON,
     PI_ZERO_HEADER,
     OLED_HEADER,
-    FUSE_5A,
+    FUSE_2A,
     BARREL_JACK,
     TVS_6V8,
     POWER_SWITCH,

@@ -12,7 +12,7 @@ from components.mcp23017 import Mcp23017Pin
 from components.test_point import TestPointPin
 from components.tvs_diode import TvsDiodePin
 
-from .base import Footprint, Pad, RECT, courtyard_for
+from .base import OBLONG, Footprint, Pad, RECT, courtyard_for
 
 SOIC_PIN_PITCH_MM = 1.27
 SOIC_PAD_SIZE_MM = (1.55, 0.60)
@@ -61,14 +61,15 @@ def _soic(
     pad_width, pad_height = SOIC_PAD_SIZE_MM
     pads = []
     for index in range(per_side):
+        number = pin_numbers[index]
         pads.append(
             Pad(
-                pin_numbers[index],
+                number,
                 -row_pitch_mm / 2.0,
                 span / 2.0 - index * SOIC_PIN_PITCH_MM,
                 pad_width,
                 pad_height,
-                RECT,
+                RECT if number == "1" else OBLONG,
             )
         )
     for index in range(per_side):
@@ -79,7 +80,7 @@ def _soic(
                 span / 2.0 - index * SOIC_PIN_PITCH_MM,
                 pad_width,
                 pad_height,
-                RECT,
+                OBLONG,
             )
         )
     finished_pads = tuple(pads)
@@ -126,8 +127,8 @@ AHCT125_SOIC = _soic(
 
 _HALL_PADS = (
     Pad(HallSensorPin.SUPPLY, -0.95, 0.95, 1.00, 1.10, RECT),
-    Pad(HallSensorPin.ACTIVE_LOW_OUTPUT, -0.95, -0.95, 1.00, 1.10, RECT),
-    Pad(HallSensorPin.GROUND, 0.95, 0.0, 1.00, 1.10, RECT),
+    Pad(HallSensorPin.ACTIVE_LOW_OUTPUT, -0.95, -0.95, 1.00, 1.10, OBLONG),
+    Pad(HallSensorPin.GROUND, 0.95, 0.0, 1.00, 1.10, OBLONG),
 )
 HALL_SOT23 = Footprint(
     "SOT-23-3",

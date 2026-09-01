@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from components.sk9822 import Sk9822Pin
 
-from .base import RECT, Footprint, Pad, courtyard_for
+from .base import OBLONG, RECT, Footprint, Pad, courtyard_for
 
 BODY_MM = (5.0, 5.0)
 _PAD_LONG = 1.5
@@ -24,13 +24,13 @@ _PITCH = 1.6
 _PADS = (
     # Left edge, top to bottom: data in, clock in.
     Pad(Sk9822Pin.DATA_IN, -_EDGE, _PITCH / 2.0, _PAD_LONG, _PAD_SHORT, RECT),
-    Pad(Sk9822Pin.CLOCK_IN, -_EDGE, -_PITCH / 2.0, _PAD_LONG, _PAD_SHORT, RECT),
+    Pad(Sk9822Pin.CLOCK_IN, -_EDGE, -_PITCH / 2.0, _PAD_LONG, _PAD_SHORT, OBLONG),
     # Right edge: data out, clock out.
-    Pad(Sk9822Pin.DATA_OUT, _EDGE, _PITCH / 2.0, _PAD_LONG, _PAD_SHORT, RECT),
-    Pad(Sk9822Pin.CLOCK_OUT, _EDGE, -_PITCH / 2.0, _PAD_LONG, _PAD_SHORT, RECT),
+    Pad(Sk9822Pin.DATA_OUT, _EDGE, _PITCH / 2.0, _PAD_LONG, _PAD_SHORT, OBLONG),
+    Pad(Sk9822Pin.CLOCK_OUT, _EDGE, -_PITCH / 2.0, _PAD_LONG, _PAD_SHORT, OBLONG),
     # Supply above, ground below.
-    Pad(Sk9822Pin.FIVE_VOLTS, 0.0, _EDGE, _PAD_SHORT, _PAD_LONG, RECT),
-    Pad(Sk9822Pin.GROUND, 0.0, -_EDGE, _PAD_SHORT, _PAD_LONG, RECT),
+    Pad(Sk9822Pin.FIVE_VOLTS, 0.0, _EDGE, _PAD_SHORT, _PAD_LONG, OBLONG),
+    Pad(Sk9822Pin.GROUND, 0.0, -_EDGE, _PAD_SHORT, _PAD_LONG, OBLONG),
 )
 
 SK9822_5050 = Footprint(

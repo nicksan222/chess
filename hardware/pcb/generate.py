@@ -20,8 +20,9 @@ from core import (  # noqa: E402
     sources,
 )
 
-BOARD_PATH = PCB_ROOT / "chess-board.kicad_pcb"
-DSN_PATH = PCB_ROOT / "generated" / "chess-board.dsn"
+GENERATED = PCB_ROOT / "generated"
+BOARD_PATH = GENERATED / "chess-board.kicad_pcb"
+DSN_PATH = GENERATED / "chess-board.dsn"
 
 
 class ChessBoardProject:

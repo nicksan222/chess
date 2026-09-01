@@ -8,8 +8,8 @@ DOCKER ?= docker
 DC := $(DEVCONTAINER) exec --workspace-folder "$(ROOT)"
 CONTAINER_IDS = $(DOCKER) ps -aq --filter "label=devcontainer.local_folder=$(ROOT)"
 
-.PHONY: help doctor build up shell exec test component-audit bom schematic board \
-	review audit status release check clean stop down logs
+.PHONY: help doctor build up shell exec test component-check bom schematic board \
+	review release check clean stop down logs
 
 help: ## Show the supported container-based PCB operations.
 	@printf 'Usage: make -C hardware/pcb <target>\n\n'
@@ -17,7 +17,7 @@ help: ## Show the supported container-based PCB operations.
 	@grep -E '^(doctor|build|up|shell|exec|logs|stop|down):.*##' $(MAKEFILE_LIST) | \
 		awk 'BEGIN {FS = ":.*## "} {printf "  %-18s %s\n", $$1, $$2}'
 	@printf '\nBoard operations (all run inside the dev container):\n'
-	@grep -E '^(test|component-audit|bom|schematic|board|review|audit|status|release|check|clean):.*##' $(MAKEFILE_LIST) | \
+	@grep -E '^(test|component-check|bom|schematic|board|review|release|check|clean):.*##' $(MAKEFILE_LIST) | \
 		awk 'BEGIN {FS = ":.*## "} {printf "  %-18s %s\n", $$1, $$2}'
 
 doctor: ## Verify Docker and the Dev Container CLI are usable.
@@ -43,7 +43,7 @@ test: up ## Run fast PCB composition, component, footprint, and placement tests.
 	cd "$(ROOT)" && $(DC) env PYTHONPATH=hardware:hardware/pcb \
 		python3 -m unittest discover -s hardware/pcb/tests -p 'test_*.py'
 
-component-audit: up ## Prove every BOM product, semantic pin, and footprint agree.
+component-check: up ## Prove every BOM product, semantic pin, and footprint agree.
 	cd "$(ROOT)" && $(DC) env PYTHONPATH=hardware:hardware/pcb \
 		python3 -m unittest hardware.pcb.tests.test_components \
 		hardware.pcb.tests.test_footprints hardware.pcb.tests.test_release_policy
@@ -61,14 +61,8 @@ board: up ## Regenerate the schematic, PCB, BOM, and KiCad project configuration
 		 python3 hardware/pcb/generate.py && \
 		 python3 hardware/pcb/configure_project.py'
 
-review: up ## Run generation, ERC, DRC, parity, renders, and audit without Gerbers.
+review: up ## Run generation, tests, ERC, DRC, parity, and renders without Gerbers.
 	cd "$(ROOT)" && $(DC) env PCB_REVIEW_ONLY=1 ./tools/pcb
-
-audit: up ## Audit existing generated evidence without regenerating the board.
-	cd "$(ROOT)" && $(DC) python3 hardware/pcb/audit.py
-
-status: audit ## Print the machine-readable release status.
-	cd "$(ROOT)" && $(DC) python3 -m json.tool hardware/pcb/generated/audit.json
 
 release: up ## Run every gate and export fabrication files only if release-ready.
 	cd "$(ROOT)" && $(DC) ./tools/pcb
@@ -79,6 +73,7 @@ check: up ## Run the complete Rust, CAD, and PCB repository check.
 clean: up ## Remove Python caches and stale fabrication output, preserving reviews.
 	cd "$(ROOT)" && $(DC) bash -lc \
 		'find hardware/pcb -type d -name __pycache__ -prune -exec rm -rf {} +; \
+		 rm -f hardware/pcb/generated/*.kicad_prl hardware/pcb/generated/~*.lck; \
 		 rm -rf hardware/pcb/generated/gerber'
 
 logs: doctor ## Follow output from the active development container.

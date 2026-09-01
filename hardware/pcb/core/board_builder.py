@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pcbnew
 
-from core import kicad, sources
+from core import kicad, rules, sources
 from core.board import Board
 from core.nets import Net
 
@@ -22,6 +22,7 @@ class BoardGeometry:
     def add_mechanical_features(self) -> None:
         _add_outline(self.layout.native)
         _add_mounting_holes(self.layout.native)
+        _add_front_silkscreen(self.layout.native)
 
     def add_power_planes(self) -> None:
         _add_power_planes(self.layout.native, self.layout.nets)
@@ -46,6 +47,8 @@ def _add_mounting_holes(board: pcbnew.BOARD) -> None:
         module.SetReference(f"H{index}")
         module.SetValue("M3 mounting hole")
         module.SetBoardOnly(True)
+        module.SetExcludedFromBOM(True)
+        module.SetExcludedFromPosFiles(True)
         module.Reference().SetVisible(False)
         module.Value().SetVisible(False)
         module.SetPosition(kicad.point(x, y))
@@ -75,6 +78,56 @@ def _add_mounting_holes(board: pcbnew.BOARD) -> None:
             line.SetLayer(pcbnew.F_CrtYd)
             line.SetWidth(pcbnew.FromMM(0.05))
             module.Add(line)
+
+
+def _add_text(
+    board: pcbnew.BOARD,
+    text: str,
+    at: tuple[float, float],
+    *,
+    height: float = 1.0,
+) -> None:
+    label = pcbnew.PCB_TEXT(board)
+    label.SetText(text)
+    label.SetPosition(kicad.point(*at))
+    label.SetLayer(pcbnew.F_SilkS)
+    label.SetTextSize(
+        pcbnew.VECTOR2I(pcbnew.FromMM(height), pcbnew.FromMM(height))
+    )
+    label.SetTextThickness(pcbnew.FromMM(rules.SILK_LINE_MM))
+    board.Add(label)
+
+
+def _add_front_silkscreen(board: pcbnew.BOARD) -> None:
+    """Put revision, controls, connector pinout, and bring-up labels on copper."""
+    shared = sources.dimensions()
+    revision = sources.netlist()["revision"]
+    _add_text(board, f"CHESS BOARD {revision}", (116.0, -165.0), height=1.5)
+    _add_text(board, "J3 5V CENTER +", (-144.0, -193.5))
+    _add_text(board, "F1 2A MAX", (-137.0, -171.0))
+    _add_text(board, "SW13 POWER", (-113.0, -181.5))
+    _add_text(board, "J2: GND 3V3 SCL SDA", (-95.0, -165.0), height=0.9)
+    _add_text(board, "D1 K=+5V", (-150.0, -159.5), height=0.9)
+
+    button_positions = dict(
+        zip(sources.names().BUTTON_NAMES, shared.PANEL_BUTTON_POSITIONS_MM, strict=True)
+    )
+    for name, (x, y) in button_positions.items():
+        label_y = y + 6.5 if y > shared.PANEL_ORIGIN_Y_MM else y - 6.5
+        _add_text(board, name, (x, label_y), height=0.9)
+
+    test_points = {
+        "5V": (-47.0, -162.5),
+        "GND": (-40.0, -162.5),
+        "DATA": (-33.0, -162.5),
+        "CLK": (-26.0, -162.5),
+        "3V3": (-19.0, -162.5),
+        "SCL": (-12.0, -162.5),
+        "SDA": (-47.0, -193.5),
+        "IRQ": (-40.0, -193.5),
+    }
+    for name, at in test_points.items():
+        _add_text(board, name, at, height=0.8)
 
 
 def _add_outline(board: pcbnew.BOARD) -> None:

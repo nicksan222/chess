@@ -14,16 +14,19 @@ The board is a native KiCad 9 project composed from Python:
 - `core/square.py` defines and validates one four-part square assembly—LED, Hall
   sensor, and both bypass capacitors—before placement repeats it 64 times.
 - `design/netlist.json` is the reviewed connectivity contract; every placed
-  component references an approved `part_key`.
-- `design/bom.md` is generated with exact manufacturer part numbers from
+  component references an approved `part_key`. `design/project-template.json`
+  is the reviewed seed from which the generated KiCad project settings are built.
+- `generated/bom.md` is generated with exact manufacturer part numbers from
   `hardware/shared/components.py`; anonymous substitutions are rejected.
 - `core/placement.py` composes square assemblies and one-off parts. Each
   `Placement` attaches itself through `KiCadBoard`; `footprints/` owns package
   geometry, while components resolve their semantic pin attachments through the
   shared connection graph.
 - `hardware/shared/` supplies dimensions, component identities, and wiring.
-- `chess-board.kicad_pro`, `chess-board.kicad_sch`, and
-  `chess-board.kicad_pcb` open directly in KiCad.
+- `generated/chess-board.kicad_pro`, `generated/chess-board.kicad_sch`, and
+  `generated/chess-board.kicad_pcb` open directly in KiCad. All generated
+  project, fabrication, report, render, BOM, and placement files live under
+  `generated/`; the PCB root contains source code and reviewed design inputs only.
 
 ## Container operations
 
@@ -34,18 +37,18 @@ host Python or KiCad versions cannot silently change the output:
 ```sh
 make -C hardware/pcb help             # list all operations
 make -C hardware/pcb test             # fast composition tests
-make -C hardware/pcb component-audit  # exact products, semantic pins, footprints
+make -C hardware/pcb component-check  # exact products, semantic pins, footprints
 make -C hardware/pcb board            # regenerate native sources
 make -C hardware/pcb review           # generation + ERC/DRC/parity/renders, no Gerbers
-make -C hardware/pcb status           # print generated/audit.json
 make -C hardware/pcb release          # gated fabrication export
 make -C hardware/pcb shell            # container shell
 make -C hardware/pcb down             # remove the container
 ```
 
 `make release` runs `./tools/pcb`; it is not a shortcut around the release gate.
-`AUDIT.md` is the human blocking-work list and `generated/audit.json` is its
-machine-readable status.
+Manufacturing requirements are executable tests in
+`tests/test_manufacturing_readiness.py`; release-only physical-evidence tests run
+with `PCB_RELEASE=1` immediately before fabrication export.
 
 ## Product reality and readiness
 
@@ -73,5 +76,6 @@ output is recreated only when all of these are true:
 - there are no PCB/schematic parity errors;
 - Hall-sensor/magnet prototype evidence exists in `prototype/`.
 
-`validate_release.py` enforces the policy after review images are generated and
-before fabrication export. A failed gate is a failed build, not a warning.
+The release-only unittest suite enforces the policy after review images are
+created and before fabrication export. A failed test is a failed build, not a
+warning.

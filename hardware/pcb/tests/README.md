@@ -1,5 +1,7 @@
 # PCB source tests
 
-These tests validate shared connectivity, custom package geometry, placement,
-and fabrication constraints without opening KiCad. `./tools/pcb` additionally
-runs KiCad's native DRC against the generated project.
+These tests own all electrical, product, generated-artifact, placement, and
+fabrication release requirements. `./tools/pcb` generates the native project,
+runs KiCad ERC/DRC, then runs the tests against those outputs. Immediately before
+Gerber export it reruns the suite with `PCB_RELEASE=1`, enabling physical Hall
+sensor and magnet evidence tests that are skipped during ordinary source review.

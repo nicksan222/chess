@@ -34,7 +34,8 @@ EXPANDER_CAP_OFFSET_MM = (0.0, -12.0)
 # and is checked for overlap by the tests rather than trusted.
 STRIP_LAYOUT: dict[str, tuple[float, float, float]] = {
     # Power inlet, at the left edge so the barrel can reach the case wall.
-    "J3": (-150.0, -178.0, 0.0),
+    # Rotate the exact PJ-102A pattern so its mating face points at the case wall.
+    "J3": (-150.0, -178.0, -90.0),
     "F1": (-138.0, -178.0, 0.0),
     "D1": (-150.0, -165.0, 0.0),
     "SW13": (-113.0, -190.0, 0.0),
@@ -48,10 +49,15 @@ STRIP_LAYOUT: dict[str, tuple[float, float, float]] = {
     "C7": (-58.0, -180.0, 0.0),
     "R1": (-50.0, -170.0, 0.0),
     "R2": (-50.0, -176.0, 0.0),
-    "TP1": (-40.0, -165.0, 0.0),
-    "TP2": (-33.0, -165.0, 0.0),
-    "TP3": (-26.0, -165.0, 0.0),
-    "TP4": (-19.0, -165.0, 0.0),
+    "R3": (-19.0, -173.0, 0.0),
+    "TP1": (-47.0, -165.0, 0.0),
+    "TP2": (-40.0, -165.0, 0.0),
+    "TP3": (-33.0, -165.0, 0.0),
+    "TP4": (-26.0, -165.0, 0.0),
+    "TP5": (-19.0, -165.0, 0.0),
+    "TP6": (-12.0, -165.0, 0.0),
+    "TP7": (-47.0, -196.0, 0.0),
+    "TP8": (-40.0, -196.0, 0.0),
 }
 
 # The Pi header lies across the board on a grid line, where no Hall sensor sits.

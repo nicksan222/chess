@@ -4,14 +4,16 @@ set -euo pipefail
 root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "${root}"
 
+cleanup_transients() {
+    find hardware/pcb -type d -name __pycache__ -prune -exec rm -rf {} +
+    rm -f hardware/pcb/generated/*.kicad_prl hardware/pcb/generated/~*.lck
+}
+trap cleanup_transients EXIT
+
 if ! command -v kicad-cli >/dev/null || ! python3 -c 'import pcbnew' 2>/dev/null; then
     printf 'error: KiCad 9 with its Python pcbnew module is required\n' >&2
     exit 1
 fi
-
-printf '\n==> Test PCB composition\n'
-PYTHONPATH=hardware:hardware/pcb python3 -m unittest discover \
-    -s hardware/pcb/tests -p 'test_*.py'
 
 printf '\n==> Generate approved BOM and native KiCad project\n'
 python3 hardware/pcb/write_bom.py
@@ -24,52 +26,58 @@ rm -rf "${out}/gerber"
 
 printf '\n==> KiCad ERC\n'
 kicad-cli sch erc --severity-all --format json \
-    -o "${out}/erc.json" hardware/pcb/chess-board.kicad_sch
+    -o "${out}/erc.json" "${out}/chess-board.kicad_sch"
 
 printf '\n==> KiCad DRC and schematic parity\n'
 kicad-cli pcb drc --schematic-parity --severity-all --severity-exclusions \
-    -o "${out}/drc.rpt" hardware/pcb/chess-board.kicad_pcb
+    -o "${out}/drc.rpt" "${out}/chess-board.kicad_pcb"
 kicad-cli pcb drc --schematic-parity --format json --severity-all --severity-exclusions \
-    -o "${out}/drc.json" hardware/pcb/chess-board.kicad_pcb
+    -o "${out}/drc.json" "${out}/chess-board.kicad_pcb"
+kicad-cli pcb export pos --format csv --units mm --side both \
+    --exclude-dnp -o "${out}/positions.csv" "${out}/chess-board.kicad_pcb"
+
+printf '\n==> Test generated PCB and release requirements\n'
+PYTHONPATH=hardware:hardware/pcb python3 -m unittest discover \
+    -s hardware/pcb/tests -p 'test_*.py'
 
 printf '\n==> Generate review previews\n'
 rm -rf "${out}/schematic"
 mkdir -p "${out}/schematic"
 kicad-cli sch export svg --exclude-drawing-sheet --no-background-color \
-    -o "${out}/schematic" hardware/pcb/chess-board.kicad_sch
+    -o "${out}/schematic" "${out}/chess-board.kicad_sch"
 svg_options=(--mode-single --page-size-mode 2 --fit-page-to-board \
     --exclude-drawing-sheet --subtract-soldermask)
 kicad-cli pcb export svg "${svg_options[@]}" \
     -l F.Cu,F.Mask,F.Silkscreen,Edge.Cuts \
-    -o "${out}/board-top.svg" hardware/pcb/chess-board.kicad_pcb
+    -o "${out}/board-top.svg" "${out}/chess-board.kicad_pcb"
 kicad-cli pcb export svg "${svg_options[@]}" --mirror \
     -l B.Cu,B.Mask,B.Silkscreen,Edge.Cuts \
-    -o "${out}/board-bottom.svg" hardware/pcb/chess-board.kicad_pcb
+    -o "${out}/board-bottom.svg" "${out}/chess-board.kicad_pcb"
 python3 hardware/pcb/polish_previews.py
 kicad-cli pcb render --quality high --width 1800 --height 1200 \
     --background opaque --floor --perspective --rotate 325,0,35 --zoom 0.75 \
-    -o "${out}/board-3d.png" hardware/pcb/chess-board.kicad_pcb
+    -o "${out}/board-3d.png" "${out}/chess-board.kicad_pcb"
 kicad-cli pcb render --quality high --width 1400 --height 1400 \
     --background opaque --side top --zoom 0.82 \
-    -o "${out}/board-top.png" hardware/pcb/chess-board.kicad_pcb
+    -o "${out}/board-top.png" "${out}/chess-board.kicad_pcb"
 kicad-cli pcb render --quality high --width 1400 --height 1400 \
     --background opaque --side bottom --zoom 0.82 \
-    -o "${out}/board-bottom.png" hardware/pcb/chess-board.kicad_pcb
-
-printf '\n==> Audit complete hardware release\n'
-python3 hardware/pcb/audit.py
+    -o "${out}/board-bottom.png" "${out}/chess-board.kicad_pcb"
 
 if [[ "${PCB_REVIEW_ONLY:-0}" == 1 ]]; then
     printf '\n==> Review-only run complete; fabrication output remains absent\n'
     exit 0
 fi
 
-printf '\n==> Enforce fabrication release gate\n'
-python3 hardware/pcb/validate_release.py
+printf '\n==> Enforce fabrication release tests\n'
+PCB_RELEASE=1 PYTHONPATH=hardware:hardware/pcb python3 -m unittest discover \
+    -s hardware/pcb/tests -p 'test_*.py'
 
 printf '\n==> Export fabrication files\n'
 mkdir -p "${out}/gerber"
 kicad-cli pcb export gerbers \
     -l F.Cu,In1.Cu,In2.Cu,In3.Cu,In4.Cu,In5.Cu,In6.Cu,B.Cu,F.Paste,B.Paste,F.Silkscreen,B.Silkscreen,F.Mask,B.Mask,Edge.Cuts \
-    -o "${out}/gerber/" hardware/pcb/chess-board.kicad_pcb
-kicad-cli pcb export drill -o "${out}/gerber/" hardware/pcb/chess-board.kicad_pcb
+    -o "${out}/gerber/" "${out}/chess-board.kicad_pcb"
+kicad-cli pcb export drill --excellon-separate-th --excellon-oval-format route \
+    --generate-report --report-path "${out}/gerber/drill-report.rpt" \
+    -o "${out}/gerber/" "${out}/chess-board.kicad_pcb"

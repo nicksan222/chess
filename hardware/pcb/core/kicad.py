@@ -155,8 +155,15 @@ class KiCadBoard:
         )
         if definition.plated_through:
             pad.SetAttribute(pcbnew.PAD_ATTRIB_PTH)
-            drill = pcbnew.FromMM(definition.drill)
-            pad.SetDrillSize(pcbnew.VECTOR2I(drill, drill))
+            drill_width, drill_height = definition.drill_size
+            pad.SetDrillSize(
+                pcbnew.VECTOR2I(
+                    pcbnew.FromMM(drill_width),
+                    pcbnew.FromMM(drill_height),
+                )
+            )
+            if drill_width != drill_height:
+                pad.SetDrillShape(pcbnew.PAD_DRILL_SHAPE_OBLONG)
             pad.SetLayerSet(pad.PTHMask())
         else:
             pad.SetAttribute(pcbnew.PAD_ATTRIB_SMD)

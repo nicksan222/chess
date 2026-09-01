@@ -176,8 +176,8 @@ PANEL_BUTTON_POSITIONS_MM = tuple(
     for column in range(PANEL_BUTTON_COLUMNS)
 )
 
-# SSD1306 1.3 in module. The window exposes the active area; the recess holds
-# the carrier board, which arrives on a four-wire jumper rather than a socket.
+# AZ-Delivery A 1-6 SH1106 1.3 in module. The window exposes the active area;
+# the recess holds the carrier board, connected to J2 by four short wires.
 PANEL_OLED_MODULE_MM = OLED_MODULE.require_body_mm()
 PANEL_OLED_WINDOW_MM = (32.0, 18.0)
 PANEL_OLED_RECESS_DEPTH_MM = 2.0

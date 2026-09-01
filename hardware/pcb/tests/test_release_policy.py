@@ -4,9 +4,10 @@ import json
 import unittest
 from pathlib import Path
 
-import audit as board_audit
 import footprints
+from configure_project import render as render_project
 from shared.components import COMPONENTS
+from write_bom import render as render_bom, render_assembly_csv
 from write_schematic import render as render_schematic
 from write_schematic import render_symbol_library, row_centres
 
@@ -41,10 +42,19 @@ class ReleasePolicyTest(unittest.TestCase):
 
     def test_native_schematic_and_symbol_library_are_current(self):
         schematic = render_schematic()
-        self.assertEqual((PCB / "chess-board.kicad_sch").read_text(), schematic)
         self.assertEqual(
-            (PCB / "generated-symbols.kicad_sym").read_text(),
+            (PCB / "generated/chess-board.kicad_sch").read_text(), schematic
+        )
+        self.assertEqual(
+            (PCB / "generated/generated-symbols.kicad_sym").read_text(),
             render_symbol_library(schematic),
+        )
+
+    def test_generated_boms_are_current(self):
+        self.assertEqual((PCB / "generated/bom.md").read_text(), render_bom())
+        self.assertEqual(
+            (PCB / "generated/assembly-bom.csv").read_text(),
+            render_assembly_csv(),
         )
 
     def test_approved_bodies_fit_their_footprint_courtyards(self):
@@ -57,8 +67,10 @@ class ReleasePolicyTest(unittest.TestCase):
                 self.assertGreaterEqual(courtyard[0], body[0])
                 self.assertGreaterEqual(courtyard[1], body[1])
 
-    def test_the_project_has_no_drc_exclusions(self):
-        project = json.loads((PCB / "chess-board.kicad_pro").read_text())
+    def test_generated_project_is_current_and_has_no_drc_exclusions(self):
+        project_text = (PCB / "generated/chess-board.kicad_pro").read_text()
+        self.assertEqual(project_text, render_project())
+        project = json.loads(project_text)
         settings = project["board"]["design_settings"]
         self.assertEqual(settings.get("drc_exclusions", []), [])
         self.assertNotIn("ignore", settings["rule_severities"].values())
@@ -78,33 +90,24 @@ class ReleasePolicyTest(unittest.TestCase):
                 self.assertNotIn(routed_prefix, descriptions)
         self.assertFalse(any("[N$" in line for line in descriptions.splitlines()))
 
-    def test_machine_audit_covers_every_release_dimension(self):
-        report = board_audit.audit()
-        self.assertEqual(report["unknown_part_keys"], [])
-        self.assertEqual(report["package_mismatches"], [])
-        self.assertEqual(report["anonymous_products"], [])
-        self.assertEqual(report["missing_component_models"], [])
-        self.assertEqual(report["pin_model_mismatches"], [])
-        self.assertEqual(report["implicit_no_connects"], 0)
-        self.assertTrue(report["bom_current"])
-        self.assertEqual(report["drc_exclusions"], 0)
-        self.assertEqual(report["ignored_drc_rules"], [])
-        self.assertEqual(report["erc_violations"], 0)
-        self.assertEqual(report["drc_violations"], 0)
-        self.assertEqual(report["unconnected_items"], 0)
-        self.assertEqual(report["schematic_parity_errors"], 0)
+    def test_native_erc_is_clean(self):
+        erc = json.loads((PCB / "generated/erc.json").read_text())
+        violations = [
+            violation
+            for sheet in erc.get("sheets", [])
+            for violation in sheet.get("violations", [])
+        ]
+        self.assertEqual(violations, [])
 
     def test_pcb_makefile_keeps_common_operations_inside_the_container(self):
         makefile = (PCB / "Makefile").read_text()
         for target in (
             "test",
-            "component-audit",
+            "component-check",
             "bom",
             "schematic",
             "board",
             "review",
-            "audit",
-            "status",
             "release",
             "check",
         ):
@@ -118,15 +121,12 @@ class ReleasePolicyTest(unittest.TestCase):
     def test_the_runner_enforces_the_release_gate_before_gerbers(self):
         runner = (PCB.parents[1] / "tools/pcb").read_text()
         review_only = runner.index("PCB_REVIEW_ONLY:-0")
-        gate = runner.index("validate_release.py")
+        gate = runner.index("PCB_RELEASE=1")
         fabrication = runner.index("pcb export gerbers")
         self.assertLess(review_only, gate)
         self.assertLess(gate, fabrication)
+        self.assertIn("python3 -m unittest discover", runner)
         self.assertIn("--severity-exclusions", runner)
-        validator = (PCB / "validate_release.py").read_text()
-        self.assertIn('"anonymous_products"', validator)
-        self.assertIn('"missing_component_models"', validator)
-        self.assertIn('"pin_model_mismatches"', validator)
         workflow = (PCB.parents[1] / ".github/workflows/ci.yml").read_text()
         self.assertIn("env PCB_REVIEW_ONLY=1 ./tools/pcb", workflow)
 

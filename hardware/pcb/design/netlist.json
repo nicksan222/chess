@@ -1420,12 +1420,12 @@
           "value": "SMBJ6.0A"
         },
         "F1": {
-          "description": "Input over-current protection",
+          "description": "Input over-current protection matched to the 2.5 A jack",
           "extras": {},
           "lib": "FUSE",
           "package": "2410 fuse",
-          "part_key": "FUSE_5A",
-          "value": "5 A time-delay"
+          "part_key": "FUSE_2A",
+          "value": "2 A time-delay"
         },
         "HS1": {
           "description": "Omnipolar active-low Hall-effect square sensor",
@@ -2107,6 +2107,14 @@
           "part_key": "RES_4K7",
           "value": "4.7k"
         },
+        "R3": {
+          "description": "External pull-up for the wire-OR MCP23017 interrupt line",
+          "extras": {},
+          "lib": "R",
+          "package": "0603 (1608 metric)",
+          "part_key": "RES_4K7",
+          "value": "4.7k"
+        },
         "SW1": {
           "description": "Momentary panel button, 9.5 mm actuator",
           "extras": {
@@ -2266,6 +2274,38 @@
           "package": "SMD test point",
           "part_key": "TEST_POINT",
           "value": "LED_CLK_5V"
+        },
+        "TP5": {
+          "description": "3.3 V test point",
+          "extras": {},
+          "lib": "TESTPOINT",
+          "package": "SMD test point",
+          "part_key": "TEST_POINT",
+          "value": "+3V3"
+        },
+        "TP6": {
+          "description": "I2C clock test point",
+          "extras": {},
+          "lib": "TESTPOINT",
+          "package": "SMD test point",
+          "part_key": "TEST_POINT",
+          "value": "I2C_SCL"
+        },
+        "TP7": {
+          "description": "I2C data test point",
+          "extras": {},
+          "lib": "TESTPOINT",
+          "package": "SMD test point",
+          "part_key": "TEST_POINT",
+          "value": "I2C_SDA"
+        },
+        "TP8": {
+          "description": "Shared sensor interrupt test point",
+          "extras": {},
+          "lib": "TESTPOINT",
+          "package": "SMD test point",
+          "part_key": "TEST_POINT",
+          "value": "SENSE_IRQ"
         },
         "U1": {
           "description": "16-bit I2C port expander, one per board quadrant",
@@ -3623,6 +3663,14 @@
             [
               "U4",
               "18"
+            ],
+            [
+              "R3",
+              "1"
+            ],
+            [
+              "TP5",
+              "1"
             ]
           ]
         },
@@ -5624,6 +5672,10 @@
             [
               "U4",
               "12"
+            ],
+            [
+              "TP6",
+              "1"
             ]
           ]
         },
@@ -5657,6 +5709,10 @@
             [
               "U4",
               "13"
+            ],
+            [
+              "TP7",
+              "1"
             ]
           ]
         },
@@ -5918,6 +5974,14 @@
             [
               "U4",
               "20"
+            ],
+            [
+              "R3",
+              "2"
+            ],
+            [
+              "TP8",
+              "1"
             ]
           ]
         },
@@ -8571,6 +8635,14 @@
           [
             "U4",
             "9"
+          ],
+          [
+            "R3",
+            "1"
+          ],
+          [
+            "TP5",
+            "1"
           ]
         ],
         "+5V": [
@@ -10261,6 +10333,10 @@
           [
             "U4",
             "12"
+          ],
+          [
+            "TP6",
+            "1"
           ]
         ],
         "I2C_SDA": [
@@ -10291,6 +10367,10 @@
           [
             "U4",
             "13"
+          ],
+          [
+            "TP7",
+            "1"
           ]
         ],
         "LED_C16": [
@@ -10493,6 +10573,14 @@
           [
             "U4",
             "20"
+          ],
+          [
+            "R3",
+            "2"
+          ],
+          [
+            "TP8",
+            "1"
           ]
         ],
         "SPI_CLK_3V3": [
@@ -11156,7 +11244,7 @@
           ]
         ]
       },
-      "revision": "B-PROTOTYPE",
+      "revision": "C-PROTOTYPE",
       "title": "Chess Smart Board - Single Board Electronics"
     }
   },

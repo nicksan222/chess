@@ -69,11 +69,17 @@ class GeometryTest(unittest.TestCase):
                 if not pad.plated_through:
                     continue
                 with self.subTest(package=package, pad=pad.number):
+                    drill_width, drill_height = pad.drill_size
                     self.assertGreaterEqual(
-                        rules.annular_ring(pad.width, pad.drill),
+                        rules.annular_ring(pad.width, drill_width),
                         rules.PCBWAY_MIN_ANNULAR_RING_MM,
                     )
-                    self.assertGreaterEqual(pad.drill, rules.PCBWAY_MIN_DRILL_MM)
+                    self.assertGreaterEqual(
+                        rules.annular_ring(pad.height, drill_height),
+                        rules.PCBWAY_MIN_ANNULAR_RING_MM,
+                    )
+                    self.assertGreaterEqual(drill_width, rules.PCBWAY_MIN_DRILL_MM)
+                    self.assertGreaterEqual(drill_height, rules.PCBWAY_MIN_DRILL_MM)
 
     def test_pads_within_a_footprint_do_not_collide(self) -> None:
         for package, footprint in footprints.CATALOG.items():
@@ -97,13 +103,27 @@ class GeometryTest(unittest.TestCase):
                     self.assertLessEqual(abs(pad.y) + pad.height / 2.0, height / 2.0)
 
     def test_multi_pin_parts_mark_pin_one(self) -> None:
-        """A square pad is the orientation cue that survives a missing silkscreen."""
+        """Pin 1 must be visibly different even before silkscreen is applied."""
         for package, footprint in footprints.CATALOG.items():
             if len(footprint.pads) < 3:
                 continue
             with self.subTest(package=package):
                 first = footprint.pad("1")
                 self.assertEqual(first.shape, RECT)
+                self.assertTrue(
+                    any(pad.shape != first.shape for pad in footprint.pads[1:]),
+                    "all pads look identical, so pin 1 is ambiguous",
+                )
+
+    def test_pj_102a_uses_the_manufacturer_slot_pattern(self) -> None:
+        jack = footprints.for_package("5.5x2.0 mm THT")
+        expected = {
+            "1": (0.0, -3.0),
+            "2": (0.0, 3.0),
+            "3": (-4.7, 0.0),
+        }
+        self.assertEqual({pad.number: (pad.x, pad.y) for pad in jack.pads}, expected)
+        self.assertEqual({pad.drill_size for pad in jack.pads}, {(1.0, 1.6)})
 
 
 class RotationTest(unittest.TestCase):

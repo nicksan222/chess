@@ -48,10 +48,16 @@ class Pad:
     height: float
     shape: str = ROUND
     drill: float = 0.0
+    drill_height: float = 0.0
 
     @property
     def plated_through(self) -> bool:
         return self.drill > 0.0
+
+    @property
+    def drill_size(self) -> tuple[float, float]:
+        """Finished drill width/height; unequal axes describe a plated slot."""
+        return (self.drill, self.drill_height or self.drill)
 
     @property
     def net_number(self) -> str:
@@ -78,7 +84,8 @@ class Pad:
             width=self.height if swap else self.width,
             height=self.width if swap else self.height,
             shape=self.shape,
-            drill=self.drill,
+            drill=(self.drill_height or self.drill) if swap else self.drill,
+            drill_height=self.drill if swap and self.drill_height else self.drill_height,
         )
 
 

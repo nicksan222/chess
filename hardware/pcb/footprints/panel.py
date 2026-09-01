@@ -29,19 +29,42 @@ TACTILE_6MM = Footprint(
     courtyard=courtyard_for(_TACT_PADS, (6.2, 6.2)),
 )
 
-# The PJ-102A has three terminals: the centre pin, the sleeve, and its normally
-# closed switched sleeve contact. Both sleeve terminals are intentionally grounded.
-_JACK_DRILL = rules.drill_for_lead(1.5)
-_JACK_PAD = rules.pad_for_drill(_JACK_DRILL)
+# Same Sky drawing PJ-102A, rev. 2024-02-15: three tapered 1.0 x 1.6 mm
+# terminals. Pin 1 and pin 2 are 6.0 mm apart; pin 3 is offset 4.7 mm from
+# their centreline. The plated slots, rather than oversized round holes, retain
+# the jack against insertion force. Both sleeve terminals are grounded.
+_JACK_SLOT_MM = (1.0, 1.6)
+_JACK_PAD_MM = (2.0, 2.6)
 _JACK_PADS = (
-    Pad(BarrelJackPad.CENTRE_POSITIVE, -4.5, 0.0, _JACK_PAD, _JACK_PAD, RECT, _JACK_DRILL),
-    Pad(BarrelJackPad.SLEEVE_GROUND, 0.0, -4.85, _JACK_PAD, _JACK_PAD, ROUND, _JACK_DRILL),
-    Pad(BarrelJackPad.SWITCHED_SLEEVE_GROUND, 4.5, 0.0, _JACK_PAD, _JACK_PAD, ROUND, _JACK_DRILL),
+    Pad(
+        BarrelJackPad.CENTRE_POSITIVE,
+        0.0,
+        -3.0,
+        *_JACK_PAD_MM,
+        RECT,
+        *_JACK_SLOT_MM,
+    ),
+    Pad(
+        BarrelJackPad.SLEEVE_GROUND,
+        0.0,
+        3.0,
+        *_JACK_PAD_MM,
+        ROUND,
+        *_JACK_SLOT_MM,
+    ),
+    Pad(
+        BarrelJackPad.SWITCHED_SLEEVE_GROUND,
+        -4.7,
+        0.0,
+        *_JACK_PAD_MM,
+        ROUND,
+        *_JACK_SLOT_MM,
+    ),
 )
 
 BARREL_JACK = Footprint(
     package="5.5x2.0 mm THT",
     description="Same Sky PJ-102A 5.5 x 2.0 mm DC jack, centre positive",
     pads=_JACK_PADS,
-    courtyard=courtyard_for(_JACK_PADS, (13.0, 11.0)),
+    courtyard=courtyard_for(_JACK_PADS, (14.4, 11.0)),
 )

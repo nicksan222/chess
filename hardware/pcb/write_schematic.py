@@ -8,6 +8,7 @@ import uuid
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
+GENERATED = ROOT / "generated"
 HARDWARE = ROOT.parent
 sys.path[:0] = [str(ROOT), str(HARDWARE)]
 
@@ -15,9 +16,9 @@ from core import connectivity as connection_model  # noqa: E402
 from core import placement, sources  # noqa: E402
 from shared.components import COMPONENTS  # noqa: E402
 
-DESTINATION = ROOT / "chess-board.kicad_sch"
-SYMBOL_LIBRARY = ROOT / "generated-symbols.kicad_sym"
-SYMBOL_TABLE = ROOT / "sym-lib-table"
+DESTINATION = GENERATED / "chess-board.kicad_sch"
+SYMBOL_LIBRARY = GENERATED / "generated-symbols.kicad_sym"
+SYMBOL_TABLE = GENERATED / "sym-lib-table"
 NAMESPACE = uuid.UUID("83abf953-6539-4c7d-9e0f-e3b5ac2c4f3b")
 ROOT_UUID = uuid.uuid5(NAMESPACE, "root")
 SYMBOL_COLUMNS = 20
@@ -270,6 +271,7 @@ def render_symbol_library(schematic: str) -> str:
 
 
 def write() -> None:
+    GENERATED.mkdir(exist_ok=True)
     schematic = render()
     DESTINATION.write_text(schematic)
     SYMBOL_LIBRARY.write_text(render_symbol_library(schematic))

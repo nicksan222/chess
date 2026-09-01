@@ -29,7 +29,7 @@ _MODELS: dict[str, type[BoardComponent]] = {
     "CAP_100N": Capacitor,
     "CAP_10U": Capacitor,
     "CAP_1000U": Capacitor,
-    "FUSE_5A": Fuse,
+    "FUSE_2A": Fuse,
     "HALL_SENSOR": HallSensor,
     "MCP23017": Mcp23017,
     "OLED_HEADER": OledHeader,

@@ -18,7 +18,9 @@ def route_input_power(board, net_by_name, pads) -> None:
             Net.DC_INPUT,
             DC_INPUT_JACK.endpoint(BarrelJackPin.CENTRE_POSITIVE),
             INPUT_FUSE.endpoint(FusePin.UNFUSED_INPUT),
-            393.0,
+            # Run below the rotated PJ-102A body; its offset grounded slot sits
+            # above the centre-positive terminal at y=393.3 mm.
+            403.0,
         ),
         (
             Net.DC_FUSED,
