@@ -85,6 +85,45 @@ class KiCadBoardAdapterTest(unittest.TestCase):
                 shared.PCB_MOUNTING_HOLE_DIAMETER_MM,
             )
 
+    def test_front_silkscreen_dots_mark_internal_square_boundaries(self) -> None:
+        layout = kicad.KiCadBoard(self.design)
+        board_builder.BoardGeometry(layout).add_mechanical_features()
+        expected = board_builder._square_grid_dot_positions(sources.dimensions())
+        dots = [
+            drawing
+            for drawing in layout.native.GetDrawings()
+            if isinstance(drawing, pcbnew.PCB_SHAPE)
+            and drawing.GetLayer() == pcbnew.F_SilkS
+        ]
+        self.assertEqual(len(dots), len(expected))
+        self.assertTrue(
+            all(
+                drawing.GetShape() == pcbnew.SHAPE_T_SEGMENT
+                and pcbnew.ToMM(drawing.GetWidth())
+                == board_builder.SQUARE_GRID_DOT_DIAMETER_MM
+                for drawing in dots
+            )
+        )
+
+        shared = sources.dimensions()
+        half_span = shared.PLAYING_SPAN_MM / 2.0
+        boundaries = {
+            -half_span + index * shared.SQUARE_SIZE_MM
+            for index in range(1, shared.GRID_COUNT)
+        }
+        self.assertTrue(all(x in boundaries or y in boundaries for x, y in expected))
+        self.assertTrue(
+            all(abs(x) < half_span and abs(y) < half_span for x, y in expected)
+        )
+        self.assertTrue(
+            all(
+                (x - hole_x) ** 2 + (y - hole_y) ** 2
+                >= board_builder.SQUARE_GRID_HOLE_CLEARANCE_MM**2
+                for x, y in expected
+                for hole_x, hole_y in shared.PCB_SUPPORT_POSITIONS_MM
+            )
+        )
+
     def test_front_silkscreen_labels_square_and_service_connections(self) -> None:
         layout = kicad.KiCadBoard(self.design)
         board_builder.BoardGeometry(layout).add_mechanical_features()
@@ -97,7 +136,7 @@ class KiCadBoardAdapterTest(unittest.TestCase):
             {f"{file}{rank}" for file in "ABCDEFGH" for rank in range(1, 9)} <= labels
         )
         self.assertTrue(set(board_builder.PI_HEADER_PINOUT) <= labels)
-        self.assertIn("U1  I2C 0x20  A1-D4", labels)
+        self.assertTrue({text for text, _at in board_builder.EXPANDER_LABELS} <= labels)
         self.assertIn("U5  SPI 3V3 -> LED 5V", labels)
         self.assertIn("LED DATA + CLK IN", labels)
         self.assertIn("LED CHAIN END", labels)

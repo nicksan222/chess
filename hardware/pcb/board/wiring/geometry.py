@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from types import ModuleType
 
 from base import board_placement as placement
 from base import rules, sources
@@ -13,6 +14,10 @@ from board.wiring.nets import Net
 
 BOARD_EDGE_WIDTH_MM = 0.05
 SQUARE_LABEL_OFFSET_MM = (-12.0, 0.0)
+SQUARE_GRID_DOT_PITCH_MM = 8.0
+SQUARE_GRID_DOT_DIAMETER_MM = 0.6
+SQUARE_GRID_DOT_SEGMENT_MM = 0.02
+SQUARE_GRID_HOLE_CLEARANCE_MM = 4.0
 
 EXPANDER_LABELS = (
     ("U1  I2C 0x20  A1-D4", (-66.0, -94.0)),
@@ -38,6 +43,7 @@ class BoardGeometry:
     def add_mechanical_features(self) -> None:
         _add_outline(self.layout.native)
         _add_mounting_holes(self.layout.native)
+        _add_square_grid(self.layout.native)
         _add_front_silkscreen(
             self.layout.native,
             self.layout.design.revision
@@ -99,6 +105,47 @@ def _add_mounting_holes(board: pcbnew.BOARD) -> None:
             line.SetLayer(pcbnew.F_CrtYd)
             line.SetWidth(pcbnew.FromMM(0.05))
             module.Add(line)
+
+
+def _square_grid_dot_positions(
+    shared: ModuleType,
+) -> tuple[tuple[float, float], ...]:
+    """Return a dotted grid while leaving mounting-hole keepouts clear."""
+    half_span = shared.PLAYING_SPAN_MM / 2.0
+    boundaries = tuple(
+        -half_span + index * shared.SQUARE_SIZE_MM
+        for index in range(1, shared.GRID_COUNT)
+    )
+    steps = round(shared.PLAYING_SPAN_MM / SQUARE_GRID_DOT_PITCH_MM)
+    along = tuple(
+        -half_span + index * SQUARE_GRID_DOT_PITCH_MM for index in range(1, steps)
+    )
+    dots = {(boundary, offset) for boundary in boundaries for offset in along}
+    dots.update((offset, boundary) for boundary in boundaries for offset in along)
+    clearance_squared = SQUARE_GRID_HOLE_CLEARANCE_MM**2
+    return tuple(
+        sorted(
+            (x, y)
+            for x, y in dots
+            if all(
+                (x - hole_x) ** 2 + (y - hole_y) ** 2 >= clearance_squared
+                for hole_x, hole_y in shared.PCB_SUPPORT_POSITIONS_MM
+            )
+        )
+    )
+
+
+def _add_square_grid(board: pcbnew.BOARD) -> None:
+    """Mark every playing-square boundary with printable silkscreen dots."""
+    half_segment = SQUARE_GRID_DOT_SEGMENT_MM / 2.0
+    for x, y in _square_grid_dot_positions(sources.dimensions()):
+        dot = pcbnew.PCB_SHAPE(board)
+        dot.SetShape(pcbnew.SHAPE_T_SEGMENT)
+        dot.SetStart(kicad.point(x - half_segment, y))
+        dot.SetEnd(kicad.point(x + half_segment, y))
+        dot.SetLayer(pcbnew.F_SilkS)
+        dot.SetWidth(pcbnew.FromMM(SQUARE_GRID_DOT_DIAMETER_MM))
+        board.Add(dot)
 
 
 def _add_text(
