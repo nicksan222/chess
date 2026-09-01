@@ -11,3 +11,7 @@ autotests = false
 [[test]]
 name = "unit"
 path = "tests/unit/main.rs"
+
+[[test]]
+name = "e2e"
+path = "tests/e2e/main.rs"

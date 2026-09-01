@@ -4,16 +4,18 @@ This crate contains a reusable headless menu state machine. It owns menu
 structure, cursor movement, submenu history, and action activation, but
 deliberately has no display, GPIO, timing, or operating-system dependency.
 
-An application maps its five controls to `Input`, passes them to
-`MenuState`, and renders its read-only `MenuSnapshot` using any display backend.
-Actions are values chosen by the application, so this crate does not need to know
+An application maps navigation, confirmation, and escape controls to `Input`,
+passes them to `MenuState`, and renders its read-only `MenuSnapshot` using any
+display backend. Actions are values chosen by the application, so the reusable
+model does not need to know
 what selecting an entry does.
 
-`MenuControls` defines what up, down, left, right, and OK do for each menu.
-Bindings can navigate, activate the selected item, return to a parent, emit an
-application action, or intentionally do nothing.
+`MenuControls` defines what up, down, left, right, OK, and escape do for each
+menu. Bindings can navigate, activate the selected item, return to a parent,
+emit an application action, or intentionally do nothing.
 
-Every `MenuItem` is either an action or a submenu. A submenu is a complete
+Every `MenuItem` is an immediate action, a blocking action with dedicated escape
+behavior, or a submenu. A submenu is a complete
 `Menu`, with its own entries and controls. The chessboard tree nests game
 choices and destructive confirmations, and returning to a parent restores its
 previous cursor.
@@ -32,7 +34,7 @@ The concrete product menu is intentionally small:
 Main Menu
 ├── Start Game
 │   ├── 1 vs 1
-│   └── 1 vs Online
+│   └── 1 vs Online (escape cancels)
 ├── Network
 │   ├── Status
 │   ├── Set Up Network
@@ -43,11 +45,18 @@ Main Menu
 ```
 
 The menu emits typed `ChessboardAction` values. Firmware owns game startup,
-network status and provisioning, forgetting credentials, and game reset. The
-destructive actions require confirmation; pressing left cancels by returning to
-the parent menu.
+network status and provisioning, forgetting credentials, and game reset. Online
+startup blocks menu input until firmware calls `MenuState::unblock`; escape emits
+`CancelOnlineGame` and unlocks immediately. Destructive actions require
+confirmation, and pressing left cancels by returning to the parent menu.
 
 ## Effects and ownership
+
+`ChessboardCallbacks` has no default methods, so firmware must explicitly
+implement every concrete menu action. Its blanket `MenuCallbacks` integration
+routes immediate actions and blocking starts to their callback, and routes a
+blocking escape to the entry's dedicated escape callback. Each blocking entry
+defines both its start action and its escape action.
 
 The state machine never executes an action. It reports menu-owned actions as
 `Event::Activated(&A)` and externally created actions as

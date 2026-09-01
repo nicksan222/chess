@@ -31,6 +31,7 @@ fn conventional_controls_define_a_vertical_list() {
     assert_eq!(controls.command(Input::Left), &Command::GoBack);
     assert_eq!(controls.command(Input::Right), &Command::Activate);
     assert_eq!(controls.command(Input::Ok), &Command::Activate);
+    assert_eq!(controls.command(Input::Escape), &Command::GoBack);
 }
 
 #[test]

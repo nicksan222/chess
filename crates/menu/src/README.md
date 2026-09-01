@@ -20,6 +20,10 @@ root tree and never owns application state. Actions stored in menu definitions
 are returned by reference. Actions created by external behavior are returned by
 value.
 
+Blocking entries define separate start and escape actions. `MenuState` retains
+references to both while blocked, and `MenuCallbacks` requires the application
+to implement immediate, blocking-start, and blocking-abort callbacks.
+
 `ExternalBehavior` receives application context through an immutable borrow. A
 firmware adapter can therefore inspect `&Game` while retaining separate mutable
 state for hardware or I/O. The crate performs no action itself: every effect is

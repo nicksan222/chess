@@ -3,6 +3,7 @@ use menu::{Command, Menu, MenuControls, MenuItem};
 #[derive(Debug, Eq, PartialEq)]
 pub enum Action {
     Start,
+    CancelStart,
     Wifi,
     DecreaseVolume,
     IncreaseVolume,
@@ -18,6 +19,7 @@ pub static SETTINGS: Menu<'static, Action> = Menu::with_controls(
         Command::Action(Action::DecreaseVolume),
         Command::Action(Action::IncreaseVolume),
         Command::Activate,
+        Command::GoBack,
     ),
 );
 
@@ -33,5 +35,6 @@ pub static ROOT: Menu<'static, Action> = Menu::with_controls(
         Command::Ignore,
         Command::Activate,
         Command::Action(Action::ShowHelp),
+        Command::GoBack,
     ),
 );

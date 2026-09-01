@@ -1,6 +1,6 @@
 use super::{Command, Input};
 
-/// Reusable bindings from the five physical buttons to headless commands.
+/// Reusable bindings from semantic inputs to headless commands.
 #[derive(Debug, Eq, PartialEq)]
 pub struct MenuControls<A> {
     up: Command<A>,
@@ -8,6 +8,7 @@ pub struct MenuControls<A> {
     left: Command<A>,
     right: Command<A>,
     ok: Command<A>,
+    escape: Command<A>,
 }
 
 impl<A> MenuControls<A> {
@@ -18,6 +19,7 @@ impl<A> MenuControls<A> {
         left: Command<A>,
         right: Command<A>,
         ok: Command<A>,
+        escape: Command<A>,
     ) -> Self {
         Self {
             up,
@@ -25,13 +27,14 @@ impl<A> MenuControls<A> {
             left,
             right,
             ok,
+            escape,
         }
     }
 
     /// Creates conventional vertical-list controls.
     ///
-    /// Up and down move the cursor, left returns to the parent, and both right
-    /// and OK activate the selected item.
+    /// Up and down move the cursor, left and escape return to the parent, and
+    /// both right and OK activate the selected item.
     pub const fn list() -> Self {
         Self::new(
             Command::SelectPrevious,
@@ -39,6 +42,7 @@ impl<A> MenuControls<A> {
             Command::GoBack,
             Command::Activate,
             Command::Activate,
+            Command::GoBack,
         )
     }
 
@@ -50,6 +54,7 @@ impl<A> MenuControls<A> {
             Input::Left => &self.left,
             Input::Right => &self.right,
             Input::Ok => &self.ok,
+            Input::Escape => &self.escape,
         }
     }
 }

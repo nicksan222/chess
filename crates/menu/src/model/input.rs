@@ -1,4 +1,4 @@
-/// One of the five physical menu buttons.
+/// A semantic input understood by the menu state.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Input {
     /// Up button.
@@ -11,4 +11,6 @@ pub enum Input {
     Right,
     /// OK button.
     Ok,
+    /// Cancel the current operation or return to the parent menu.
+    Escape,
 }

@@ -1,10 +1,14 @@
 //! A `no_std` headless menu model and the chessboard's menu definition.
 //!
-//! Menus define labels, entries, and five-button behavior without knowing about
-//! GPIO or pixels. [`MenuState`] applies input and exposes a read-only
+//! Menus define labels, entries, navigation, and escape behavior without knowing
+//! about GPIO or pixels. [`MenuState`] applies input and exposes a read-only
 //! [`MenuSnapshot`] for renderers.
 //!
 //! # External behavior
+//!
+//! Blocking entries emit a start callback and reject navigation until external
+//! code calls [`MenuState::unblock`]. Escape unlocks the menu and emits the
+//! entry's separately defined cancellation callback.
 //!
 //! [`ExternalBehavior`] may override individual inputs using immutable access to
 //! application state. A chess game can therefore remain externally owned and
@@ -50,8 +54,10 @@ mod model;
 mod navigation;
 
 pub use chessboard::{
-    ChessboardAction, FORGET_NETWORK_MENU, MAIN_MENU, NETWORK_MENU, RESET_GAME_MENU,
-    START_GAME_MENU,
+    ChessboardAction, ChessboardCallbacks, FORGET_NETWORK_MENU, MAIN_MENU, NETWORK_MENU,
+    RESET_GAME_MENU, START_GAME_MENU,
 };
 pub use model::{Command, Input, Menu, MenuControls, MenuDefinition, MenuItem};
-pub use navigation::{Event, ExternalBehavior, MAX_MENU_DEPTH, MenuSnapshot, MenuState};
+pub use navigation::{
+    Event, ExternalBehavior, MAX_MENU_DEPTH, MenuCallbacks, MenuSnapshot, MenuState,
+};

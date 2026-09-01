@@ -31,10 +31,48 @@ fn start_game_choices_request_local_or_online_play() {
         Event::SelectionChanged { selected: 1 }
     );
     assert_eq!(START_GAME_MENU.items()[1].label(), "1 vs Online");
+    assert!(START_GAME_MENU.items()[1].is_blocking());
+    assert_eq!(
+        START_GAME_MENU.items()[1].escape_action(),
+        Some(&ChessboardAction::CancelOnlineGame)
+    );
     assert_eq!(
         state.handle(Input::Ok),
-        Event::Activated(&ChessboardAction::StartOnlineGame)
+        Event::BlockingStarted(&ChessboardAction::StartOnlineGame)
     );
+    assert!(state.is_blocked());
+    assert_eq!(
+        state.blocking_action(),
+        Some(&ChessboardAction::StartOnlineGame)
+    );
+    assert_eq!(
+        state.blocking_escape_action(),
+        Some(&ChessboardAction::CancelOnlineGame)
+    );
+    let snapshot = state.snapshot();
+    assert!(snapshot.is_blocked());
+    assert_eq!(snapshot.blocking_action(), state.blocking_action());
+    assert_eq!(
+        snapshot.blocking_escape_action(),
+        state.blocking_escape_action()
+    );
+    assert_eq!(state.handle(Input::Down), Event::InputBlocked);
+
+    assert_eq!(
+        state.handle(Input::Escape),
+        Event::BlockingAborted {
+            operation: &ChessboardAction::StartOnlineGame,
+            escape_action: &ChessboardAction::CancelOnlineGame,
+        }
+    );
+    assert!(!state.is_blocked());
+
+    assert_eq!(
+        state.handle(Input::Ok),
+        Event::BlockingStarted(&ChessboardAction::StartOnlineGame)
+    );
+    assert_eq!(state.unblock(), Some(&ChessboardAction::StartOnlineGame));
+    assert!(!state.is_blocked());
 }
 
 #[test]
