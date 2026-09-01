@@ -1,40 +1,26 @@
-use alloc::{collections::BTreeMap, vec::Vec};
-use core::convert::Infallible;
+use std::{collections::BTreeMap, convert::Infallible};
 
-use super::{KeyValueStore, LoadOutcome};
+use persistence::{KeyValueStore, LoadOutcome};
 
-/// An infallible, allocator-backed key/value store for tests and simulations.
-///
-/// Keys and values are owned byte sequences. Cloning a store produces an
-/// independent snapshot.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
-pub struct MemoryStore {
+pub(crate) struct MemoryStore {
     entries: BTreeMap<Vec<u8>, Vec<u8>>,
 }
 
 impl MemoryStore {
-    /// Creates an empty store without allocating.
-    #[must_use]
-    pub const fn new() -> Self {
-        Self {
-            entries: BTreeMap::new(),
-        }
+    pub(crate) fn new() -> Self {
+        Self::default()
     }
 
-    /// Returns the number of stored keys.
-    #[must_use]
-    pub fn len(&self) -> usize {
+    pub(crate) fn len(&self) -> usize {
         self.entries.len()
     }
 
-    /// Returns whether no keys are stored.
-    #[must_use]
-    pub fn is_empty(&self) -> bool {
+    pub(crate) fn is_empty(&self) -> bool {
         self.entries.is_empty()
     }
 
-    /// Removes every key and value.
-    pub fn clear(&mut self) {
+    pub(crate) fn clear(&mut self) {
         self.entries.clear();
     }
 }
@@ -50,13 +36,11 @@ impl KeyValueStore for MemoryStore {
         let Some(value) = self.entries.get(key) else {
             return Ok(LoadOutcome::NotFound);
         };
-
         if output.len() < value.len() {
             return Ok(LoadOutcome::BufferTooSmall {
                 required: value.len(),
             });
         }
-
         output[..value.len()].copy_from_slice(value);
         Ok(LoadOutcome::Loaded { len: value.len() })
     }

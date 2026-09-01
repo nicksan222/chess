@@ -1,10 +1,12 @@
-use chess_core::storage::{
-    KeyValueStore, LoadOutcome, MemoryStore,
+use persistence::{
+    KeyValueStore, LoadOutcome,
     record::{
         DecodeError, EncodeError, FORMAT_VERSION, HEADER_LEN, MAGIC, crc32, decode, encode,
         encoded_len,
     },
 };
+
+use crate::common::MemoryStore;
 
 fn encoded(schema_version: u16, payload: &[u8]) -> Vec<u8> {
     let mut output = vec![0; encoded_len(payload.len()).expect("representable length")];

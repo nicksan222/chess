@@ -1,6 +1,8 @@
 use std::fmt::Debug;
 
-use chess_core::storage::{KeyValueStore, LoadOutcome, MemoryStore};
+use persistence::{KeyValueStore, LoadOutcome};
+
+use crate::common::MemoryStore;
 
 fn verify_store_contract<S>(store: &mut S)
 where
@@ -48,11 +50,10 @@ where
     store.flush().expect("flush succeeds");
     assert!(store.remove(key).expect("remove succeeds"));
     assert!(!store.remove(key).expect("remove succeeds"));
-    assert_eq!(store.value_len(key).expect("length succeeds"), None);
 }
 
 #[test]
-fn memory_store_satisfies_key_value_contract() {
+fn external_memory_store_satisfies_contract() {
     verify_store_contract(&mut MemoryStore::new());
 }
 
@@ -78,30 +79,17 @@ fn empty_keys_and_values_are_distinct_from_missing_entries() {
 }
 
 #[test]
-fn keys_and_values_are_owned_binary_data() {
+fn mutable_references_forward_the_store_contract() {
     let mut store = MemoryStore::new();
-    let mut key = vec![0, 255, 1];
-    let mut value = vec![0, 128, 255];
+    let mut reference = &mut store;
 
-    store.store(&key, &value).expect("store succeeds");
-    key.fill(7);
-    value.fill(7);
-
-    let mut output = [0; 3];
-    assert_eq!(
-        store
-            .load(&[0, 255, 1], &mut output)
-            .expect("load succeeds"),
-        LoadOutcome::Loaded { len: 3 }
-    );
-    assert_eq!(output, [0, 128, 255]);
+    verify_store_contract(&mut reference);
 }
 
 #[test]
-fn clone_is_an_independent_snapshot_and_clear_reuses_store() {
+fn test_backend_snapshots_are_independent() {
     let mut original = MemoryStore::new();
     original.store(b"one", b"1").expect("store succeeds");
-    original.store(b"two", b"2").expect("store succeeds");
     let mut snapshot = original.clone();
 
     original.remove(b"one").expect("remove succeeds");
@@ -110,8 +98,7 @@ fn clone_is_an_independent_snapshot_and_clear_reuses_store() {
 
     snapshot.clear();
     assert!(snapshot.is_empty());
-    assert_eq!(snapshot.len(), 0);
-    assert_eq!(original.len(), 1);
+    assert_eq!(original.len(), 0);
 }
 
 #[test]

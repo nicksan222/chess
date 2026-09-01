@@ -6,6 +6,7 @@ members = [
     "crates/core",
     "crates/menu",
     "crates/logger",
+    "crates/persistence",
     "tools/xtask",
 ]
 resolver = "3"

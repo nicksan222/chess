@@ -9,7 +9,9 @@
 extern crate alloc;
 
 pub mod collections;
-pub mod storage;
+pub mod value;
+
+pub use value::{InvalidPercentage, Percentage, Toggle};
 
 /// Creates an owned [`LinkedList`](crate::collections::LinkedList).
 ///
