@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from base import board_placement as placement
 from base import rules, sources
 from base.kicad import board as kicad
 from base.kicad.api import pcbnew
@@ -11,6 +12,21 @@ from board import definition as board_definition
 from board.wiring.nets import Net
 
 BOARD_EDGE_WIDTH_MM = 0.05
+SQUARE_LABEL_OFFSET_MM = (-12.0, 0.0)
+
+EXPANDER_LABELS = (
+    ("U1  I2C 0x20  A1-D4", (-66.0, -94.0)),
+    ("U2  I2C 0x21  E1-H4", (94.0, -94.0)),
+    ("U3  I2C 0x22  A5-D8", (-66.0, 66.0)),
+    ("U4  I2C 0x23  E5-H8", (94.0, 66.0)),
+)
+
+PI_HEADER_PINOUT = (
+    "J1 PI: 3 SDA  5 SCL  7 IRQ  11 RESET  15 F3",
+    "16 F4  18 F5  19 SPI-DATA  23 SPI-CLK",
+    "29 UP  31 DOWN  32 LEFT  33 RIGHT  35 PASS  36 OK",
+    "38 F1  40 F2 | 1/17 3V3 | 2/4 5V | GND: 6/9/14/20/25/30/34/39",
+)
 
 
 class BoardGeometry:
@@ -110,6 +126,21 @@ def _add_front_silkscreen(board: pcbnew.BOARD, revision: str) -> None:
     _add_text(board, "SW13 POWER", (-113.0, -181.5))
     _add_text(board, "J2: GND 3V3 SCL SDA", (-95.0, -165.0), height=0.9)
     _add_text(board, "D1 K=+5V", (-150.0, -159.5), height=0.9)
+    _add_text(board, "U5  SPI 3V3 -> LED 5V", (-30.0, -181.0), height=0.8)
+    _add_text(board, "R1/R2 I2C PULL-UPS", (-68.0, -166.0), height=0.8)
+    _add_text(board, "R3 IRQ PULL-UP", (-19.0, -177.0), height=0.8)
+    _add_text(board, "LED DATA + CLK IN", (-127.0, -118.0), height=0.8)
+    _add_text(board, "LED CHAIN END", (146.0, 151.0), height=0.8)
+
+    for name, (x, y) in placement.square_centres(shared).items():
+        offset_x, offset_y = SQUARE_LABEL_OFFSET_MM
+        _add_text(board, name, (x + offset_x, y + offset_y), height=1.0)
+
+    for text, at in EXPANDER_LABELS:
+        _add_text(board, text, at, height=0.8)
+
+    for text, y in zip(PI_HEADER_PINOUT, (-171.0, -176.0, -189.0, -194.0), strict=True):
+        _add_text(board, text, (116.0, y), height=0.8)
 
     button_positions = dict(
         zip(sources.names().BUTTON_NAMES, shared.PANEL_BUTTON_POSITIONS_MM, strict=True)

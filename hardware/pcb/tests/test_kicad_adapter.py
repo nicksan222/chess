@@ -85,6 +85,23 @@ class KiCadBoardAdapterTest(unittest.TestCase):
                 shared.PCB_MOUNTING_HOLE_DIAMETER_MM,
             )
 
+    def test_front_silkscreen_labels_square_and_service_connections(self) -> None:
+        layout = kicad.KiCadBoard(self.design)
+        board_builder.BoardGeometry(layout).add_mechanical_features()
+        labels = {
+            drawing.GetText()
+            for drawing in layout.native.GetDrawings()
+            if isinstance(drawing, pcbnew.PCB_TEXT)
+        }
+        self.assertTrue(
+            {f"{file}{rank}" for file in "ABCDEFGH" for rank in range(1, 9)} <= labels
+        )
+        self.assertTrue(set(board_builder.PI_HEADER_PINOUT) <= labels)
+        self.assertIn("U1  I2C 0x20  A1-D4", labels)
+        self.assertIn("U5  SPI 3V3 -> LED 5V", labels)
+        self.assertIn("LED DATA + CLK IN", labels)
+        self.assertIn("LED CHAIN END", labels)
+
     def test_attached_hall_pads_use_native_kicad_nets(self) -> None:
         layout = self.layout_for({"HS1"})
         output = layout.pad(("HS1", HallSensorPin.ACTIVE_LOW_OUTPUT))
