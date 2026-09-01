@@ -1,6 +1,5 @@
 [workspace]
 members = [
-    "apps/bridge",
     "apps/simulator",
     "crates/board-model",
     "crates/chess",
