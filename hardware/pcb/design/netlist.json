@@ -17,7 +17,117 @@
             "Square": "C1"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C100": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS29",
+            "Square": "E4"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C101": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS30",
+            "Square": "F4"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C102": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS31",
+            "Square": "G4"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C103": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS32",
+            "Square": "H4"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C104": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS33",
+            "Square": "A5"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C105": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS34",
+            "Square": "B5"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C106": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS35",
+            "Square": "C5"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C107": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS36",
+            "Square": "D5"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C108": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS37",
+            "Square": "A6"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C109": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS38",
+            "Square": "B6"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -27,7 +137,117 @@
             "Square": "D1"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C110": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS39",
+            "Square": "C6"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C111": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS40",
+            "Square": "D6"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C112": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS41",
+            "Square": "A7"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C113": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS42",
+            "Square": "B7"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C114": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS43",
+            "Square": "C7"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C115": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS44",
+            "Square": "D7"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C116": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS45",
+            "Square": "A8"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C117": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS46",
+            "Square": "B8"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C118": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS47",
+            "Square": "C8"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C119": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS48",
+            "Square": "D8"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -37,7 +257,117 @@
             "Square": "E1"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C120": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS49",
+            "Square": "E5"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C121": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS50",
+            "Square": "F5"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C122": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS51",
+            "Square": "G5"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C123": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS52",
+            "Square": "H5"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C124": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS53",
+            "Square": "E6"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C125": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS54",
+            "Square": "F6"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C126": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS55",
+            "Square": "G6"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C127": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS56",
+            "Square": "H6"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C128": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS57",
+            "Square": "E7"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C129": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS58",
+            "Square": "F7"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -47,7 +377,73 @@
             "Square": "F1"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C130": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS59",
+            "Square": "G7"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C131": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS60",
+            "Square": "H7"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C132": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS61",
+            "Square": "E8"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C133": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS62",
+            "Square": "F8"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C134": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS63",
+            "Square": "G8"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C135": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS64",
+            "Square": "H8"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -57,7 +453,7 @@
             "Square": "G1"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -67,7 +463,7 @@
             "Square": "H1"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -77,7 +473,7 @@
             "Square": "H2"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -87,7 +483,7 @@
             "Square": "G2"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -97,7 +493,7 @@
             "Square": "F2"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -107,7 +503,7 @@
             "Square": "E2"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -115,9 +511,9 @@
           "description": "Rail decoupling capacitor",
           "extras": {},
           "lib": "C",
-          "package": "radial 5 mm",
+          "package": "0805 (2012 metric)",
           "part_key": "CAP_10U",
-          "value": "10uF 16V"
+          "value": "10uF 10V"
         },
         "C20": {
           "description": "Local LED decoupling capacitor",
@@ -125,7 +521,7 @@
             "Square": "D2"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -135,7 +531,7 @@
             "Square": "C2"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -145,7 +541,7 @@
             "Square": "B2"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -155,7 +551,7 @@
             "Square": "A2"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -165,7 +561,7 @@
             "Square": "A3"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -175,7 +571,7 @@
             "Square": "B3"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -185,7 +581,7 @@
             "Square": "C3"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -195,7 +591,7 @@
             "Square": "D3"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -205,7 +601,7 @@
             "Square": "E3"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -215,15 +611,17 @@
             "Square": "F3"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C3": {
           "description": "Expander decoupling capacitor",
-          "extras": {},
+          "extras": {
+            "For": "U1"
+          },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -233,7 +631,7 @@
             "Square": "G3"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -243,7 +641,7 @@
             "Square": "H3"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -253,7 +651,7 @@
             "Square": "H4"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -263,7 +661,7 @@
             "Square": "G4"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -273,7 +671,7 @@
             "Square": "F4"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -283,7 +681,7 @@
             "Square": "E4"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -293,7 +691,7 @@
             "Square": "D4"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -303,7 +701,7 @@
             "Square": "C4"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -313,7 +711,7 @@
             "Square": "B4"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -323,15 +721,17 @@
             "Square": "A4"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C4": {
           "description": "Expander decoupling capacitor",
-          "extras": {},
+          "extras": {
+            "For": "U2"
+          },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -341,7 +741,7 @@
             "Square": "A5"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -351,7 +751,7 @@
             "Square": "B5"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -361,7 +761,7 @@
             "Square": "C5"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -371,7 +771,7 @@
             "Square": "D5"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -381,7 +781,7 @@
             "Square": "E5"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -391,7 +791,7 @@
             "Square": "F5"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -401,7 +801,7 @@
             "Square": "G5"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -411,7 +811,7 @@
             "Square": "H5"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -421,7 +821,7 @@
             "Square": "H6"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -431,15 +831,17 @@
             "Square": "G6"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C5": {
           "description": "Expander decoupling capacitor",
-          "extras": {},
+          "extras": {
+            "For": "U3"
+          },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -449,7 +851,7 @@
             "Square": "F6"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -459,7 +861,7 @@
             "Square": "E6"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -469,7 +871,7 @@
             "Square": "D6"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -479,7 +881,7 @@
             "Square": "C6"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -489,7 +891,7 @@
             "Square": "B6"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -499,7 +901,7 @@
             "Square": "A6"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -509,7 +911,7 @@
             "Square": "A7"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -519,7 +921,7 @@
             "Square": "B7"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -529,7 +931,7 @@
             "Square": "C7"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -539,15 +941,17 @@
             "Square": "D7"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
         "C6": {
           "description": "Expander decoupling capacitor",
-          "extras": {},
+          "extras": {
+            "For": "U4"
+          },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -557,7 +961,7 @@
             "Square": "E7"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -567,7 +971,7 @@
             "Square": "F7"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -577,7 +981,7 @@
             "Square": "G7"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -587,7 +991,7 @@
             "Square": "H7"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -597,7 +1001,7 @@
             "Square": "H8"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -607,7 +1011,7 @@
             "Square": "G8"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -617,7 +1021,7 @@
             "Square": "F8"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -627,7 +1031,7 @@
             "Square": "E8"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -637,7 +1041,7 @@
             "Square": "D8"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -647,7 +1051,7 @@
             "Square": "C8"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -655,7 +1059,7 @@
           "description": "Buffer decoupling capacitor",
           "extras": {},
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -665,7 +1069,7 @@
             "Square": "B8"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -675,7 +1079,95 @@
             "Square": "A8"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C72": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS1",
+            "Square": "A1"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C73": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS2",
+            "Square": "B1"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C74": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS3",
+            "Square": "C1"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C75": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS4",
+            "Square": "D1"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C76": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS5",
+            "Square": "A2"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C77": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS6",
+            "Square": "B2"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C78": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS7",
+            "Square": "C2"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C79": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS8",
+            "Square": "D2"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -685,7 +1177,117 @@
             "Square": "A1"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C80": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS9",
+            "Square": "A3"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C81": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS10",
+            "Square": "B3"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C82": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS11",
+            "Square": "C3"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C83": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS12",
+            "Square": "D3"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C84": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS13",
+            "Square": "A4"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C85": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS14",
+            "Square": "B4"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C86": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS15",
+            "Square": "C4"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C87": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS16",
+            "Square": "D4"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C88": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS17",
+            "Square": "E1"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C89": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS18",
+            "Square": "F1"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -695,7 +1297,117 @@
             "Square": "B1"
           },
           "lib": "C",
-          "package": "disc 2.54 mm",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C90": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS19",
+            "Square": "G1"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C91": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS20",
+            "Square": "H1"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C92": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS21",
+            "Square": "E2"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C93": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS22",
+            "Square": "F2"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C94": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS23",
+            "Square": "G2"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C95": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS24",
+            "Square": "H2"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C96": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS25",
+            "Square": "E3"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C97": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS26",
+            "Square": "F3"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C98": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS27",
+            "Square": "G3"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C99": {
+          "description": "Local Hall-sensor decoupling capacitor",
+          "extras": {
+            "Sensor": "HS28",
+            "Square": "H3"
+          },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
           "value": "100nF"
         },
@@ -703,17 +1415,657 @@
           "description": "Input transient suppressor on the 5 V rail",
           "extras": {},
           "lib": "TVS",
-          "package": "axial DO-15",
+          "package": "SMB (DO-214AA)",
           "part_key": "TVS_6V8",
-          "value": "P6KE6.8A"
+          "value": "SMBJ6.0A"
         },
         "F1": {
           "description": "Input over-current protection",
           "extras": {},
           "lib": "FUSE",
-          "package": "5x20 mm holder THT",
-          "part_key": "FUSE_HOLDER",
-          "value": "5 A"
+          "package": "2410 fuse",
+          "part_key": "FUSE_5A",
+          "value": "5 A time-delay"
+        },
+        "HS1": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "A1"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS10": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "B3"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS11": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "C3"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS12": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "D3"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS13": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "A4"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS14": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "B4"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS15": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "C4"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS16": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "D4"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS17": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "E1"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS18": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "F1"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS19": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "G1"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS2": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "B1"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS20": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "H1"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS21": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "E2"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS22": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "F2"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS23": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "G2"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS24": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "H2"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS25": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "E3"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS26": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "F3"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS27": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "G3"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS28": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "H3"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS29": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "E4"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS3": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "C1"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS30": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "F4"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS31": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "G4"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS32": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "H4"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS33": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "A5"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS34": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "B5"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS35": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "C5"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS36": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "D5"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS37": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "A6"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS38": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "B6"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS39": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "C6"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS4": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "D1"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS40": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "D6"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS41": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "A7"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS42": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "B7"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS43": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "C7"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS44": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "D7"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS45": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "A8"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS46": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "B8"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS47": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "C8"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS48": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "D8"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS49": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "E5"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS5": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "A2"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS50": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "F5"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS51": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "G5"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS52": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "H5"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS53": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "E6"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS54": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "F6"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS55": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "G6"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS56": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "H6"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS57": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "E7"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS58": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "F7"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS59": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "G7"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS6": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "B2"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS60": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "H7"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS61": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "E8"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS62": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "F8"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS63": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "G8"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS64": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "H8"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS7": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "C2"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS8": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "D2"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
+        },
+        "HS9": {
+          "description": "Omnipolar active-low Hall-effect square sensor",
+          "extras": {
+            "Square": "A3"
+          },
+          "lib": "HALL",
+          "package": "SOT-23-3",
+          "part_key": "HALL_SENSOR",
+          "value": "DRV5032FC"
         },
         "J1": {
           "description": "Raspberry Pi Zero 2 W GPIO socket",
@@ -743,7 +2095,7 @@
           "description": "I2C pull-up",
           "extras": {},
           "lib": "R",
-          "package": "axial 1/4 W",
+          "package": "0603 (1608 metric)",
           "part_key": "RES_4K7",
           "value": "4.7k"
         },
@@ -751,689 +2103,9 @@
           "description": "I2C pull-up",
           "extras": {},
           "lib": "R",
-          "package": "axial 1/4 W",
+          "package": "0603 (1608 metric)",
           "part_key": "RES_4K7",
           "value": "4.7k"
-        },
-        "RS1": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "A1"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS10": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "B3"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS11": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "C3"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS12": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "D3"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS13": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "A4"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS14": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "B4"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS15": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "C4"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS16": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "D4"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS17": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "E1"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS18": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "F1"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS19": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "G1"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS2": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "B1"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS20": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "H1"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS21": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "E2"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS22": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "F2"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS23": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "G2"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS24": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "H2"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS25": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "E3"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS26": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "F3"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS27": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "G3"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS28": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "H3"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS29": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "E4"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS3": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "C1"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS30": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "F4"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS31": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "G4"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS32": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "H4"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS33": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "A5"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS34": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "B5"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS35": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "C5"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS36": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "D5"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS37": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "A6"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS38": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "B6"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS39": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "C6"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS4": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "D1"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS40": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "D6"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS41": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "A7"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS42": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "B7"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS43": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "C7"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS44": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "D7"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS45": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "A8"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS46": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "B8"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS47": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "C8"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS48": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "D8"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS49": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "E5"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS5": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "A2"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS50": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "F5"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS51": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "G5"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS52": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "H5"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS53": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "E6"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS54": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "F6"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS55": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "G6"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS56": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "H6"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS57": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "E7"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS58": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "F7"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS59": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "G7"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS6": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "B2"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS60": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "H7"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS61": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "E8"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS62": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "F8"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS63": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "G8"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS64": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "H8"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS7": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "C2"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS8": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "D2"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "RS9": {
-          "description": "Normally-open through-hole reed switch",
-          "extras": {
-            "Square": "A3"
-          },
-          "lib": "REED",
-          "package": "axial 14 mm",
-          "part_key": "REED_SWITCH",
-          "value": "REED NO"
-        },
-        "SKT1": {
-          "description": "Turned-pin socket; the chip drops in after assembly",
-          "extras": {},
-          "lib": "DIP_SOCKET",
-          "package": "DIP-28",
-          "part_key": "DIP28_SOCKET",
-          "value": "DIP-28 socket"
-        },
-        "SKT2": {
-          "description": "Turned-pin socket; the chip drops in after assembly",
-          "extras": {},
-          "lib": "DIP_SOCKET",
-          "package": "DIP-28",
-          "part_key": "DIP28_SOCKET",
-          "value": "DIP-28 socket"
-        },
-        "SKT3": {
-          "description": "Turned-pin socket; the chip drops in after assembly",
-          "extras": {},
-          "lib": "DIP_SOCKET",
-          "package": "DIP-28",
-          "part_key": "DIP28_SOCKET",
-          "value": "DIP-28 socket"
-        },
-        "SKT4": {
-          "description": "Turned-pin socket; the chip drops in after assembly",
-          "extras": {},
-          "lib": "DIP_SOCKET",
-          "package": "DIP-28",
-          "part_key": "DIP28_SOCKET",
-          "value": "DIP-28 socket"
-        },
-        "SKT5": {
-          "description": "Turned-pin socket; the chip drops in after assembly",
-          "extras": {},
-          "lib": "DIP_SOCKET",
-          "package": "DIP-14",
-          "part_key": "DIP14_SOCKET",
-          "value": "DIP-14 socket"
         },
         "SW1": {
           "description": "Momentary panel button, 9.5 mm actuator",
@@ -1567,7 +2239,7 @@
           "description": "5 V test point",
           "extras": {},
           "lib": "TESTPOINT",
-          "package": "turret 1.6 mm THT",
+          "package": "SMD test point",
           "part_key": "TEST_POINT",
           "value": "+5V"
         },
@@ -1575,7 +2247,7 @@
           "description": "Ground test point",
           "extras": {},
           "lib": "TESTPOINT",
-          "package": "turret 1.6 mm THT",
+          "package": "SMD test point",
           "part_key": "TEST_POINT",
           "value": "GND"
         },
@@ -1583,7 +2255,7 @@
           "description": "Buffered LED data test point",
           "extras": {},
           "lib": "TESTPOINT",
-          "package": "turret 1.6 mm THT",
+          "package": "SMD test point",
           "part_key": "TEST_POINT",
           "value": "LED_DATA_5V"
         },
@@ -1591,7 +2263,7 @@
           "description": "Buffered LED clock test point",
           "extras": {},
           "lib": "TESTPOINT",
-          "package": "turret 1.6 mm THT",
+          "package": "SMD test point",
           "part_key": "TEST_POINT",
           "value": "LED_CLK_5V"
         },
@@ -1602,9 +2274,9 @@
             "Quadrant": "A1-D4"
           },
           "lib": "MCP23017",
-          "package": "PDIP-28",
+          "package": "SOIC-28W 1.27 mm",
           "part_key": "MCP23017",
-          "value": "MCP23017-E/SP"
+          "value": "MCP23017-E/SO"
         },
         "U10": {
           "description": "Clocked 5050 RGB LED",
@@ -1723,9 +2395,9 @@
             "Quadrant": "E1-H4"
           },
           "lib": "MCP23017",
-          "package": "PDIP-28",
+          "package": "SOIC-28W 1.27 mm",
           "part_key": "MCP23017",
-          "value": "MCP23017-E/SP"
+          "value": "MCP23017-E/SO"
         },
         "U20": {
           "description": "Clocked 5050 RGB LED",
@@ -1844,9 +2516,9 @@
             "Quadrant": "A5-D8"
           },
           "lib": "MCP23017",
-          "package": "PDIP-28",
+          "package": "SOIC-28W 1.27 mm",
           "part_key": "MCP23017",
-          "value": "MCP23017-E/SP"
+          "value": "MCP23017-E/SO"
         },
         "U30": {
           "description": "Clocked 5050 RGB LED",
@@ -1965,9 +2637,9 @@
             "Quadrant": "E5-H8"
           },
           "lib": "MCP23017",
-          "package": "PDIP-28",
+          "package": "SOIC-28W 1.27 mm",
           "part_key": "MCP23017",
-          "value": "MCP23017-E/SP"
+          "value": "MCP23017-E/SO"
         },
         "U40": {
           "description": "Clocked 5050 RGB LED",
@@ -2083,9 +2755,9 @@
           "description": "Quad 5 V buffer accepts 3.3 V SPI clock and data",
           "extras": {},
           "lib": "AHCT125",
-          "package": "DIP-14",
+          "package": "SOIC-14 1.27 mm",
           "part_key": "AHCT125",
-          "value": "SN74AHCT125N"
+          "value": "SN74AHCT125DR"
         },
         "U50": {
           "description": "Clocked 5050 RGB LED",
@@ -2373,6 +3045,518 @@
               "1"
             ],
             [
+              "C72",
+              "1"
+            ],
+            [
+              "C73",
+              "1"
+            ],
+            [
+              "C74",
+              "1"
+            ],
+            [
+              "C75",
+              "1"
+            ],
+            [
+              "C76",
+              "1"
+            ],
+            [
+              "C77",
+              "1"
+            ],
+            [
+              "C78",
+              "1"
+            ],
+            [
+              "C79",
+              "1"
+            ],
+            [
+              "C80",
+              "1"
+            ],
+            [
+              "C81",
+              "1"
+            ],
+            [
+              "C82",
+              "1"
+            ],
+            [
+              "C83",
+              "1"
+            ],
+            [
+              "C84",
+              "1"
+            ],
+            [
+              "C85",
+              "1"
+            ],
+            [
+              "C86",
+              "1"
+            ],
+            [
+              "C87",
+              "1"
+            ],
+            [
+              "C88",
+              "1"
+            ],
+            [
+              "C89",
+              "1"
+            ],
+            [
+              "C90",
+              "1"
+            ],
+            [
+              "C91",
+              "1"
+            ],
+            [
+              "C92",
+              "1"
+            ],
+            [
+              "C93",
+              "1"
+            ],
+            [
+              "C94",
+              "1"
+            ],
+            [
+              "C95",
+              "1"
+            ],
+            [
+              "C96",
+              "1"
+            ],
+            [
+              "C97",
+              "1"
+            ],
+            [
+              "C98",
+              "1"
+            ],
+            [
+              "C99",
+              "1"
+            ],
+            [
+              "C100",
+              "1"
+            ],
+            [
+              "C101",
+              "1"
+            ],
+            [
+              "C102",
+              "1"
+            ],
+            [
+              "C103",
+              "1"
+            ],
+            [
+              "C104",
+              "1"
+            ],
+            [
+              "C105",
+              "1"
+            ],
+            [
+              "C106",
+              "1"
+            ],
+            [
+              "C107",
+              "1"
+            ],
+            [
+              "C108",
+              "1"
+            ],
+            [
+              "C109",
+              "1"
+            ],
+            [
+              "C110",
+              "1"
+            ],
+            [
+              "C111",
+              "1"
+            ],
+            [
+              "C112",
+              "1"
+            ],
+            [
+              "C113",
+              "1"
+            ],
+            [
+              "C114",
+              "1"
+            ],
+            [
+              "C115",
+              "1"
+            ],
+            [
+              "C116",
+              "1"
+            ],
+            [
+              "C117",
+              "1"
+            ],
+            [
+              "C118",
+              "1"
+            ],
+            [
+              "C119",
+              "1"
+            ],
+            [
+              "C120",
+              "1"
+            ],
+            [
+              "C121",
+              "1"
+            ],
+            [
+              "C122",
+              "1"
+            ],
+            [
+              "C123",
+              "1"
+            ],
+            [
+              "C124",
+              "1"
+            ],
+            [
+              "C125",
+              "1"
+            ],
+            [
+              "C126",
+              "1"
+            ],
+            [
+              "C127",
+              "1"
+            ],
+            [
+              "C128",
+              "1"
+            ],
+            [
+              "C129",
+              "1"
+            ],
+            [
+              "C130",
+              "1"
+            ],
+            [
+              "C131",
+              "1"
+            ],
+            [
+              "C132",
+              "1"
+            ],
+            [
+              "C133",
+              "1"
+            ],
+            [
+              "C134",
+              "1"
+            ],
+            [
+              "C135",
+              "1"
+            ],
+            [
+              "HS1",
+              "1"
+            ],
+            [
+              "HS10",
+              "1"
+            ],
+            [
+              "HS11",
+              "1"
+            ],
+            [
+              "HS12",
+              "1"
+            ],
+            [
+              "HS13",
+              "1"
+            ],
+            [
+              "HS14",
+              "1"
+            ],
+            [
+              "HS15",
+              "1"
+            ],
+            [
+              "HS16",
+              "1"
+            ],
+            [
+              "HS17",
+              "1"
+            ],
+            [
+              "HS18",
+              "1"
+            ],
+            [
+              "HS19",
+              "1"
+            ],
+            [
+              "HS2",
+              "1"
+            ],
+            [
+              "HS20",
+              "1"
+            ],
+            [
+              "HS21",
+              "1"
+            ],
+            [
+              "HS22",
+              "1"
+            ],
+            [
+              "HS23",
+              "1"
+            ],
+            [
+              "HS24",
+              "1"
+            ],
+            [
+              "HS25",
+              "1"
+            ],
+            [
+              "HS26",
+              "1"
+            ],
+            [
+              "HS27",
+              "1"
+            ],
+            [
+              "HS28",
+              "1"
+            ],
+            [
+              "HS29",
+              "1"
+            ],
+            [
+              "HS3",
+              "1"
+            ],
+            [
+              "HS30",
+              "1"
+            ],
+            [
+              "HS31",
+              "1"
+            ],
+            [
+              "HS32",
+              "1"
+            ],
+            [
+              "HS33",
+              "1"
+            ],
+            [
+              "HS34",
+              "1"
+            ],
+            [
+              "HS35",
+              "1"
+            ],
+            [
+              "HS36",
+              "1"
+            ],
+            [
+              "HS37",
+              "1"
+            ],
+            [
+              "HS38",
+              "1"
+            ],
+            [
+              "HS39",
+              "1"
+            ],
+            [
+              "HS4",
+              "1"
+            ],
+            [
+              "HS40",
+              "1"
+            ],
+            [
+              "HS41",
+              "1"
+            ],
+            [
+              "HS42",
+              "1"
+            ],
+            [
+              "HS43",
+              "1"
+            ],
+            [
+              "HS44",
+              "1"
+            ],
+            [
+              "HS45",
+              "1"
+            ],
+            [
+              "HS46",
+              "1"
+            ],
+            [
+              "HS47",
+              "1"
+            ],
+            [
+              "HS48",
+              "1"
+            ],
+            [
+              "HS49",
+              "1"
+            ],
+            [
+              "HS5",
+              "1"
+            ],
+            [
+              "HS50",
+              "1"
+            ],
+            [
+              "HS51",
+              "1"
+            ],
+            [
+              "HS52",
+              "1"
+            ],
+            [
+              "HS53",
+              "1"
+            ],
+            [
+              "HS54",
+              "1"
+            ],
+            [
+              "HS55",
+              "1"
+            ],
+            [
+              "HS56",
+              "1"
+            ],
+            [
+              "HS57",
+              "1"
+            ],
+            [
+              "HS58",
+              "1"
+            ],
+            [
+              "HS59",
+              "1"
+            ],
+            [
+              "HS6",
+              "1"
+            ],
+            [
+              "HS60",
+              "1"
+            ],
+            [
+              "HS61",
+              "1"
+            ],
+            [
+              "HS62",
+              "1"
+            ],
+            [
+              "HS63",
+              "1"
+            ],
+            [
+              "HS64",
+              "1"
+            ],
+            [
+              "HS7",
+              "1"
+            ],
+            [
+              "HS8",
+              "1"
+            ],
+            [
+              "HS9",
+              "1"
+            ],
+            [
               "J1",
               "1"
             ],
@@ -2394,10 +3578,14 @@
             ],
             [
               "U1",
-              "18"
+              "9"
             ],
             [
               "U1",
+              "18"
+            ],
+            [
+              "U2",
               "9"
             ],
             [
@@ -2409,7 +3597,7 @@
               "18"
             ],
             [
-              "U2",
+              "U3",
               "9"
             ],
             [
@@ -2421,7 +3609,7 @@
               "18"
             ],
             [
-              "U3",
+              "U4",
               "9"
             ],
             [
@@ -2435,10 +3623,6 @@
             [
               "U4",
               "18"
-            ],
-            [
-              "U4",
-              "9"
             ]
           ]
         },
@@ -2447,6 +3631,22 @@
           "pads": [
             [
               "C1",
+              "1"
+            ],
+            [
+              "C2",
+              "1"
+            ],
+            [
+              "C7",
+              "1"
+            ],
+            [
+              "C8",
+              "1"
+            ],
+            [
+              "C9",
               "1"
             ],
             [
@@ -2487,10 +3687,6 @@
             ],
             [
               "C19",
-              "1"
-            ],
-            [
-              "C2",
               "1"
             ],
             [
@@ -2694,23 +3890,11 @@
               "1"
             ],
             [
-              "C7",
-              "1"
-            ],
-            [
               "C70",
               "1"
             ],
             [
               "C71",
-              "1"
-            ],
-            [
-              "C8",
-              "1"
-            ],
-            [
-              "C9",
               "1"
             ],
             [
@@ -2732,6 +3916,34 @@
             [
               "TP1",
               "1"
+            ],
+            [
+              "U5",
+              "10"
+            ],
+            [
+              "U5",
+              "13"
+            ],
+            [
+              "U5",
+              "14"
+            ],
+            [
+              "U6",
+              "4"
+            ],
+            [
+              "U7",
+              "4"
+            ],
+            [
+              "U8",
+              "4"
+            ],
+            [
+              "U9",
+              "4"
             ],
             [
               "U10",
@@ -2934,10 +4146,6 @@
               "4"
             ],
             [
-              "U6",
-              "4"
-            ],
-            [
               "U60",
               "4"
             ],
@@ -2976,30 +4184,6 @@
             [
               "U69",
               "4"
-            ],
-            [
-              "U7",
-              "4"
-            ],
-            [
-              "U8",
-              "4"
-            ],
-            [
-              "U9",
-              "4"
-            ],
-            [
-              "U5",
-              "10"
-            ],
-            [
-              "U5",
-              "13"
-            ],
-            [
-              "U5",
-              "14"
             ]
           ]
         },
@@ -3193,6 +4377,38 @@
               "2"
             ],
             [
+              "C2",
+              "2"
+            ],
+            [
+              "C3",
+              "2"
+            ],
+            [
+              "C4",
+              "2"
+            ],
+            [
+              "C5",
+              "2"
+            ],
+            [
+              "C6",
+              "2"
+            ],
+            [
+              "C7",
+              "2"
+            ],
+            [
+              "C8",
+              "2"
+            ],
+            [
+              "C9",
+              "2"
+            ],
+            [
               "C10",
               "2"
             ],
@@ -3230,10 +4446,6 @@
             ],
             [
               "C19",
-              "2"
-            ],
-            [
-              "C2",
               "2"
             ],
             [
@@ -3277,10 +4489,6 @@
               "2"
             ],
             [
-              "C3",
-              "2"
-            ],
-            [
               "C30",
               "2"
             ],
@@ -3318,10 +4526,6 @@
             ],
             [
               "C39",
-              "2"
-            ],
-            [
-              "C4",
               "2"
             ],
             [
@@ -3365,10 +4569,6 @@
               "2"
             ],
             [
-              "C5",
-              "2"
-            ],
-            [
               "C50",
               "2"
             ],
@@ -3406,10 +4606,6 @@
             ],
             [
               "C59",
-              "2"
-            ],
-            [
-              "C6",
               "2"
             ],
             [
@@ -3453,10 +4649,6 @@
               "2"
             ],
             [
-              "C7",
-              "2"
-            ],
-            [
               "C70",
               "2"
             ],
@@ -3465,16 +4657,528 @@
               "2"
             ],
             [
-              "C8",
+              "C72",
               "2"
             ],
             [
-              "C9",
+              "C73",
+              "2"
+            ],
+            [
+              "C74",
+              "2"
+            ],
+            [
+              "C75",
+              "2"
+            ],
+            [
+              "C76",
+              "2"
+            ],
+            [
+              "C77",
+              "2"
+            ],
+            [
+              "C78",
+              "2"
+            ],
+            [
+              "C79",
+              "2"
+            ],
+            [
+              "C80",
+              "2"
+            ],
+            [
+              "C81",
+              "2"
+            ],
+            [
+              "C82",
+              "2"
+            ],
+            [
+              "C83",
+              "2"
+            ],
+            [
+              "C84",
+              "2"
+            ],
+            [
+              "C85",
+              "2"
+            ],
+            [
+              "C86",
+              "2"
+            ],
+            [
+              "C87",
+              "2"
+            ],
+            [
+              "C88",
+              "2"
+            ],
+            [
+              "C89",
+              "2"
+            ],
+            [
+              "C90",
+              "2"
+            ],
+            [
+              "C91",
+              "2"
+            ],
+            [
+              "C92",
+              "2"
+            ],
+            [
+              "C93",
+              "2"
+            ],
+            [
+              "C94",
+              "2"
+            ],
+            [
+              "C95",
+              "2"
+            ],
+            [
+              "C96",
+              "2"
+            ],
+            [
+              "C97",
+              "2"
+            ],
+            [
+              "C98",
+              "2"
+            ],
+            [
+              "C99",
+              "2"
+            ],
+            [
+              "C100",
+              "2"
+            ],
+            [
+              "C101",
+              "2"
+            ],
+            [
+              "C102",
+              "2"
+            ],
+            [
+              "C103",
+              "2"
+            ],
+            [
+              "C104",
+              "2"
+            ],
+            [
+              "C105",
+              "2"
+            ],
+            [
+              "C106",
+              "2"
+            ],
+            [
+              "C107",
+              "2"
+            ],
+            [
+              "C108",
+              "2"
+            ],
+            [
+              "C109",
+              "2"
+            ],
+            [
+              "C110",
+              "2"
+            ],
+            [
+              "C111",
+              "2"
+            ],
+            [
+              "C112",
+              "2"
+            ],
+            [
+              "C113",
+              "2"
+            ],
+            [
+              "C114",
+              "2"
+            ],
+            [
+              "C115",
+              "2"
+            ],
+            [
+              "C116",
+              "2"
+            ],
+            [
+              "C117",
+              "2"
+            ],
+            [
+              "C118",
+              "2"
+            ],
+            [
+              "C119",
+              "2"
+            ],
+            [
+              "C120",
+              "2"
+            ],
+            [
+              "C121",
+              "2"
+            ],
+            [
+              "C122",
+              "2"
+            ],
+            [
+              "C123",
+              "2"
+            ],
+            [
+              "C124",
+              "2"
+            ],
+            [
+              "C125",
+              "2"
+            ],
+            [
+              "C126",
+              "2"
+            ],
+            [
+              "C127",
+              "2"
+            ],
+            [
+              "C128",
+              "2"
+            ],
+            [
+              "C129",
+              "2"
+            ],
+            [
+              "C130",
+              "2"
+            ],
+            [
+              "C131",
+              "2"
+            ],
+            [
+              "C132",
+              "2"
+            ],
+            [
+              "C133",
+              "2"
+            ],
+            [
+              "C134",
+              "2"
+            ],
+            [
+              "C135",
               "2"
             ],
             [
               "D1",
               "2"
+            ],
+            [
+              "HS1",
+              "3"
+            ],
+            [
+              "HS10",
+              "3"
+            ],
+            [
+              "HS11",
+              "3"
+            ],
+            [
+              "HS12",
+              "3"
+            ],
+            [
+              "HS13",
+              "3"
+            ],
+            [
+              "HS14",
+              "3"
+            ],
+            [
+              "HS15",
+              "3"
+            ],
+            [
+              "HS16",
+              "3"
+            ],
+            [
+              "HS17",
+              "3"
+            ],
+            [
+              "HS18",
+              "3"
+            ],
+            [
+              "HS19",
+              "3"
+            ],
+            [
+              "HS2",
+              "3"
+            ],
+            [
+              "HS20",
+              "3"
+            ],
+            [
+              "HS21",
+              "3"
+            ],
+            [
+              "HS22",
+              "3"
+            ],
+            [
+              "HS23",
+              "3"
+            ],
+            [
+              "HS24",
+              "3"
+            ],
+            [
+              "HS25",
+              "3"
+            ],
+            [
+              "HS26",
+              "3"
+            ],
+            [
+              "HS27",
+              "3"
+            ],
+            [
+              "HS28",
+              "3"
+            ],
+            [
+              "HS29",
+              "3"
+            ],
+            [
+              "HS3",
+              "3"
+            ],
+            [
+              "HS30",
+              "3"
+            ],
+            [
+              "HS31",
+              "3"
+            ],
+            [
+              "HS32",
+              "3"
+            ],
+            [
+              "HS33",
+              "3"
+            ],
+            [
+              "HS34",
+              "3"
+            ],
+            [
+              "HS35",
+              "3"
+            ],
+            [
+              "HS36",
+              "3"
+            ],
+            [
+              "HS37",
+              "3"
+            ],
+            [
+              "HS38",
+              "3"
+            ],
+            [
+              "HS39",
+              "3"
+            ],
+            [
+              "HS4",
+              "3"
+            ],
+            [
+              "HS40",
+              "3"
+            ],
+            [
+              "HS41",
+              "3"
+            ],
+            [
+              "HS42",
+              "3"
+            ],
+            [
+              "HS43",
+              "3"
+            ],
+            [
+              "HS44",
+              "3"
+            ],
+            [
+              "HS45",
+              "3"
+            ],
+            [
+              "HS46",
+              "3"
+            ],
+            [
+              "HS47",
+              "3"
+            ],
+            [
+              "HS48",
+              "3"
+            ],
+            [
+              "HS49",
+              "3"
+            ],
+            [
+              "HS5",
+              "3"
+            ],
+            [
+              "HS50",
+              "3"
+            ],
+            [
+              "HS51",
+              "3"
+            ],
+            [
+              "HS52",
+              "3"
+            ],
+            [
+              "HS53",
+              "3"
+            ],
+            [
+              "HS54",
+              "3"
+            ],
+            [
+              "HS55",
+              "3"
+            ],
+            [
+              "HS56",
+              "3"
+            ],
+            [
+              "HS57",
+              "3"
+            ],
+            [
+              "HS58",
+              "3"
+            ],
+            [
+              "HS59",
+              "3"
+            ],
+            [
+              "HS6",
+              "3"
+            ],
+            [
+              "HS60",
+              "3"
+            ],
+            [
+              "HS61",
+              "3"
+            ],
+            [
+              "HS62",
+              "3"
+            ],
+            [
+              "HS63",
+              "3"
+            ],
+            [
+              "HS64",
+              "3"
+            ],
+            [
+              "HS7",
+              "3"
+            ],
+            [
+              "HS8",
+              "3"
+            ],
+            [
+              "HS9",
+              "3"
+            ],
+            [
+              "J1",
+              "6"
+            ],
+            [
+              "J1",
+              "9"
             ],
             [
               "J1",
@@ -3501,14 +5205,6 @@
               "39"
             ],
             [
-              "J1",
-              "6"
-            ],
-            [
-              "J1",
-              "9"
-            ],
-            [
               "J2",
               "1"
             ],
@@ -3517,260 +5213,8 @@
               "2"
             ],
             [
-              "RS1",
-              "2"
-            ],
-            [
-              "RS10",
-              "2"
-            ],
-            [
-              "RS11",
-              "2"
-            ],
-            [
-              "RS12",
-              "2"
-            ],
-            [
-              "RS13",
-              "2"
-            ],
-            [
-              "RS14",
-              "2"
-            ],
-            [
-              "RS15",
-              "2"
-            ],
-            [
-              "RS16",
-              "2"
-            ],
-            [
-              "RS17",
-              "2"
-            ],
-            [
-              "RS18",
-              "2"
-            ],
-            [
-              "RS19",
-              "2"
-            ],
-            [
-              "RS2",
-              "2"
-            ],
-            [
-              "RS20",
-              "2"
-            ],
-            [
-              "RS21",
-              "2"
-            ],
-            [
-              "RS22",
-              "2"
-            ],
-            [
-              "RS23",
-              "2"
-            ],
-            [
-              "RS24",
-              "2"
-            ],
-            [
-              "RS25",
-              "2"
-            ],
-            [
-              "RS26",
-              "2"
-            ],
-            [
-              "RS27",
-              "2"
-            ],
-            [
-              "RS28",
-              "2"
-            ],
-            [
-              "RS29",
-              "2"
-            ],
-            [
-              "RS3",
-              "2"
-            ],
-            [
-              "RS30",
-              "2"
-            ],
-            [
-              "RS31",
-              "2"
-            ],
-            [
-              "RS32",
-              "2"
-            ],
-            [
-              "RS33",
-              "2"
-            ],
-            [
-              "RS34",
-              "2"
-            ],
-            [
-              "RS35",
-              "2"
-            ],
-            [
-              "RS36",
-              "2"
-            ],
-            [
-              "RS37",
-              "2"
-            ],
-            [
-              "RS38",
-              "2"
-            ],
-            [
-              "RS39",
-              "2"
-            ],
-            [
-              "RS4",
-              "2"
-            ],
-            [
-              "RS40",
-              "2"
-            ],
-            [
-              "RS41",
-              "2"
-            ],
-            [
-              "RS42",
-              "2"
-            ],
-            [
-              "RS43",
-              "2"
-            ],
-            [
-              "RS44",
-              "2"
-            ],
-            [
-              "RS45",
-              "2"
-            ],
-            [
-              "RS46",
-              "2"
-            ],
-            [
-              "RS47",
-              "2"
-            ],
-            [
-              "RS48",
-              "2"
-            ],
-            [
-              "RS49",
-              "2"
-            ],
-            [
-              "RS5",
-              "2"
-            ],
-            [
-              "RS50",
-              "2"
-            ],
-            [
-              "RS51",
-              "2"
-            ],
-            [
-              "RS52",
-              "2"
-            ],
-            [
-              "RS53",
-              "2"
-            ],
-            [
-              "RS54",
-              "2"
-            ],
-            [
-              "RS55",
-              "2"
-            ],
-            [
-              "RS56",
-              "2"
-            ],
-            [
-              "RS57",
-              "2"
-            ],
-            [
-              "RS58",
-              "2"
-            ],
-            [
-              "RS59",
-              "2"
-            ],
-            [
-              "RS6",
-              "2"
-            ],
-            [
-              "RS60",
-              "2"
-            ],
-            [
-              "RS61",
-              "2"
-            ],
-            [
-              "RS62",
-              "2"
-            ],
-            [
-              "RS63",
-              "2"
-            ],
-            [
-              "RS64",
-              "2"
-            ],
-            [
-              "RS7",
-              "2"
-            ],
-            [
-              "RS8",
-              "2"
-            ],
-            [
-              "RS9",
-              "2"
+              "J3",
+              "3"
             ],
             [
               "SW1",
@@ -3841,6 +5285,74 @@
               "17"
             ],
             [
+              "U2",
+              "10"
+            ],
+            [
+              "U2",
+              "16"
+            ],
+            [
+              "U2",
+              "17"
+            ],
+            [
+              "U3",
+              "10"
+            ],
+            [
+              "U3",
+              "15"
+            ],
+            [
+              "U3",
+              "17"
+            ],
+            [
+              "U4",
+              "10"
+            ],
+            [
+              "U4",
+              "17"
+            ],
+            [
+              "U5",
+              "1"
+            ],
+            [
+              "U5",
+              "4"
+            ],
+            [
+              "U5",
+              "7"
+            ],
+            [
+              "U5",
+              "9"
+            ],
+            [
+              "U5",
+              "12"
+            ],
+            [
+              "U6",
+              "3"
+            ],
+            [
+              "U7",
+              "3"
+            ],
+            [
+              "U8",
+              "3"
+            ],
+            [
+              "U9",
+              "3"
+            ],
+            [
               "U10",
               "3"
             ],
@@ -3879,18 +5391,6 @@
             [
               "U19",
               "3"
-            ],
-            [
-              "U2",
-              "10"
-            ],
-            [
-              "U2",
-              "16"
-            ],
-            [
-              "U2",
-              "17"
             ],
             [
               "U20",
@@ -3933,18 +5433,6 @@
               "3"
             ],
             [
-              "U3",
-              "10"
-            ],
-            [
-              "U3",
-              "15"
-            ],
-            [
-              "U3",
-              "17"
-            ],
-            [
               "U30",
               "3"
             ],
@@ -3983,14 +5471,6 @@
             [
               "U39",
               "3"
-            ],
-            [
-              "U4",
-              "10"
-            ],
-            [
-              "U4",
-              "17"
             ],
             [
               "U40",
@@ -4073,10 +5553,6 @@
               "3"
             ],
             [
-              "U6",
-              "3"
-            ],
-            [
               "U60",
               "3"
             ],
@@ -4114,42 +5590,6 @@
             ],
             [
               "U69",
-              "3"
-            ],
-            [
-              "U7",
-              "3"
-            ],
-            [
-              "U8",
-              "3"
-            ],
-            [
-              "U9",
-              "3"
-            ],
-            [
-              "U5",
-              "1"
-            ],
-            [
-              "U5",
-              "4"
-            ],
-            [
-              "U5",
-              "7"
-            ],
-            [
-              "U5",
-              "9"
-            ],
-            [
-              "U5",
-              "12"
-            ],
-            [
-              "J3",
               "3"
             ]
           ]
@@ -4511,8 +5951,8 @@
           "name": "SQ_A1",
           "pads": [
             [
-              "RS1",
-              "1"
+              "HS1",
+              "2"
             ],
             [
               "U1",
@@ -4524,8 +5964,8 @@
           "name": "SQ_A2",
           "pads": [
             [
-              "RS5",
-              "1"
+              "HS5",
+              "2"
             ],
             [
               "U1",
@@ -4537,8 +5977,8 @@
           "name": "SQ_A3",
           "pads": [
             [
-              "RS9",
-              "1"
+              "HS9",
+              "2"
             ],
             [
               "U1",
@@ -4550,8 +5990,8 @@
           "name": "SQ_A4",
           "pads": [
             [
-              "RS13",
-              "1"
+              "HS13",
+              "2"
             ],
             [
               "U1",
@@ -4563,8 +6003,8 @@
           "name": "SQ_A5",
           "pads": [
             [
-              "RS33",
-              "1"
+              "HS33",
+              "2"
             ],
             [
               "U3",
@@ -4576,8 +6016,8 @@
           "name": "SQ_A6",
           "pads": [
             [
-              "RS37",
-              "1"
+              "HS37",
+              "2"
             ],
             [
               "U3",
@@ -4589,8 +6029,8 @@
           "name": "SQ_A7",
           "pads": [
             [
-              "RS41",
-              "1"
+              "HS41",
+              "2"
             ],
             [
               "U3",
@@ -4602,8 +6042,8 @@
           "name": "SQ_A8",
           "pads": [
             [
-              "RS45",
-              "1"
+              "HS45",
+              "2"
             ],
             [
               "U3",
@@ -4615,8 +6055,8 @@
           "name": "SQ_B1",
           "pads": [
             [
-              "RS2",
-              "1"
+              "HS2",
+              "2"
             ],
             [
               "U1",
@@ -4628,8 +6068,8 @@
           "name": "SQ_B2",
           "pads": [
             [
-              "RS6",
-              "1"
+              "HS6",
+              "2"
             ],
             [
               "U1",
@@ -4641,8 +6081,8 @@
           "name": "SQ_B3",
           "pads": [
             [
-              "RS10",
-              "1"
+              "HS10",
+              "2"
             ],
             [
               "U1",
@@ -4654,8 +6094,8 @@
           "name": "SQ_B4",
           "pads": [
             [
-              "RS14",
-              "1"
+              "HS14",
+              "2"
             ],
             [
               "U1",
@@ -4667,8 +6107,8 @@
           "name": "SQ_B5",
           "pads": [
             [
-              "RS34",
-              "1"
+              "HS34",
+              "2"
             ],
             [
               "U3",
@@ -4680,8 +6120,8 @@
           "name": "SQ_B6",
           "pads": [
             [
-              "RS38",
-              "1"
+              "HS38",
+              "2"
             ],
             [
               "U3",
@@ -4693,8 +6133,8 @@
           "name": "SQ_B7",
           "pads": [
             [
-              "RS42",
-              "1"
+              "HS42",
+              "2"
             ],
             [
               "U3",
@@ -4706,8 +6146,8 @@
           "name": "SQ_B8",
           "pads": [
             [
-              "RS46",
-              "1"
+              "HS46",
+              "2"
             ],
             [
               "U3",
@@ -4719,8 +6159,8 @@
           "name": "SQ_C1",
           "pads": [
             [
-              "RS3",
-              "1"
+              "HS3",
+              "2"
             ],
             [
               "U1",
@@ -4732,8 +6172,8 @@
           "name": "SQ_C2",
           "pads": [
             [
-              "RS7",
-              "1"
+              "HS7",
+              "2"
             ],
             [
               "U1",
@@ -4745,8 +6185,8 @@
           "name": "SQ_C3",
           "pads": [
             [
-              "RS11",
-              "1"
+              "HS11",
+              "2"
             ],
             [
               "U1",
@@ -4758,8 +6198,8 @@
           "name": "SQ_C4",
           "pads": [
             [
-              "RS15",
-              "1"
+              "HS15",
+              "2"
             ],
             [
               "U1",
@@ -4771,8 +6211,8 @@
           "name": "SQ_C5",
           "pads": [
             [
-              "RS35",
-              "1"
+              "HS35",
+              "2"
             ],
             [
               "U3",
@@ -4784,8 +6224,8 @@
           "name": "SQ_C6",
           "pads": [
             [
-              "RS39",
-              "1"
+              "HS39",
+              "2"
             ],
             [
               "U3",
@@ -4797,8 +6237,8 @@
           "name": "SQ_C7",
           "pads": [
             [
-              "RS43",
-              "1"
+              "HS43",
+              "2"
             ],
             [
               "U3",
@@ -4810,8 +6250,8 @@
           "name": "SQ_C8",
           "pads": [
             [
-              "RS47",
-              "1"
+              "HS47",
+              "2"
             ],
             [
               "U3",
@@ -4823,8 +6263,8 @@
           "name": "SQ_D1",
           "pads": [
             [
-              "RS4",
-              "1"
+              "HS4",
+              "2"
             ],
             [
               "U1",
@@ -4836,8 +6276,8 @@
           "name": "SQ_D2",
           "pads": [
             [
-              "RS8",
-              "1"
+              "HS8",
+              "2"
             ],
             [
               "U1",
@@ -4849,8 +6289,8 @@
           "name": "SQ_D3",
           "pads": [
             [
-              "RS12",
-              "1"
+              "HS12",
+              "2"
             ],
             [
               "U1",
@@ -4862,8 +6302,8 @@
           "name": "SQ_D4",
           "pads": [
             [
-              "RS16",
-              "1"
+              "HS16",
+              "2"
             ],
             [
               "U1",
@@ -4875,8 +6315,8 @@
           "name": "SQ_D5",
           "pads": [
             [
-              "RS36",
-              "1"
+              "HS36",
+              "2"
             ],
             [
               "U3",
@@ -4888,8 +6328,8 @@
           "name": "SQ_D6",
           "pads": [
             [
-              "RS40",
-              "1"
+              "HS40",
+              "2"
             ],
             [
               "U3",
@@ -4901,8 +6341,8 @@
           "name": "SQ_D7",
           "pads": [
             [
-              "RS44",
-              "1"
+              "HS44",
+              "2"
             ],
             [
               "U3",
@@ -4914,8 +6354,8 @@
           "name": "SQ_D8",
           "pads": [
             [
-              "RS48",
-              "1"
+              "HS48",
+              "2"
             ],
             [
               "U3",
@@ -4927,8 +6367,8 @@
           "name": "SQ_E1",
           "pads": [
             [
-              "RS17",
-              "1"
+              "HS17",
+              "2"
             ],
             [
               "U2",
@@ -4940,8 +6380,8 @@
           "name": "SQ_E2",
           "pads": [
             [
-              "RS21",
-              "1"
+              "HS21",
+              "2"
             ],
             [
               "U2",
@@ -4953,8 +6393,8 @@
           "name": "SQ_E3",
           "pads": [
             [
-              "RS25",
-              "1"
+              "HS25",
+              "2"
             ],
             [
               "U2",
@@ -4966,8 +6406,8 @@
           "name": "SQ_E4",
           "pads": [
             [
-              "RS29",
-              "1"
+              "HS29",
+              "2"
             ],
             [
               "U2",
@@ -4979,8 +6419,8 @@
           "name": "SQ_E5",
           "pads": [
             [
-              "RS49",
-              "1"
+              "HS49",
+              "2"
             ],
             [
               "U4",
@@ -4992,8 +6432,8 @@
           "name": "SQ_E6",
           "pads": [
             [
-              "RS53",
-              "1"
+              "HS53",
+              "2"
             ],
             [
               "U4",
@@ -5005,8 +6445,8 @@
           "name": "SQ_E7",
           "pads": [
             [
-              "RS57",
-              "1"
+              "HS57",
+              "2"
             ],
             [
               "U4",
@@ -5018,8 +6458,8 @@
           "name": "SQ_E8",
           "pads": [
             [
-              "RS61",
-              "1"
+              "HS61",
+              "2"
             ],
             [
               "U4",
@@ -5031,8 +6471,8 @@
           "name": "SQ_F1",
           "pads": [
             [
-              "RS18",
-              "1"
+              "HS18",
+              "2"
             ],
             [
               "U2",
@@ -5044,8 +6484,8 @@
           "name": "SQ_F2",
           "pads": [
             [
-              "RS22",
-              "1"
+              "HS22",
+              "2"
             ],
             [
               "U2",
@@ -5057,8 +6497,8 @@
           "name": "SQ_F3",
           "pads": [
             [
-              "RS26",
-              "1"
+              "HS26",
+              "2"
             ],
             [
               "U2",
@@ -5070,8 +6510,8 @@
           "name": "SQ_F4",
           "pads": [
             [
-              "RS30",
-              "1"
+              "HS30",
+              "2"
             ],
             [
               "U2",
@@ -5083,8 +6523,8 @@
           "name": "SQ_F5",
           "pads": [
             [
-              "RS50",
-              "1"
+              "HS50",
+              "2"
             ],
             [
               "U4",
@@ -5096,8 +6536,8 @@
           "name": "SQ_F6",
           "pads": [
             [
-              "RS54",
-              "1"
+              "HS54",
+              "2"
             ],
             [
               "U4",
@@ -5109,8 +6549,8 @@
           "name": "SQ_F7",
           "pads": [
             [
-              "RS58",
-              "1"
+              "HS58",
+              "2"
             ],
             [
               "U4",
@@ -5122,8 +6562,8 @@
           "name": "SQ_F8",
           "pads": [
             [
-              "RS62",
-              "1"
+              "HS62",
+              "2"
             ],
             [
               "U4",
@@ -5135,8 +6575,8 @@
           "name": "SQ_G1",
           "pads": [
             [
-              "RS19",
-              "1"
+              "HS19",
+              "2"
             ],
             [
               "U2",
@@ -5148,8 +6588,8 @@
           "name": "SQ_G2",
           "pads": [
             [
-              "RS23",
-              "1"
+              "HS23",
+              "2"
             ],
             [
               "U2",
@@ -5161,8 +6601,8 @@
           "name": "SQ_G3",
           "pads": [
             [
-              "RS27",
-              "1"
+              "HS27",
+              "2"
             ],
             [
               "U2",
@@ -5174,8 +6614,8 @@
           "name": "SQ_G4",
           "pads": [
             [
-              "RS31",
-              "1"
+              "HS31",
+              "2"
             ],
             [
               "U2",
@@ -5187,8 +6627,8 @@
           "name": "SQ_G5",
           "pads": [
             [
-              "RS51",
-              "1"
+              "HS51",
+              "2"
             ],
             [
               "U4",
@@ -5200,8 +6640,8 @@
           "name": "SQ_G6",
           "pads": [
             [
-              "RS55",
-              "1"
+              "HS55",
+              "2"
             ],
             [
               "U4",
@@ -5213,8 +6653,8 @@
           "name": "SQ_G7",
           "pads": [
             [
-              "RS59",
-              "1"
+              "HS59",
+              "2"
             ],
             [
               "U4",
@@ -5226,8 +6666,8 @@
           "name": "SQ_G8",
           "pads": [
             [
-              "RS63",
-              "1"
+              "HS63",
+              "2"
             ],
             [
               "U4",
@@ -5239,8 +6679,8 @@
           "name": "SQ_H1",
           "pads": [
             [
-              "RS20",
-              "1"
+              "HS20",
+              "2"
             ],
             [
               "U2",
@@ -5252,8 +6692,8 @@
           "name": "SQ_H2",
           "pads": [
             [
-              "RS24",
-              "1"
+              "HS24",
+              "2"
             ],
             [
               "U2",
@@ -5265,8 +6705,8 @@
           "name": "SQ_H3",
           "pads": [
             [
-              "RS28",
-              "1"
+              "HS28",
+              "2"
             ],
             [
               "U2",
@@ -5278,8 +6718,8 @@
           "name": "SQ_H4",
           "pads": [
             [
-              "RS32",
-              "1"
+              "HS32",
+              "2"
             ],
             [
               "U2",
@@ -5291,8 +6731,8 @@
           "name": "SQ_H5",
           "pads": [
             [
-              "RS52",
-              "1"
+              "HS52",
+              "2"
             ],
             [
               "U4",
@@ -5304,8 +6744,8 @@
           "name": "SQ_H6",
           "pads": [
             [
-              "RS56",
-              "1"
+              "HS56",
+              "2"
             ],
             [
               "U4",
@@ -5317,8 +6757,8 @@
           "name": "SQ_H7",
           "pads": [
             [
-              "RS60",
-              "1"
+              "HS60",
+              "2"
             ],
             [
               "U4",
@@ -5330,8 +6770,8 @@
           "name": "SQ_H8",
           "pads": [
             [
-              "RS64",
-              "1"
+              "HS64",
+              "2"
             ],
             [
               "U4",
@@ -5483,12 +6923,12 @@
           "name": null,
           "pads": [
             [
-              "U10",
-              "1"
-            ],
-            [
               "U9",
               "6"
+            ],
+            [
+              "U10",
+              "1"
             ]
           ]
         },
@@ -5496,12 +6936,12 @@
           "name": null,
           "pads": [
             [
-              "U10",
-              "2"
-            ],
-            [
               "U9",
               "5"
+            ],
+            [
+              "U10",
+              "2"
             ]
           ]
         },

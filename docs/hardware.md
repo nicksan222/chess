@@ -22,7 +22,7 @@ drift from the board actually sent to fabrication.
 
 ## Architecture
 
-Four MCP23017 expanders read 64 normally-open reed switches. Each expander owns
+Four MCP23017 expanders read 64 active-low omnipolar Hall sensors. Each expander owns
 a 4×4 quadrant. Sixty-four SK9822 LEDs form a serpentine SPI chain beginning at
 A1. Twelve panel buttons connect to dedicated Pi GPIO lines, and an SSD1306 OLED
 uses the shared I²C bus.

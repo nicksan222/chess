@@ -28,25 +28,16 @@ class PlacementTest(unittest.TestCase):
         cls.board = Board()
         cls.by_reference = {p.reference: p for p in cls.placements}
 
-    def test_every_part_is_placed_except_the_sockets(self) -> None:
-        expected = {
-            reference
-            for reference, entry in self.netlist["components"].items()
-            if entry["lib"] not in placement.SKIPPED_LIBS
-        }
+    def test_every_board_part_is_placed(self) -> None:
+        expected = set(self.netlist["components"])
         self.assertEqual(set(self.by_reference), expected)
         self.assertEqual(len(self.placements), len(expected))
-
-    def test_sockets_are_deliberately_not_placed(self) -> None:
-        """A socket shares its chip's pads; placing both would double them."""
-        sockets = {
-            reference
-            for reference, entry in self.netlist["components"].items()
-            if entry["lib"] == "DIP_SOCKET"
-        }
-        self.assertTrue(sockets)
-        for reference in sockets:
-            self.assertNotIn(reference, self.by_reference)
+        self.assertFalse(
+            any(
+                entry["lib"] == "DIP_SOCKET"
+                for entry in self.netlist["components"].values()
+            )
+        )
 
     def test_no_two_parts_overlap(self) -> None:
         collisions = []
@@ -99,14 +90,14 @@ class GridAlignmentTest(unittest.TestCase):
         }
         self.assertEqual(placed, expected)
 
-    def test_every_reed_sits_at_a_square_centre(self) -> None:
+    def test_every_hall_sensor_sits_at_a_square_centre(self) -> None:
         expected = {
-            (x, y) for _row, _column, x, y in self.shared.BOARD_REED_POSITIONS_MM
+            (x, y) for _row, _column, x, y in self.shared.BOARD_HALL_POSITIONS_MM
         }
         placed = {
             (item.x, item.y)
             for reference, item in self.by_reference.items()
-            if self.netlist["components"][reference]["lib"] == "REED"
+            if self.netlist["components"][reference]["lib"] == "HALL"
         }
         self.assertEqual(placed, expected)
 
@@ -134,44 +125,54 @@ class GridAlignmentTest(unittest.TestCase):
         self.assertEqual(centres["A8"], (-half + offset, half - offset))
 
     def test_expanders_sit_beside_the_quadrant_they_serve(self) -> None:
+        square_centres = placement.square_centres(self.shared)
         for reference, entry in self.netlist["components"].items():
             if entry["lib"] != "MCP23017":
                 continue
             item = self.by_reference[reference]
             quadrant = entry["extras"]["Quadrant"]
-            centre = placement._quadrant_centre(quadrant, self.shared)
+            first, last = quadrant.split("-")
+            centre = tuple(
+                (left + right) / 2.0
+                for left, right in zip(
+                    square_centres[first], square_centres[last], strict=True
+                )
+            )
             with self.subTest(expander=reference):
-                # Offset from the exact centre, because a DIP-28 is nearly as
-                # long as a square and the centre is taken by an LED.
+                self.assertEqual(
+                    (item.x, item.y),
+                    self.shared.EXPANDER_POSITIONS_BY_QUADRANT_MM[quadrant],
+                )
+                # Preserve the short quadrant fanout and avoid the centre LED.
                 self.assertAlmostEqual(item.x - centre[0], 14.0, places=6)
                 self.assertAlmostEqual(item.y - centre[1], 0.0, places=6)
 
-    def test_reed_traces_stay_short(self) -> None:
+    def test_hall_output_traces_stay_short(self) -> None:
         """The whole reason for four expanders instead of one."""
         expanders = {
             reference: self.by_reference[reference]
             for reference, entry in self.netlist["components"].items()
             if entry["lib"] == "MCP23017"
         }
-        reeds = {
+        sensors = {
             reference: self.by_reference[reference]
             for reference, entry in self.netlist["components"].items()
-            if entry["lib"] == "REED"
+            if entry["lib"] == "HALL"
         }
         worst = 0.0
         for connection in self.netlist["connections"]:
             pads = [tuple(pad) for pad in connection["pads"]]
-            reed = next((r for r, _p in pads if r in reeds), None)
+            sensor = next((r for r, _p in pads if r in sensors), None)
             expander = next((r for r, _p in pads if r in expanders), None)
-            if reed is None or expander is None:
+            if sensor is None or expander is None:
                 continue
             distance = (
-                (reeds[reed].x - expanders[expander].x) ** 2
-                + (reeds[reed].y - expanders[expander].y) ** 2
+                (sensors[sensor].x - expanders[expander].x) ** 2
+                + (sensors[sensor].y - expanders[expander].y) ** 2
             ) ** 0.5
             worst = max(worst, distance)
-        self.assertGreater(worst, 0.0, "no reed-to-expander pairs found")
-        self.assertLess(worst, 110.0, f"longest reed run is {worst:.1f} mm")
+        self.assertGreater(worst, 0.0, "no Hall-to-expander pairs found")
+        self.assertLess(worst, 110.0, f"longest Hall run is {worst:.1f} mm")
 
 
 if __name__ == "__main__":

@@ -138,8 +138,9 @@ class VerticalStackTest(unittest.TestCase):
 
     def test_the_plate_clears_the_tallest_thing_on_the_board(self) -> None:
         tallest = max(
-            cad.REED_SENSOR_BODY_MM[1] + cad.REED_SENSOR_STANDOFF_MM,
+            cad.HALL_SENSOR_HEIGHT_MM + cad.HALL_SENSOR_STANDOFF_MM,
             cad.LED_PACKAGE_MAX_SIZE_MM[2],
+            cad.EXPANDER_BODY_MM[2],
         )
         self.assertGreater(cad.PCB_TO_PLATE_GAP_MM, tallest)
 
@@ -186,16 +187,16 @@ class FdmFeatureTest(unittest.TestCase):
 
 
 class PerSquareFeatureTest(unittest.TestCase):
-    def test_one_led_and_one_reed_for_every_square(self) -> None:
+    def test_one_led_and_one_hall_sensor_for_every_square(self) -> None:
         squares = cad.GRID_COUNT * cad.GRID_COUNT
         self.assertEqual(len(cad.BOARD_SQUARE_CENTERS_MM), squares)
         self.assertEqual(len(cad.BOARD_LED_POSITIONS_MM), squares)
-        self.assertEqual(len(cad.BOARD_REED_POSITIONS_MM), squares)
+        self.assertEqual(len(cad.BOARD_HALL_POSITIONS_MM), squares)
 
     def test_positions_are_unique(self) -> None:
         for name, table in (
             ("led", cad.BOARD_LED_POSITIONS_MM),
-            ("reed", cad.BOARD_REED_POSITIONS_MM),
+            ("hall", cad.BOARD_HALL_POSITIONS_MM),
         ):
             with self.subTest(table=name):
                 self.assertEqual(
@@ -222,9 +223,13 @@ class PerSquareFeatureTest(unittest.TestCase):
         for row, column, _x, _y in cad.BOARD_DARK_SQUARES_MM:
             self.assertEqual((row + column) % 2, 1)
 
-    def test_underside_pockets_clear_the_reed_switches(self) -> None:
+    def test_hall_sensor_dimensions_have_explicit_xy_and_height(self) -> None:
+        self.assertEqual(cad.HALL_SENSOR_BODY_MM, (2.92, 1.30))
+        self.assertEqual(cad.HALL_SENSOR_HEIGHT_MM, 1.12)
+
+    def test_underside_pockets_clear_the_hall_sensors(self) -> None:
         self.assertGreater(
-            cad.TILE_PLATE_UNDERSIDE_POCKET_SPAN_MM, cad.REED_SENSOR_BODY_MM[0]
+            cad.TILE_PLATE_UNDERSIDE_POCKET_SPAN_MM, cad.HALL_SENSOR_BODY_MM[0]
         )
         self.assertTrue(
             isclose(
@@ -232,6 +237,15 @@ class PerSquareFeatureTest(unittest.TestCase):
                 cad.SQUARE_SIZE_MM - 2.0 * cad.TILE_PLATE_RIB_WIDTH_MM,
             )
         )
+
+
+class ExpanderEnvelopeTest(unittest.TestCase):
+    def test_all_four_quadrant_positions_are_shared_with_pcb_placement(self) -> None:
+        self.assertEqual(
+            set(cad.EXPANDER_POSITIONS_BY_QUADRANT_MM),
+            {"A1-D4", "E1-H4", "A5-D8", "E5-H8"},
+        )
+        self.assertEqual(cad.EXPANDER_BODY_MM, (10.3, 17.9, 2.65))
 
 
 class BoardSupportTest(unittest.TestCase):
@@ -251,7 +265,7 @@ class BoardSupportTest(unittest.TestCase):
             len(cad.PCB_SUPPORT_POSITIONS_MM),
         )
 
-    def test_every_support_stands_clear_of_an_led_and_a_reed(self) -> None:
+    def test_every_support_stands_clear_of_an_led_and_a_hall_sensor(self) -> None:
         radius = cad.PCB_SUPPORT_BOSS_DIAMETER_MM / 2.0
         for boss_x, boss_y in cad.PCB_SUPPORT_POSITIONS_MM:
             for _row, _column, led_x, led_y in cad.BOARD_LED_POSITIONS_MM:

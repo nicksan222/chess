@@ -26,11 +26,12 @@ PCBWAY_MIN_MASK_DAM_MM = 0.1
 PCBWAY_MAX_BOARD_MM = (500.0, 1000.0)
 
 # --- What this board uses ---------------------------------------------------
-# Four times the process minimum. This board is hand-soldered and hand-reviewed;
-# there is no reason to be anywhere near the limit.
-TRACE_WIDTH_MM = 0.4
+# More than three times the process minimum. These dimensions preserve a wide
+# fabrication margin while comfortably escaping 1.27 mm SOIC pitch.
+TRACE_WIDTH_MM = 0.31
 POWER_TRACE_WIDTH_MM = 1.5
-CLEARANCE_MM = 0.4
+# A conservative 0.30 mm clearance still supports common SOIC/SOT assembly.
+CLEARANCE_MM = 0.30
 
 VIA_DRILL_MM = 0.4
 VIA_PAD_MM = 0.9
@@ -94,7 +95,7 @@ def validate() -> None:
         raise ValueError("The board outline needs a drawn width")
     if COPPER_LAYERS != 8:
         raise ValueError(
-            "Three rail planes and three isolated bus layers require eight layers"
+            "Three rail planes and three signal layers require eight layers"
         )
     if MASK_EXPANSION_MM <= 0.0:
         raise ValueError("Soldermask must open wider than the pad it clears")

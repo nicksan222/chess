@@ -3,14 +3,24 @@
 The board is a native KiCad 9 project composed from Python:
 
 - `write_schematic.py` builds the native schematic and embedded symbol library.
-- `generate.py` builds the eight-layer `chess-board.kicad_pcb` through KiCad's
-  `pcbnew` API: three rail planes, three isolated bus layers, and two outer
-  routing layers.
+- `generate.py` is the thin orchestration entry point for the eight-layer board.
+- `core/kicad.py` provides the `KiCadBoard` object that owns native nets, pads,
+  package attachment, manufacturing rules, traces, and vias.
+- `core/connectivity.py` provides the validated object graph shared by PCB,
+  schematic, and semantic component models.
+- `core/board_builder.py` owns mechanical geometry and serialization;
+  `core/routing.py` orders focused LED, control, sensor, and power routers from
+  the neighbouring `routing_*.py` modules.
+- `core/square.py` defines and validates one four-part square assembly—LED, Hall
+  sensor, and both bypass capacitors—before placement repeats it 64 times.
 - `design/netlist.json` is the reviewed connectivity contract; every placed
   component references an approved `part_key`.
 - `design/bom.md` is generated with exact manufacturer part numbers from
   `hardware/shared/components.py`; anonymous substitutions are rejected.
-- `core/placement.py` and `footprints/` implement placement and package geometry.
+- `core/placement.py` composes square assemblies and one-off parts. Each
+  `Placement` attaches itself through `KiCadBoard`; `footprints/` owns package
+  geometry, while components resolve their semantic pin attachments through the
+  shared connection graph.
 - `hardware/shared/` supplies dimensions, component identities, and wiring.
 - `chess-board.kicad_pro`, `chess-board.kicad_sch`, and
   `chess-board.kicad_pcb` open directly in KiCad.
@@ -47,7 +57,7 @@ identities rather than anonymous `R`, `C`, or connector placeholders.
 
 That does **not** make the board automatically production-ready. Availability,
 manufacturer drawing review, stack-up review, component 3D models, and physical
-reed/magnet validation remain real engineering gates. The repository currently
+Hall-sensor/magnet validation remain real engineering gates. The repository currently
 reports `release_ready: false` because prototype evidence is absent; do not order
 the board until `make -C hardware/pcb release` succeeds without bypasses.
 
@@ -61,7 +71,7 @@ output is recreated only when all of these are true:
 - every intentionally unused pin is explicitly marked `no_connect` in the
   reviewed connectivity contract;
 - there are no PCB/schematic parity errors;
-- reed/magnet prototype evidence exists in `prototype/`.
+- Hall-sensor/magnet prototype evidence exists in `prototype/`.
 
 `validate_release.py` enforces the policy after review images are generated and
 before fabrication export. A failed gate is a failed build, not a warning.

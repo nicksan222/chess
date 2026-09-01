@@ -9,7 +9,7 @@ they do.
 
 ```text
         Physical Board
-     64 reeds, 64 LEDs, 12 buttons
+     64 Hall sensors, 64 LEDs, 12 buttons
               |
       I2C, SPI, GPIO  (no protocol)
               |

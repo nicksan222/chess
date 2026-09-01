@@ -1,14 +1,12 @@
 //! Turning noisy sensor reads into settled changes.
 //!
-//! Reed contacts bounce for a millisecond or two, and the board deliberately
-//! carries no hardware filtering: the pull-ups are the expanders' own internal
-//! ones and there are no RC networks on the 64 sense lines. Filtering that
-//! bounce is this module's job, which is what keeps 128 components off the PCB.
+//! Hall outputs can briefly change near a magnet's operate/release threshold.
+//! Requiring consecutive samples also rejects I2C glitches without adding RC
+//! delay to any of the 64 active-low sense lines.
 //!
 //! The rule is simple and stateful: a square has to read the same way for a
 //! number of consecutive samples before the change is believed. Chess moves take
-//! hundreds of milliseconds and contacts settle in single digits, so there are
-//! three orders of magnitude of margin to spend here.
+//! hundreds of milliseconds, leaving ample latency margin for this filtering.
 
 use chess::Square;
 

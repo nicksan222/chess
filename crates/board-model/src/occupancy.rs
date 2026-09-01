@@ -64,7 +64,7 @@ impl Occupancy {
     /// Builds a snapshot from what the expanders reported.
     ///
     /// `ports` holds two bytes per expander, port A then port B, in device
-    /// order. A reed pulls its pin to ground when a piece is present, so a clear
+    /// order. A Hall sensor pulls its active-low output low when a piece is present, so a clear
     /// bit means occupied; this is where that inversion is handled, once.
     #[must_use]
     pub fn from_expander_ports(ports: [u8; (EXPANDER_COUNT * 2) as usize]) -> Self {
@@ -142,7 +142,7 @@ mod tests {
     fn a_grounded_pin_means_an_occupied_square() {
         // Every pin high: nothing pulled down, so the board is empty.
         assert_eq!(Occupancy::from_expander_ports([0xFF; 8]), Occupancy::EMPTY);
-        // Every pin low: every reed closed.
+        // Every pin low: every Hall sensor active.
         assert_eq!(
             Occupancy::from_expander_ports([0x00; 8]).count(),
             SQUARE_COUNT as u32

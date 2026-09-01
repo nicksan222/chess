@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from components.barrel_jack import BarrelJackPad
 from components.tactile_switch import TactileSwitchPad
-from components.test_point import TestPointPin
 from core import rules
 
 from .base import RECT, ROUND, Footprint, Pad, courtyard_for
@@ -28,19 +27,6 @@ TACTILE_6MM = Footprint(
     description="6 mm tactile panel switch, 9.5 mm actuator",
     pads=_TACT_PADS,
     courtyard=courtyard_for(_TACT_PADS, (6.2, 6.2)),
-)
-
-_TURRET_DRILL = rules.drill_for_lead(1.0)
-_TURRET_PAD = rules.pad_for_drill(_TURRET_DRILL)
-_TURRET_PADS = (
-    Pad(TestPointPin.PROBE, 0.0, 0.0, _TURRET_PAD, _TURRET_PAD, ROUND, _TURRET_DRILL),
-)
-
-TESTPOINT_TURRET = Footprint(
-    package="turret 1.6 mm THT",
-    description="Turret test point",
-    pads=_TURRET_PADS,
-    courtyard=courtyard_for(_TURRET_PADS),
 )
 
 # The PJ-102A has three terminals: the centre pin, the sleeve, and its normally

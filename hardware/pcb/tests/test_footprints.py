@@ -108,14 +108,14 @@ class GeometryTest(unittest.TestCase):
 
 class RotationTest(unittest.TestCase):
     def test_a_quarter_turn_swaps_the_axes(self) -> None:
-        pad = footprints.for_package("PDIP-28").pad("1")
+        pad = footprints.for_package("SOIC-28W 1.27 mm").pad("1")
         turned = pad.rotated(90)
         self.assertAlmostEqual(turned.x, -pad.y, places=4)
         self.assertAlmostEqual(turned.y, pad.x, places=4)
         self.assertAlmostEqual(turned.width, pad.height, places=4)
 
     def test_no_rotation_returns_the_same_pad(self) -> None:
-        pad = footprints.for_package("PDIP-28").pad("1")
+        pad = footprints.for_package("SOIC-28W 1.27 mm").pad("1")
         self.assertIs(pad.rotated(0), pad)
 
     def test_courtyard_turns_with_the_part(self) -> None:
@@ -134,7 +134,7 @@ class ExtraPadTest(unittest.TestCase):
         self.assertEqual({pad.net_number for pad in tactile.pads}, {"1", "2"})
 
     def test_a_plain_pin_number_is_its_own_net_number(self) -> None:
-        for pad in footprints.for_package("PDIP-28").pads:
+        for pad in footprints.for_package("SOIC-28W 1.27 mm").pads:
             self.assertEqual(pad.net_number, pad.number)
 
 

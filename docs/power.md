@@ -13,7 +13,7 @@ expanders and the display need comes off the Raspberry Pi's own header, which
 about 5 mA of load against a roughly 250 mA budget comfortably allows.
 
 The whole power section is therefore six parts: the jack, a 5 A fuse in a holder,
-a P6KE6.8A transient suppressor, a rocker switch, a 1000 µF bulk capacitor and a
+an SMBJ6.0A transient suppressor, a rocker switch, a 1000 µF bulk capacitor and a
 10 µF rail capacitor.
 
 The suppressor and the fuse work as a pair. A spike is clamped; a reverse-polarity

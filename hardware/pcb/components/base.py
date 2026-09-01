@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import ClassVar, Generic, NamedTuple, TypeVar
+from typing import ClassVar, Generic, NamedTuple, Protocol, TypeVar, cast
 
 
 PinType = TypeVar("PinType", bound=StrEnum)
@@ -15,6 +15,12 @@ class Endpoint(NamedTuple):
 
     reference: str
     pin: StrEnum
+
+
+class NetLookup(Protocol):
+    """Minimal connection-graph interface understood by component instances."""
+
+    def net_name(self, endpoint: tuple[str, str]) -> str: ...
 
 
 class ComponentReference(StrEnum):
@@ -38,7 +44,7 @@ class BoardComponent(Generic[PinType]):
 
     def get_pins(self) -> tuple[PinType, ...]:
         """Return every logical pin as a semantic enum member."""
-        return tuple(self.pin_type)  # type: ignore[return-value]
+        return cast(tuple[PinType, ...], tuple(self.pin_type))
 
     def get_pin(self, pin: PinType) -> PinType:
         """Validate and return one of this component's pins."""
@@ -52,10 +58,17 @@ class BoardComponent(Generic[PinType]):
     def get_pin_by_number(self, number: str) -> PinType:
         """Translate a serialized datasheet number at the netlist boundary."""
         try:
-            return self.pin_type(number)  # type: ignore[return-value]
+            return cast(PinType, self.pin_type(number))
         except ValueError as error:
             raise KeyError(f"{self.reference} has no logical pin {number!r}") from error
 
     def endpoint(self, pin: PinType) -> Endpoint:
         """Return the typed netlist endpoint for ``pin``."""
         return Endpoint(self.reference, self.get_pin(pin))
+
+    def attachments(self, connections: NetLookup) -> dict[PinType, str]:
+        """Resolve every semantic component pin to its attached net."""
+        return {
+            pin: connections.net_name(self.endpoint(pin))
+            for pin in self.get_pins()
+        }

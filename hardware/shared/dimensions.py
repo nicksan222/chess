@@ -7,12 +7,14 @@ every tile enclosure, wire port and Velcro pocket dimension.
 
 Coordinates are centred on the playing area, not on the case. The control strip
 extends in negative Y, so the case is offset by `CASE_CENTER_OFFSET_Y_MM` while
-square centres, LED positions and reed positions stay symmetric about the origin.
+square centres, LED positions and Hall-sensor positions stay symmetric about
+that origin.
 """
 
 from math import isclose
+from types import MappingProxyType
 
-from .components import REED_SWITCH, SK9822
+from .components import HALL_SENSOR, MCP23017, OLED_MODULE, SK9822
 
 
 # Unit contract. One Blender unit represents one millimetre in generated files.
@@ -61,7 +63,7 @@ PLAYING_SPAN_MM = SQUARE_SIZE_MM * GRID_COUNT
 # difference is electrical, a separate clock line the host can drive from SPI.
 # https://www.ledyilighting.com/wp-content/uploads/2025/02/WS2812B-datasheet.pdf
 LED_PACKAGE_REFERENCE = SK9822.description
-LED_PACKAGE_NOMINAL_SIZE_MM = SK9822.body_mm
+LED_PACKAGE_NOMINAL_SIZE_MM = SK9822.require_body_mm()
 LED_PACKAGE_TOLERANCE_MM = 0.05
 LED_PACKAGE_MAX_SIZE_MM = tuple(
     axis + LED_PACKAGE_TOLERANCE_MM for axis in LED_PACKAGE_NOMINAL_SIZE_MM
@@ -70,12 +72,28 @@ LED_PACKAGE_CLEARANCE_PER_SIDE_MM = 0.2
 LED_EMITTER_WINDOW_MM = (4.0, 4.0)
 LED_POSITION_MM = (13.0, 13.0)
 
-# Through-hole reed switch lying flat at the centre of each square, on the PCB.
-# Sensitivity remains the open prototype question: a flat reed under a vertical
-# piece magnet couples through the field's fringe rather than head-on.
-REED_SENSOR_BODY_MM = REED_SWITCH.body_mm[:2]
-REED_SENSOR_POSITION_MM = (0.0, 0.0)
-REED_SENSOR_STANDOFF_MM = 1.0
+# SOT-23 omnipolar Hall sensor at each square centre. Either magnet pole drives
+# its active-low output, preserving the old occupied-square electrical polarity.
+HALL_SENSOR_PACKAGE_MM = HALL_SENSOR.require_body_mm()
+HALL_SENSOR_BODY_MM = HALL_SENSOR_PACKAGE_MM[:2]
+HALL_SENSOR_HEIGHT_MM = HALL_SENSOR_PACKAGE_MM[2]
+HALL_SENSOR_POSITION_MM = (0.0, 0.0)
+HALL_SENSOR_STANDOFF_MM = 0.0
+
+# Expander package orientation and centres are shared because the CAD proxy must
+# depict the same physical obstructions that PCB placement and routing use.
+_EXPANDER_PACKAGE_MM = MCP23017.require_body_mm()
+EXPANDER_BODY_MM = (
+    _EXPANDER_PACKAGE_MM[1],
+    _EXPANDER_PACKAGE_MM[0],
+    _EXPANDER_PACKAGE_MM[2],
+)
+EXPANDER_POSITIONS_BY_QUADRANT_MM = MappingProxyType({
+    "A1-D4": (-66.0, -80.0),
+    "E1-H4": (94.0, -80.0),
+    "A5-D8": (-66.0, 80.0),
+    "E5-H8": (94.0, 80.0),
+})
 
 # --- Printed circuit board --------------------------------------------------
 # One board spans the playing area plus a 40 mm control strip along the front,
@@ -113,7 +131,7 @@ PCB_UNDERSIDE_Z_MM = PCB_TOP_Z_MM - PCB_THICKNESS_MM
 PI_BAY_HEIGHT_MM = PCB_UNDERSIDE_Z_MM - CASE_FLOOR_MM
 
 # A 320 mm board flexes badly on perimeter support alone, so bosses stand on the
-# grid lines, where no LED or reed sits. Seven millimetres clears both.
+# grid lines, where no LED or Hall sensor sits. Seven millimetres clears both.
 PCB_SUPPORT_BOSS_DIAMETER_MM = 7.0
 PCB_SUPPORT_PILOT_DIAMETER_MM = 2.5
 PCB_MOUNTING_HOLE_DIAMETER_MM = 3.4
@@ -160,7 +178,7 @@ PANEL_BUTTON_POSITIONS_MM = tuple(
 
 # SSD1306 1.3 in module. The window exposes the active area; the recess holds
 # the carrier board, which arrives on a four-wire jumper rather than a socket.
-PANEL_OLED_MODULE_MM = (35.5, 33.5, 4.0)
+PANEL_OLED_MODULE_MM = OLED_MODULE.require_body_mm()
 PANEL_OLED_WINDOW_MM = (32.0, 18.0)
 PANEL_OLED_RECESS_DEPTH_MM = 2.0
 PANEL_OLED_CENTER_MM = (-110.0, PANEL_ORIGIN_Y_MM)
@@ -192,7 +210,7 @@ TILE_PLATE_DARK_SQUARE_DEPTH_MM = 0.4
 # One pocket per square on the underside, leaving ribs on the grid lines. It
 # does two jobs: it removes most of a 320 mm solid sheet's volume, which is a
 # real line on a print-service quote and a warping risk, and it is also the
-# clearance over the reed switch bodies and their solder joints.
+# clearance over the Hall sensors and nearby bypass capacitors.
 TILE_PLATE_RIB_WIDTH_MM = 3.0
 TILE_PLATE_UNDERSIDE_POCKET_DEPTH_MM = 1.2
 TILE_PLATE_UNDERSIDE_POCKET_SPAN_MM = SQUARE_SIZE_MM - 2.0 * TILE_PLATE_RIB_WIDTH_MM
@@ -233,8 +251,8 @@ BOARD_LED_POSITIONS_MM = tuple(
     (row, column, x + LED_POSITION_MM[0], y + LED_POSITION_MM[1])
     for row, column, x, y in BOARD_SQUARE_CENTERS_MM
 )
-BOARD_REED_POSITIONS_MM = tuple(
-    (row, column, x + REED_SENSOR_POSITION_MM[0], y + REED_SENSOR_POSITION_MM[1])
+BOARD_HALL_POSITIONS_MM = tuple(
+    (row, column, x + HALL_SENSOR_POSITION_MM[0], y + HALL_SENSOR_POSITION_MM[1])
     for row, column, x, y in BOARD_SQUARE_CENTERS_MM
 )
 BOARD_DARK_SQUARES_MM = tuple(
@@ -311,10 +329,13 @@ def validate() -> None:
         raise ValueError("Case height must equal the sum of the internal stack")
     if PI_BAY_HEIGHT_MM < PI_HEADER_HEIGHT_MM + PI_BOARD_SIZE_MM[2] + PI_CLEARANCE_MM:
         raise ValueError("Cavity below the board is too shallow for the Pi on its header")
-    if PCB_TO_PLATE_GAP_MM < REED_SENSOR_BODY_MM[1] + REED_SENSOR_STANDOFF_MM:
-        raise ValueError("Plate would foul the reed switch bodies standing on the board")
-    if PCB_TO_PLATE_GAP_MM < LED_PACKAGE_MAX_SIZE_MM[2]:
-        raise ValueError("Plate would foul the LED packages")
+    tallest_playing_area_component = max(
+        HALL_SENSOR_HEIGHT_MM + HALL_SENSOR_STANDOFF_MM,
+        LED_PACKAGE_MAX_SIZE_MM[2],
+        EXPANDER_BODY_MM[2],
+    )
+    if PCB_TO_PLATE_GAP_MM < tallest_playing_area_component:
+        raise ValueError("Plate would foul a component in the playing area")
 
     if not FDM_MIN_FIT_CLEARANCE_MM <= TILE_PLATE_CLEARANCE_MM <= (
         FDM_MAX_FIT_CLEARANCE_MM
@@ -348,8 +369,8 @@ def validate() -> None:
         TILE_PLATE_THICKNESS_MM - FDM_MIN_FLOOR_MM
     ):
         raise ValueError("Underside pockets must leave a printable plate floor")
-    if TILE_PLATE_UNDERSIDE_POCKET_SPAN_MM <= REED_SENSOR_BODY_MM[0]:
-        raise ValueError("Underside pocket must span the reed switch it clears")
+    if TILE_PLATE_UNDERSIDE_POCKET_SPAN_MM <= HALL_SENSOR_BODY_MM[0]:
+        raise ValueError("Underside pocket must span the Hall sensor it clears")
     if TILE_PLATE_DARK_SQUARE_DEPTH_MM >= TILE_PLATE_DIFFUSER_SKIN_MM:
         raise ValueError("Dark-square recess must not reach the diffuser skin")
     required_led_pocket_xy = tuple(
@@ -399,8 +420,8 @@ def validate() -> None:
         margin = half - abs(position) - TILE_PLATE_LED_POCKET_MM[axis] / 2.0
         if margin < FDM_MIN_FEATURE_MM:
             raise ValueError("LED pocket crosses into the neighbouring square")
-    if REED_SENSOR_BODY_MM[0] > SQUARE_SIZE_MM - 2.0 * FDM_MIN_FEATURE_MM:
-        raise ValueError("Reed switch body does not fit within one square")
+    if HALL_SENSOR_BODY_MM[0] > SQUARE_SIZE_MM - 2.0 * FDM_MIN_FEATURE_MM:
+        raise ValueError("Hall sensor body does not fit within one square")
 
     # Support bosses stand on the grid lines; nothing else may be there.
     boss_radius = PCB_SUPPORT_BOSS_DIAMETER_MM / 2.0
@@ -409,12 +430,12 @@ def validate() -> None:
             gap = max(abs(boss_x - led_x), abs(boss_y - led_y))
             if gap < boss_radius + TILE_PLATE_LED_POCKET_MM[0] / 2.0:
                 raise ValueError("A support boss collides with an LED position")
-        for _row, _column, reed_x, reed_y in BOARD_REED_POSITIONS_MM:
+        for _row, _column, sensor_x, sensor_y in BOARD_HALL_POSITIONS_MM:
             if (
-                abs(boss_x - reed_x) < boss_radius + REED_SENSOR_BODY_MM[0] / 2.0
-                and abs(boss_y - reed_y) < boss_radius + REED_SENSOR_BODY_MM[1] / 2.0
+                abs(boss_x - sensor_x) < boss_radius + HALL_SENSOR_BODY_MM[0] / 2.0
+                and abs(boss_y - sensor_y) < boss_radius + HALL_SENSOR_BODY_MM[1] / 2.0
             ):
-                raise ValueError("A support boss collides with a reed switch")
+                raise ValueError("A support boss collides with a Hall sensor")
     if len(set(PCB_SUPPORT_POSITIONS_MM)) != len(PCB_SUPPORT_POSITIONS_MM):
         raise ValueError("Support boss positions must be unique")
     if PCB_SUPPORT_PILOT_DEPTH_MM >= PCB_SUPPORT_BOSS_DIAMETER_MM * 3.0:
@@ -456,9 +477,14 @@ def validate() -> None:
     ):
         raise ValueError("Display window must be smaller than the module behind it")
 
+    if len(EXPANDER_POSITIONS_BY_QUADRANT_MM) != 4:
+        raise ValueError("Board composition must place four GPIO expanders")
+    if len(set(EXPANDER_POSITIONS_BY_QUADRANT_MM.values())) != 4:
+        raise ValueError("GPIO expander positions must be unique")
+
     for name, count in (
         ("LED", len(BOARD_LED_POSITIONS_MM)),
-        ("reed", len(BOARD_REED_POSITIONS_MM)),
+        ("hall", len(BOARD_HALL_POSITIONS_MM)),
     ):
         if count != GRID_COUNT * GRID_COUNT:
             raise ValueError(f"Board composition must contain one {name} per square")
@@ -491,7 +517,9 @@ def describe(domain: str = "Shared hardware") -> str:
 
 # Re-export public measurements through thin domain adapters without leaking
 # implementation imports such as ``isclose``.
-__all__ = tuple(name for name in globals() if name.isupper()) + (
+__all__ = tuple(
+    name for name in globals() if name.isupper() and not name.startswith("_")
+) + (
     "describe",
     "fits_build_volume",
     "meets",

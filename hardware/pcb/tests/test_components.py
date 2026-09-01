@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import sys
 import unittest
+from collections import Counter
 from enum import StrEnum
 from pathlib import Path
 
@@ -14,8 +15,9 @@ if str(PCB_ROOT) not in sys.path:
 from components.barrel_jack import BarrelJackPin, DC_INPUT_JACK  # noqa: E402
 from components.base import ComponentReference, Endpoint  # noqa: E402
 from components.catalog import for_netlist_entry, known_part_keys  # noqa: E402
-from components.dip_socket import Dip14Socket, Dip28Socket  # noqa: E402
-from components.fuse_holder import FuseHolderPin, INPUT_FUSE  # noqa: E402
+from components.capacitor import CapacitorPin  # noqa: E402
+from components.fuse import FusePin, INPUT_FUSE  # noqa: E402
+from components.hall_sensor import HallSensorPin  # noqa: E402
 from components.mcp23017 import Mcp23017Pin  # noqa: E402
 from components.ahct125 import Ahct125Pin  # noqa: E402
 from components.sk9822 import Sk9822, Sk9822Pin  # noqa: E402
@@ -40,6 +42,58 @@ class ComponentModelTest(unittest.TestCase):
                     reference,
                 )
 
+    def test_cost_optimized_packages_are_used_consistently(self) -> None:
+        components = self.netlist["components"]
+        by_key = {}
+        for reference, entry in components.items():
+            by_key.setdefault(entry["part_key"], []).append((reference, entry))
+
+        self.assertNotIn("DIP14_SOCKET", by_key)
+        self.assertNotIn("DIP28_SOCKET", by_key)
+        self.assertNotIn("REED_SWITCH", by_key)
+        self.assertEqual(len(by_key["HALL_SENSOR"]), 64)
+        self.assertEqual(len(by_key["MCP23017"]), 4)
+        self.assertTrue(
+            all(
+                entry["package"] == "SOIC-28W 1.27 mm"
+                for _reference, entry in by_key["MCP23017"]
+            )
+        )
+        self.assertEqual(len(by_key["AHCT125"]), 1)
+        self.assertEqual(
+            by_key["AHCT125"][0][1]["package"],
+            "SOIC-14 1.27 mm",
+        )
+        self.assertTrue(
+            all(
+                entry["package"] == "0603 (1608 metric)"
+                for _reference, entry in by_key["CAP_100N"]
+            )
+        )
+        hall_caps = {
+            reference: entry
+            for reference, entry in by_key["CAP_100N"]
+            if "Sensor" in entry["extras"]
+        }
+        self.assertEqual(len(hall_caps), 64)
+        self.assertEqual(
+            {entry["extras"]["Sensor"] for entry in hall_caps.values()},
+            {reference for reference, _entry in by_key["HALL_SENSOR"]},
+        )
+        for entry in hall_caps.values():
+            sensor = components[entry["extras"]["Sensor"]]
+            self.assertEqual(
+                entry["extras"]["Square"],
+                sensor["extras"]["Square"],
+            )
+
+        expander_caps = {
+            entry["extras"].get("For")
+            for _reference, entry in by_key["CAP_100N"]
+            if "For" in entry["extras"]
+        }
+        self.assertEqual(expander_caps, {"U1", "U2", "U3", "U4"})
+
     def test_every_footprint_exposes_exactly_its_models_logical_pins(self) -> None:
         for reference, entry in self.netlist["components"].items():
             model = for_netlist_entry(reference, entry)
@@ -49,6 +103,19 @@ class ComponentModelTest(unittest.TestCase):
                     {pad.net_number for pad in footprint.pads},
                     set(model.get_pins()),
                 )
+
+    def test_every_endpoint_belongs_to_exactly_one_connection(self) -> None:
+        endpoints = Counter(
+            tuple(pad)
+            for connection in self.netlist["connections"]
+            for pad in connection["pads"]
+        )
+        duplicates = {
+            endpoint: count
+            for endpoint, count in endpoints.items()
+            if count > 1
+        }
+        self.assertEqual(duplicates, {})
 
     def test_every_serialized_connection_pin_resolves_to_an_enum(self) -> None:
         components = {
@@ -61,12 +128,44 @@ class ComponentModelTest(unittest.TestCase):
                     pin = components[reference].get_pin_by_number(number)
                     self.assertIsInstance(pin, StrEnum)
 
-    def test_sockets_expose_the_installed_ics_semantic_pins(self) -> None:
-        self.assertIs(Dip28Socket("U1S").get_pin_by_number("12"), Mcp23017Pin.I2C_CLOCK)
-        self.assertIs(
-            Dip14Socket("U5S").get_pin_by_number("2"),
-            Ahct125Pin.BUFFER_1_INPUT,
-        )
+    def test_hall_sensors_are_powered_and_active_low(self) -> None:
+        pads_by_net = {
+            connection.get("name"): {tuple(pad) for pad in connection["pads"]}
+            for connection in self.netlist["connections"]
+            if connection.get("name")
+        }
+        sensors = {
+            reference
+            for reference, entry in self.netlist["components"].items()
+            if entry["part_key"] == "HALL_SENSOR"
+        }
+        hall_caps = {
+            reference
+            for reference, entry in self.netlist["components"].items()
+            if entry["part_key"] == "CAP_100N"
+            and "Sensor" in entry["extras"]
+        }
+        self.assertEqual(len(sensors), 64)
+        self.assertEqual(len(hall_caps), 64)
+        for reference in hall_caps:
+            self.assertIn(
+                (reference, CapacitorPin.SUPPLY_OR_ELECTRODE_A),
+                pads_by_net["+3V3"],
+            )
+            self.assertIn(
+                (reference, CapacitorPin.RETURN_OR_ELECTRODE_B),
+                pads_by_net["GND"],
+            )
+        for reference in sensors:
+            self.assertIn((reference, HallSensorPin.SUPPLY), pads_by_net["+3V3"])
+            self.assertIn((reference, HallSensorPin.GROUND), pads_by_net["GND"])
+            square_nets = [
+                name
+                for name, pads in pads_by_net.items()
+                if name.startswith("SQ_")
+                and (reference, HallSensorPin.ACTIVE_LOW_OUTPUT) in pads
+            ]
+            self.assertEqual(len(square_nets), 1)
 
     def test_datasheet_pinouts_do_not_regress_to_logical_numbering(self) -> None:
         # Same Sky PJ-102A mechanical drawing.
@@ -74,7 +173,12 @@ class ComponentModelTest(unittest.TestCase):
         self.assertEqual(BarrelJackPin.SLEEVE_GROUND, "2")
         self.assertEqual(BarrelJackPin.SWITCHED_SLEEVE_GROUND, "3")
 
-        # Microchip DS20001952D table 2-1 (SPDIP column).
+        # TI DRV5032 DBZ package pinout.
+        self.assertEqual(HallSensorPin.SUPPLY, "1")
+        self.assertEqual(HallSensorPin.ACTIVE_LOW_OUTPUT, "2")
+        self.assertEqual(HallSensorPin.GROUND, "3")
+
+        # Microchip DS20001952D table 2-1 (SOIC column).
         self.assertEqual(Mcp23017Pin.GPIO_B0, "1")
         self.assertEqual(Mcp23017Pin.INTERRUPT_B, "19")
         self.assertEqual(Mcp23017Pin.INTERRUPT_A, "20")
@@ -111,14 +215,14 @@ class ComponentModelTest(unittest.TestCase):
         self.assertIs(reference, ComponentReference.DC_INPUT_JACK)
         self.assertIs(pin, BarrelJackPin.CENTRE_POSITIVE)
 
-        reference, pin = INPUT_FUSE.endpoint(FuseHolderPin.UNFUSED_INPUT)
+        reference, pin = INPUT_FUSE.endpoint(FusePin.UNFUSED_INPUT)
         self.assertIs(reference, ComponentReference.INPUT_FUSE)
-        self.assertIs(pin, FuseHolderPin.UNFUSED_INPUT)
+        self.assertIs(pin, FusePin.UNFUSED_INPUT)
 
     def test_get_pins_returns_enums(self) -> None:
         self.assertEqual(
             INPUT_FUSE.get_pins(),
-            (FuseHolderPin.UNFUSED_INPUT, FuseHolderPin.FUSED_OUTPUT),
+            (FusePin.UNFUSED_INPUT, FusePin.FUSED_OUTPUT),
         )
         self.assertTrue(all(isinstance(pin, StrEnum) for pin in INPUT_FUSE.get_pins()))
 

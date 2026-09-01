@@ -8,7 +8,7 @@ import audit as board_audit
 import footprints
 from shared.components import COMPONENTS
 from write_schematic import render as render_schematic
-from write_schematic import render_symbol_library
+from write_schematic import render_symbol_library, row_centres
 
 PCB = Path(__file__).resolve().parents[1]
 
@@ -32,6 +32,12 @@ class ReleasePolicyTest(unittest.TestCase):
                 self.assertTrue(spec.mpn.strip())
                 self.assertNotEqual(spec.manufacturer.casefold(), "generic")
                 self.assertNotEqual(spec.mpn, spec.key)
+
+    def test_schematic_rows_expand_for_tall_symbols(self):
+        self.assertEqual(row_centres([]), [])
+        centres = row_centres([2] * 20 + [28] + [2] * 19)
+        self.assertEqual(len(centres), 2)
+        self.assertGreater(centres[1] - centres[0], 40.0)
 
     def test_native_schematic_and_symbol_library_are_current(self):
         schematic = render_schematic()

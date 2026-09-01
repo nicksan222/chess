@@ -5,7 +5,7 @@ from .base import BoardComponent
 
 
 class Mcp23017Pin(StrEnum):
-    """SPDIP pinout from Microchip data sheet DS20001952D, table 2-1."""
+    """SOIC pinout from Microchip data sheet DS20001952D, table 2-1."""
 
     GPIO_B0 = "1"
     GPIO_B1 = "2"

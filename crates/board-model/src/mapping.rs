@@ -68,7 +68,7 @@ const fn rank_of(square: Square) -> u8 {
 
 /// Returns the expander pin that reads a square.
 ///
-/// Quadrants keep the reed traces short on a 320 mm board: an expander sits at
+/// Quadrants keep the sensor traces short on a 320 mm board: an expander sits at
 /// the centre of the sixteen squares it serves. Within a quadrant, port A takes
 /// the lower two ranks and port B the upper two.
 #[must_use]

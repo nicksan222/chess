@@ -99,7 +99,7 @@ def expander_straps(index: int) -> tuple[bool, bool, bool]:
 def expander_of(file_index: int, rank: int) -> tuple[int, int]:
     """Which expander reads a square, and which of its sixteen pins.
 
-    Quadrants keep every reed trace short on a 320 mm board: an expander sits at
+    Quadrants keep every sensor trace short on a 320 mm board: an expander sits at
     the centre of the sixteen squares it serves. Pins 0-7 are port A, the lower
     two ranks of the quadrant, and 8-15 are port B, the upper two.
     """

@@ -76,7 +76,7 @@ def add_plate(
 def _cut_underside_pockets(
     plate: bpy.types.Object, construction: bpy.types.Collection
 ) -> None:
-    """One pocket per square: removes weight and clears the reed switches."""
+    """One pocket per square: removes weight and clears the Hall sensors."""
     depth = shared.TILE_PLATE_UNDERSIDE_POCKET_DEPTH_MM
     half_span = shared.TILE_PLATE_UNDERSIDE_POCKET_SPAN_MM / 2.0
     z0 = UNDERSIDE_Z_MM - shared.BOOLEAN_RECESS_OVERLAP_MM

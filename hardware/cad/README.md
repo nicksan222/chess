@@ -55,7 +55,7 @@ same validation without Blender; `./tools/cad` then generates with it.
 
 Coordinates are centred on the **playing area**, not the case. The control strip
 extends in negative Y, so the case carries `CASE_CENTER_OFFSET_Y_MM` while square
-centres, LED positions and reed positions stay symmetric about the origin.
+centres, LED positions and Hall-sensor positions stay symmetric about the origin.
 
 Both printable parts are generated in **assembly coordinates**: the case floor at
 z = 0 and the plate occupying the top 3 mm. `board-assembly` therefore moves

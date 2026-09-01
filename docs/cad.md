@@ -40,7 +40,7 @@ what keeps every component on one side of the board and avoids right-angle parts
 ## Coordinates and the assembly datum
 
 Coordinates are centred on the **playing area**, not the case, so square centres,
-LED positions and reed positions stay symmetric about the origin while the case
+LED positions and Hall-sensor positions stay symmetric about the origin while the case
 carries `CASE_CENTER_OFFSET_Y_MM`.
 
 Both printable parts are generated in **assembly coordinates**: the case floor at
@@ -55,7 +55,7 @@ Shared CAD measurements live in `hardware/shared/dimensions.py`, which
 validates itself on import. Among other things it checks that the internal stack
 — floor, Pi cavity, board, gap, plate — sums exactly to the case height, that
 every plate screw lands on the case ledge rather than over the PCB, that no
-support boss collides with an LED or a reed, and that every control-panel feature
+support boss collides with an LED or a Hall sensor, and that every control-panel feature
 stays on the control strip.
 
 All modeled physical dimensions use millimetres. Generators must consume those
@@ -87,7 +87,7 @@ reserved before testing whether a part fits.
 The plate's underside is pocketed square by square, leaving ribs on the grid
 lines. A 3 mm solid sheet 320 mm across is a lot of material to have quoted and a
 warping risk; the pockets remove about a third of it and double as the clearance
-over the reed switches.
+over the Hall sensors.
 
 ## Validation
 

@@ -1,8 +1,8 @@
-"""Deterministic two-layer orthogonal router for the spacious repeated grid.
+"""Deterministic multilayer orthogonal router for the repeated board grid.
 
 This is intentionally conservative: raster cells are blocked by copper plus the
-full board clearance. KiCad remains authoritative and checks the resulting exact
-geometry after generation.
+full board clearance. Through-via sites are kept clear on every routed layer.
+KiCad remains authoritative and checks the resulting exact geometry.
 """
 
 from __future__ import annotations
@@ -16,7 +16,8 @@ import pcbnew
 from core import rules
 from core.nets import ButtonNet
 
-GRID_MM = 0.5
+# Fine enough to escape 1.27 mm SOIC pitch while retaining conservative clearance.
+GRID_MM = 0.25
 TRACK_MM = rules.TRACE_WIDTH_MM
 KEEP_OUT_MM = rules.CLEARANCE_MM + TRACK_MM / 2 + 0.02
 LAYERS = (pcbnew.F_Cu, pcbnew.B_Cu)
@@ -151,13 +152,22 @@ def find_route(
     start: pcbnew.VECTOR2I,
     end: pcbnew.VECTOR2I,
     margin_mm: float = 150.0,
-    preferred_layer: int | None = None,
-    required_end_layer: int | None = None,
+    preferred_layer_index: int | None = None,
+    required_end_layer_index: int | None = None,
     allow_vias: bool = True,
     layers: tuple[int, ...] = LAYERS,
     diagonals: bool = False,
 ) -> Route:
-    """Find a clearance-aware path; layer is encoded as 0=front, 1=back."""
+    """Find a path whose point layers are indices into ``layers``."""
+    if not layers:
+        raise ValueError("at least one routing layer is required")
+    for label, index in (
+        ("preferred start", preferred_layer_index),
+        ("required end", required_end_layer_index),
+    ):
+        if index is not None and not 0 <= index < len(layers):
+            raise ValueError(f"{label} layer index {index} is outside {layers}")
+
     start_cell, end_cell = _cell(start), _cell(end)
     margin = round(margin_mm / GRID_MM)
     edge = board.GetBoardEdgesBoundingBox()
@@ -179,10 +189,16 @@ def find_route(
         blocked[layer].discard(start_cell)
         blocked[layer].discard(end_cell)
 
-    start_layers = range(len(layers)) if preferred_layer is None else (preferred_layer,)
+    start_layers = (
+        range(len(layers))
+        if preferred_layer_index is None
+        else (preferred_layer_index,)
+    )
     starts = [(start_cell[0], start_cell[1], layer) for layer in start_layers]
     target_layers = (
-        range(len(layers)) if required_end_layer is None else (required_end_layer,)
+        range(len(layers))
+        if required_end_layer_index is None
+        else (required_end_layer_index,)
     )
     targets = {(end_cell[0], end_cell[1], layer) for layer in target_layers}
     queue: list[tuple[int, int, tuple[int, int, int]]] = []
@@ -235,7 +251,8 @@ def find_route(
                 or (x, ny) in blocked[layers[nl]]
             ):
                 continue
-            # A through via needs clearance on both outer layers.
+            # A through via needs clearance on its source and destination. The
+            # layer-independent via_forbidden map covers copper on other layers.
             if nl != layer_index and (
                 cell in blocked[layers[layer_index]] or cell in via_forbidden
             ):

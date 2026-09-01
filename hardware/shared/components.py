@@ -14,6 +14,8 @@ from typing import Generic, TypeVar
 
 @dataclass(frozen=True)
 class ComponentSpec:
+    """Approved-part identity and nominal manufacturer L/W/H envelope."""
+
     key: str
     description: str
     package: str
@@ -21,6 +23,12 @@ class ComponentSpec:
     mpn: str
     body_mm: tuple[float, float, float] | None = None
     datasheet: str = ""
+
+    def require_body_mm(self) -> tuple[float, float, float]:
+        """Return the body envelope, failing clearly when geometry is unspecified."""
+        if self.body_mm is None:
+            raise ValueError(f"{self.key} has no body dimensions")
+        return self.body_mm
 
 
 Implementation = TypeVar("Implementation")
@@ -37,41 +45,214 @@ class ComponentImplementation(ABC, Generic[Implementation]):
         """Build the domain-specific representation of :attr:`spec`."""
 
 
-def part(key, description, package, manufacturer, mpn, body=None, datasheet=""):
-    return ComponentSpec(key, description, package, manufacturer, mpn, body, datasheet)
-
-
-SK9822 = part("SK9822", "Clocked 5050 RGB LED", "PLCC-6 5050", "Opsco Optoelectronics", "SK9822-EC20", (5.4, 5.0, 1.57))
-REED_SWITCH = part("REED_SWITCH", "Normally-open axial reed switch", "axial 14 mm", "Standex-Meder Electronics", "KSK-1A66-1015", (14.0, 2.2, 2.2))
-MCP23017 = part("MCP23017", "16-bit I2C GPIO expander", "PDIP-28", "Microchip Technology", "MCP23017-E/SP", (34.7, 7.6, 4.6), "https://ww1.microchip.com/downloads/aemDocuments/documents/APID/ProductDocuments/DataSheets/MCP23017-Data-Sheet-DS20001952.pdf")
-AHCT125 = part("AHCT125", "Quad 3.3 V to 5 V logic buffer", "DIP-14", "Texas Instruments", "SN74AHCT125N", (19.3, 6.35, 4.57), "https://www.ti.com/lit/ds/symlink/sn74ahct125.pdf")
-CAP_100N = part("CAP_100N", "100 nF radial ceramic capacitor", "disc 2.54 mm", "KEMET", "C315C104M5U5TA")
-CAP_10U = part("CAP_10U", "10 uF 16 V radial electrolytic", "radial 5 mm", "Nichicon", "UVR1C100MDD")
-CAP_1000U = part("CAP_1000U", "1000 uF 10 V low-ESR electrolytic", "radial 10 mm", "Panasonic", "EEU-FR1A102")
-RES_4K7 = part("RES_4K7", "4.7 kohm 0.25 W axial resistor", "axial 1/4 W", "Yageo", "MFR-25FBF52-4K7")
-BUTTON = part("BUTTON", "6 mm tactile switch, 9.5 mm actuator", "6x6 mm THT", "Omron", "B3F-4050")
-PI_ZERO_HEADER = part("PI_ZERO_HEADER", "Raspberry Pi Zero 2 W 2x20 socket", "2x20 2.54 mm THT", "Samtec", "SSW-120-02-G-D")
-OLED_HEADER = part("OLED_HEADER", "1x4 OLED socket", "1x4 2.54 mm THT", "Samtec", "SSW-104-02-G-S")
-DIP28_SOCKET = part("DIP28_SOCKET", "28-pin turned-pin DIP socket", "DIP-28", "Mill-Max", "110-44-628-41-001000")
-DIP14_SOCKET = part("DIP14_SOCKET", "14-pin turned-pin DIP socket", "DIP-14", "Mill-Max", "110-44-314-41-001000")
-FUSE_HOLDER = part("FUSE_HOLDER", "5x20 mm PCB fuse holder", "5x20 mm holder THT", "Keystone Electronics", "3557")
-FUSE_5A = part("FUSE_5A", "5 A time-delay 5x20 mm fuse", "5x20 mm fuse", "Littelfuse", "0218005.MXP")
-BARREL_JACK = part("BARREL_JACK", "5.5x2.0 mm centre-positive DC jack", "5.5x2.0 mm THT", "Same Sky", "PJ-102A", datasheet="https://www.sameskydevices.com/product/resource/pj-102a.pdf")
-TVS_6V8 = part("TVS_6V8", "6.8 V unidirectional TVS diode", "axial DO-15", "Littelfuse", "P6KE6.8A")
-POWER_SWITCH = part("POWER_SWITCH", "PCB SPST rocker switch", "SPST rocker THT", "E-Switch", "RA11131100")
-TEST_POINT = part("TEST_POINT", "1.6 mm turret test point", "turret 1.6 mm THT", "Keystone Electronics", "1502-2")
-PI_ZERO_2_W = part("PI_ZERO_2_W", "Raspberry Pi Zero 2 W host", "65x30 mm module", "Raspberry Pi", "SC0510", (65.0, 30.0, 5.2))
-OLED_MODULE = part("OLED_MODULE", "1.3 inch 128x64 I2C OLED module", "35.5x33.5 mm module", "Waveshare", "1.3inch OLED (A) 10444", (35.5, 33.5, 4.0))
-POWER_SUPPLY = part("POWER_SUPPLY", "5 V 6 A regulated desktop supply", "external PSU", "MEAN WELL", "GST40A05-P1J")
-MICRO_SD = part("MICRO_SD", "32 GB high-endurance microSD card", "microSD", "SanDisk", "SDSQQNR-032G-GN6IA")
-
-COMPONENTS = {
-    spec.key: spec
-    for spec in (
-        SK9822, REED_SWITCH, MCP23017, AHCT125, CAP_100N, CAP_10U,
-        CAP_1000U, RES_4K7, BUTTON, PI_ZERO_HEADER, OLED_HEADER,
-        DIP28_SOCKET, DIP14_SOCKET, FUSE_HOLDER, FUSE_5A, BARREL_JACK,
-        TVS_6V8, POWER_SWITCH, TEST_POINT, PI_ZERO_2_W, OLED_MODULE,
-        POWER_SUPPLY, MICRO_SD,
+def part(
+    key: str,
+    description: str,
+    package: str,
+    manufacturer: str,
+    mpn: str,
+    body_mm: tuple[float, float, float] | None = None,
+    datasheet: str = "",
+) -> ComponentSpec:
+    """Define one exact, purchasable component."""
+    if body_mm is not None and any(axis <= 0.0 for axis in body_mm):
+        raise ValueError(f"{key}: body dimensions must be positive")
+    return ComponentSpec(
+        key,
+        description,
+        package,
+        manufacturer,
+        mpn,
+        body_mm,
+        datasheet,
     )
-}
+
+
+SK9822 = part(
+    "SK9822",
+    "Clocked 5050 RGB LED",
+    "PLCC-6 5050",
+    "Opsco Optoelectronics",
+    "SK9822-EC20",
+    (5.4, 5.0, 1.57),
+)
+HALL_SENSOR = part(
+    "HALL_SENSOR",
+    "20 Hz omnipolar active-low Hall-effect sensor",
+    "SOT-23-3",
+    "Texas Instruments",
+    "DRV5032FCDBZR",
+    (2.92, 1.30, 1.12),
+    "https://www.ti.com/lit/ds/symlink/drv5032.pdf",
+)
+MCP23017 = part(
+    "MCP23017",
+    "16-bit I2C GPIO expander",
+    "SOIC-28W 1.27 mm",
+    "Microchip Technology",
+    "MCP23017-E/SO",
+    (17.9, 10.3, 2.65),
+    "https://ww1.microchip.com/downloads/aemDocuments/documents/APID/"
+    "ProductDocuments/DataSheets/MCP23017-Data-Sheet-DS20001952.pdf",
+)
+AHCT125 = part(
+    "AHCT125",
+    "Quad 3.3 V to 5 V logic buffer",
+    "SOIC-14 1.27 mm",
+    "Texas Instruments",
+    "SN74AHCT125DR",
+    (8.7, 6.2, 1.75),
+    "https://www.ti.com/lit/ds/symlink/sn74ahct125.pdf",
+)
+CAP_100N = part(
+    "CAP_100N",
+    "100 nF 50 V X7R MLCC",
+    "0603 (1608 metric)",
+    "Yageo",
+    "CC0603KRX7R9BB104",
+    (1.6, 0.8, 0.8),
+)
+CAP_10U = part(
+    "CAP_10U",
+    "10 uF 10 V X5R MLCC",
+    "0805 (2012 metric)",
+    "Yageo",
+    "CC0805KKX5R6BB106",
+    (2.0, 1.25, 1.25),
+)
+CAP_1000U = part(
+    "CAP_1000U",
+    "1000 uF 10 V low-ESR electrolytic",
+    "radial 10 mm",
+    "Rubycon",
+    "10ZLJ1000M10X16",
+    (10.0, 10.0, 16.0),
+)
+RES_4K7 = part(
+    "RES_4K7",
+    "4.7 kohm 0.1 W thick-film resistor",
+    "0603 (1608 metric)",
+    "Yageo",
+    "RC0603FR-074K7L",
+    (1.6, 0.8, 0.55),
+)
+BUTTON = part(
+    "BUTTON",
+    "6 mm tactile switch, 9.5 mm actuator",
+    "6x6 mm THT",
+    "E-Switch",
+    "TL1105SPF100QG",
+    (6.0, 6.0, 9.5),
+)
+PI_ZERO_HEADER = part(
+    "PI_ZERO_HEADER",
+    "Raspberry Pi Zero 2 W 2x20 socket",
+    "2x20 2.54 mm THT",
+    "Sullins Connector Solutions",
+    "PPPC202LFBN-RC",
+)
+OLED_HEADER = part(
+    "OLED_HEADER",
+    "1x4 OLED socket",
+    "1x4 2.54 mm THT",
+    "Sullins Connector Solutions",
+    "PPPC041LFBN-RC",
+)
+FUSE_5A = part(
+    "FUSE_5A",
+    "5 A time-delay surface-mount fuse",
+    "2410 fuse",
+    "Littelfuse",
+    "0453005.MR",
+    (6.1, 2.7, 2.7),
+)
+BARREL_JACK = part(
+    "BARREL_JACK",
+    "5.5x2.0 mm centre-positive DC jack",
+    "5.5x2.0 mm THT",
+    "Same Sky",
+    "PJ-102A",
+    datasheet="https://www.sameskydevices.com/product/resource/pj-102a.pdf",
+)
+TVS_6V8 = part(
+    "TVS_6V8",
+    "6 V unidirectional TVS diode",
+    "SMB (DO-214AA)",
+    "Littelfuse",
+    "SMBJ6.0A",
+    (4.6, 3.6, 2.3),
+)
+POWER_SWITCH = part(
+    "POWER_SWITCH",
+    "PCB SPST rocker switch",
+    "SPST rocker THT",
+    "E-Switch",
+    "RA11131100",
+)
+TEST_POINT = part(
+    "TEST_POINT",
+    "Low-profile surface-mount test point",
+    "SMD test point",
+    "Harwin",
+    "S1751-46R",
+    (2.0, 1.2, 1.0),
+)
+PI_ZERO_2_W = part(
+    "PI_ZERO_2_W",
+    "Raspberry Pi Zero 2 W host",
+    "65x30 mm module",
+    "Raspberry Pi",
+    "SC0510",
+    (65.0, 30.0, 5.2),
+)
+OLED_MODULE = part(
+    "OLED_MODULE",
+    "1.3 inch 128x64 I2C OLED module",
+    "35.5x33.5 mm module",
+    "Waveshare",
+    "1.3inch OLED (A) 10444",
+    (35.5, 33.5, 4.0),
+)
+POWER_SUPPLY = part(
+    "POWER_SUPPLY",
+    "5 V 6 A regulated desktop supply",
+    "external PSU",
+    "MEAN WELL",
+    "GST40A05-P1J",
+)
+MICRO_SD = part(
+    "MICRO_SD",
+    "32 GB high-endurance microSD card",
+    "microSD",
+    "SanDisk",
+    "SDSQQNR-032G-GN6IA",
+)
+
+APPROVED_COMPONENTS = (
+    SK9822,
+    HALL_SENSOR,
+    MCP23017,
+    AHCT125,
+    CAP_100N,
+    CAP_10U,
+    CAP_1000U,
+    RES_4K7,
+    BUTTON,
+    PI_ZERO_HEADER,
+    OLED_HEADER,
+    FUSE_5A,
+    BARREL_JACK,
+    TVS_6V8,
+    POWER_SWITCH,
+    TEST_POINT,
+    PI_ZERO_2_W,
+    OLED_MODULE,
+    POWER_SUPPLY,
+    MICRO_SD,
+)
+
+_component_keys = [spec.key for spec in APPROVED_COMPONENTS]
+if len(_component_keys) != len(set(_component_keys)):
+    raise ValueError("Approved component keys must be unique")
+
+COMPONENTS = {spec.key: spec for spec in APPROVED_COMPONENTS}

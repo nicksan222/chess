@@ -8,13 +8,12 @@ from .ahct125 import Ahct125
 from .barrel_jack import BarrelJack
 from .base import BoardComponent
 from .capacitor import Capacitor
-from .dip_socket import Dip14Socket, Dip28Socket
-from .fuse_holder import FuseHolder
+from .fuse import Fuse
+from .hall_sensor import HallSensor
 from .mcp23017 import Mcp23017
 from .oled_header import OledHeader
 from .power_switch import PowerSwitch
 from .raspberry_pi_header import RaspberryPiHeader
-from .reed_switch import ReedSwitch
 from .resistor import Resistor
 from .sk9822 import Sk9822
 from .tactile_switch import TactileSwitch
@@ -30,14 +29,12 @@ _MODELS: dict[str, type[BoardComponent]] = {
     "CAP_100N": Capacitor,
     "CAP_10U": Capacitor,
     "CAP_1000U": Capacitor,
-    "DIP14_SOCKET": Dip14Socket,
-    "DIP28_SOCKET": Dip28Socket,
-    "FUSE_HOLDER": FuseHolder,
+    "FUSE_5A": Fuse,
+    "HALL_SENSOR": HallSensor,
     "MCP23017": Mcp23017,
     "OLED_HEADER": OledHeader,
     "PI_ZERO_HEADER": RaspberryPiHeader,
     "POWER_SWITCH": PowerSwitch,
-    "REED_SWITCH": ReedSwitch,
     "RES_4K7": Resistor,
     "SK9822": Sk9822,
     "TEST_POINT": TestPoint,

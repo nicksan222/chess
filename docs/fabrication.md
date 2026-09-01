@@ -18,7 +18,7 @@ Excellon, and preview files under `hardware/pcb/generated`.
 A fabrication package is acceptable only when `generated/drc.rpt` contains zero
 violations and zero unconnected items. Copper routing and zones now satisfy that
 gate. Ordering remains blocked until native schematic parity and the documented
-reed/magnet prototype evidence also pass.
+Hall-sensor/magnet prototype evidence also pass.
 
 Before ordering, inspect the project in KiCad, verify footprints against vendor
 datasheets, complete the remaining release evidence, run `./tools/pcb`, and

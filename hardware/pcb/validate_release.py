@@ -21,7 +21,7 @@ def validate() -> None:
         if path.name != "README.md"
     ]
     if not prototype_records:
-        raise SystemExit("release blocked: reed/magnet prototype evidence is missing")
+        raise SystemExit("release blocked: Hall-sensor/magnet prototype evidence is missing")
 
     if not SCHEMATIC.is_file():
         raise SystemExit("release blocked: native KiCad schematic is missing")

@@ -259,7 +259,7 @@ def _add_support_bosses(
 ) -> None:
     """Bosses carry the board off the floor and stop a 320 mm panel flexing.
 
-    They stand on the grid lines, where neither an LED nor a reed switch sits.
+    They stand on the grid lines, where neither an LED nor a Hall sensor sits.
     """
     height = shared.PI_BAY_HEIGHT_MM
     bosses = [

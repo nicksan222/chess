@@ -26,5 +26,5 @@ pub use mapping::{
 };
 pub use occupancy::Occupancy;
 
-/// Number of squares on the board, and so of reeds and of LEDs.
+/// Number of squares on the board, and so of Hall sensors and LEDs.
 pub const SQUARE_COUNT: usize = 64;

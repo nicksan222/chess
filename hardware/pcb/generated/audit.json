@@ -1,8 +1,8 @@
 {
   "anonymous_products": [],
-  "approved_products": 23,
+  "approved_products": 20,
   "bom_current": true,
-  "components": 233,
+  "components": 292,
   "connections": 241,
   "drc_exclusions": 0,
   "drc_violations": 0,

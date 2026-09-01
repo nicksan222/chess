@@ -23,16 +23,16 @@ engineer can review it and assemble it by hand at a kitchen table:
 
 - **One PCB**, 320 x 360 mm, carrying all 64 sensors, all 64 LEDs and the control
   panel. No wiring harness.
-- **Two IC part numbers**, both through-hole in sockets, so no chip ever sees a
-  soldering iron. About eighteen things to buy in total.
+- **Common SMD packages** for sensors, expanders, logic, and passives; the Pi,
+  display, power inlet, and controls retain practical through-hole connectors.
 - **Two printed parts**: a case and a single plate with the checkerboard engraved
   into it. The previous revision needed 129 prints to cover a board.
 - **No firmware.** The board has no microcontroller, so there is no second
   toolchain, no cross-compilation target and no flashing step — just one Linux
   binary on the Pi.
 
-That last point is only possible because of two component choices: every reed
-switch gets its own pin on an I2C expander instead of being scanned as a matrix,
+That last point is only possible because of two component choices: every Hall
+sensor gets its own pin on an I2C expander instead of being scanned as a matrix,
 and the LEDs are SK9822, which carry a clock line and so have no timing
 requirement a non-real-time host could violate.
 [`docs/hardware.md`](docs/hardware.md) explains both.
@@ -51,15 +51,9 @@ order to solder it in.
 The mechanical design and revision-B PCB sources are ready for review, and the
 board layout generates real Gerbers. Nothing has been physically built yet.
 
-Two things stand between this and a working board:
-
-- **The KiCad migration is unrouted.** Placement and connectivity are generated,
-  but unsafe traces from the former custom Gerber implementation were discarded.
-  KiCad DRC is the fabrication gate.
-  `hardware/pcb/generated/routing.md` is the running score.
-- **Reed sensitivity is unproven.** The reeds lie flat under a vertical piece
-  magnet, so they couple through the field's fringe rather than head-on. Test one
-  square on prototyping board before ordering a full one.
+The automated KiCad ERC, DRC, connectivity, and schematic-parity gates pass.
+Physical Hall-sensor/magnet range at the final plate spacing remains unproven;
+test one square on prototyping board before ordering the full board.
 
 The host application is not written. The board model that turns sensor bytes into
 chess squares is, and so is the chess engine behind it.

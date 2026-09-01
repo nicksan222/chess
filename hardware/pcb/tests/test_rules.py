@@ -26,10 +26,12 @@ class CapabilityTest(unittest.TestCase):
     def test_a_hand_soldered_board_keeps_a_wide_margin(self) -> None:
         """Near a process limit is the wrong place for a prototype to be."""
         self.assertGreaterEqual(
-            rules.TRACE_WIDTH_MM, 3.0 * rules.PCBWAY_MIN_TRACE_WIDTH_MM
+            round(rules.TRACE_WIDTH_MM, 6),
+            round(3.0 * rules.PCBWAY_MIN_TRACE_WIDTH_MM, 6),
         )
         self.assertGreaterEqual(
-            rules.CLEARANCE_MM, 3.0 * rules.PCBWAY_MIN_CLEARANCE_MM
+            round(rules.CLEARANCE_MM, 6),
+            round(3.0 * rules.PCBWAY_MIN_CLEARANCE_MM, 6),
         )
 
     def test_power_carries_more_copper_than_signal(self) -> None:

@@ -8,6 +8,8 @@
 .venv/
 *.swp
 *.tmp
+*.kicad_prl
+*.filled.kicad_pro
 *.blend1
 *.blend2
 __pycache__/

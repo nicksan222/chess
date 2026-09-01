@@ -1,0 +1,2 @@
+# KiCad exporters preserve significant formatting and may emit trailing spaces.
+hardware/pcb/generated/** -whitespace

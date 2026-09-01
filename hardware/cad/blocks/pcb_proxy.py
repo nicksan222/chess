@@ -9,17 +9,14 @@ Positions come from the shared dimensions, so if a square pitch or a board
 thickness changes, the proxy moves with it.
 """
 
-from math import pi
-
 import bpy
 
 from core import dimensions as shared
 from core import materials
 from core import modeling
 
-# DIP-28 body, near enough for a presentation proxy.
-EXPANDER_BODY_MM = (35.0, 7.5, 4.0)
-EXPANDER_POSITIONS_MM = ((-80.0, -80.0), (80.0, -80.0), (-80.0, 80.0), (80.0, 80.0))
+EXPANDER_BODY_MM = shared.EXPANDER_BODY_MM
+EXPANDER_POSITIONS_MM = tuple(shared.EXPANDER_POSITIONS_BY_QUADRANT_MM.values())
 BUTTON_BODY_MM = (6.0, 6.0, 5.0)
 BUTTON_ACTUATOR_DIAMETER_MM = 3.5
 
@@ -28,8 +25,9 @@ def create_materials() -> dict[str, bpy.types.Material]:
     return {
         "pcb": materials.solid("Circuit board", (0.02, 0.16, 0.07, 1.0), 0.38),
         "body": materials.solid("Component body", (0.10, 0.10, 0.11, 1.0), 0.34),
-        "emitter": materials.solid("RGB emitter window", (0.78, 0.86, 0.92, 1.0), 0.10),
-        "glass": materials.solid("Reed glass capsule", (0.28, 0.55, 0.62, 1.0), 0.12),
+        "emitter": materials.solid(
+            "RGB emitter window", (0.78, 0.86, 0.92, 1.0), 0.10
+        ),
         "host": materials.solid("Raspberry Pi board", (0.16, 0.05, 0.10, 1.0), 0.42),
         "display": materials.solid("OLED glass", (0.02, 0.02, 0.03, 1.0), 0.08),
     }
@@ -54,7 +52,7 @@ def add_board(collection: bpy.types.Collection) -> bpy.types.Object:
     board["purpose"] = "Presentation proxy; the design contract owns the real design"
 
     _add_leds(collection, palette)
-    _add_reeds(collection, palette)
+    _add_hall_sensors(collection, palette)
     _add_expanders(collection, palette)
     _add_host(collection, palette)
     _add_panel(collection, palette)
@@ -85,23 +83,19 @@ def _add_leds(
         emitter.data.materials.append(palette["emitter"])
 
 
-def _add_reeds(
+def _add_hall_sensors(
     collection: bpy.types.Collection, palette: dict[str, bpy.types.Material]
 ) -> None:
-    diameter = shared.REED_SENSOR_BODY_MM[1]
-    for row, column, x, y in shared.BOARD_REED_POSITIONS_MM:
-        reed = modeling.cylinder(
-            f"Proxy_Reed_{row:02d}_{column:02d}",
-            diameter,
-            shared.REED_SENSOR_BODY_MM[0],
-            (x, y, shared.PCB_TOP_Z_MM + diameter / 2.0),
+    height = shared.HALL_SENSOR_HEIGHT_MM
+    for row, column, x, y in shared.BOARD_HALL_POSITIONS_MM:
+        sensor = modeling.rounded_box(
+            f"Proxy_Hall_{row:02d}_{column:02d}",
+            (*shared.HALL_SENSOR_BODY_MM, height),
+            (x, y, shared.PCB_TOP_Z_MM + height / 2.0),
+            0.2,
             collection,
-            vertices=16,
         )
-        # Lying flat across the square, which is the orientation whose
-        # sensitivity the hardware prototype still has to settle.
-        reed.rotation_euler[1] = pi / 2.0
-        reed.data.materials.append(palette["glass"])
+        sensor.data.materials.append(palette["body"])
 
 
 def _add_expanders(
@@ -116,7 +110,7 @@ def _add_expanders(
             collection,
         )
         chip.data.materials.append(palette["body"])
-        chip["purpose"] = "MCP23017 in a socket, one per board quadrant"
+        chip["purpose"] = "SMD MCP23017, one per board quadrant"
 
 
 def _add_host(

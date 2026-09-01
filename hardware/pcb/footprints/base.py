@@ -1,13 +1,12 @@
 """Shared shape of a footprint.
 
 A footprint is the copper a part lands on. Every module in this package describes
-one physical package, keyed by the same `package` string the design contract already
-records in its bill of materials — so the join between "what the part is" and
-"what its pads look like" is a name that already existed, not a new registry.
+one physical package, keyed by the same ``package`` string the design contract
+records in its bill of materials. The existing package identity therefore joins
+"what the part is" to "what its pads look like" without another registry.
 
-Pad numbers are datasheet pin numbers, matching the design contract. That is what lets
-the connectivity check ask "is pin 21 of U1 connected to pin 1 of RS1" without a
-translation table.
+Pad numbers are datasheet pin numbers matching the design contract. This lets the
+connectivity check compare component endpoints without a translation table.
 """
 
 from __future__ import annotations
@@ -117,11 +116,7 @@ def two_pad_axial(
     body: tuple[float, float],
     pin_numbers: tuple[str, str],
 ) -> Footprint:
-    """A leaded part lying flat, with its two holes on the X axis.
-
-    Axial parts dominate this board's bill of materials, so their geometry is
-    derived from the lead rather than restated part by part.
-    """
+    """Build a leaded part lying flat, with both holes on the X axis."""
     from core import rules
 
     drill = rules.drill_for_lead(lead_diameter)
@@ -135,66 +130,6 @@ def two_pad_axial(
         description=description,
         pads=pads,
         courtyard=courtyard_for(pads, body),
-    )
-
-
-def dual_inline(
-    package: str,
-    description: str,
-    ways: int,
-    row_spacing: float = 7.62,
-    pitch: float = 2.54,
-    lead_diameter: float = 0.5,
-    body: tuple[float, float] | None = None,
-    pin_numbers: tuple[str, ...] = (),
-) -> Footprint:
-    """A DIP package with its long axis along Y and pin 1 at the top left.
-
-    Pins run down the left column, then back up the right, which is how every
-    datasheet numbers them.
-    """
-    from core import rules
-
-    if ways % 2 != 0:
-        raise ValueError(f"{package}: a dual-inline package needs an even pin count")
-    if len(pin_numbers) != ways:
-        raise ValueError(f"{package}: expected {ways} semantic pin numbers")
-    per_side = ways // 2
-    drill = rules.drill_for_lead(lead_diameter)
-    pad = rules.pad_for_drill(drill)
-    span = (per_side - 1) * pitch
-    pads = []
-    for index in range(per_side):
-        # Pin 1 is a rectangle so the silkscreen is not the only orientation cue.
-        shape = RECT if index == 0 else ROUND
-        pads.append(
-            Pad(
-                pin_numbers[index],
-                -row_spacing / 2.0,
-                span / 2.0 - index * pitch,
-                pad,
-                pad,
-                shape,
-                drill,
-            )
-        )
-    for index in range(per_side):
-        pads.append(
-            Pad(
-                pin_numbers[ways - index - 1],
-                row_spacing / 2.0,
-                span / 2.0 - index * pitch,
-                pad,
-                pad,
-                ROUND,
-                drill,
-            )
-        )
-    return Footprint(
-        package=package,
-        description=description,
-        pads=tuple(pads),
-        courtyard=courtyard_for(tuple(pads), body or (row_spacing, span)),
     )
 
 

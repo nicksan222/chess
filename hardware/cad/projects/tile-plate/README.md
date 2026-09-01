@@ -19,7 +19,7 @@ board — 64 lids and 64 trays. This is the part that replaced all of them.
 - **64 underside pockets** on the 40 mm grid, leaving ribs on the grid lines.
   These do two jobs: a 3 mm solid sheet this size is a lot of material to have
   quoted and a warping risk, and the pockets are also the clearance over the
-  reed switches and their solder joints.
+  Hall sensors and their bypass capacitors.
 - **Eight screws** with recessed heads, all landing on the case ledge. Nothing
   further inboard is possible, because the PCB is there.
 - **A clipped A1 corner** so the plate cannot be fitted the wrong way round.

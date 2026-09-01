@@ -22,7 +22,7 @@ still match.
 Both sides encode the same two rules:
 
 - **Quadrant:** expander index is `(rank / 4) * 2 + (file / 4)`, and the pin
-  within it is `(rank % 4) * 4 + (file % 4)`. Quadrants keep every reed trace
+  within it is `(rank % 4) * 4 + (file % 4)`. Quadrants keep every sensor trace
   short on a 320 mm board, and port A takes the lower two ranks.
 - **Serpentine:** the LED chain snakes by rank from a1, so the run between
   consecutive LEDs is one square pitch everywhere.
@@ -35,5 +35,5 @@ saves 128 components, and moves the job here.
 
 `Debouncer` requires a square to read the same way for a number of consecutive
 samples before it believes a change, so a chattering contact never settles.
-Reed contacts bounce for a millisecond or two and chess moves take hundreds, so
+Hall sensor readings can briefly transition near the magnetic threshold and chess moves take hundreds, so
 there is a great deal of margin to spend.

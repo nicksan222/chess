@@ -15,12 +15,18 @@ sys.path.insert(0, str(HARDWARE))
 from shared.components import COMPONENTS  # noqa: E402
 
 EXTRA_ASSEMBLY_PARTS = (
-    "FUSE_5A",
     "PI_ZERO_2_W",
     "OLED_MODULE",
     "POWER_SUPPLY",
     "MICRO_SD",
 )
+
+
+def reference_sort_key(reference: str) -> tuple[str, int]:
+    """Sort references naturally, including multi-letter prefixes such as HS."""
+    prefix = reference.rstrip("0123456789")
+    suffix = reference[len(prefix):]
+    return prefix, int(suffix) if suffix else 0
 
 
 def render() -> str:
@@ -35,7 +41,7 @@ def render() -> str:
     rows = []
     for key in sorted(references):
         spec = COMPONENTS[key]
-        refs = sorted(references[key], key=lambda value: (value[:1], int(value[1:]) if value[1:].isdigit() else 0))
+        refs = sorted(references[key], key=reference_sort_key)
         rows.append(
             f"| {len(refs)} | `{spec.mpn}` | {spec.manufacturer} | "
             f"{spec.description} | {spec.package} | {', '.join(refs)} |"

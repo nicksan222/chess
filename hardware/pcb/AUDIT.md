@@ -16,15 +16,15 @@ not be weakened to clear an item.
   a 2.0 mm centre pin and an asymmetric three-terminal PCB pattern; the current
   footprint still uses a generic symmetric DC-jack hole pattern. Do not order
   it until the exact drawing, including terminal shapes, is implemented.
-- **Reed/magnet stack unproven.** The selected KSK-1A66-1015 lies horizontally
-  below a vertical magnet. One-square testing at the final CAD spacing is still
-  mandatory before buying the large board. Record the evidence in `prototype/`;
-  the release gate intentionally refuses to emit Gerbers until it exists.
+- **Hall-sensor/magnet stack unproven.** Characterize the DRV5032FC operate and
+  release distance with both magnet poles at the final CAD spacing before buying
+  the large board. Record the evidence in `prototype/`; the release gate
+  intentionally refuses to emit Gerbers until it exists.
 
 ## Automated gates currently passing
 
 - Copper routing is complete: KiCad reports zero geometry violations and zero
-  unconnected items across reed inputs, LED links, rails, buses, interrupts,
+  unconnected items across Hall-sensor inputs, LED links, rails, buses, interrupts,
   and controls.
 - The native schematic exists, ERC passes, and schematic/PCB parity reports zero
   errors.

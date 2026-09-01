@@ -9,8 +9,8 @@ from .barrel_jack import BarrelJack, BarrelJackPad, BarrelJackPin, DC_INPUT_JACK
 from .base import BoardComponent, ComponentReference, Endpoint
 from .capacitor import Capacitor, CapacitorPin
 from .catalog import for_netlist_entry, known_part_keys
-from .dip_socket import Dip14Socket, Dip28Socket
-from .fuse_holder import FuseHolder, FuseHolderPin, INPUT_FUSE
+from .fuse import Fuse, FusePin, INPUT_FUSE
+from .hall_sensor import HallSensor, HallSensorPin
 from .mcp23017 import Mcp23017, Mcp23017Pin
 from .oled_header import DISPLAY_HEADER, OledHeader, OledHeaderPin
 from .power_switch import MAIN_POWER_SWITCH, PowerSwitch, PowerSwitchPin
@@ -19,7 +19,6 @@ from .raspberry_pi_header import (
     RaspberryPiHeader,
     RaspberryPiHeaderPin,
 )
-from .reed_switch import ReedSwitch, ReedSwitchPin
 from .resistor import Resistor, ResistorPin
 from .sk9822 import Sk9822, Sk9822Pin
 from .tactile_switch import TactileSwitch, TactileSwitchPad, TactileSwitchPin
@@ -38,11 +37,11 @@ __all__ = [
     "ComponentReference",
     "DC_INPUT_JACK",
     "DISPLAY_HEADER",
-    "Dip14Socket",
-    "Dip28Socket",
     "Endpoint",
-    "FuseHolder",
-    "FuseHolderPin",
+    "Fuse",
+    "FusePin",
+    "HallSensor",
+    "HallSensorPin",
     "HOST_GPIO_HEADER",
     "INPUT_FUSE",
     "INPUT_TVS",
@@ -56,8 +55,6 @@ __all__ = [
     "PowerSwitchPin",
     "RaspberryPiHeader",
     "RaspberryPiHeaderPin",
-    "ReedSwitch",
-    "ReedSwitchPin",
     "Resistor",
     "ResistorPin",
     "Sk9822",
