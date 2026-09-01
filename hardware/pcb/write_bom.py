@@ -14,6 +14,7 @@ HARDWARE = PCB.parent
 sys.path.insert(0, str(HARDWARE))
 
 from base.design import BoardDesign
+from board import artifacts
 from board import definition as board_definition
 from shared.components import COMPONENTS
 
@@ -94,11 +95,10 @@ def render_assembly_csv(design: BoardDesign | None = None) -> str:
 
 
 def write() -> None:
-    generated = PCB / "generated"
-    generated.mkdir(exist_ok=True)
+    artifacts.GENERATED_DIR.mkdir(exist_ok=True)
     design = board_definition.load()
-    (generated / "bom.md").write_text(render(design))
-    (generated / "assembly-bom.csv").write_text(render_assembly_csv(design))
+    artifacts.BOM.write_text(render(design))
+    artifacts.ASSEMBLY_BOM.write_text(render_assembly_csv(design))
 
 
 if __name__ == "__main__":

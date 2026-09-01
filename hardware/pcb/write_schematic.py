@@ -9,17 +9,14 @@ from itertools import pairwise
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-GENERATED = ROOT / "generated"
 HARDWARE = ROOT.parent
 sys.path[:0] = [str(ROOT), str(HARDWARE)]
 
 from base.design import BoardDesign
+from board import artifacts
 from board import definition as board_definition
 from shared.components import COMPONENTS
 
-DESTINATION = GENERATED / "chess-board.kicad_sch"
-SYMBOL_LIBRARY = GENERATED / "generated-symbols.kicad_sym"
-SYMBOL_TABLE = GENERATED / "sym-lib-table"
 NAMESPACE = uuid.UUID("83abf953-6539-4c7d-9e0f-e3b5ac2c4f3b")
 ROOT_UUID = uuid.uuid5(NAMESPACE, "root")
 SYMBOL_COLUMNS = 20
@@ -264,19 +261,19 @@ def render_symbol_library(schematic: str) -> str:
 
 
 def write() -> None:
-    GENERATED.mkdir(exist_ok=True)
+    artifacts.GENERATED_DIR.mkdir(exist_ok=True)
     schematic = render()
-    DESTINATION.write_text(schematic)
-    SYMBOL_LIBRARY.write_text(render_symbol_library(schematic))
-    SYMBOL_TABLE.write_text(
+    artifacts.SCHEMATIC.write_text(schematic)
+    artifacts.SYMBOL_LIBRARY.write_text(render_symbol_library(schematic))
+    artifacts.SYMBOL_TABLE.write_text(
         "(sym_lib_table\n"
         "  (version 7)\n"
         '  (lib (name "Generated")(type "KiCad")'
         '(uri "${KIPRJMOD}/generated-symbols.kicad_sym")(options "")(descr ""))\n'
         ")\n"
     )
-    print(f"wrote {DESTINATION}")
-    print(f"wrote {SYMBOL_LIBRARY}")
+    print(f"wrote {artifacts.SCHEMATIC}")
+    print(f"wrote {artifacts.SYMBOL_LIBRARY}")
 
 
 if __name__ == "__main__":

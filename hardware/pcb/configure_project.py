@@ -7,10 +7,10 @@ import json
 from pathlib import Path
 
 from base import rules
+from board import artifacts
 
 ROOT = Path(__file__).resolve().parent
 TEMPLATE = ROOT / "board" / "project-template.json"
-PROJECT = ROOT / "generated" / "chess-board.kicad_pro"
 STRICT_RULES = (
     "footprint_filters_mismatch",
     "footprint_type_mismatch",
@@ -62,8 +62,8 @@ def render() -> str:
 
 
 def configure() -> None:
-    PROJECT.parent.mkdir(exist_ok=True)
-    PROJECT.write_text(render())
+    artifacts.GENERATED_DIR.mkdir(exist_ok=True)
+    artifacts.PROJECT.write_text(render())
 
 
 if __name__ == "__main__":

@@ -12,13 +12,9 @@ sys.path.insert(0, str(PCB_ROOT))
 sys.path.insert(0, str(HARDWARE_ROOT))
 
 from base.kicad import board as kicad
-from board import definition
+from board import artifacts, definition
 from board.wiring import geometry as board_builder
 from board.wiring import router
-
-GENERATED = PCB_ROOT / "generated"
-BOARD_PATH = GENERATED / "chess-board.kicad_pcb"
-DSN_PATH = GENERATED / "chess-board.dsn"
 
 
 class ChessBoardProject:
@@ -40,9 +36,9 @@ class ChessBoardProject:
         self.geometry.add_power_planes()
 
     def write(self) -> None:
-        self.writer.write(BOARD_PATH, DSN_PATH)
-        print(f"wrote {BOARD_PATH}")
-        print(f"wrote {DSN_PATH}")
+        self.writer.write(artifacts.BOARD, artifacts.DSN)
+        print(f"wrote {artifacts.BOARD}")
+        print(f"wrote {artifacts.DSN}")
 
     def build(self) -> None:
         self.compose()
