@@ -5,6 +5,7 @@ from __future__ import annotations
 import math
 from collections import defaultdict
 
+from base.component import ComponentReference
 from base.kicad import board as kicad
 from base.kicad import grid_router
 from base.kicad.api import pcbnew
@@ -20,27 +21,36 @@ CONTROL_SIGNAL_NETS = frozenset(
 OPTIONAL_ESCAPE_VIA_NETS = CONTROL_SIGNAL_NETS
 
 
+def footprint(board: pcbnew.BOARD, reference: str) -> pcbnew.FOOTPRINT:
+    """Resolve exactly one native footprint by its semantic reference."""
+    matches = [
+        item for item in board.GetFootprints() if item.GetReference() == reference
+    ]
+    if len(matches) != 1:
+        raise RuntimeError(f"expected one {reference} footprint; found {len(matches)}")
+    return matches[0]
+
+
 def _host_header_via_keepouts(board) -> frozenset[tuple[int, int]]:
     """Protect this board's narrow Pi button-signal launch channels."""
+    header = footprint(board, ComponentReference.HOST_GPIO_HEADER)
+    header_y = pcbnew.ToMM(header.GetPosition().y)
     forbidden = set()
-    for footprint in board.GetFootprints():
-        if footprint.GetReference() != "J1":
+    for pad in header.Pads():
+        if pad.GetNetname() not in ButtonNet:
             continue
-        for pad in footprint.Pads():
-            if pad.GetNetname() not in ButtonNet:
-                continue
-            centre = pad.GetPosition()
-            cx, cy = pcbnew.ToMM(centre.x), pcbnew.ToMM(centre.y)
-            direction = 1 if cy > 340.0 else -1
-            left = math.floor((cx - 1.2) / grid_router.GRID_MM)
-            right = math.ceil((cx + 1.2) / grid_router.GRID_MM)
-            near = math.floor(cy / grid_router.GRID_MM)
-            far = math.ceil((cy + direction * 6.0) / grid_router.GRID_MM)
-            forbidden.update(
-                (x, y)
-                for x in range(left, right + 1)
-                for y in range(min(near, far), max(near, far) + 1)
-            )
+        centre = pad.GetPosition()
+        cx, cy = pcbnew.ToMM(centre.x), pcbnew.ToMM(centre.y)
+        direction = 1 if cy > header_y else -1
+        left = math.floor((cx - 1.2) / grid_router.GRID_MM)
+        right = math.ceil((cx + 1.2) / grid_router.GRID_MM)
+        near = math.floor(cy / grid_router.GRID_MM)
+        far = math.ceil((cy + direction * 6.0) / grid_router.GRID_MM)
+        forbidden.update(
+            (x, y)
+            for x in range(left, right + 1)
+            for y in range(min(near, far), max(near, far) + 1)
+        )
     return frozenset(forbidden)
 
 

@@ -116,11 +116,7 @@ def route_buttons(board, net_by_name, pads, graph) -> None:
             node for node in nodes if node[0] == ComponentReference.HOST_GPIO_HEADER
         )
         switch_node = next(node for node in nodes if node[0].startswith("SW"))
-        module = next(
-            footprint
-            for footprint in board.GetFootprints()
-            if footprint.GetReference() == switch_node[0]
-        )
+        module = common.footprint(board, switch_node[0])
         primary = next(
             pad
             for pad in module.Pads()
@@ -164,7 +160,8 @@ def route_buttons(board, net_by_name, pads, graph) -> None:
                 layer for layer in signal_layers if layer != preferred
             )
             start = pads[pi].GetPosition()
-            direction = 1 if pcbnew.ToMM(start.y) > 340.0 else -1
+            header = common.footprint(board, ComponentReference.HOST_GPIO_HEADER)
+            direction = 1 if start.y > header.GetPosition().y else -1
             launch = pcbnew.VECTOR2I(
                 start.x
                 + pcbnew.FromMM(0.8 if name == ButtonNet.F3 or index % 2 else -0.8),

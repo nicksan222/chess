@@ -13,7 +13,7 @@ def route_led_chain(
     board, net_by_name, pads, connections, *, obstructed_only=False
 ) -> None:
     """Route regular links first and expander-obstructed links after sensors."""
-    origin = pcbnew.FromMM(kicad.ORIGIN_X_MM)
+    origin = kicad.point(0.0, 0.0).x
     for connection in connections.connections:
         nodes = list(connection.endpoints)
         if len(nodes) != 2 or not all(

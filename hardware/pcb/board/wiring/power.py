@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from base import rules
+from base.component import ComponentReference
 from base.kicad import board as kicad
 from base.kicad.api import pcbnew
 from board.wiring import common
@@ -20,21 +21,22 @@ def route_input_power(board, net_by_name, pads) -> None:
             DC_INPUT_JACK.endpoint(BarrelJackPin.CENTRE_POSITIVE),
             INPUT_FUSE.endpoint(FusePin.UNFUSED_INPUT),
             # Run below the rotated PJ-102A body; its offset grounded slot sits
-            # above the centre-positive terminal at y=393.3 mm.
-            403.0,
+            # above the centre-positive terminal.
+            -183.0,
         ),
         (
             Net.DC_FUSED,
             INPUT_FUSE.endpoint(FusePin.FUSED_OUTPUT),
             MAIN_POWER_SWITCH.endpoint(PowerSwitchPin.FUSED_INPUT),
-            414.0,
+            -194.0,
         ),
     )
     for name, left, right, lane_y in routes:
         net = net_by_name[name]
         start, end = pads[left].GetPosition(), pads[right].GetPosition()
-        first = pcbnew.VECTOR2I(start.x, pcbnew.FromMM(lane_y))
-        second = pcbnew.VECTOR2I(end.x, pcbnew.FromMM(lane_y))
+        native_y = kicad.point(0.0, lane_y).y
+        first = pcbnew.VECTOR2I(start.x, native_y)
+        second = pcbnew.VECTOR2I(end.x, native_y)
         kicad.add_trace(board, net, start, first, width=rules.POWER_TRACE_WIDTH_MM)
         kicad.add_trace(board, net, first, second, width=rules.POWER_TRACE_WIDTH_MM)
         kicad.add_trace(board, net, second, end, width=rules.POWER_TRACE_WIDTH_MM)
@@ -52,7 +54,7 @@ def _power_escape_position(module, pad):
         escape_mm = 2.0 + (int(pad.GetNumber()) - 1) % 4
         distance = pcbnew.FromMM(escape_mm)
         escaped = pcbnew.VECTOR2I(at.x + (distance if dx >= 0 else -distance), at.y)
-    elif reference == "U5":
+    elif reference == ComponentReference.LED_LEVEL_SHIFTER:
         distance = pcbnew.FromMM(1.2)
         escaped = pcbnew.VECTOR2I(at.x + (distance if dx >= 0 else -distance), at.y)
     else:
@@ -65,9 +67,7 @@ def _power_escape_position(module, pad):
 
     # The Pi/header bay is unusually dense. Push these vias beyond its parallel
     # launch lanes rather than leaving them in the normal 0.4 mm fanout ring.
-    if pcbnew.FromMM(170) < at.x < pcbnew.FromMM(230) and pcbnew.FromMM(
-        340
-    ) < at.y < pcbnew.FromMM(350):
+    if reference == ComponentReference.HOST_GPIO_HEADER:
         escaped = pcbnew.VECTOR2I(
             at.x + (pcbnew.FromMM(6.0) if dx > 0 else -pcbnew.FromMM(6.0)),
             at.y,
