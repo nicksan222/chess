@@ -47,4 +47,4 @@ SRC_URI[generic-array-0.14.7.sha256sum] = "85649ca51fd72272d7821adaf274ad91c2882
 SRC_URI[libc-0.2.189.sha256sum] = "3eaf3ede3fee6db1a4c2ee091bf8a8b4dccdc6d17f656fb07896ee72867612f2"
 SRC_URI[sha2-0.10.9.sha256sum] = "a7507d819769d01a365ab707794a4084392c824f54a7a6a7862f8c3d0892b283"
 SRC_URI[typenum-1.20.1.sha256sum] = "b6f5e870be6c3b371b77fe0ee0bafb859fa4964b4404c27de1d380043c4dda20"
-SRC_URI[version_check-0.9.5.sha256sum] = "0b928f33d9755b9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
+SRC_URI[version_check-0.9.5.sha256sum] = "0b928f33d975b9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
