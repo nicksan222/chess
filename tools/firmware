@@ -28,8 +28,16 @@ collect() {
     local deploy output firmware bmap
     deploy="${cache}/build/tmp/deploy/images/${machine}"
     output="${root}/dist/firmware"
-    firmware="$(find "${deploy}" -maxdepth 1 -type f -name 'firmware-image-*.rootfs.wic.xz' -print -quit)"
-    bmap="$(find "${deploy}" -maxdepth 1 -type f -name 'firmware-image-*.rootfs.wic.bmap' -print -quit)"
+    firmware="${deploy}/firmware-image-${machine}.rootfs.wic.xz"
+    bmap="${deploy}/firmware-image-${machine}.rootfs.wic.bmap"
+    [[ -e "${firmware}" ]] || {
+        echo "error: firmware image is absent from ${deploy}" >&2
+        exit 1
+    }
+    [[ -e "${bmap}" ]] || {
+        echo "error: firmware block map is absent from ${deploy}" >&2
+        exit 1
+    }
     rm -rf "${output}"
     mkdir -p "${output}"
     cp "${firmware}" "${output}/firmware-rpi-zero-2w.img.xz"
