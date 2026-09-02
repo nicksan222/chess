@@ -21,6 +21,9 @@ python3 hardware/pcb/write_schematic.py
 python3 hardware/pcb/generate.py
 python3 hardware/pcb/configure_project.py
 
+printf '\n==> Verify firmware pins against pcbnew board\n'
+./tools/firmware-pins --check
+
 out=hardware/pcb/generated
 rm -rf "${out}/gerber"
 

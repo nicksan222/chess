@@ -2,6 +2,8 @@ use std::{env, thread};
 
 use logger::{LevelFilter, implementations::SystemdLogger, info, register};
 
+pub mod generated_pins;
+
 static LOGGER: SystemdLogger = SystemdLogger::new(LevelFilter::Info);
 
 fn main() {

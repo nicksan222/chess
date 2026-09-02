@@ -4,4 +4,5 @@ set -euo pipefail
 repository_root="$(git rev-parse --show-toplevel)"
 
 git diff --cached --check
+"${repository_root}/tools/firmware-pins" --check
 SKIP_CAD_GENERATE=1 exec "${repository_root}/tools/check"

@@ -6,3 +6,12 @@ repos:
         files: ^hardware/(cad|pcb|shared)/
       - id: ruff-format
         files: ^hardware/(cad|pcb|shared)/
+
+  - repo: local
+    hooks:
+      - id: firmware-pins
+        name: Verify firmware pins against pcbnew
+        entry: ./tools/firmware-pins --check
+        language: system
+        pass_filenames: false
+        always_run: true
