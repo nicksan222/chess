@@ -16,7 +16,7 @@ from write_bom import render_assembly_csv
 from write_schematic import render as render_schematic
 from write_schematic import render_symbol_library, row_centres
 
-PCB = Path(__file__).resolve().parents[1]
+PCB = Path(__file__).resolve().parents[2]
 
 
 class ReleasePolicyTest(unittest.TestCase):
