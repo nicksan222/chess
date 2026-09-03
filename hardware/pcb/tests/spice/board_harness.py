@@ -13,6 +13,7 @@ from fractions import Fraction
 from base.design import BoardDesign
 from components.ahct125 import Ahct125Pin
 from components.barrel_jack import DC_INPUT_JACK, BarrelJackPin
+from components.capacitor import CapacitorPin
 from components.electrical import (
     AHCT125,
     BOARD_POWER,
@@ -85,6 +86,8 @@ class BoardHarness:
             port = "A" if gpio_index < 8 else "B"
             port_index = gpio_index % 8
             expander_pin = Mcp23017Pin[f"GPIO_{port}{port_index}"]
+            self._required_net(reference, HallSensorPin.SUPPLY, "+3V3")
+            self._required_net(reference, HallSensorPin.GROUND, "GND")
             net = wiring.sense_net(square)
             self._required_endpoints(
                 net,
@@ -487,12 +490,25 @@ class BoardHarness:
         fused_node = _node(dc_fused)
         rail_node = _node(five_volts)
         capacitors = []
+        five_volt_capacitor_roles = {
+            "LED rail bulk capacitor",
+            "Rail decoupling capacitor",
+            "Buffer decoupling capacitor",
+            "Local LED decoupling capacitor",
+        }
         for component in self.design.components.values():
-            if not component.spec.part_key.startswith("CAP_"):
+            if component.spec.description not in five_volt_capacitor_roles:
                 continue
-            if self.net_by_endpoint.get((component.reference, "1")) != "+5V":
-                continue
-            self._required_net(component.reference, "2", "GND")
+            self._required_net(
+                component.reference,
+                CapacitorPin.SUPPLY_OR_ELECTRODE_A,
+                "+5V",
+            )
+            self._required_net(
+                component.reference,
+                CapacitorPin.RETURN_OR_ELECTRODE_B,
+                "GND",
+            )
             value = (
                 component.spec.value.split()[0].replace("uF", "u").replace("nF", "n")
             )
