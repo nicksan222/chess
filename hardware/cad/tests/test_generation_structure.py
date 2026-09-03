@@ -125,7 +125,7 @@ class GeneratedLayoutTest(unittest.TestCase):
 
     def test_the_main_directory_holds_no_artefacts(self) -> None:
         loose = {path.name for path in CAD_ROOT.iterdir() if path.is_file()}
-        self.assertEqual(loose, {"README.md"})
+        self.assertEqual(loose, {"README.md", "justfile"})
         self.assertTrue(GENERATED.is_dir())
 
     def test_the_domain_keeps_the_shared_directory_shape(self) -> None:

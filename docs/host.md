@@ -29,8 +29,9 @@ are the better foundation for new work.
 only the Raspberry Pi GPIOs connected by the native pcbnew board. The generated
 types describe host pin identity but deliberately assign no application meaning;
 firmware consumers decide which concrete GPIO implementation and semantic role
-each marker receives. Regenerate with `./tools/firmware-pins`. Pre-commit and the
-PCB CI workflow run `./tools/firmware-pins --check` after board generation.
+each marker receives. Regenerate the board with
+`just --justfile hardware/pcb/justfile generate`. The package's test recipe,
+pre-commit, and PCB CI verify pin parity after board generation.
 
 The LED frame needs no library. An SK9822 frame is a start frame of zero bytes,
 four bytes per LED — brightness, then blue, green, red — and an end frame. Start

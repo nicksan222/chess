@@ -11,4 +11,4 @@ mechanical design:
 
 There is intentionally no separate electronics/schematic domain. The PCB is the
 electrical design, and `pcb/board/netlist.json` is its explicit connectivity
-contract. Run `./tools/pcb` to validate and generate manufacturing artifacts.
+contract. Run `just --justfile hardware/pcb/justfile release` to validate and generate manufacturing artifacts.

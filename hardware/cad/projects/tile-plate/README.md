@@ -30,4 +30,4 @@ The plate occupies the top 3 mm of the case, so `board-assembly` loads it and
 the case without moving either. Every dimension comes from
 `core/dimensions.py`.
 
-Run `./tools/cad` from the repository root.
+Run `just --justfile hardware/cad/justfile generate` from the repository root.

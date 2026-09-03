@@ -9,6 +9,9 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from typing import Generic, TypeVar
+
+Implementation = TypeVar("Implementation")
 
 
 @dataclass(frozen=True)
@@ -30,7 +33,8 @@ class ComponentSpec:
         return self.body_mm
 
 
-class ComponentImplementation[Implementation](ABC):
+# Blender 4.5 embeds Python 3.11, so this shared type cannot use PEP 695 syntax.
+class ComponentImplementation(ABC, Generic[Implementation]):  # noqa: UP046
     spec: ComponentSpec
 
     def __init__(self, spec: ComponentSpec) -> None:

@@ -1,0 +1,29 @@
+set shell := ["bash", "-euo", "pipefail", "-c"]
+
+root := `git rev-parse --show-toplevel`
+package := "persistence"
+
+default:
+    @just --list
+
+# Format-check, type-check, lint, and document this package.
+quality:
+    cd "{{ root }}" && cargo fmt --check --package "{{ package }}"
+    cd "{{ root }}" && cargo check --package "{{ package }}" --all-targets --all-features
+    cd "{{ root }}" && cargo clippy --package "{{ package }}" --all-targets --all-features -- -D warnings
+    cd "{{ root }}" && RUSTDOCFLAGS='-D warnings' cargo doc --package "{{ package }}" --no-deps --all-features
+
+# Run every test target in this package.
+test:
+    cd "{{ root }}" && cargo test --package "{{ package }}" --all-targets --all-features
+
+# Run every package gate.
+check: quality test
+
+# Build every target in this package.
+build:
+    cd "{{ root }}" && cargo build --package "{{ package }}" --all-targets --all-features
+
+# Remove this package's Cargo output.
+clean:
+    cd "{{ root }}" && cargo clean --package "{{ package }}"

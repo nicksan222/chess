@@ -16,6 +16,6 @@ CAD, schematic, PCB, and future KiCad implementations may inherit from the base
 class, but shared code must never import Blender, Schemdraw, Gerbonara, or KiCad.
 Domain folders adapt these definitions and own only rendering/tool behavior.
 
-Shared Python is linted and format-checked with Ruff. From the repository root,
-`./tools/python` is the check; it also runs from `./tools/check`, the
-pre-commit hook, and CI.
+Shared Python is linted and format-checked with Ruff through this package's
+`justfile`. Run `just --justfile hardware/shared/justfile check`; the root
+`just precommit` and `just check` recipes compose it with the other packages.

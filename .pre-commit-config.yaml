@@ -1,17 +1,9 @@
 repos:
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.16.5
-    hooks:
-      - id: ruff-check
-        files: ^hardware/(cad|pcb|shared)/
-      - id: ruff-format
-        files: ^hardware/(cad|pcb|shared)/
-
   - repo: local
     hooks:
-      - id: firmware-pins
-        name: Verify firmware pins against pcbnew
-        entry: ./tools/firmware-pins --check
+      - id: repository-check
+        name: Run the package-owned repository commit gate
+        entry: just precommit
         language: system
         pass_filenames: false
         always_run: true

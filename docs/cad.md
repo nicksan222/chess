@@ -12,8 +12,9 @@ exports will be derived later.
 
 Each Blender design owns a directory under `hardware/cad/projects` containing
 its generator and documentation; the models and renders it produces are written
-to `hardware/cad/generated`. Run `./tools/cad` from the repository root to
-regenerate all of them locally, or `./tools/pcb` for the drawings.
+to `hardware/cad/generated`. Run `just --justfile hardware/cad/justfile generate`
+from the repository root to regenerate all of them locally, or the PCB package's
+`review` recipe for its drawings.
 
 ## Two printed parts
 

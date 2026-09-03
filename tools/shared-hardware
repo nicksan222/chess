@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-set -euo pipefail
-
-repository_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
-cd "${repository_root}"
-
-PYTHONPATH=hardware python3 -m unittest discover -s hardware/shared/tests -p 'test_*.py'
-PYTHONPATH=hardware python3 -m shared.dimensions

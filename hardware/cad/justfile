@@ -1,0 +1,81 @@
+set shell := ["bash", "-euo", "pipefail", "-c"]
+
+root := `git rev-parse --show-toplevel`
+ruff := env_var_or_default("RUFF", "ruff")
+blender_version := "4.5.13"
+blender_archive := "blender-" + blender_version + "-linux-x64.tar.xz"
+blender_sha256 := "da4e69b06b75b9e642d106496c50e7e240218b411d2f6e18271c1d1d819cef91"
+cache := root + "/.cache/blender"
+cached_blender := cache + "/blender-" + blender_version + "-linux-x64/blender"
+
+default:
+    @just --list
+
+# Lint and format-check CAD Python.
+quality:
+    cd "{{ root }}" && {{ ruff }} check hardware/cad
+    cd "{{ root }}" && {{ ruff }} format --check hardware/cad
+
+# Validate dimensions and run CAD unit tests.
+test:
+    cd "{{ root }}" && PYTHONPATH=hardware python3 hardware/cad/core/dimensions.py
+    cd "{{ root }}" && PYTHONPATH=hardware python3 -m unittest discover -s hardware/cad/tests
+
+# Provide the pinned Blender toolchain when BLENDER_BIN and /opt/blender are absent.
+setup:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [[ -n "${BLENDER_BIN:-}" ]]; then
+        [[ -x "$BLENDER_BIN" ]] || { echo "error: BLENDER_BIN is not executable: $BLENDER_BIN" >&2; exit 1; }
+        exit 0
+    fi
+    [[ -x /opt/blender/blender ]] && exit 0
+    [[ -x "{{ cached_blender }}" ]] && exit 0
+    [[ "$(uname -m)" == x86_64 ]] || { echo 'error: automatic Blender setup supports Linux x86_64 only; set BLENDER_BIN' >&2; exit 1; }
+    mkdir -p "{{ cache }}"
+    archive="{{ cache }}/{{ blender_archive }}"
+    if [[ ! -f "$archive" ]]; then
+        printf 'Downloading Blender %s LTS...\n' '{{ blender_version }}' >&2
+        curl --fail --location --retry 3 --show-error --output "$archive" \
+            "https://download.blender.org/release/Blender4.5/{{ blender_archive }}"
+    fi
+    printf '%s  %s\n' '{{ blender_sha256 }}' "$archive" | sha256sum --check --status
+    tar -xf "$archive" -C "{{ cache }}"
+
+# Regenerate every Blender model and render in declared generation order.
+generate: setup
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd "{{ root }}"
+    blender="${BLENDER_BIN:-}"
+    if [[ -z "$blender" && -x /opt/blender/blender ]]; then blender=/opt/blender/blender; fi
+    if [[ -z "$blender" ]]; then blender="{{ cached_blender }}"; fi
+    mkdir -p hardware/cad/generated
+    find hardware/cad/generated -maxdepth 1 -type f ! -name README.md -delete
+    lines="$(while IFS= read -r -d '' generator; do
+        order_file="$(dirname -- "$generator")/generation-order"
+        order=100
+        if [[ -f "$order_file" ]]; then IFS= read -r order < "$order_file" || true; fi
+        [[ "$order" =~ ^[0-9]+$ ]] || { printf 'Invalid generation order in %s: %s\n' "$order_file" "$order" >&2; exit 1; }
+        printf '%09d\t%s\n' "$order" "$generator"
+    done < <(find hardware/cad/projects -type f -name generate.py -print0))"
+    [[ -n "$lines" ]] || { echo 'error: no CAD project generators found' >&2; exit 1; }
+    while IFS= read -r generator; do
+        printf '\n==> Generate %s\n' "$(dirname -- "$generator")"
+        command=("$blender" --background --factory-startup --gpu-backend opengl --python-exit-code 1)
+        if [[ -z "${DISPLAY:-}" ]] && command -v xvfb-run >/dev/null; then
+            command=(xvfb-run --auto-servernum "${command[@]}")
+        fi
+        "${command[@]}" --python "$generator"
+    done < <(printf '%s\n' "$lines" | LC_ALL=C sort | cut -f2-)
+
+# Run checks without invoking Blender.
+check-fast: quality test
+
+# Run all CAD checks and regenerate output.
+check: check-fast generate
+
+# Remove local Python and downloaded Blender caches.
+clean:
+    find "{{ root }}/hardware/cad" -type d -name __pycache__ -prune -exec rm -rf {} +
+    rm -rf "{{ cache }}"

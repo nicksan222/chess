@@ -151,36 +151,36 @@ class ReleasePolicyTest(unittest.TestCase):
         ]
         self.assertEqual(violations, [])
 
-    def test_pcb_makefile_keeps_common_operations_inside_the_container(self):
-        makefile = (PCB / "Makefile").read_text()
-        for target in (
+    def test_pcb_capabilities_are_owned_by_the_package(self):
+        justfile = (PCB / "justfile").read_text()
+        for capability in (
+            "quality",
+            "generate",
+            "pins-check",
+            "erc",
+            "drc",
             "test",
-            "component-check",
-            "bom",
-            "schematic",
-            "board",
+            "previews",
             "review",
+            "fabrication",
             "release",
-            "check",
+            "check-fast",
         ):
-            with self.subTest(target=target):
-                recipe = makefile.split(f"{target}:", 1)[1].split("\n\n", 1)[0]
-                self.assertIn("$(DC)", recipe)
-        self.assertIn("release: up", makefile)
-        self.assertIn("$(DC) ./tools/pcb", makefile)
-        self.assertIn("PCB_REVIEW_ONLY=1 ./tools/pcb", makefile)
+            with self.subTest(capability=capability):
+                self.assertIn(f"{capability}:", justfile)
+        self.assertIn("review: quality previews", justfile)
+        self.assertIn("release: quality previews fabrication", justfile)
 
-    def test_the_runner_enforces_the_release_gate_before_gerbers(self):
-        runner = (PCB.parents[1] / "tools/pcb").read_text()
-        review_only = runner.index("PCB_REVIEW_ONLY:-0")
-        gate = runner.index("PCB_RELEASE=1")
-        fabrication = runner.index("pcb export gerbers")
-        self.assertLess(review_only, gate)
+    def test_release_capability_enforces_the_gate_before_gerbers(self):
+        justfile = (PCB / "justfile").read_text()
+        gate = justfile.index("PCB_RELEASE=1")
+        fabrication = justfile.index("pcb export gerbers")
         self.assertLess(gate, fabrication)
-        self.assertIn("python3 -m unittest discover", runner)
-        self.assertIn("--severity-exclusions", runner)
+        self.assertIn("fabrication: release-test", justfile)
+        self.assertIn("python3 -m unittest discover", justfile)
+        self.assertIn("--severity-exclusions", justfile)
         workflow = (PCB.parents[1] / ".github/workflows/ci.yml").read_text()
-        self.assertIn("env PCB_REVIEW_ONLY=1 ./tools/pcb", workflow)
+        self.assertIn("just --justfile hardware/pcb/justfile review", workflow)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,76 @@
+set shell := ["bash", "-euo", "pipefail", "-c"]
+
+root := `git rev-parse --show-toplevel`
+package := "firmware"
+cache := root + "/.cache/yocto"
+config := root + "/apps/firmware/yocto/kas/firmware.yml"
+machine := "raspberrypi0-2w-64"
+deploy := cache + "/build/tmp/deploy/images/" + machine
+output := root + "/dist/firmware"
+kas_image := "ghcr.io/siemens/kas/kas:5.2"
+ruff := env_var_or_default("RUFF", "ruff")
+
+default:
+    @just --list
+
+# Check the Rust package and Yocto Python.
+quality:
+    cd "{{ root }}" && cargo fmt --check --package "{{ package }}"
+    cd "{{ root }}" && cargo check --package "{{ package }}" --all-targets --all-features
+    cd "{{ root }}" && cargo clippy --package "{{ package }}" --all-targets --all-features -- -D warnings
+    cd "{{ root }}" && RUSTDOCFLAGS='-D warnings' cargo doc --package "{{ package }}" --no-deps --all-features
+    cd "{{ root }}" && {{ ruff }} check apps/firmware/yocto
+    cd "{{ root }}" && {{ ruff }} format --check apps/firmware/yocto
+
+# Run every firmware Rust test.
+test:
+    cd "{{ root }}" && cargo test --package "{{ package }}" --all-targets --all-features
+
+# Run local firmware gates.
+check: quality test validate
+
+# Build the firmware application without constructing an OS image.
+build:
+    cd "{{ root }}" && cargo build --package "{{ package }}" --all-targets --all-features
+
+# Validate crate metadata consumed by BitBake.
+validate:
+    cd "{{ root }}" && python3 apps/firmware/yocto/validate_crates.py
+
+# Parse the complete BitBake configuration without building an image.
+image-check: validate _docker
+    mkdir -p "{{ cache }}"
+    docker run --rm --init --user root \
+        -e "USER_ID=$(id -u)" -e "GROUP_ID=$(id -g)" \
+        -e KAS_WORK_DIR=/build -e "FIRMWARE_SOURCE_DIR={{ root }}" \
+        -v "{{ root }}:{{ root }}" -v "{{ cache }}:/build" -w "{{ root }}" \
+        {{ kas_image }} shell -c 'bitbake -p' "{{ config }}"
+
+# Build and collect the flashable Yocto image.
+image: validate _docker
+    #!/usr/bin/env bash
+    set -euo pipefail
+    mkdir -p "{{ cache }}"
+    docker run --rm --init --user root \
+        -e "USER_ID=$(id -u)" -e "GROUP_ID=$(id -g)" \
+        -e KAS_WORK_DIR=/build -e "FIRMWARE_SOURCE_DIR={{ root }}" \
+        -v "{{ root }}:{{ root }}" -v "{{ cache }}:/build" -w "{{ root }}" \
+        {{ kas_image }} build "{{ config }}"
+    firmware="{{ deploy }}/firmware-image-{{ machine }}.rootfs.wic.xz"
+    bmap="{{ deploy }}/firmware-image-{{ machine }}.rootfs.wic.bmap"
+    [[ -e "$firmware" ]] || { echo "error: firmware image is absent from {{ deploy }}" >&2; exit 1; }
+    [[ -e "$bmap" ]] || { echo "error: firmware block map is absent from {{ deploy }}" >&2; exit 1; }
+    rm -rf "{{ output }}"
+    mkdir -p "{{ output }}"
+    cp "$firmware" "{{ output }}/firmware-rpi-zero-2w.img.xz"
+    cp "$bmap" "{{ output }}/firmware-rpi-zero-2w.bmap"
+    (cd "{{ output }}" && sha256sum -- * > SHA256SUMS)
+
+[private]
+_docker:
+    @command -v docker >/dev/null || { echo 'error: Docker is required' >&2; exit 1; }
+
+# Remove this package's Cargo and Yocto output.
+clean:
+    rm -rf "{{ cache }}" "{{ output }}"
+    cd "{{ root }}" && cargo clean --package "{{ package }}"

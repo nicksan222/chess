@@ -1,0 +1,27 @@
+set shell := ["bash", "-euo", "pipefail", "-c"]
+
+root := `git rev-parse --show-toplevel`
+ruff := env_var_or_default("RUFF", "ruff")
+
+default:
+    @just --list
+
+# Lint and format-check shared Python.
+quality:
+    cd "{{ root }}" && {{ ruff }} check hardware/shared
+    cd "{{ root }}" && {{ ruff }} format --check hardware/shared
+
+# Run shared contract tests.
+test:
+    cd "{{ root }}" && PYTHONPATH=hardware python3 -m unittest discover -s hardware/shared/tests -p 'test_*.py'
+
+# Validate shared dimensions.
+validate:
+    cd "{{ root }}" && PYTHONPATH=hardware python3 -m shared.dimensions
+
+# Run every shared-hardware gate.
+check: quality test validate
+
+# Remove local Python caches.
+clean:
+    find . -type d -name __pycache__ -prune -exec rm -rf {} +

@@ -1,6 +1,6 @@
 # Git hooks
 
 This directory owns version-controlled Git hooks. The pre-commit hook runs
-`./tools/check` with CAD generation skipped so commits stay fast; Blender
-renders stay on `./tools/cad` and CI. Ruff also runs there via `./tools/python`,
-and `.pre-commit-config.yaml` is the same check for `pre-commit run`.
+`just precommit`, which composes package-owned recipes while skipping CAD
+renders and PCB fabrication output. `.pre-commit-config.yaml` invokes the same
+gate for `pre-commit run`.

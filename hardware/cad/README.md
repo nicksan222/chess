@@ -15,7 +15,7 @@ rather than to gate anything.
 Regenerate everything from the repository root with:
 
 ```sh
-./tools/cad
+just --justfile hardware/cad/justfile generate
 ```
 
 ## Layout
@@ -51,7 +51,8 @@ projects. It derives the playing span from square size and grid count, derives
 the plate span from fit clearance, and validates the vertical stack, the control
 panel layout, the board support positions and the plate fixings. Project READMEs
 describe intent rather than duplicating those values. Dimension tests run the
-same validation without Blender; `./tools/cad` then generates with it.
+same validation without Blender; the package's `generate` recipe then generates
+with it.
 
 Coordinates are centred on the **playing area**, not the case. The control strip
 extends in negative Y, so the case carries `CASE_CENTER_OFFSET_Y_MM` while square
@@ -94,11 +95,11 @@ error, so `core/modeling.py` guards against them:
 
 ## Toolchain
 
-`./tools/cad` downloads a checksum-verified Blender build into the ignored
+The CAD `justfile` downloads a checksum-verified Blender build into the ignored
 `.cache` directory if one is not already there. Set `BLENDER_BIN` to use an
 existing install instead, which is required on platforms without a published
 Linux x86_64 build. Manufacturing exports remain deliberately separate.
 
-CAD Python is linted and format-checked with Ruff. From the repository root,
-`./tools/python` is the check; it also runs from `./tools/check`, the
-pre-commit hook, and CI.
+CAD Python is linted and format-checked with Ruff through its package-local
+`justfile`. The root recipes, pre-commit hook, and CI compose the same
+capabilities.

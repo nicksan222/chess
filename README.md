@@ -40,7 +40,7 @@ requirement a non-real-time host could violate.
 
 The repository contains the software, the design contract, the board layout and the
 printable CAD needed to build the board. Python composes a native KiCad project
-from reviewed shared definitions and connectivity. Run `make gen` to regenerate everything, or see
+from reviewed shared definitions and connectivity. Run `just generate` to regenerate CAD and review artifacts, or see
 [`docs/development.md`](docs/development.md) for the complete development
 workflow. [`docs/assembly.md`](docs/assembly.md) covers what to order and the
 order to solder it in. [`apps/firmware`](apps/firmware) contains the Pi firmware.

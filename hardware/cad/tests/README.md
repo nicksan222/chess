@@ -16,4 +16,4 @@ ensure every printable object has one owning generator and that view generators
 import those outputs instead of recreating geometry.
 
 The repository quality gate discovers these tests automatically through
-`make check`.
+`just check`.

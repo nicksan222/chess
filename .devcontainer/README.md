@@ -8,18 +8,18 @@ Reopen in Container**, or drive it from the
 
 ```sh
 devcontainer up --workspace-folder .
-devcontainer exec --workspace-folder . ./tools/pcb
-devcontainer exec --workspace-folder . ./tools/cad
-devcontainer exec --workspace-folder . ./tools/python
-devcontainer exec --workspace-folder . ./tools/rust
-devcontainer exec --workspace-folder . make check
+devcontainer exec --workspace-folder . just pcb
+devcontainer exec --workspace-folder . just cad
+devcontainer exec --workspace-folder . just quality
+devcontainer exec --workspace-folder . just test
+devcontainer exec --workspace-folder . just check
 ```
 
 The image provides:
 
 - Node.js 22 and the [Pi coding agent](https://pi.dev/), installed during
   container creation;
-- stable Rust with `rustfmt` and Clippy;
+- stable Rust with `rustfmt`, Clippy, and Just;
 - Ruff for CAD, PCB, and shared Python;
 - KiCad 9 with `kicad-cli` and `pcbnew`;
 - a checksum-verified Blender at `/opt/blender`;
@@ -48,11 +48,11 @@ After create:
 
 ```sh
 pi                         # start the coding agent; use /login for OAuth
-./tools/pcb                 # test, then generate
-./tools/cad                 # test, then generate
-./tools/python              # lint and format-check hardware Python
-./tools/rust                # fmt, clippy, and tests
-make check                  # all domains, sequentially
+just pcb                    # test, then generate PCB review output
+just cad                    # test, then generate CAD output
+just quality                # lint and format-check every package
+just test                   # test every package
+just check                  # all domains, sequentially
 ```
 
 Host-specific device access and hardware flashing policy do not belong in the

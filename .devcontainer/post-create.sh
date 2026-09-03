@@ -17,9 +17,9 @@ cat <<'EOF'
 The container is ready. Hardware toolchains and Pi are installed.
 
   pi                          start the Pi coding agent
-  ./tools/cad                 test, then generate
-  ./tools/pcb                 test, then generate fabrication output
-  ./tools/python              lint and format-check hardware Python
-  ./tools/rust                fmt, clippy, and tests
-  make check                  all domains, sequentially
+  just                        list repository capabilities
+  just cad                    test, then generate CAD output
+  just pcb                    test, then generate PCB review output
+  just quality                lint and format-check every package
+  just check                  all domains, sequentially
 EOF

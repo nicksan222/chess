@@ -26,4 +26,4 @@ render shows what fills the cavity, and so the vertical stack in
 positions are derived from the shared dimensions, so it follows any change to
 the square pitch or the board thickness.
 
-Run `./tools/cad` from the repository root.
+Run `just --justfile hardware/cad/justfile generate` from the repository root.

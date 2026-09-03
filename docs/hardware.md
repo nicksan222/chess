@@ -36,8 +36,8 @@ the hardware contract.
 Run:
 
 ```sh
-./tools/shared-hardware
-./tools/pcb
+just --justfile hardware/shared/justfile check
+just --justfile hardware/pcb/justfile release
 ```
 
 PCB tests verify package coverage, pad numbering, placement, fabrication rules,

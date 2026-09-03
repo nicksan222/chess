@@ -69,7 +69,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: ./tools/firmware validate
+      - uses: extractions/setup-just@v2
+        with:
+          just-version: 1.40.0
+      - run: just --justfile apps/firmware/justfile validate
 
   crates:
     name: Discover crates
@@ -83,7 +86,8 @@ jobs:
         name: Read workspace packages
         run: |
           packages="$(cargo metadata --format-version 1 --no-deps \
-            | jq --compact-output '[.packages[].name]')"
+            | jq --compact-output \
+              '[.packages[] | {name: .name, directory: (.manifest_path | split("/") | .[-3:-1] | join("/"))}]')"
           echo "packages=${packages}" >> "${GITHUB_OUTPUT}"
 
   cad:
@@ -94,7 +98,7 @@ jobs:
       - uses: ./.github/actions/run-in-devcontainer
         with:
           image: ${{ needs.prebuild.outputs.image }}
-          command: ./tools/cad
+          command: just --justfile hardware/cad/justfile check
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
@@ -109,7 +113,7 @@ jobs:
       - uses: ./.github/actions/run-in-devcontainer
         with:
           image: ${{ needs.prebuild.outputs.image }}
-          command: env PCB_REVIEW_ONLY=1 ./tools/pcb
+          command: just --justfile hardware/pcb/justfile review
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
@@ -131,10 +135,10 @@ jobs:
       - uses: ./.github/actions/run-in-devcontainer
         with:
           image: ${{ needs.prebuild.outputs.image }}
-          command: ./tools/quality
+          command: just quality
 
   crate-test:
-    name: Crate test (${{ matrix.package }})
+    name: Crate test (${{ matrix.package.name }})
     needs: [prebuild, crates]
     runs-on: ubuntu-latest
     strategy:
@@ -146,14 +150,14 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: target
-          key: ${{ runner.os }}-crate-${{ matrix.package }}-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-crate-${{ matrix.package.name }}-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
-            ${{ runner.os }}-crate-${{ matrix.package }}-
+            ${{ runner.os }}-crate-${{ matrix.package.name }}-
             ${{ runner.os }}-cargo-
       - uses: ./.github/actions/run-in-devcontainer
         with:
           image: ${{ needs.prebuild.outputs.image }}
-          command: ./tools/rust test ${{ matrix.package }}
+          command: just --justfile ${{ matrix.package.directory }}/justfile test
 
   firmware-check:
     name: Firmware configuration
@@ -163,7 +167,10 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
-      - run: ./tools/firmware check
+      - uses: extractions/setup-just@v2
+        with:
+          just-version: 1.40.0
+      - run: just --justfile apps/firmware/justfile image-check
 
   firmware:
     name: Firmware
@@ -173,6 +180,9 @@ jobs:
     timeout-minutes: 360
     steps:
       - uses: actions/checkout@v4
+      - uses: extractions/setup-just@v2
+        with:
+          just-version: 1.40.0
       - name: Free disk space
         run: |
           sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc
@@ -187,7 +197,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yocto-${{ hashFiles('apps/firmware/yocto/kas/firmware.yml') }}-
             ${{ runner.os }}-yocto-
-      - run: ./tools/firmware build
+      - run: just --justfile apps/firmware/justfile image
       - name: Save Yocto cache
         if: always()
         uses: actions/cache/save@v4

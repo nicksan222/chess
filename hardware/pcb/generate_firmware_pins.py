@@ -147,7 +147,9 @@ def main() -> None:
     current = OUTPUT_PATH.read_text() if OUTPUT_PATH.exists() else None
     if arguments.check:
         if current != expected:
-            raise SystemExit("firmware pins are stale; run `./tools/firmware-pins`")
+            raise SystemExit(
+                "firmware pins are stale; run `just --justfile hardware/pcb/justfile generate`"
+            )
         return
     OUTPUT_PATH.write_text(expected)
 

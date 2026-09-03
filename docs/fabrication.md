@@ -7,7 +7,7 @@ wiring, reviewed connectivity, package geometry, and placement.
 Run:
 
 ```sh
-./tools/pcb
+just --justfile hardware/pcb/justfile release
 ```
 
 The runner regenerates the board, executes KiCad DRC, and exports Gerber,
@@ -21,5 +21,5 @@ gate. Ordering remains blocked until native schematic parity and the documented
 Hall-sensor/magnet prototype evidence also pass.
 
 Before ordering, inspect the project in KiCad, verify footprints against vendor
-datasheets, complete the remaining release evidence, run `./tools/pcb`, and
+datasheets, complete the remaining release evidence, run the PCB `release` recipe, and
 inspect the board manufacturer's preview.

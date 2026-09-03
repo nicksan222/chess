@@ -30,4 +30,4 @@ The floor sits at z = 0 and the top face at `CASE_HEIGHT_MM`, so
 dimension comes from `core/dimensions.py`; nothing is hard-coded here except
 where a feature sits along the wall it pierces.
 
-Run `./tools/cad` from the repository root.
+Run `just --justfile hardware/cad/justfile generate` from the repository root.

@@ -2,7 +2,7 @@
 set -euo pipefail
 
 repository_root="$(git rev-parse --show-toplevel)"
+cd "${repository_root}"
 
 git diff --cached --check
-"${repository_root}/tools/firmware-pins" --check
-SKIP_CAD_GENERATE=1 exec "${repository_root}/tools/check"
+exec just precommit

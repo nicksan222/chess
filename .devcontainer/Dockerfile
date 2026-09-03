@@ -68,5 +68,6 @@ USER vscode
 RUN curl --fail --location --proto '=https' --tlsv1.2 --show-error \
         https://sh.rustup.rs \
         | sh -s -- -y --profile minimal --default-toolchain stable \
-    && rustup component add clippy rustfmt rust-src
+    && rustup component add clippy rustfmt rust-src \
+    && cargo install just --locked --version 1.40.0
 USER root
