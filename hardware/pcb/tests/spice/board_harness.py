@@ -22,8 +22,13 @@ from components.electrical import (
 )
 from components.fuse import INPUT_FUSE, FusePin
 from components.hall_sensor import HallSensorPin
+from components.mcp23017 import Mcp23017Pin
 from components.power_switch import MAIN_POWER_SWITCH, PowerSwitchPin
+from components.raspberry_pi_header import RaspberryPiHeaderPin
+from components.sk9822 import Sk9822Pin
 from components.tactile_switch import TactileSwitchPin
+from components.test_point import TestPointPin
+from shared import wiring
 from spice.circuit import SpiceCircuit
 from spice.movement import MovementCase
 
@@ -48,13 +53,50 @@ class BoardHarness:
             for connection in design.connections.connections
             for reference, pin in connection.endpoints
         }
-        self.square_nets = {
-            str(name)[3:]: str(name)
-            for (reference, pin), name in self.net_by_endpoint.items()
-            if reference.startswith("HS") and pin == HallSensorPin.ACTIVE_LOW_OUTPUT
+        self.endpoints_by_net = {
+            str(connection.name): {
+                (str(reference), str(pin)) for reference, pin in connection.endpoints
+            }
+            for connection in design.connections.connections
         }
-        if len(self.square_nets) != 64:
+        self.square_nets = self._validated_square_nets()
+
+    def _required_endpoints(
+        self,
+        net: str,
+        expected: set[tuple[str, str]],
+    ) -> None:
+        actual = self.endpoints_by_net.get(net)
+        if actual != expected:
+            raise ValueError(
+                f"{net} must connect {sorted(expected)}; found {sorted(actual or set())}"
+            )
+
+    def _validated_square_nets(self) -> dict[str, str]:
+        found = {}
+        for reference, component in self.design.components.items():
+            if component.spec.part_key != "HALL_SENSOR":
+                continue
+            square = component.spec.extras.get("Square")
+            if not isinstance(square, str):
+                raise ValueError(f"{reference} has no square identity")
+            file_index, rank_index = wiring.parse_square(square)
+            expander_index, gpio_index = wiring.expander_of(file_index, rank_index)
+            port = "A" if gpio_index < 8 else "B"
+            port_index = gpio_index % 8
+            expander_pin = Mcp23017Pin[f"GPIO_{port}{port_index}"]
+            net = wiring.sense_net(square)
+            self._required_endpoints(
+                net,
+                {
+                    (reference, str(HallSensorPin.ACTIVE_LOW_OUTPUT)),
+                    (f"U{expander_index + 1}", str(expander_pin)),
+                },
+            )
+            found[square] = net
+        if len(found) != 64:
             raise ValueError("SPICE generation requires all 64 Hall sensor nets")
+        return found
 
     @staticmethod
     def _hall_model() -> list[str]:
@@ -82,6 +124,16 @@ class BoardHarness:
         return actual
 
     def _power_path_nets(self) -> tuple[str, str, str]:
+        self._required_net(
+            DC_INPUT_JACK.reference,
+            BarrelJackPin.SLEEVE_GROUND,
+            "GND",
+        )
+        self._required_net(
+            DC_INPUT_JACK.reference,
+            BarrelJackPin.SWITCHED_SLEEVE_GROUND,
+            "GND",
+        )
         dc_input = self._required_net(
             DC_INPUT_JACK.reference,
             BarrelJackPin.CENTRE_POSITIVE,
@@ -210,12 +262,22 @@ class BoardHarness:
                 Ahct125Pin.BUFFER_1_OUTPUT_ENABLE,
                 Ahct125Pin.BUFFER_1_INPUT,
                 Ahct125Pin.BUFFER_1_OUTPUT,
+                "SPI_DATA_3V3",
+                RaspberryPiHeaderPin.SPI_DATA_GPIO10,
+                "LED_DATA_5V",
+                "TP3",
+                Sk9822Pin.DATA_IN,
                 False,
             ),
             (
                 Ahct125Pin.BUFFER_2_OUTPUT_ENABLE,
                 Ahct125Pin.BUFFER_2_INPUT,
                 Ahct125Pin.BUFFER_2_OUTPUT,
+                "SPI_CLK_3V3",
+                RaspberryPiHeaderPin.SPI_CLOCK_GPIO11,
+                "LED_CLK_5V",
+                "TP4",
+                Sk9822Pin.CLOCK_IN,
                 True,
             ),
         )
@@ -225,12 +287,32 @@ class BoardHarness:
             f"* EXPECT result_channel_2 {AHCT125.high.minimum} {AHCT125.high.maximum}",
             f"V5 {supply_node} 0 {AHCT125.supply_volts}",
         ]
-        for index, (enable_pin, input_pin, output_pin, high) in enumerate(
-            channels, start=1
-        ):
+        for index, (
+            enable_pin,
+            input_pin,
+            output_pin,
+            expected_input_net,
+            host_pin,
+            expected_output_net,
+            test_point,
+            led_pin,
+            high,
+        ) in enumerate(channels, start=1):
             enable_net = self._required_net("U5", enable_pin, ground_net)
-            input_net = self.net_by_endpoint[("U5", str(input_pin))]
-            output_net = self.net_by_endpoint[("U5", str(output_pin))]
+            input_net = self._required_net("U5", input_pin, expected_input_net)
+            output_net = self._required_net("U5", output_pin, expected_output_net)
+            self._required_endpoints(
+                input_net,
+                {("J1", str(host_pin)), ("U5", str(input_pin))},
+            )
+            self._required_endpoints(
+                output_net,
+                {
+                    ("U5", str(output_pin)),
+                    ("U6", str(led_pin)),
+                    (test_point, str(TestPointPin.PROBE)),
+                },
+            )
             enable_node = "0" if enable_net == ground_net else _node(enable_net)
             input_node = _node(input_net)
             output_node = _node(output_net)
@@ -375,6 +457,7 @@ class BoardHarness:
                 continue
             if self.net_by_endpoint.get((component.reference, "1")) != "+5V":
                 continue
+            self._required_net(component.reference, "2", "GND")
             value = (
                 component.spec.value.split()[0].replace("uF", "u").replace("nF", "n")
             )
