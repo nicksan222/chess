@@ -343,7 +343,31 @@ class BoardHarness:
         return "\n".join(lines) + "\n"
 
     def _open_drain_inputs(self) -> str:
-        bus_nets = ("I2C_SDA", "I2C_SCL", "SENSE_IRQ")
+        bus_nets = (wiring.SDA_NET, wiring.SCL_NET, wiring.SENSE_IRQ_NET)
+        bus_endpoints = {
+            wiring.SDA_NET: {
+                ("J1", str(RaspberryPiHeaderPin.I2C_SDA)),
+                ("J2", "4"),
+                ("R1", "2"),
+                ("TP7", str(TestPointPin.PROBE)),
+                *((f"U{index}", str(Mcp23017Pin.I2C_DATA)) for index in range(1, 5)),
+            },
+            wiring.SCL_NET: {
+                ("J1", str(RaspberryPiHeaderPin.I2C_SCL)),
+                ("J2", "3"),
+                ("R2", "2"),
+                ("TP6", str(TestPointPin.PROBE)),
+                *((f"U{index}", str(Mcp23017Pin.I2C_CLOCK)) for index in range(1, 5)),
+            },
+            wiring.SENSE_IRQ_NET: {
+                ("J1", str(RaspberryPiHeaderPin.SENSE_IRQ_GPIO4)),
+                ("R3", "2"),
+                ("TP8", str(TestPointPin.PROBE)),
+                *((f"U{index}", str(Mcp23017Pin.INTERRUPT_A)) for index in range(1, 5)),
+            },
+        }
+        for net, endpoints in bus_endpoints.items():
+            self._required_endpoints(net, endpoints)
         lines = ["Generated chess-board open-drain bus inputs"]
         for name in bus_nets:
             lines.extend(
@@ -429,7 +453,18 @@ class BoardHarness:
             if len(switches) != 1:
                 raise ValueError(f"{name} must have exactly one tactile switch")
             reference = switches[0]
-            self._required_net(reference, TactileSwitchPin.SIGNAL, name)
+            button = name.removeprefix("BTN_")
+            gpio = wiring.BUTTON_GPIO[button]
+            host_pin = next(
+                pin for pin in RaspberryPiHeaderPin if pin.name.endswith(f"GPIO{gpio}")
+            )
+            self._required_endpoints(
+                name,
+                {
+                    (reference, str(TactileSwitchPin.SIGNAL)),
+                    ("J1", str(host_pin)),
+                },
+            )
             self._required_net(reference, TactileSwitchPin.GROUND, "GND")
             node = _node(name)
             lines.extend(
@@ -512,7 +547,15 @@ class BoardHarness:
         )
 
     def power_current(self, *, full_white: bool = False) -> float:
-        led_count = self._component_count("SK9822")
+        leds = [
+            component
+            for component in self.design.components.values()
+            if component.spec.part_key == "SK9822"
+        ]
+        for led in leds:
+            self._required_net(led.reference, Sk9822Pin.FIVE_VOLTS, "+5V")
+            self._required_net(led.reference, Sk9822Pin.GROUND, "GND")
+        led_count = len(leds)
         brightness = Fraction(1) if full_white else self.led_brightness_max
         return BOARD_POWER.host_and_logic_amps + (
             led_count * BOARD_POWER.led_full_white_amps_each * float(brightness)
