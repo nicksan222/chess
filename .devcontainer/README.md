@@ -17,6 +17,8 @@ devcontainer exec --workspace-folder . make check
 
 The image provides:
 
+- Node.js 22 and the [Pi coding agent](https://pi.dev/), installed during
+  container creation;
 - stable Rust with `rustfmt` and Clippy;
 - Ruff for CAD, PCB, and shared Python;
 - KiCad 9 with `kicad-cli` and `pcbnew`;
@@ -30,13 +32,22 @@ CI prebuilds this image, pushes it to GHCR, then runs Python, CAD, PCB, and Rust
 parallel `devcontainer exec` jobs against that digest. Subsequent
 prebuilds reuse the image layers when the Dockerfile is unchanged.
 
-Container creation configures the repository pre-commit hook. Host-only
-fallback downloads (`.cache/blender`, `.cache/pcb`) exist for people
+Container creation configures the repository pre-commit hook and installs Pi.
+Credentials for every built-in Pi API-key provider are forwarded from matching
+host environment variables without writing secrets to the repository. Pi's
+`~/.pi/agent` directory uses the persistent `chess-pi-agent` Docker volume, so
+credentials created with `pi` and `/login` survive container rebuilds. Export
+provider variables on the host before opening the container; see Pi's
+[provider documentation](https://github.com/earendil-works/pi-mono/blob/main/packages/coding-agent/docs/providers.md)
+for the supported names and cloud-provider settings.
+
+Host-only fallback downloads (`.cache/blender`, `.cache/pcb`) exist for people
 who run the tools outside the container.
 
 After create:
 
 ```sh
+pi                         # start the coding agent; use /login for OAuth
 ./tools/pcb                 # test, then generate
 ./tools/cad                 # test, then generate
 ./tools/python              # lint and format-check hardware Python

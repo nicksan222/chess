@@ -7,8 +7,67 @@
       "VARIANT": "ubuntu-24.04"
     }
   },
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "22"
+    }
+  },
   "remoteUser": "vscode",
   "updateRemoteUserUID": true,
+  "mounts": [
+    "source=chess-pi-agent,target=/home/vscode/.pi/agent,type=volume"
+  ],
+  "remoteEnv": {
+    "AI_GATEWAY_API_KEY": "${localEnv:AI_GATEWAY_API_KEY}",
+    "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY}",
+    "ANT_LING_API_KEY": "${localEnv:ANT_LING_API_KEY}",
+    "AWS_ACCESS_KEY_ID": "${localEnv:AWS_ACCESS_KEY_ID}",
+    "AWS_BEARER_TOKEN_BEDROCK": "${localEnv:AWS_BEARER_TOKEN_BEDROCK}",
+    "AWS_DEFAULT_REGION": "${localEnv:AWS_DEFAULT_REGION}",
+    "AWS_PROFILE": "${localEnv:AWS_PROFILE}",
+    "AWS_REGION": "${localEnv:AWS_REGION}",
+    "AWS_ROLE_ARN": "${localEnv:AWS_ROLE_ARN}",
+    "AWS_SECRET_ACCESS_KEY": "${localEnv:AWS_SECRET_ACCESS_KEY}",
+    "AWS_SESSION_TOKEN": "${localEnv:AWS_SESSION_TOKEN}",
+    "AWS_WEB_IDENTITY_TOKEN_FILE": "${localEnv:AWS_WEB_IDENTITY_TOKEN_FILE}",
+    "AZURE_OPENAI_API_KEY": "${localEnv:AZURE_OPENAI_API_KEY}",
+    "AZURE_OPENAI_API_VERSION": "${localEnv:AZURE_OPENAI_API_VERSION}",
+    "AZURE_OPENAI_BASE_URL": "${localEnv:AZURE_OPENAI_BASE_URL}",
+    "AZURE_OPENAI_DEPLOYMENT_NAME_MAP": "${localEnv:AZURE_OPENAI_DEPLOYMENT_NAME_MAP}",
+    "AZURE_OPENAI_RESOURCE_NAME": "${localEnv:AZURE_OPENAI_RESOURCE_NAME}",
+    "BASETEN_API_KEY": "${localEnv:BASETEN_API_KEY}",
+    "CEREBRAS_API_KEY": "${localEnv:CEREBRAS_API_KEY}",
+    "CLOUDFLARE_ACCOUNT_ID": "${localEnv:CLOUDFLARE_ACCOUNT_ID}",
+    "CLOUDFLARE_API_KEY": "${localEnv:CLOUDFLARE_API_KEY}",
+    "CLOUDFLARE_GATEWAY_ID": "${localEnv:CLOUDFLARE_GATEWAY_ID}",
+    "DEEPSEEK_API_KEY": "${localEnv:DEEPSEEK_API_KEY}",
+    "FIREWORKS_API_KEY": "${localEnv:FIREWORKS_API_KEY}",
+    "GEMINI_API_KEY": "${localEnv:GEMINI_API_KEY}",
+    "GOOGLE_APPLICATION_CREDENTIALS": "${localEnv:GOOGLE_APPLICATION_CREDENTIALS}",
+    "GOOGLE_CLOUD_LOCATION": "${localEnv:GOOGLE_CLOUD_LOCATION}",
+    "GOOGLE_CLOUD_PROJECT": "${localEnv:GOOGLE_CLOUD_PROJECT}",
+    "GROQ_API_KEY": "${localEnv:GROQ_API_KEY}",
+    "HF_TOKEN": "${localEnv:HF_TOKEN}",
+    "KIMI_API_KEY": "${localEnv:KIMI_API_KEY}",
+    "MINIMAX_API_KEY": "${localEnv:MINIMAX_API_KEY}",
+    "MINIMAX_CN_API_KEY": "${localEnv:MINIMAX_CN_API_KEY}",
+    "MISTRAL_API_KEY": "${localEnv:MISTRAL_API_KEY}",
+    "NVIDIA_API_KEY": "${localEnv:NVIDIA_API_KEY}",
+    "OPENCODE_API_KEY": "${localEnv:OPENCODE_API_KEY}",
+    "OPENAI_API_KEY": "${localEnv:OPENAI_API_KEY}",
+    "OPENROUTER_API_KEY": "${localEnv:OPENROUTER_API_KEY}",
+    "QWEN_TOKEN_PLAN_API_KEY": "${localEnv:QWEN_TOKEN_PLAN_API_KEY}",
+    "QWEN_TOKEN_PLAN_CN_API_KEY": "${localEnv:QWEN_TOKEN_PLAN_CN_API_KEY}",
+    "RADIUS_API_KEY": "${localEnv:RADIUS_API_KEY}",
+    "TOGETHER_API_KEY": "${localEnv:TOGETHER_API_KEY}",
+    "XAI_API_KEY": "${localEnv:XAI_API_KEY}",
+    "XIAOMI_API_KEY": "${localEnv:XIAOMI_API_KEY}",
+    "XIAOMI_TOKEN_PLAN_AMS_API_KEY": "${localEnv:XIAOMI_TOKEN_PLAN_AMS_API_KEY}",
+    "XIAOMI_TOKEN_PLAN_CN_API_KEY": "${localEnv:XIAOMI_TOKEN_PLAN_CN_API_KEY}",
+    "XIAOMI_TOKEN_PLAN_SGP_API_KEY": "${localEnv:XIAOMI_TOKEN_PLAN_SGP_API_KEY}",
+    "ZAI_API_KEY": "${localEnv:ZAI_API_KEY}",
+    "ZAI_CODING_CN_API_KEY": "${localEnv:ZAI_CODING_CN_API_KEY}"
+  },
   "capAdd": [
     "SYS_PTRACE"
   ],
