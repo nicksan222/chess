@@ -2,13 +2,14 @@
 
 import unittest
 
+from components.electrical import BOARD_POWER
 from spice.support import board_circuits, run_circuit
 
 
 class PowerStartupSpiceTest(unittest.TestCase):
     def test_rail_settles_after_switch_on_with_every_fitted_capacitor(self) -> None:
         circuit = board_circuits().power_startup().clear_expectations()
-        circuit.expect("5v_at_1ms", 4.75, 5.1)
+        circuit.expect("5v_at_1ms", *BOARD_POWER.healthy_rail.tuple())
         run_circuit(__file__, circuit)
 
 

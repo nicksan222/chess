@@ -12,6 +12,13 @@ from fractions import Fraction
 
 from base.design import BoardDesign
 from components.ahct125 import Ahct125Pin
+from components.electrical import (
+    AHCT125,
+    BOARD_POWER,
+    HALL_SENSOR,
+    LOGIC_3V3,
+    PI_GPIO_PULLUP_OHMS,
+)
 from components.hall_sensor import HallSensorPin
 from spice.circuit import SpiceCircuit
 from spice.movement import MovementCase
@@ -22,8 +29,8 @@ def _node(name: str) -> str:
 
 
 def _expect(name: str, occupied: bool) -> str:
-    bounds = "0 0.1" if occupied else "3.2 3.4"
-    return f"* EXPECT result_{name} {bounds}"
+    voltage = LOGIC_3V3.low if occupied else LOGIC_3V3.high
+    return f"* EXPECT result_{name} {voltage.minimum} {voltage.maximum}"
 
 
 class BoardHarness:
@@ -47,11 +54,17 @@ class BoardHarness:
 
     @staticmethod
     def _hall_model() -> list[str]:
+        switch = (
+            f"Ron={HALL_SENSOR.output_on_ohms} "
+            f"Roff={HALL_SENSOR.output_off_spice} "
+            f"Vt={HALL_SENSOR.magnetic_drive_threshold_volts} "
+            f"Vh={HALL_SENSOR.magnetic_drive_hysteresis_volts}"
+        )
         return [
-            ".model HALLSW SW(Ron=50 Roff=1T Vt=1.65 Vh=0.1)",
+            f".model HALLSW SW({switch})",
             ".subckt SQUARE_SENSOR OUT VDD MAG GND",
             "SOUTPUT OUT GND MAG GND HALLSW",
-            "RPULL OUT VDD 100k",
+            f"RPULL OUT VDD {HALL_SENSOR.input_pullup_ohms}",
             ".ends SQUARE_SENSOR",
         ]
 
@@ -89,7 +102,7 @@ class BoardHarness:
         lines = [f"Generated chess-board {scenario.name} sensor sequence"]
         lines.extend(_expect(check.name, check.occupied) for check in scenario.checks)
         lines.extend(self._hall_model())
-        lines.append("VDD vdd 0 3.3")
+        lines.append(f"VDD vdd 0 {LOGIC_3V3.supply_volts}")
         for square in touched:
             points = [(0.0, square in scenario.initially_occupied)]
             for event in events_by_square[square]:
@@ -100,7 +113,8 @@ class BoardHarness:
                     )
                 )
             waveform = " ".join(
-                f"{at}m {3.3 if occupied else 0}" for at, occupied in points
+                f"{at}m {LOGIC_3V3.supply_volts if occupied else 0}"
+                for at, occupied in points
             )
             node = _node(self.square_nets[square])
             lines.extend(
@@ -130,7 +144,12 @@ class BoardHarness:
         for square in sorted(self.square_nets):
             lines.append(_expect(_node(square), True))
         lines.extend(self._hall_model())
-        lines.extend(("VDD vdd 0 3.3", "VMAG mag 0 3.3"))
+        lines.extend(
+            (
+                f"VDD vdd 0 {LOGIC_3V3.supply_volts}",
+                f"VMAG mag 0 {LOGIC_3V3.supply_volts}",
+            )
+        )
         for square, net in sorted(self.square_nets.items()):
             lines.append(f"X{_node(square)} {_node(net)} vdd mag 0 SQUARE_SENSOR")
         lines.append(".tran 1u 10u")
@@ -156,9 +175,9 @@ class BoardHarness:
         )
         lines = [
             "Generated chess-board AHCT125 level-shifter channels",
-            "* EXPECT result_channel_1 0 0.3",
-            "* EXPECT result_channel_2 4.5 5.1",
-            "V5 rail_5v 0 5",
+            f"* EXPECT result_channel_1 {AHCT125.low.minimum} {AHCT125.low.maximum}",
+            f"* EXPECT result_channel_2 {AHCT125.high.minimum} {AHCT125.high.maximum}",
+            f"V5 rail_5v 0 {AHCT125.supply_volts}",
         ]
         for index, (input_pin, output_pin, high) in enumerate(channels, start=1):
             input_net = self.net_by_endpoint[("U5", str(input_pin))]
@@ -167,11 +186,13 @@ class BoardHarness:
             output_node = _node(output_net)
             output_expression = (
                 f"BOUT{index} {output_node} 0 "
-                f"V={{V({input_node})>2 ? V(rail_5v)-0.1 : 0.1}}"
+                f"V={{V({input_node})>{AHCT125.input_high_threshold_volts} ? "
+                f"V(rail_5v)-{AHCT125.output_headroom_volts} : "
+                f"{AHCT125.output_headroom_volts}}}"
             )
             lines.extend(
                 (
-                    f"VIN{index} {input_node} 0 {3.3 if high else 0}",
+                    f"VIN{index} {input_node} 0 {LOGIC_3V3.supply_volts if high else 0}",
                     output_expression,
                 )
             )
@@ -199,9 +220,14 @@ class BoardHarness:
             )
         lines.extend(
             (
-                ".model INPUTSW SW(Ron=50 Roff=1T Vt=1.65 Vh=0.1)",
-                "VDD vdd 0 3.3",
-                "VDRIVE drive 0 PULSE(0 3.3 1m 1u 1u 10 20)",
+                (
+                    f".model INPUTSW SW(Ron={HALL_SENSOR.output_on_ohms} "
+                    f"Roff={HALL_SENSOR.output_off_spice} "
+                    f"Vt={HALL_SENSOR.magnetic_drive_threshold_volts} "
+                    f"Vh={HALL_SENSOR.magnetic_drive_hysteresis_volts})"
+                ),
+                f"VDD vdd 0 {LOGIC_3V3.supply_volts}",
+                f"VDRIVE drive 0 PULSE(0 {LOGIC_3V3.supply_volts} 1m 1u 1u 10 20)",
             )
         )
         for index, name in enumerate(bus_nets, start=1):
@@ -242,11 +268,14 @@ class BoardHarness:
         )
         lines = ["Generated chess-board complete button input bank"]
         lines.extend(_expect(_node(name), True) for name in button_nets)
-        lines.extend(("VDD vdd 0 3.3", "VGROUND pressed 0 0"))
+        lines.extend((f"VDD vdd 0 {LOGIC_3V3.supply_volts}", "VGROUND pressed 0 0"))
         for index, name in enumerate(button_nets, start=1):
             node = _node(name)
             lines.extend(
-                (f"RPULL{index} {node} vdd 50k", f"RSWITCH{index} {node} pressed 50")
+                (
+                    f"RPULL{index} {node} vdd {PI_GPIO_PULLUP_OHMS}",
+                    f"RSWITCH{index} {node} pressed {HALL_SENSOR.output_on_ohms}",
+                )
             )
         lines.append(".tran 1u 10u")
         lines.extend(
@@ -269,10 +298,16 @@ class BoardHarness:
             capacitors.append((component.reference, value))
         lines = [
             "Generated chess-board fitted-capacitor startup",
-            "* EXPECT result_5v_at_1ms 4.75 5.1",
-            "VINPUT source 0 PULSE(0 5 0 1u 1u 10 20)",
-            "RPATH source rail_5v 0.12",
-            "BLOAD rail_5v 0 I=0.45*tanh(V(rail_5v)/0.2)",
+            (
+                f"* EXPECT result_5v_at_1ms {BOARD_POWER.healthy_rail.minimum} "
+                f"{BOARD_POWER.healthy_rail.maximum}"
+            ),
+            f"VINPUT source 0 PULSE(0 {BOARD_POWER.supply_volts} 0 1u 1u 10 20)",
+            f"RPATH source rail_5v {BOARD_POWER.path_ohms}",
+            (
+                f"BLOAD rail_5v 0 I={BOARD_POWER.host_and_logic_amps}*"
+                f"tanh(V(rail_5v)/{BOARD_POWER.load_soft_start_volts})"
+            ),
         ]
         lines.extend(
             f"C{reference} rail_5v 0 {value}" for reference, value in capacitors
@@ -284,33 +319,51 @@ class BoardHarness:
 
     @staticmethod
     def _power_off() -> str:
-        return """Generated chess-board open power switch
-* EXPECT result_5v 0 0.01
-VINPUT source 0 5
-RSWITCH source rail_5v 1T
-RBLEED rail_5v 0 10k
-.tran 1u 10u
-.meas tran result_5v FIND v(rail_5v) AT=5u
-.end
-"""
+        return "\n".join(
+            (
+                "Generated chess-board open power switch",
+                (
+                    f"* EXPECT result_5v {BOARD_POWER.off_rail.minimum} "
+                    f"{BOARD_POWER.off_rail.maximum}"
+                ),
+                f"VINPUT source 0 {BOARD_POWER.supply_volts}",
+                "RSWITCH source rail_5v 1T",
+                "RBLEED rail_5v 0 10k",
+                ".tran 1u 10u",
+                ".meas tran result_5v FIND v(rail_5v) AT=5u",
+                ".end",
+                "",
+            )
+        )
 
-    def _power(self, full_white: bool) -> str:
+    def power_current(self, *, full_white: bool = False) -> float:
         led_count = self._component_count("SK9822")
         brightness = Fraction(1) if full_white else self.led_brightness_max
-        load = 0.45 + led_count * 0.060 * float(brightness)
+        return BOARD_POWER.host_and_logic_amps + (
+            led_count * BOARD_POWER.led_full_white_amps_each * float(brightness)
+        )
+
+    def _power(self, full_white: bool) -> str:
+        load = self.power_current(full_white=full_white)
         fuse_rating = float(self._component_value("FUSE_2A").split()[0])
         overloaded = load > fuse_rating
         name = "full-white" if full_white else "approved"
         lines = [
             f"Generated chess-board {name} power load",
-            f"* EXPECT result_current {load - 0.01} {load + 0.01}",
             (
-                "* EXPECT result_5v 4.3 4.63"
-                if overloaded
-                else "* EXPECT result_5v 4.75 5.1"
+                f"* EXPECT result_current "
+                f"{load - BOARD_POWER.current_tolerance_amps} "
+                f"{load + BOARD_POWER.current_tolerance_amps}"
             ),
-            "VINPUT source 0 5",
-            "RPATH source rail_5v 0.12",
+            (
+                f"* EXPECT result_5v {BOARD_POWER.overloaded_rail.minimum} "
+                f"{BOARD_POWER.overloaded_rail.maximum}"
+                if overloaded
+                else f"* EXPECT result_5v {BOARD_POWER.healthy_rail.minimum} "
+                f"{BOARD_POWER.healthy_rail.maximum}"
+            ),
+            f"VINPUT source 0 {BOARD_POWER.supply_volts}",
+            f"RPATH source rail_5v {BOARD_POWER.path_ohms}",
             f"ILOAD rail_5v 0 {load}",
             ".tran 1u 10u",
             ".meas tran result_5v FIND v(rail_5v) AT=5u",

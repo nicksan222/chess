@@ -2,6 +2,7 @@
 
 import unittest
 
+from components.electrical import LOGIC_3V3
 from spice.support import board_circuits, run_circuit
 
 
@@ -22,7 +23,7 @@ class ButtonBankSpiceTest(unittest.TestCase):
             "btn_f4",
             "btn_f5",
         ):
-            circuit.expect(button, 0.0, 0.1)
+            circuit.expect(button, *LOGIC_3V3.low.tuple())
         run_circuit(__file__, circuit)
 
 

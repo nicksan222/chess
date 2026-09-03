@@ -2,6 +2,7 @@
 
 import unittest
 
+from components.electrical import LOGIC_3V3
 from spice.support import board_circuits, run_circuit
 
 
@@ -10,7 +11,7 @@ class AllSquareHallSpiceTest(unittest.TestCase):
         circuit = board_circuits().all_squares().clear_expectations()
         for file_name in "abcdefgh":
             for rank in range(1, 9):
-                circuit.expect(f"{file_name}{rank}", 0.0, 0.1)
+                circuit.expect(f"{file_name}{rank}", *LOGIC_3V3.low.tuple())
         run_circuit(__file__, circuit)
 
 
