@@ -12,6 +12,7 @@ from fractions import Fraction
 
 from base.design import BoardDesign
 from components.ahct125 import Ahct125Pin
+from components.barrel_jack import DC_INPUT_JACK, BarrelJackPin
 from components.electrical import (
     AHCT125,
     BOARD_POWER,
@@ -19,7 +20,10 @@ from components.electrical import (
     LOGIC_3V3,
     PI_GPIO_PULLUP_OHMS,
 )
+from components.fuse import INPUT_FUSE, FusePin
 from components.hall_sensor import HallSensorPin
+from components.power_switch import MAIN_POWER_SWITCH, PowerSwitchPin
+from components.tactile_switch import TactileSwitchPin
 from spice.circuit import SpiceCircuit
 from spice.movement import MovementCase
 
@@ -76,6 +80,34 @@ class BoardHarness:
                 f"found {actual}"
             )
         return actual
+
+    def _power_path_nets(self) -> tuple[str, str, str]:
+        dc_input = self._required_net(
+            DC_INPUT_JACK.reference,
+            BarrelJackPin.CENTRE_POSITIVE,
+            "DC_IN",
+        )
+        self._required_net(
+            INPUT_FUSE.reference,
+            FusePin.UNFUSED_INPUT,
+            dc_input,
+        )
+        dc_fused = self._required_net(
+            INPUT_FUSE.reference,
+            FusePin.FUSED_OUTPUT,
+            "DC_FUSED",
+        )
+        self._required_net(
+            MAIN_POWER_SWITCH.reference,
+            PowerSwitchPin.FUSED_INPUT,
+            dc_fused,
+        )
+        five_volts = self._required_net(
+            MAIN_POWER_SWITCH.reference,
+            PowerSwitchPin.SWITCHED_FIVE_VOLTS,
+            "+5V",
+        )
+        return dc_input, dc_fused, five_volts
 
     def _component_count(self, part_key: str) -> int:
         return sum(
@@ -238,6 +270,7 @@ class BoardHarness:
                     _expect(f"{_node(name)}_low", True),
                 )
             )
+        supply_node = _node("+3V3")
         lines.extend(
             (
                 (
@@ -246,7 +279,7 @@ class BoardHarness:
                     f"Vt={HALL_SENSOR.magnetic_drive_threshold_volts} "
                     f"Vh={HALL_SENSOR.magnetic_drive_hysteresis_volts})"
                 ),
-                f"VDD vdd 0 {LOGIC_3V3.supply_volts}",
+                f"VDD {supply_node} 0 {LOGIC_3V3.supply_volts}",
                 f"VDRIVE drive 0 PULSE(0 {LOGIC_3V3.supply_volts} 1m 1u 1u 10 20)",
             )
         )
@@ -261,10 +294,19 @@ class BoardHarness:
                     self.net_by_endpoint.get((component.reference, "2")),
                 }
             )
+            attached_nets = {
+                self.net_by_endpoint.get((resistor.reference, "1")),
+                self.net_by_endpoint.get((resistor.reference, "2")),
+            }
+            if attached_nets != {name, "+3V3"}:
+                raise ValueError(
+                    f"{resistor.reference} must connect {name} to +3V3; "
+                    f"found {sorted(str(net) for net in attached_nets)}"
+                )
             node = _node(name)
             lines.extend(
                 (
-                    f"RPULL{index} {node} vdd {resistor.spec.value}",
+                    f"RPULL{index} {node} {supply_node} {resistor.spec.value}",
                     f"SDRIVE{index} {node} 0 drive 0 INPUTSW",
                 )
             )
@@ -288,13 +330,30 @@ class BoardHarness:
         )
         lines = ["Generated chess-board complete button input bank"]
         lines.extend(_expect(_node(name), True) for name in button_nets)
-        lines.extend((f"VDD vdd 0 {LOGIC_3V3.supply_volts}", "VGROUND pressed 0 0"))
+        supply_node = _node("+3V3")
+        lines.append(f"VDD {supply_node} 0 {LOGIC_3V3.supply_volts}")
+        connections = {
+            str(connection.name): connection
+            for connection in self.design.connections.connections
+            if connection.name
+        }
         for index, name in enumerate(button_nets, start=1):
+            switches = [
+                str(reference)
+                for reference, pin in connections[name].endpoints
+                if str(reference).startswith("SW")
+                and str(pin) == TactileSwitchPin.SIGNAL
+            ]
+            if len(switches) != 1:
+                raise ValueError(f"{name} must have exactly one tactile switch")
+            reference = switches[0]
+            self._required_net(reference, TactileSwitchPin.SIGNAL, name)
+            self._required_net(reference, TactileSwitchPin.GROUND, "GND")
             node = _node(name)
             lines.extend(
                 (
-                    f"RPULL{index} {node} vdd {PI_GPIO_PULLUP_OHMS}",
-                    f"RSWITCH{index} {node} pressed {HALL_SENSOR.output_on_ohms}",
+                    f"RPULL{index} {node} {supply_node} {PI_GPIO_PULLUP_OHMS}",
+                    f"R{reference} {node} 0 {HALL_SENSOR.output_on_ohms}",
                 )
             )
         lines.append(".tran 1u 10u")
@@ -306,6 +365,10 @@ class BoardHarness:
         return "\n".join(lines) + "\n"
 
     def _power_startup(self) -> str:
+        dc_input, dc_fused, five_volts = self._power_path_nets()
+        input_node = _node(dc_input)
+        fused_node = _node(dc_fused)
+        rail_node = _node(five_volts)
         capacitors = []
         for component in self.design.components.values():
             if not component.spec.part_key.startswith("CAP_"):
@@ -322,23 +385,31 @@ class BoardHarness:
                 f"* EXPECT result_5v_at_1ms {BOARD_POWER.healthy_rail.minimum} "
                 f"{BOARD_POWER.healthy_rail.maximum}"
             ),
-            f"VINPUT source 0 PULSE(0 {BOARD_POWER.supply_volts} 0 1u 1u 10 20)",
-            f"RPATH source rail_5v {BOARD_POWER.path_ohms}",
+            f"VINPUT {input_node} 0 PULSE(0 {BOARD_POWER.supply_volts} 0 1u 1u 10 20)",
+            f"RFUSE {input_node} {fused_node} {BOARD_POWER.path_ohms / 2}",
+            f"RSWITCH {fused_node} {rail_node} {BOARD_POWER.path_ohms / 2}",
             (
-                f"BLOAD rail_5v 0 I={BOARD_POWER.host_and_logic_amps}*"
-                f"tanh(V(rail_5v)/{BOARD_POWER.load_soft_start_volts})"
+                f"BLOAD {rail_node} 0 I={BOARD_POWER.host_and_logic_amps}*"
+                f"tanh(V({rail_node})/{BOARD_POWER.load_soft_start_volts})"
             ),
         ]
         lines.extend(
-            f"C{reference} rail_5v 0 {value}" for reference, value in capacitors
+            f"C{reference} {rail_node} 0 {value}" for reference, value in capacitors
         )
         lines.extend(
-            (".tran 5u 2m", ".meas tran result_5v_at_1ms FIND v(rail_5v) AT=1m", ".end")
+            (
+                ".tran 5u 2m",
+                f".meas tran result_5v_at_1ms FIND v({rail_node}) AT=1m",
+                ".end",
+            )
         )
         return "\n".join(lines) + "\n"
 
-    @staticmethod
-    def _power_off() -> str:
+    def _power_off(self) -> str:
+        dc_input, dc_fused, five_volts = self._power_path_nets()
+        input_node = _node(dc_input)
+        fused_node = _node(dc_fused)
+        rail_node = _node(five_volts)
         return "\n".join(
             (
                 "Generated chess-board open power switch",
@@ -346,11 +417,12 @@ class BoardHarness:
                     f"* EXPECT result_5v {BOARD_POWER.off_rail.minimum} "
                     f"{BOARD_POWER.off_rail.maximum}"
                 ),
-                f"VINPUT source 0 {BOARD_POWER.supply_volts}",
-                "RSWITCH source rail_5v 1T",
-                "RBLEED rail_5v 0 10k",
+                f"VINPUT {input_node} 0 {BOARD_POWER.supply_volts}",
+                f"RFUSE {input_node} {fused_node} {BOARD_POWER.path_ohms}",
+                f"RSWITCH {fused_node} {rail_node} 1T",
+                f"RBLEED {rail_node} 0 10k",
                 ".tran 1u 10u",
-                ".meas tran result_5v FIND v(rail_5v) AT=5u",
+                f".meas tran result_5v FIND v({rail_node}) AT=5u",
                 ".end",
                 "",
             )
@@ -364,6 +436,10 @@ class BoardHarness:
         )
 
     def _power(self, full_white: bool) -> str:
+        dc_input, dc_fused, five_volts = self._power_path_nets()
+        input_node = _node(dc_input)
+        fused_node = _node(dc_fused)
+        rail_node = _node(five_volts)
         load = self.power_current(full_white=full_white)
         fuse_rating = float(self._component_value("FUSE_2A").split()[0])
         overloaded = load > fuse_rating
@@ -382,11 +458,12 @@ class BoardHarness:
                 else f"* EXPECT result_5v {BOARD_POWER.healthy_rail.minimum} "
                 f"{BOARD_POWER.healthy_rail.maximum}"
             ),
-            f"VINPUT source 0 {BOARD_POWER.supply_volts}",
-            f"RPATH source rail_5v {BOARD_POWER.path_ohms}",
-            f"ILOAD rail_5v 0 {load}",
+            f"VINPUT {input_node} 0 {BOARD_POWER.supply_volts}",
+            f"RFUSE {input_node} {fused_node} {BOARD_POWER.path_ohms / 2}",
+            f"RSWITCH {fused_node} {rail_node} {BOARD_POWER.path_ohms / 2}",
+            f"ILOAD {rail_node} 0 {load}",
             ".tran 1u 10u",
-            ".meas tran result_5v FIND v(rail_5v) AT=5u",
+            f".meas tran result_5v FIND v({rail_node}) AT=5u",
             ".meas tran input_current FIND i(VINPUT) AT=5u",
             ".meas tran result_current PARAM='-input_current'",
             ".end",
