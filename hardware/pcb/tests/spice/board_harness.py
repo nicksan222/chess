@@ -68,6 +68,15 @@ class BoardHarness:
             ".ends SQUARE_SENSOR",
         ]
 
+    def _required_net(self, reference: str, pin: str, expected: str) -> str:
+        actual = self.net_by_endpoint.get((reference, pin))
+        if actual != expected:
+            raise ValueError(
+                f"{reference} pin {pin} must be on {expected} for simulation; "
+                f"found {actual}"
+            )
+        return actual
+
     def _component_count(self, part_key: str) -> int:
         return sum(
             component.spec.part_key == part_key
@@ -161,13 +170,18 @@ class BoardHarness:
         return "\n".join(lines) + "\n"
 
     def _level_shifter(self) -> str:
+        supply_net = self._required_net("U5", Ahct125Pin.SUPPLY, "+5V")
+        ground_net = self._required_net("U5", Ahct125Pin.GROUND, "GND")
+        supply_node = _node(supply_net)
         channels = (
             (
+                Ahct125Pin.BUFFER_1_OUTPUT_ENABLE,
                 Ahct125Pin.BUFFER_1_INPUT,
                 Ahct125Pin.BUFFER_1_OUTPUT,
                 False,
             ),
             (
+                Ahct125Pin.BUFFER_2_OUTPUT_ENABLE,
                 Ahct125Pin.BUFFER_2_INPUT,
                 Ahct125Pin.BUFFER_2_OUTPUT,
                 True,
@@ -177,18 +191,24 @@ class BoardHarness:
             "Generated chess-board AHCT125 level-shifter channels",
             f"* EXPECT result_channel_1 {AHCT125.low.minimum} {AHCT125.low.maximum}",
             f"* EXPECT result_channel_2 {AHCT125.high.minimum} {AHCT125.high.maximum}",
-            f"V5 rail_5v 0 {AHCT125.supply_volts}",
+            f"V5 {supply_node} 0 {AHCT125.supply_volts}",
         ]
-        for index, (input_pin, output_pin, high) in enumerate(channels, start=1):
+        for index, (enable_pin, input_pin, output_pin, high) in enumerate(
+            channels, start=1
+        ):
+            enable_net = self._required_net("U5", enable_pin, ground_net)
             input_net = self.net_by_endpoint[("U5", str(input_pin))]
             output_net = self.net_by_endpoint[("U5", str(output_pin))]
+            enable_node = "0" if enable_net == ground_net else _node(enable_net)
             input_node = _node(input_net)
             output_node = _node(output_net)
             output_expression = (
                 f"BOUT{index} {output_node} 0 "
-                f"V={{V({input_node})>{AHCT125.input_high_threshold_volts} ? "
-                f"V(rail_5v)-{AHCT125.output_headroom_volts} : "
-                f"{AHCT125.output_headroom_volts}}}"
+                f"V={{V({supply_node})>{AHCT125.minimum_supply_volts} "
+                f"&& V({enable_node})<{AHCT125.enable_low_max_volts} ? "
+                f"(V({input_node})>{AHCT125.input_high_threshold_volts} ? "
+                f"V({supply_node})-{AHCT125.output_headroom_volts} : "
+                f"{AHCT125.output_headroom_volts}) : 0}}"
             )
             lines.extend(
                 (

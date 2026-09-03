@@ -37,6 +37,8 @@ class HallSensorModel:
 @dataclass(frozen=True)
 class Ahct125Model:
     supply_volts: float
+    minimum_supply_volts: float
+    enable_low_max_volts: float
     input_high_threshold_volts: float
     output_headroom_volts: float
     low: VoltageRange
@@ -71,6 +73,8 @@ HALL_SENSOR = HallSensorModel(
 PI_GPIO_PULLUP_OHMS = 50_000.0
 AHCT125 = Ahct125Model(
     supply_volts=5.0,
+    minimum_supply_volts=4.5,
+    enable_low_max_volts=0.8,
     input_high_threshold_volts=2.0,
     output_headroom_volts=0.1,
     low=VoltageRange(0.0, 0.3),
