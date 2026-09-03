@@ -8,6 +8,10 @@ permissions:
   contents: read
   packages: write
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   prebuild:
     runs-on: ubuntu-latest
@@ -59,6 +63,13 @@ jobs:
             docker tag "${IMAGE}" "${LATEST}"
             docker push "${LATEST}"
           fi
+
+  firmware-metadata:
+    name: Firmware metadata
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./tools/firmware validate
 
   crates:
     name: Discover crates
@@ -147,7 +158,7 @@ jobs:
   firmware-check:
     name: Firmware configuration
     if: github.event_name == 'pull_request'
-    needs: [cad, pcb, code-quality, crate-test]
+    needs: [cad, pcb, code-quality, crate-test, firmware-metadata]
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
@@ -157,7 +168,7 @@ jobs:
   firmware:
     name: Firmware
     if: github.event_name != 'pull_request'
-    needs: [cad, pcb, code-quality, crate-test]
+    needs: [cad, pcb, code-quality, crate-test, firmware-metadata]
     runs-on: ubuntu-24.04
     timeout-minutes: 360
     steps:
@@ -166,7 +177,25 @@ jobs:
         run: |
           sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc
           docker system prune --all --force
+      - id: yocto-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            .cache/yocto/downloads
+            .cache/yocto/sstate-cache
+          key: ${{ runner.os }}-yocto-${{ hashFiles('apps/firmware/yocto/kas/firmware.yml') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            ${{ runner.os }}-yocto-${{ hashFiles('apps/firmware/yocto/kas/firmware.yml') }}-
+            ${{ runner.os }}-yocto-
       - run: ./tools/firmware build
+      - name: Save Yocto cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            .cache/yocto/downloads
+            .cache/yocto/sstate-cache
+          key: ${{ steps.yocto-cache.outputs.cache-primary-key }}
       - run: |
           xz --test dist/firmware/firmware-rpi-zero-2w.img.xz
           (cd dist/firmware && sha256sum --check SHA256SUMS)

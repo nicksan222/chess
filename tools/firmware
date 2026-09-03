@@ -7,8 +7,12 @@ config="${root}/apps/firmware/yocto/kas/firmware.yml"
 machine="raspberrypi0-2w-64"
 
 usage() {
-    echo 'Usage: ./tools/firmware [check | build | clean]' >&2
+    echo 'Usage: ./tools/firmware [validate | check | build | clean]' >&2
     exit 2
+}
+
+validate() {
+    python3 apps/firmware/yocto/validate_crates.py
 }
 
 run_kas() {
@@ -46,10 +50,15 @@ collect() {
 }
 
 case "${1:-}" in
+    validate)
+        validate
+        ;;
     check)
+        validate
         run_kas shell -c 'bitbake -p' "${config}"
         ;;
     build)
+        validate
         run_kas build "${config}"
         collect
         ;;

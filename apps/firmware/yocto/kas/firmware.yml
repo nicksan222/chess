@@ -47,6 +47,8 @@ repos:
 local_conf_header:
   firmware: |
     CONF_VERSION = "2"
+    DL_DIR = "${TOPDIR}/../downloads"
+    SSTATE_DIR = "${TOPDIR}/../sstate-cache"
     ENABLE_I2C = "1"
     ENABLE_SPI_BUS = "1"
     KERNEL_MODULE_AUTOLOAD:rpi += "i2c-dev"

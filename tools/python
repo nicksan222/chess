@@ -10,7 +10,7 @@ if [[ $# -ne 0 ]]; then
 fi
 
 ruff_version="0.16.5"
-python_roots=(hardware/cad hardware/pcb hardware/shared)
+python_roots=(apps/firmware/yocto hardware/cad hardware/pcb hardware/shared)
 
 run_ruff() {
     if command -v ruff >/dev/null 2>&1 \
@@ -28,7 +28,7 @@ run_ruff() {
     return 1
 }
 
-printf '\n==> Lint CAD, PCB, and shared Python\n'
+printf '\n==> Lint Python\n'
 run_ruff check "${python_roots[@]}"
-printf '\n==> Format CAD, PCB, and shared Python\n'
+printf '\n==> Format Python\n'
 run_ruff format --check "${python_roots[@]}"
