@@ -10,7 +10,7 @@ autobenches = false
 [dependencies]
 chess-core = { path = "../core" }
 logger = { path = "../logger" }
-sha2 = { version = "0.10.9", default-features = false }
+sha2 = { version = "0.11.0", default-features = false }
 
 [[test]]
 name = "unit"
