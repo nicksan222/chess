@@ -1,5 +1,8 @@
 # Chess ♟️
 
+[![CI](https://github.com/nicksan222/chess/actions/workflows/ci.yml/badge.svg)](https://github.com/nicksan222/chess/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Chess is an open-source smart chessboard you can build, modify, and play on.
 Each square senses a magnetic piece and has its own RGB light, allowing the board
 to follow a physical game, highlight moves, and provide feedback. A Raspberry Pi
@@ -57,3 +60,12 @@ test one square on prototyping board before ordering the full board.
 The firmware app boots as a supervised process, but its hardware and
 provisioning workers are not written. The board model that
 turns sensor bytes into chess squares is, and so is the chess engine behind it.
+
+## Contributing and support
+
+Contributions are welcome. Start with [`CONTRIBUTING.md`](CONTRIBUTING.md), use
+[Discussions](https://github.com/nicksan222/chess/discussions) for questions,
+and report vulnerabilities according to [`SECURITY.md`](SECURITY.md).
+
+This project follows its [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) and is
+available under the [MIT License](LICENSE).

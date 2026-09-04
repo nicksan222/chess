@@ -1,6 +1,6 @@
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
-root := `git rev-parse --show-toplevel`
+root := justfile_directory() + "/../.."
 package := "persistence"
 
 default:
