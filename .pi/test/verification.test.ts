@@ -30,6 +30,22 @@ describe("selectChecks", () => {
 		expect(checks[0]?.args).toContain("chess");
 	});
 
+	test("parses changed package justfiles alongside Rust checks", () => {
+		const checks = selectChecks(cwd, ["crates/core/justfile"], "fast");
+
+		expect(checks.map((check) => check.id)).toEqual([
+			"crates/core:cargo-check",
+			"crates/core/justfile:just-format",
+		]);
+		expect(checks[1]?.args).toEqual([
+			"--unstable",
+			"--justfile",
+			"/repo/crates/core/justfile",
+			"--fmt",
+			"--check",
+		]);
+	});
+
 	test("uses manifest package names for renamed workspace crates", () => {
 		for (const [path, packageName] of [
 			["apps/simulator/src/main.rs", "chess-simulator"],
@@ -156,11 +172,11 @@ describe("selectChecks", () => {
 	});
 
 	test("uses a non-invasive diff check for unscoped fast validation", () => {
-		const checks = selectChecks(cwd, ["justfile"], "fast");
+		const checks = selectChecks(cwd, ["README.md"], "fast");
 
 		expect(checks.map((check) => check.id)).toEqual(["repository:diff-check"]);
 		expect(checks[0]?.command).toBe("git");
-		expect(checks[0]?.args).toEqual(["-C", cwd, "diff", "--check", "--", "justfile"]);
+		expect(checks[0]?.args).toEqual(["-C", cwd, "diff", "--check", "--", "README.md"]);
 	});
 
 	test("checks committed unscoped changes from their base revision", () => {

@@ -218,6 +218,14 @@ export function selectChecks(cwd: string, paths: string[], level: ValidationLeve
 	if (yoctoMetadataPaths.length > 0 && firmwareCodePaths.length > 0) {
 		checks.push(yoctoMetadataCheck(cwd));
 	}
+	const justfiles = paths.filter((path) => path === "justfile" || path.endsWith("/justfile"));
+	for (const path of [...new Set(justfiles)].sort()) {
+		checks.push({
+			id: `${path}:just-format`,
+			command: "just",
+			args: ["--unstable", "--justfile", join(cwd, path), "--fmt", "--check"],
+		});
+	}
 	const harnessShellPaths = paths.filter((path) =>
 		path === ".githooks/pre-commit"
 		|| (path.endsWith(".sh") && (path.startsWith(".devcontainer/") || path.startsWith(".github/")))
