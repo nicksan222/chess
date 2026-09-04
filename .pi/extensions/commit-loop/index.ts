@@ -56,10 +56,7 @@ async function requestChanges(
 	message: string,
 	paths: readonly string[],
 ): Promise<boolean> {
-	const feedback = await ctx.ui.editor(
-		"Changes needed before this commit",
-		"Describe what should change in the patch or commit message.",
-	);
+	const feedback = await ctx.ui.editor("Describe the changes needed in the patch or commit message");
 	await unstage(pi, repository, paths);
 	if (!feedback?.trim()) {
 		ctx.ui.notify("Commit loop paused; staged changes were restored to the working tree.", "info");

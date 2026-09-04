@@ -44,6 +44,7 @@ function createHarness(
 	const reviews: string[] = [];
 	const notices: string[] = [];
 	const sentMessages: string[] = [];
+	const editorCalls: unknown[][] = [];
 	const pi = {
 		registerCommand(name: string, registration: { handler: (args: string, ctx: any) => Promise<void> }) {
 			if (name === "commit-loop") commandHandler = registration.handler;
@@ -77,7 +78,10 @@ function createHarness(
 		sessionManager: { getBranch: () => [] },
 		waitForIdle: async () => {},
 		ui: {
-			editor: async () => options.editor,
+			editor: async (...args: unknown[]) => {
+				editorCalls.push(args);
+				return options.editor;
+			},
 			notify: (message: string) => notices.push(message),
 			select: async (title: string) => {
 				reviews.push(title);
@@ -86,7 +90,7 @@ function createHarness(
 			setStatus() {},
 		},
 	};
-	return { commandHandler, context, notices, reviews, sentMessages };
+	return { commandHandler, context, editorCalls, notices, reviews, sentMessages };
 }
 
 describe("commit plan validation", () => {
@@ -153,6 +157,7 @@ describe("/commit-loop", () => {
 		await harness.commandHandler("update nested file", harness.context);
 
 		expect((await run("git", ["diff", "--cached", "--name-only"], repository)).stdout).toBe("");
+		expect(harness.editorCalls).toEqual([["Describe the changes needed in the patch or commit message"]]);
 		expect(harness.sentMessages[0]).toContain("Keep the original first line.");
 	});
 });
