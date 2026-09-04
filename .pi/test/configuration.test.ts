@@ -17,6 +17,15 @@ describe("Pi harness configuration", () => {
 		}
 	});
 
+	test("keeps every GitHub workflow and action parseable", async () => {
+		const paths = [...new Bun.Glob(".github/**/*.{yml,yaml}").scanSync({ cwd: repository })];
+		expect(paths.length).toBeGreaterThan(0);
+		for (const path of paths) {
+			const workflow = await text(path);
+			expect(() => YAML.parse(workflow)).not.toThrow();
+		}
+	});
+
 	test("keeps the CI workflow parseable and requires Bun validation", async () => {
 		const workflow = await text(".github/workflows/ci.yml");
 		expect(() => YAML.parse(workflow)).not.toThrow();
