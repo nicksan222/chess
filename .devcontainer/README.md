@@ -38,8 +38,9 @@ Container creation configures the repository pre-commit hook and installs Pi.
 Credentials for every built-in Pi API-key provider are forwarded from matching
 host environment variables without writing secrets to the repository. Pi's
 `~/.pi/agent` directory uses the persistent `chess-pi-agent` Docker volume, so
-credentials created with `pi` and `/login` survive container rebuilds. Export
-provider variables on the host before opening the container; see Pi's
+credentials created with `pi` and `/login` survive container rebuilds. Automatic
+Pi worktrees similarly use the persistent `chess-pi-worktrees` volume, preserving
+uncommitted agent work across container recreation. Export provider variables on the host before opening the container; see Pi's
 [provider documentation](https://github.com/earendil-works/pi-mono/blob/main/packages/coding-agent/docs/providers.md)
 for the supported names and cloud-provider settings.
 

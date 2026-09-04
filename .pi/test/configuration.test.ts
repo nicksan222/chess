@@ -17,6 +17,12 @@ describe("Pi harness configuration", () => {
 		}
 	});
 
+	test("persists Pi state and automatic worktrees", async () => {
+		const config = JSON.parse(await text(".devcontainer/devcontainer.json"));
+		expect(config.mounts).toContain("source=chess-pi-agent,target=/home/vscode/.pi/agent,type=volume");
+		expect(config.mounts).toContain("source=chess-pi-worktrees,target=/home/vscode/.worktrees,type=volume");
+	});
+
 	test("keeps every GitHub workflow and action parseable", async () => {
 		const paths = [...new Bun.Glob(".github/**/*.{yml,yaml}").scanSync({ cwd: repository })];
 		expect(paths.length).toBeGreaterThan(0);
