@@ -202,10 +202,10 @@ jobs:
 
   firmware:
     name: Firmware
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: github.event_name == 'push'
     needs: [cad, pcb, code-quality, crate-test, firmware-metadata, firmware-binary]
     permissions:
       contents: write
     uses: ./.github/workflows/firmware.yml
     with:
-      publish: true
+      publish: ${{ startsWith(github.ref, 'refs/tags/v') }}
