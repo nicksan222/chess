@@ -1,0 +1,44 @@
+name: Feature proposal
+description: Propose a focused improvement
+title: "feature: "
+labels:
+  - enhancement
+body:
+  - type: checkboxes
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues, pull requests, and discussions.
+          required: true
+  - type: textarea
+    attributes:
+      label: Problem
+      description: What concrete problem or limitation should be addressed?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Proposed change
+      description: Describe the desired behavior without prescribing unnecessary implementation details.
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Area
+      options:
+        - Firmware
+        - Rust software
+        - PCB
+        - CAD
+        - Documentation or tooling
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Alternatives and tradeoffs
+      description: What other approaches have you considered?
+  - type: textarea
+    attributes:
+      label: Additional context
+      description: Add sketches, references, measurements, or examples.
