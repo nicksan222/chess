@@ -116,11 +116,6 @@ describe("standalone /pr workflow", () => {
 
 	test("shows and publishes existing branch commits without recreating them", async () => {
 		const repository = await createRepository();
-		const remote = await mkdtemp(join(tmpdir(), "pi-pr-workflow-remote-"));
-		temporaryDirectories.push(remote);
-		await run("git", ["init", "--bare", "-q"], remote);
-		await run("git", ["remote", "add", "origin", remote], repository);
-		await run("git", ["push", "-q", "-u", "origin", "main"], repository);
 		await run("git", ["switch", "-q", "-c", "pi/session"], repository);
 		await writeFile(join(repository, "README.md"), "committed change\n");
 		await run("git", ["add", "README.md"], repository);

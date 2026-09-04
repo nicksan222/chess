@@ -80,9 +80,14 @@ export async function inspectGitState(pi: ExtensionAPI, cwd: string): Promise<Gi
 	const currentBranch = branchResult.code === 0 ? branchResult.stdout.trim() : "HEAD";
 	const selectedBase = await baseBranch(pi, repository);
 	const remoteBase = `origin/${selectedBase}`;
-	const mergeBase = await git(pi, repository, ["merge-base", "HEAD", remoteBase], true);
-	const head = await git(pi, repository, ["rev-parse", "HEAD"]);
-	const baseOid = mergeBase.code === 0 ? mergeBase.stdout.trim() : head.stdout.trim();
+	let mergeBase = await git(pi, repository, ["merge-base", "HEAD", remoteBase], true);
+	if (mergeBase.code !== 0) {
+		mergeBase = await git(pi, repository, ["merge-base", "HEAD", selectedBase], true);
+	}
+	if (mergeBase.code !== 0) {
+		throw new Error(`Could not resolve a merge base against ${remoteBase} or local ${selectedBase}.`);
+	}
+	const baseOid = mergeBase.stdout.trim();
 	const existingCommits = (await git(pi, repository, [
 		"log",
 		"--reverse",
