@@ -59,12 +59,16 @@ describe("secret scanning", () => {
 				'+api_key = "definitely-not-a-real-secret-value"',
 				'+AWS_SECRET_ACCESS_KEY = "quoted-secret-value"',
 				"+STRIPE_SECRET_KEY = 'another-secret-value'",
+				'+  "client_secret": "structured-secret-value"',
+				"+  password: unquoted-secret-value",
 			].join("\n"),
 		);
 		expect(findings).toEqual([
 			'+api_key = "definitely-not-a-real-secret-value"',
 			'+AWS_SECRET_ACCESS_KEY = "quoted-secret-value"',
 			"+STRIPE_SECRET_KEY = 'another-secret-value'",
+			'+  "client_secret": "structured-secret-value"',
+			"+  password: unquoted-secret-value",
 		]);
 		expect(suspiciousPatchLines(
 			"+API_KEY=super-secret-value\n+AWS_SECRET_ACCESS_KEY=abcdefghijklmnop # production\n+DATABASE_PASSWORD: secret-value\n+MODE=development",
