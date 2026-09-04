@@ -19,7 +19,7 @@ The image provides:
 
 - Node.js 22 and the [Pi coding agent](https://pi.dev/), installed during
   container creation;
-- stable Rust with `rustfmt`, Clippy, and Just;
+- stable Rust with `rustfmt`, Clippy, Just, and the AArch64 GNU target/linker;
 - Ruff for CAD, PCB, and shared Python;
 - KiCad 9 with `kicad-cli` and `pcbnew`;
 - a checksum-verified Blender at `/opt/blender`;
@@ -51,6 +51,7 @@ pi                         # start the coding agent; use /login for OAuth
 just pcb                    # test, then generate PCB review output
 just cad                    # test, then generate CAD output
 just quality                # lint and format-check every package
+just firmware-binary        # link the firmware for AArch64
 just test                   # test every package
 just check                  # all domains, sequentially
 ```

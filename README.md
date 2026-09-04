@@ -1,6 +1,7 @@
 # Chess ♟️
 
 [![CI](https://github.com/nicksan222/chess/actions/workflows/ci.yml/badge.svg)](https://github.com/nicksan222/chess/actions/workflows/ci.yml)
+[![Firmware](https://github.com/nicksan222/chess/actions/workflows/firmware.yml/badge.svg)](https://github.com/nicksan222/chess/actions/workflows/firmware.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 Chess is an open-source smart chessboard you can build, modify, and play on.

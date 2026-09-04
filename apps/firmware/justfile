@@ -2,6 +2,7 @@ set shell := ["bash", "-euo", "pipefail", "-c"]
 
 root := justfile_directory() + "/../.."
 package := "firmware"
+target := "aarch64-unknown-linux-gnu"
 cache := root + "/.cache/yocto"
 config := root + "/apps/firmware/yocto/kas/firmware.yml"
 machine := "raspberrypi0-2w-64"
@@ -33,18 +34,31 @@ check: quality test validate
 build:
     cd "{{ root }}" && cargo build --package "{{ package }}" --all-targets --all-features
 
+# Compile and link the complete firmware crate graph for the Pi architecture.
+cross-build: _cross-toolchain
+    cd "{{ root }}" && CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc \
+        cargo build --locked --release --package "{{ package }}" --target "{{ target }}"
+    aarch64-linux-gnu-readelf --file-header \
+        "{{ root }}/target/{{ target }}/release/{{ package }}" | grep --quiet 'Machine:.*AArch64'
+
+[private]
+_cross-toolchain:
+    @command -v aarch64-linux-gnu-gcc >/dev/null || { echo 'error: the AArch64 GCC linker is required; use the development container' >&2; exit 1; }
+    @command -v aarch64-linux-gnu-readelf >/dev/null || { echo 'error: AArch64 binutils are required; use the development container' >&2; exit 1; }
+    @target_libdir="$(rustc --target '{{ target }}' --print target-libdir)"; compgen -G "$target_libdir/libstd-*.rlib" >/dev/null || { echo 'error: the Rust AArch64 target is required; use the development container' >&2; exit 1; }
+
 # Validate crate metadata consumed by BitBake.
 validate:
     cd "{{ root }}" && python3 apps/firmware/yocto/validate_crates.py
 
-# Parse the complete BitBake configuration without building an image.
+# Parse BitBake and dry-run the complete image task graph without executing it.
 image-check: validate _docker
     mkdir -p "{{ cache }}"
     docker run --rm --init --user root \
         -e "USER_ID=$(id -u)" -e "GROUP_ID=$(id -g)" \
         -e KAS_WORK_DIR=/build -e "FIRMWARE_SOURCE_DIR={{ root }}" \
         -v "{{ root }}:{{ root }}" -v "{{ cache }}:/build" -w "{{ root }}" \
-        {{ kas_image }} shell -c 'bitbake -p' "{{ config }}"
+        {{ kas_image }} shell -c 'bitbake -n firmware-image' "{{ config }}"
 
 # Build and collect the flashable Yocto image.
 image: validate _docker
@@ -65,6 +79,8 @@ image: validate _docker
     cp "$firmware" "{{ output }}/firmware-rpi-zero-2w.img.xz"
     cp "$bmap" "{{ output }}/firmware-rpi-zero-2w.bmap"
     (cd "{{ output }}" && sha256sum -- * > SHA256SUMS)
+    xz --test "{{ output }}/firmware-rpi-zero-2w.img.xz"
+    (cd "{{ output }}" && sha256sum --check SHA256SUMS)
 
 [private]
 _docker:

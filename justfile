@@ -12,6 +12,7 @@ check: _automation-format
     #!/usr/bin/env bash
     set -euo pipefail
     for package in {{ rust_packages }}; do just --justfile "$package/justfile" check; done
+    just firmware-binary
     just --justfile hardware/shared/justfile check
     just --justfile hardware/cad/justfile check
     just --justfile hardware/pcb/justfile review
@@ -21,6 +22,7 @@ precommit: _automation-format
     #!/usr/bin/env bash
     set -euo pipefail
     for package in {{ rust_packages }}; do just --justfile "$package/justfile" check; done
+    just firmware-binary
     just --justfile hardware/shared/justfile check
     just --justfile hardware/cad/justfile check-fast
     just --justfile hardware/pcb/justfile check-fast
@@ -68,6 +70,10 @@ pcb:
 # Enforce physical release evidence and export PCB fabrication output.
 pcb-release:
     just --justfile hardware/pcb/justfile release
+
+# Compile and link the complete firmware crate graph for AArch64.
+firmware-binary:
+    just --justfile apps/firmware/justfile cross-build
 
 # Validate the complete Yocto configuration.
 firmware-check:

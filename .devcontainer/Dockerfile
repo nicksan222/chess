@@ -14,7 +14,9 @@ RUN apt-get update \
         clang \
         cmake \
         curl \
+        gcc-aarch64-linux-gnu \
         git \
+        libc6-dev-arm64-cross \
         libdecor-0-0 \
         libdecor-0-plugin-1-cairo \
         libegl1 \
@@ -69,5 +71,6 @@ RUN curl --fail --location --proto '=https' --tlsv1.2 --show-error \
         https://sh.rustup.rs \
         | sh -s -- -y --profile minimal --default-toolchain stable \
     && rustup component add clippy rustfmt rust-src \
+    && rustup target add aarch64-unknown-linux-gnu \
     && cargo install just --locked --version 1.40.0
 USER root
