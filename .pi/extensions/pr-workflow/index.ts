@@ -1,3 +1,6 @@
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import type { ExtensionAPI, ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
 import { pathsFromNameStatus } from "../../feedback/git-paths.js";
 import { suspiciousPatchLines, suspiciousTextLines } from "../../feedback/secrets.js";
@@ -57,28 +60,40 @@ async function createCommits(
 	ctx: ExtensionCommandContext,
 	state: GitState,
 	plan: PrPlan,
-	selectedPaths: readonly string[],
 ): Promise<void> {
-	const selected = new Set(selectedPaths);
+	const selected = new Set(plan.commits.flatMap((commit) => commit.paths));
 	const unrelatedStaged = state.stagedPaths.filter((path) => !selected.has(path));
-	if (unrelatedStaged.length > 0) {
-		throw new Error(`Refusing to alter the index because unrelated paths are staged: ${unrelatedStaged.join(", ")}`);
-	}
-	const selectedStaged = state.stagedPaths.filter((path) => selected.has(path));
-	if (selectedStaged.length > 0) {
-		await git(pi, state.repository, ["restore", "--staged", "--", ...selectedStaged]);
-	}
-
-	for (const [index, commit] of plan.commits.entries()) {
-		ctx.ui.setStatus("pr-workflow", `committing ${index + 1}/${plan.commits.length}`);
-		await git(pi, state.repository, ["add", "--", ...commit.paths]);
-		const staged = await git(pi, state.repository, ["diff", "--cached", "--name-status", "-z", "--"]);
-		const actualPaths = pathsFromNameStatus(staged.stdout);
-		const expectedPaths = [...commit.paths].sort();
-		if (JSON.stringify(actualPaths) !== JSON.stringify(expectedPaths)) {
-			throw new Error(`Staged paths differ from commit plan. Expected ${expectedPaths.join(", ")}; found ${actualPaths.join(", ") || "none"}.`);
+	let savedIndexDirectory: string | undefined;
+	try {
+		if (unrelatedStaged.length > 0) {
+			const patch = await git(pi, state.repository, [
+				"diff", "--cached", "--binary", "--full-index", "--", ...unrelatedStaged,
+			]);
+			savedIndexDirectory = await mkdtemp(join(tmpdir(), "pi-pr-index-"));
+			await writeFile(join(savedIndexDirectory, "unrelated.patch"), patch.stdout);
+			await git(pi, state.repository, ["restore", "--staged", "--", ...unrelatedStaged]);
 		}
-		await git(pi, state.repository, ["commit", "--no-verify", "-m", commit.message]);
+		const selectedStaged = state.stagedPaths.filter((path) => selected.has(path));
+		if (selectedStaged.length > 0) {
+			await git(pi, state.repository, ["restore", "--staged", "--", ...selectedStaged]);
+		}
+
+		for (const [index, commit] of plan.commits.entries()) {
+			ctx.ui.setStatus("pr-workflow", `committing ${index + 1}/${plan.commits.length}`);
+			await git(pi, state.repository, ["add", "--", ...commit.paths]);
+			const staged = await git(pi, state.repository, ["diff", "--cached", "--name-status", "-z", "--"]);
+			const actualPaths = pathsFromNameStatus(staged.stdout);
+			const expectedPaths = [...commit.paths].sort();
+			if (JSON.stringify(actualPaths) !== JSON.stringify(expectedPaths)) {
+				throw new Error(`Staged paths differ from commit plan. Expected ${expectedPaths.join(", ")}; found ${actualPaths.join(", ") || "none"}.`);
+			}
+			await git(pi, state.repository, ["commit", "--no-verify", "-m", commit.message]);
+		}
+	} finally {
+		if (savedIndexDirectory) {
+			await git(pi, state.repository, ["apply", "--cached", join(savedIndexDirectory, "unrelated.patch")]);
+			await rm(savedIndexDirectory, { recursive: true, force: true });
+		}
 	}
 }
 
@@ -166,7 +181,7 @@ async function runPr(pi: ExtensionAPI, args: string, ctx: ExtensionCommandContex
 	}
 
 	await createBranch(pi, state, branch);
-	await createCommits(pi, ctx, state, plan, selectedPaths);
+	await createCommits(pi, ctx, state, plan);
 	ctx.ui.setStatus("pr-workflow", "running full validation");
 	const validationPaths = [...new Set([...state.existingPaths, ...selectedPaths])].sort();
 	const snapshot = await createValidationWorktree(pi, state.repository, "HEAD");

@@ -119,6 +119,24 @@ describe("standalone /pr workflow", () => {
 		expect(harness.notices.some(({ message, level }) => level === "warning" && message.includes("Created and validated local commits"))).toBe(true);
 	});
 
+	test("preserves unrelated staged changes exactly", async () => {
+		const repository = await createRepository();
+		await writeFile(join(repository, "unrelated.txt"), "before\n");
+		await run("git", ["add", "unrelated.txt"], repository);
+		await run("git", ["commit", "-qm", "Add unrelated fixture"], repository);
+		await writeFile(join(repository, "unrelated.txt"), "staged unrelated change\n");
+		await run("git", ["add", "unrelated.txt"], repository);
+		await writeFile(join(repository, "README.md"), "selected change\n");
+		const harness = createHarness(repository, DOCUMENTATION_PLAN);
+
+		await harness.commandHandler("document the workflow", harness.context);
+
+		expect((await run("git", ["diff", "--cached", "--", "unrelated.txt"], repository)).stdout)
+			.toContain("+staged unrelated change");
+		expect((await run("git", ["log", "-1", "--pretty=%s"], repository)).stdout.trim())
+			.toBe("Document the PR workflow");
+	});
+
 	test("preserves both sides of an initially staged rename", async () => {
 		const repository = await createRepository();
 		await writeFile(join(repository, "old.txt"), "renamed content\n");
