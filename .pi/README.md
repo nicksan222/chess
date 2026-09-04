@@ -4,8 +4,10 @@ Project-local Pi extensions are intentionally split by responsibility:
 
 - `auto-worktree` creates and switches to a unique `pi/<session-id>` Git
   worktree when a new Pi process starts;
-- `change-tracker` detects files changed during an agent turn, including writes
-  made through shell commands;
+- `change-tracker` attributes files changed during an agent turn to explicit
+  edit/write calls, with snapshot fallback for shell-only mutation turns;
+- `commit-loop` stages each planned tiny commit for interactive review, validates
+  accepted patches, and resumes automatically after requested repair turns;
 - `auto-validation` runs bounded fast validation after changed turns and gives
   failures back to the agent for at most two repair rounds;
 - `verify-changes` provides the `verify_changes` tool and `/verify` command;
@@ -21,12 +23,18 @@ result formatting live in `feedback/verification.ts`.
 ```text
 /verify [fast|test|full]
 /validation-clear
+/commit-loop [goal]
 /pr [goal]
 /worktree
 ```
 
 `/worktree` is supplied by the installed `@narumitw/pi-worktree` package for
-manual inspection, switching, and cleanup. `/pr` uses the active model once to
+manual inspection, switching, and cleanup. `/commit-loop` uses the active model
+to propose ordered path-scoped commits, stages one at a time, and asks whether
+to commit, request changes, or stop. Requested changes are safely unstaged and
+handed back to the agent before the loop resumes automatically.
+
+`/pr` uses the active model once to
 produce a typed plan, then the extension itself creates or renames the branch,
 creates ordered path-scoped commits, runs full validation, pushes, and invokes
 `gh pr create`. It shows one complete plan and asks for confirmation before any

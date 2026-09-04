@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import autoValidation from "../extensions/auto-validation/index.js";
 import autoWorktree from "../extensions/auto-worktree/index.js";
+import commitLoop from "../extensions/commit-loop/index.js";
 import changeTracker from "../extensions/change-tracker/index.js";
 import prWorkflow from "../extensions/pr-workflow/index.js";
 import validationStatus from "../extensions/validation-status/index.js";
@@ -44,6 +45,7 @@ describe("project extensions", () => {
 		for (const extension of [
 			autoValidation,
 			autoWorktree,
+			commitLoop,
 			changeTracker,
 			prWorkflow,
 			validationStatus,
@@ -55,6 +57,7 @@ describe("project extensions", () => {
 		expect(harness.tools).toEqual(["verify_changes"]);
 		expect(harness.commands.sort()).toEqual([
 			"auto-worktree-bootstrap",
+			"commit-loop",
 			"pr",
 			"validation-clear",
 			"verify",
