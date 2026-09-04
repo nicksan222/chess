@@ -139,6 +139,7 @@ async function runCommitLoop(
 		ctx.ui.setStatus("commit-loop", `staging ${index + 1}/${plan.commits.length}`);
 		await stageExact(pi, repository, commit.paths);
 		const stagedPatch = await git(pi, repository, ["diff", "--cached", "--no-ext-diff", "--no-color", "--"]);
+		const reviewedTree = (await git(pi, repository, ["write-tree"])).stdout.trim();
 		const choice = await ctx.ui.select(reviewText(commit.message, stagedPatch.stdout, index, plan.commits.length), [
 			"Commit",
 			"Needs changes",
@@ -168,6 +169,17 @@ async function runCommitLoop(
 		if (!validation.passed) {
 			await unstage(pi, repository, commit.paths);
 			throw new Error(`Commit validation failed; the proposed commit was unstaged.\n${formatValidationResult(validation)}`);
+		}
+		const currentTree = (await git(pi, repository, ["write-tree"])).stdout.trim();
+		if (currentTree !== reviewedTree) {
+			await unstage(pi, repository, commit.paths);
+			throw new Error("The staged index changed during review or validation; the proposed commit was unstaged.");
+		}
+		const currentPatch = await git(pi, repository, ["diff", "--cached", "--no-ext-diff", "--no-color", "--"]);
+		const suspicious = suspiciousPatchLines(currentPatch.stdout);
+		if (suspicious.length > 0) {
+			await unstage(pi, repository, commit.paths);
+			throw new Error(`Potential credentials found in staged additions:\n${suspicious.join("\n")}`);
 		}
 		await git(pi, repository, ["commit", "--no-verify", "-m", commit.message]);
 		committed.push(commit.message.split("\n", 1)[0] ?? commit.message);

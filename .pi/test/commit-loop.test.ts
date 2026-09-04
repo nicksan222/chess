@@ -169,6 +169,36 @@ describe("/commit-loop", () => {
 		expect(harness.notices.some((message) => message.includes("Commit loop complete"))).toBe(true);
 	});
 
+	test("rejects index drift after review and validation", async () => {
+		const repository = await createRepository();
+		await writeFile(join(repository, "README.md"), "before\n");
+		await writeFile(join(repository, "EXTRA.md"), "before\n");
+		await run("git", ["add", "."], repository);
+		await run("git", ["commit", "-qm", "Initial commit"], repository);
+		await writeFile(join(repository, "README.md"), "after\n");
+		let injected = false;
+		const harness = createHarness(
+			repository,
+			[{ message: "Update readme", paths: ["README.md"] }],
+			{
+				execute: async (command, args) => {
+					if (command === "git" && args.includes("--check") && !injected) {
+						injected = true;
+						await writeFile(join(repository, "EXTRA.md"), "late staged change\n");
+						await run("git", ["add", "EXTRA.md"], repository);
+					}
+					return run(command, args, repository);
+				},
+			},
+		);
+
+		await harness.commandHandler("update documentation", harness.context);
+
+		expect((await run("git", ["log", "-1", "--pretty=%s"], repository)).stdout.trim()).toBe("Initial commit");
+		expect(harness.notices).toContain("The staged index changed during review or validation; the proposed commit was unstaged.");
+		expect((await run("git", ["diff", "--cached", "--name-only"], repository)).stdout.trim()).toBe("EXTRA.md");
+	});
+
 	test("validates each staged snapshot without later working-tree changes", async () => {
 		const repository = await createRepository();
 		await mkdir(join(repository, "crates/core/src"), { recursive: true });
