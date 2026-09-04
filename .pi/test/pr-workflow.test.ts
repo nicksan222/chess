@@ -76,6 +76,9 @@ describe("secret scanning", () => {
 		expect(suspiciousPatchLines("+-----BEGIN ENCRYPTED PRIVATE KEY-----")).toEqual([
 			"+-----BEGIN ENCRYPTED PRIVATE KEY-----",
 		]);
+		expect(suspiciousPatchLines("+  - password: sequence-secret-value")).toEqual([
+			"+  - password: sequence-secret-value",
+		]);
 		expect(suspiciousPatchLines(
 			"+API_KEY=super-secret-value\n+AWS_SECRET_ACCESS_KEY=abcdefghijklmnop # production\n+DATABASE_PASSWORD: secret-value\n+MODE=development",
 		)).toEqual([
