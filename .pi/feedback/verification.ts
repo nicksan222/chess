@@ -167,7 +167,7 @@ export function selectChecks(cwd: string, paths: string[], level: ValidationLeve
 		const firmwareYoctoPaths = root === "apps/firmware"
 			? paths.filter((path) => path.startsWith("apps/firmware/yocto/"))
 			: [];
-		if (yoctoMetadataPaths.length > 0 && firmwareCodePaths.length === 0) {
+		if (root === "apps/firmware" && yoctoMetadataPaths.length > 0 && firmwareCodePaths.length === 0) {
 			return {
 				id: "apps/firmware:image-check",
 				command: "just",

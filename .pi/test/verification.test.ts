@@ -77,6 +77,19 @@ describe("selectChecks", () => {
 		}
 	});
 
+	test("retains checks for other packages alongside Yocto metadata", () => {
+		const checks = selectChecks(
+			cwd,
+			["apps/firmware/yocto/kas/firmware.yml", "crates/core/src/lib.rs"],
+			"fast",
+		);
+
+		expect(checks.map((check) => check.id)).toEqual([
+			"apps/firmware:image-check",
+			"crates/core:cargo-check",
+		]);
+	});
+
 	test("retains firmware code checks in mixed Yocto batches", () => {
 		const checks = selectChecks(
 			cwd,
