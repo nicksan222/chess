@@ -23,7 +23,7 @@ CARGO_MANIFEST_PATH = "${SOURCE_BASEDIR}/Cargo.toml"
 python firmware_limit_source_date_epoch_scan() {
     d.setVar("SOURCE_BASEDIR", d.getVar("EXTERNALSRC") + "/apps/firmware")
 }
-do_unpack[postfuncs]:prepend = "firmware_limit_source_date_epoch_scan "
+do_unpack[postfuncs] =+ "firmware_limit_source_date_epoch_scan"
 
 FIRMWARE_FILES_DIR := "${THISDIR}/files"
 
