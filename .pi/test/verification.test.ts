@@ -130,6 +130,15 @@ describe("selectChecks", () => {
 		}
 	});
 
+	test("checks the version-controlled Git hook as Bash", () => {
+		const checks = selectChecks(cwd, [".githooks/pre-commit"], "fast");
+
+		expect(checks.map((check) => check.id)).toEqual([
+			".githooks/pre-commit:bash-syntax",
+			"repository:diff-check",
+		]);
+	});
+
 	test("checks root Cargo metadata across the workspace", () => {
 		for (const path of ["Cargo.toml", "Cargo.lock"]) {
 			const checks = selectChecks(cwd, [path], "fast");

@@ -201,7 +201,8 @@ export function selectChecks(cwd: string, paths: string[], level: ValidationLeve
 		checks.push(yoctoMetadataCheck(cwd));
 	}
 	const harnessShellPaths = paths.filter((path) =>
-		path.endsWith(".sh") && (path.startsWith(".devcontainer/") || path.startsWith(".github/"))
+		path === ".githooks/pre-commit"
+		|| (path.endsWith(".sh") && (path.startsWith(".devcontainer/") || path.startsWith(".github/")))
 	);
 	for (const path of [...new Set(harnessShellPaths)].sort()) {
 		const absolutePath = join(cwd, path);

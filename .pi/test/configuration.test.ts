@@ -33,9 +33,12 @@ describe("Pi harness configuration", () => {
 	});
 
 	test("keeps every harness shell script parseable", () => {
-		const paths = [".github", ".devcontainer"].flatMap((directory) =>
-			[...new Bun.Glob(`${directory}/**/*.sh`).scanSync({ cwd: repository })]
-		);
+		const paths = [
+			".githooks/pre-commit",
+			...[".github", ".devcontainer"].flatMap((directory) =>
+				[...new Bun.Glob(`${directory}/**/*.sh`).scanSync({ cwd: repository })]
+			),
+		];
 		expect(paths.length).toBeGreaterThan(0);
 		for (const path of paths) {
 			expect(Bun.spawnSync(["bash", "-n", resolve(repository, path)]).exitCode).toBe(0);
