@@ -104,6 +104,7 @@ export async function inspectGitState(pi: ExtensionAPI, cwd: string): Promise<Gi
 		"--reverse",
 		"--format=",
 		"--patch",
+		"--diff-merges=first-parent",
 		"--no-ext-diff",
 		"--no-color",
 		`${baseOid}..HEAD`,

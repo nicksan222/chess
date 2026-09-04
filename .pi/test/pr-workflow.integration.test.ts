@@ -209,6 +209,32 @@ describe("standalone /pr workflow", () => {
 		expect(harness.notices.some(({ message }) => message.includes("Potential secret material"))).toBe(true);
 	});
 
+	test("blocks secrets introduced by merge conflict resolution", async () => {
+		const repository = await createRepository();
+		await run("git", ["switch", "-q", "-c", "pi/session"], repository);
+		await writeFile(join(repository, "README.md"), "feature version\n");
+		await run("git", ["add", "README.md"], repository);
+		await run("git", ["commit", "-qm", "Change feature readme"], repository);
+		await run("git", ["switch", "-q", "-c", "side", "main"], repository);
+		await writeFile(join(repository, "README.md"), "side version\n");
+		await run("git", ["add", "README.md"], repository);
+		await run("git", ["commit", "-qm", "Change side readme"], repository);
+		await run("git", ["switch", "-q", "pi/session"], repository);
+		await run("git", ["merge", "--no-commit", "side"], repository);
+		await writeFile(join(repository, "README.md"), 'api_key = "merge-conflict-secret"\n');
+		await run("git", ["add", "README.md"], repository);
+		await run("git", ["commit", "-qm", "Merge side"], repository);
+		await writeFile(join(repository, "README.md"), "resolved safely\n");
+		await run("git", ["add", "README.md"], repository);
+		await run("git", ["commit", "-qm", "Remove merge credential"], repository);
+		const harness = createHarness(repository, { ...DOCUMENTATION_PLAN, commits: [] });
+
+		await harness.commandHandler("prepare the pull request", harness.context);
+
+		expect(harness.planningCalls()).toBe(0);
+		expect(harness.notices.some(({ message }) => message.includes("Potential secret material"))).toBe(true);
+	});
+
 	test("blocks suspicious additions before invoking the planning model", async () => {
 		const repository = await createRepository();
 		await writeFile(join(repository, "credentials.env"), "AWS_SECRET_ACCESS_KEY=super-secret-value\n");
