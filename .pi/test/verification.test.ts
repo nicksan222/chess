@@ -70,6 +70,13 @@ describe("selectChecks", () => {
 		expect(checks[0]?.command).toBe("just");
 	});
 
+	test("dry-runs BitBake for Yocto metadata changes", () => {
+		for (const level of ["fast", "full"] as const) {
+			const checks = selectChecks(cwd, ["apps/firmware/yocto/kas/firmware.yml"], level);
+			expect(checks[0]?.id).toBe("apps/firmware:image-check");
+		}
+	});
+
 	test("validates Pi extension changes with the Bun project", () => {
 		const checks = selectChecks(cwd, [".pi/extensions/change-tracker/index.ts"], "fast");
 

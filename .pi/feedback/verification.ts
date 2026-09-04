@@ -156,9 +156,21 @@ export function selectChecks(cwd: string, paths: string[], level: ValidationLeve
 			};
 		}
 
-		const includesFirmwarePython = root === "apps/firmware"
-			&& paths.some((path) => path.startsWith("apps/firmware/yocto/"));
-		if (level === "fast" && RUST_PACKAGES.has(root) && !includesFirmwarePython) {
+		const firmwareYoctoPaths = root === "apps/firmware"
+			? paths.filter((path) => path.startsWith("apps/firmware/yocto/"))
+			: [];
+		const includesYoctoMetadata = firmwareYoctoPaths.some((path) =>
+			[".bb", ".bbappend", ".conf", ".inc", ".yaml", ".yml"].some((extension) => path.endsWith(extension))
+		);
+		if (includesYoctoMetadata) {
+			return {
+				id: "apps/firmware:image-check",
+				command: "just",
+				args: ["--justfile", join(cwd, "apps/firmware/justfile"), "image-check"],
+			};
+		}
+
+		if (level === "fast" && RUST_PACKAGES.has(root) && firmwareYoctoPaths.length === 0) {
 			const packageName = RUST_PACKAGES.get(root)!;
 			const args = [
 				"check",
