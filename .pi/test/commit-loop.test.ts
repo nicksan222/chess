@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, test } from "bun:test";
+import { existsSync } from "node:fs";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -38,7 +39,12 @@ async function createRepository(): Promise<string> {
 function createHarness(
 	repository: string,
 	commits: PlannedCommit[],
-	options: { choice?: string; editor?: string; cwd?: string } = {},
+	options: {
+		choice?: string;
+		cwd?: string;
+		editor?: string;
+		execute?: (command: string, args: string[]) => Promise<Awaited<ReturnType<typeof run>>>;
+	} = {},
 ) {
 	let commandHandler: ((args: string, ctx: any) => Promise<void>) | undefined;
 	const reviews: string[] = [];
@@ -54,7 +60,7 @@ function createHarness(
 		sendUserMessage(message: string) {
 			sentMessages.push(message);
 		},
-		exec: (command: string, args: string[]) => run(command, args, repository),
+		exec: (command: string, args: string[]) => options.execute?.(command, args) ?? run(command, args, repository),
 	} as unknown as ExtensionAPI;
 	commitLoop(pi);
 	if (!commandHandler) throw new Error("/commit-loop was not registered");
@@ -143,24 +149,39 @@ describe("/commit-loop", () => {
 	test("validates each staged snapshot without later working-tree changes", async () => {
 		const repository = await createRepository();
 		await mkdir(join(repository, "crates/core/src"), { recursive: true });
-		await writeFile(join(repository, "Cargo.toml"), '[workspace]\nmembers = ["crates/core"]\nresolver = "2"\n');
-		await writeFile(join(repository, "crates/core/Cargo.toml"), '[package]\nname = "core"\nversion = "0.1.0"\nedition = "2024"\n');
 		await writeFile(join(repository, "crates/core/src/lib.rs"), "pub fn existing() {}\n");
 		await run("git", ["add", "."], repository);
 		await run("git", ["commit", "-qm", "Initial crate"], repository);
 		await writeFile(join(repository, "crates/core/src/lib.rs"), "mod generated;\npub use generated::value;\n");
 		await writeFile(join(repository, "crates/core/src/generated.rs"), "pub fn value() {}\n");
 
-		const harness = createHarness(repository, [
-			{ message: "Expose generated value", paths: ["crates/core/src/lib.rs"] },
-			{ message: "Implement generated value", paths: ["crates/core/src/generated.rs"] },
-		]);
+		const harness = createHarness(
+			repository,
+			[
+				{ message: "Expose generated value", paths: ["crates/core/src/lib.rs"] },
+				{ message: "Implement generated value", paths: ["crates/core/src/generated.rs"] },
+			],
+			{
+				execute: async (command, args) => {
+					if (command !== "cargo") return run(command, args, repository);
+					const manifest = args[args.indexOf("--manifest-path") + 1];
+					const snapshotRoot = manifest?.replace(/\/Cargo\.toml$/, "") ?? repository;
+					const dependencyExists = existsSync(join(snapshotRoot, "crates/core/src/generated.rs"));
+					return {
+						stdout: "",
+						stderr: dependencyExists ? "" : "generated module is missing",
+						code: dependencyExists ? 0 : 1,
+						killed: false,
+					};
+				},
+			},
+		);
 		await harness.commandHandler("split the crate update", harness.context);
 
 		expect((await run("git", ["log", "-1", "--pretty=%s"], repository)).stdout.trim()).toBe("Initial crate");
 		expect((await run("git", ["diff", "--cached", "--name-only"], repository)).stdout).toBe("");
 		expect(harness.notices.some((message) => message.includes("Commit validation failed"))).toBe(true);
-	}, 20_000);
+	});
 
 	test("rejects whitespace errors in the staged patch", async () => {
 		const repository = await createRepository();
