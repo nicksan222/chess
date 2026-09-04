@@ -51,6 +51,7 @@ async function stageExact(pi: ExtensionAPI, cwd: string, paths: readonly string[
 async function requestChanges(
 	pi: ExtensionAPI,
 	ctx: ExtensionCommandContext,
+	repository: string,
 	goal: string,
 	message: string,
 	paths: readonly string[],
@@ -59,7 +60,7 @@ async function requestChanges(
 		"Changes needed before this commit",
 		"Describe what should change in the patch or commit message.",
 	);
-	await unstage(pi, ctx.cwd, paths);
+	await unstage(pi, repository, paths);
 	if (!feedback?.trim()) {
 		ctx.ui.notify("Commit loop paused; staged changes were restored to the working tree.", "info");
 		return false;
@@ -121,7 +122,7 @@ async function runCommitLoop(
 
 		if (choice === "Needs changes") {
 			setResumeGoal(goal);
-			if (!(await requestChanges(pi, ctx, goal, commit.message, commit.paths))) setResumeGoal(undefined);
+			if (!(await requestChanges(pi, ctx, repository, goal, commit.message, commit.paths))) setResumeGoal(undefined);
 			return;
 		}
 		if (choice !== "Commit") {

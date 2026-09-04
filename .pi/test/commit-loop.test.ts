@@ -1,10 +1,15 @@
 import { afterEach, describe, expect, test } from "bun:test";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import commitLoop from "../extensions/commit-loop/index.js";
 import { validateCommitPlan } from "../extensions/commit-loop/planner.js";
+
+interface PlannedCommit {
+	message: string;
+	paths: string[];
+}
 
 const temporaryDirectories: string[] = [];
 afterEach(async () => {
@@ -19,6 +24,69 @@ async function run(command: string, args: string[], cwd: string) {
 		child.exited,
 	]);
 	return { stdout, stderr, code, killed: false };
+}
+
+async function createRepository(): Promise<string> {
+	const repository = await mkdtemp(join(tmpdir(), "pi-commit-loop-test-"));
+	temporaryDirectories.push(repository);
+	await run("git", ["init", "-q", "-b", "main"], repository);
+	await run("git", ["config", "user.name", "Pi Test"], repository);
+	await run("git", ["config", "user.email", "pi@example.invalid"], repository);
+	return repository;
+}
+
+function createHarness(
+	repository: string,
+	commits: PlannedCommit[],
+	options: { choice?: string; editor?: string; cwd?: string } = {},
+) {
+	let commandHandler: ((args: string, ctx: any) => Promise<void>) | undefined;
+	const reviews: string[] = [];
+	const notices: string[] = [];
+	const sentMessages: string[] = [];
+	const pi = {
+		registerCommand(name: string, registration: { handler: (args: string, ctx: any) => Promise<void> }) {
+			if (name === "commit-loop") commandHandler = registration.handler;
+		},
+		on() {},
+		events: { emit() {} },
+		sendUserMessage(message: string) {
+			sentMessages.push(message);
+		},
+		exec: (command: string, args: string[]) => run(command, args, repository),
+	} as unknown as ExtensionAPI;
+	commitLoop(pi);
+	if (!commandHandler) throw new Error("/commit-loop was not registered");
+
+	const context = {
+		cwd: options.cwd ?? repository,
+		hasUI: true,
+		model: { provider: "faux", id: "planner" },
+		modelRegistry: {
+			hasConfiguredAuth: () => true,
+			complete: async () => ({
+				stopReason: "toolUse",
+				content: [{
+					type: "toolCall",
+					id: "plan-1",
+					name: "submit_commit_plan",
+					arguments: { commits },
+				}],
+			}),
+		},
+		sessionManager: { getBranch: () => [] },
+		waitForIdle: async () => {},
+		ui: {
+			editor: async () => options.editor,
+			notify: (message: string) => notices.push(message),
+			select: async (title: string) => {
+				reviews.push(title);
+				return options.choice ?? "Commit";
+			},
+			setStatus() {},
+		},
+	};
+	return { commandHandler, context, notices, reviews, sentMessages };
 }
 
 describe("commit plan validation", () => {
@@ -39,11 +107,7 @@ describe("commit plan validation", () => {
 
 describe("/commit-loop", () => {
 	test("stages, reviews, validates, and commits each tiny step", async () => {
-		const repository = await mkdtemp(join(tmpdir(), "pi-commit-loop-test-"));
-		temporaryDirectories.push(repository);
-		await run("git", ["init", "-q", "-b", "main"], repository);
-		await run("git", ["config", "user.name", "Pi Test"], repository);
-		await run("git", ["config", "user.email", "pi@example.invalid"], repository);
+		const repository = await createRepository();
 		await writeFile(join(repository, "README.md"), "before\n");
 		await run("git", ["add", "README.md"], repository);
 		await run("git", ["commit", "-qm", "Initial commit"], repository);
@@ -51,57 +115,12 @@ describe("/commit-loop", () => {
 		await writeFile(join(repository, "NOTES.md"), "notes\n");
 		await writeFile(join(repository, " leading.md"), "leading-space path\n");
 
-		let commandHandler: ((args: string, ctx: any) => Promise<void>) | undefined;
-		const reviews: string[] = [];
-		const notices: string[] = [];
-		const pi = {
-			registerCommand(name: string, options: { handler: (args: string, ctx: any) => Promise<void> }) {
-				if (name === "commit-loop") commandHandler = options.handler;
-			},
-			on() {},
-			events: { emit() {} },
-			sendUserMessage() {},
-			exec: (command: string, args: string[]) => run(command, args, repository),
-		} as unknown as ExtensionAPI;
-		commitLoop(pi);
-		if (!commandHandler) throw new Error("/commit-loop was not registered");
-
-		await commandHandler("document both steps", {
-			cwd: repository,
-			hasUI: true,
-			model: { provider: "faux", id: "planner" },
-			modelRegistry: {
-				hasConfiguredAuth: () => true,
-				complete: async () => ({
-					stopReason: "toolUse",
-					content: [
-						{
-							type: "toolCall",
-							id: "plan-1",
-							name: "submit_commit_plan",
-							arguments: {
-								commits: [
-									{ message: "Update the readme", paths: ["README.md"] },
-									{ message: "Add development notes", paths: ["NOTES.md"] },
-									{ message: "Add unusual path fixture", paths: [" leading.md"] },
-								],
-							},
-						},
-					],
-				}),
-			},
-			sessionManager: { getBranch: () => [] },
-			waitForIdle: async () => {},
-			ui: {
-				editor: async () => undefined,
-				notify: (message: string) => notices.push(message),
-				select: async (title: string) => {
-					reviews.push(title);
-					return "Commit";
-				},
-				setStatus() {},
-			},
-		});
+		const harness = createHarness(repository, [
+			{ message: "Update the readme", paths: ["README.md"] },
+			{ message: "Add development notes", paths: ["NOTES.md"] },
+			{ message: "Add unusual path fixture", paths: [" leading.md"] },
+		]);
+		await harness.commandHandler("document all steps", harness.context);
 
 		const log = (await run("git", ["log", "-3", "--reverse", "--pretty=%s"], repository)).stdout.trim();
 		expect(log.split("\n")).toEqual([
@@ -109,11 +128,31 @@ describe("/commit-loop", () => {
 			"Add development notes",
 			"Add unusual path fixture",
 		]);
-		expect(reviews).toHaveLength(3);
-		expect(reviews[0]).toContain("Staged commit 1/3");
-		expect(reviews[1]).toContain("Staged commit 2/3");
-		expect(reviews[2]).toContain("Staged commit 3/3");
+		expect(harness.reviews).toHaveLength(3);
+		expect(harness.reviews[0]).toContain("Staged commit 1/3");
+		expect(harness.reviews[1]).toContain("Staged commit 2/3");
+		expect(harness.reviews[2]).toContain("Staged commit 3/3");
 		expect((await run("git", ["status", "--porcelain"], repository)).stdout).toBe("");
-		expect(notices.some((message) => message.includes("Commit loop complete"))).toBe(true);
+		expect(harness.notices.some((message) => message.includes("Commit loop complete"))).toBe(true);
+	});
+
+	test("unstages rejected paths when launched from a nested directory", async () => {
+		const repository = await createRepository();
+		const nested = join(repository, "nested");
+		await mkdir(nested);
+		await writeFile(join(nested, "file.txt"), "before\n");
+		await run("git", ["add", "nested/file.txt"], repository);
+		await run("git", ["commit", "-qm", "Initial commit"], repository);
+		await writeFile(join(nested, "file.txt"), "after\n");
+
+		const harness = createHarness(
+			repository,
+			[{ message: "Update nested file", paths: ["nested/file.txt"] }],
+			{ choice: "Needs changes", editor: "Keep the original first line.", cwd: nested },
+		);
+		await harness.commandHandler("update nested file", harness.context);
+
+		expect((await run("git", ["diff", "--cached", "--name-only"], repository)).stdout).toBe("");
+		expect(harness.sentMessages[0]).toContain("Keep the original first line.");
 	});
 });
