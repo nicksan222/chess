@@ -8,6 +8,7 @@ export interface GitState {
 	baseBranch: string;
 	baseOid: string;
 	existingCommits: string;
+	existingPatch: string;
 	existingPaths: string[];
 	dirtyPaths: string[];
 	stagedPaths: string[];
@@ -88,6 +89,16 @@ export async function inspectGitState(pi: ExtensionAPI, cwd: string): Promise<Gi
 		"--pretty=format:%h %s",
 		`${baseOid}..HEAD`,
 	])).stdout.trim();
+	const existingPatch = (await git(pi, repository, [
+		"diff",
+		"--no-ext-diff",
+		"--no-color",
+		`${baseOid}..HEAD`,
+		"--",
+	])).stdout;
+	if (Buffer.byteLength(existingPatch) > MAX_PATCH_BYTES) {
+		throw new Error(`The committed patch exceeds ${MAX_PATCH_BYTES / 1024}KB. Review and publish it manually.`);
+	}
 	const existingPaths = splitNull((await git(pi, repository, [
 		"diff",
 		"--name-only",
@@ -119,6 +130,7 @@ export async function inspectGitState(pi: ExtensionAPI, cwd: string): Promise<Gi
 		baseBranch: selectedBase,
 		baseOid,
 		existingCommits,
+		existingPatch,
 		existingPaths,
 		dirtyPaths: paths,
 		stagedPaths: splitNull(staged.stdout),

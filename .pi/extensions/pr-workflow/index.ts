@@ -133,7 +133,7 @@ async function runPr(pi: ExtensionAPI, args: string, ctx: ExtensionCommandContex
 	await ctx.waitForIdle();
 	ctx.ui.setStatus("pr-workflow", "inspecting changes");
 	const state = await inspectGitState(pi, ctx.cwd);
-	const suspicious = suspiciousPatchLines(state.patch);
+	const suspicious = suspiciousPatchLines(`${state.existingPatch}\n${state.patch}`);
 	if (suspicious.length > 0) {
 		throw new Error(`Potential secret material found in dirty additions; inspect before retrying:\n${suspicious.join("\n")}`);
 	}

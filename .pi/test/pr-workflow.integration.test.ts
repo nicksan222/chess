@@ -135,6 +135,25 @@ describe("standalone /pr workflow", () => {
 		expect((await run("git", ["log", "-1", "--pretty=%s"], repository)).stdout.trim()).toBe("Document existing workflow");
 	});
 
+	test("blocks secrets in existing commits before invoking the planning model", async () => {
+		const repository = await createRepository();
+		const remote = await mkdtemp(join(tmpdir(), "pi-pr-workflow-secret-remote-"));
+		temporaryDirectories.push(remote);
+		await run("git", ["init", "--bare", "-q"], remote);
+		await run("git", ["remote", "add", "origin", remote], repository);
+		await run("git", ["push", "-q", "-u", "origin", "main"], repository);
+		await run("git", ["switch", "-q", "-c", "pi/session"], repository);
+		await writeFile(join(repository, "credentials.env"), 'api_key = "committed-secret-value"\n');
+		await run("git", ["add", "credentials.env"], repository);
+		await run("git", ["commit", "-qm", "Add accidental credential"], repository);
+		const harness = createHarness(repository, { ...DOCUMENTATION_PLAN, commits: [] });
+
+		await harness.commandHandler("prepare the pull request", harness.context);
+
+		expect(harness.planningCalls()).toBe(0);
+		expect(harness.notices.some(({ message }) => message.includes("Potential secret material"))).toBe(true);
+	});
+
 	test("blocks suspicious additions before invoking the planning model", async () => {
 		const repository = await createRepository();
 		await writeFile(join(repository, "credentials.env"), 'api_key = "super-secret-value"\n');
