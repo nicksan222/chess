@@ -5,7 +5,7 @@ import autoValidation from "../extensions/auto-validation/index.js";
 const REPOSITORY = "/tmp/example-repository";
 
 describe("automatic validation", () => {
-	test("runs from the repository recorded by change tracking", async () => {
+	test("checks changes from the recorded repository and pre-turn revision", async () => {
 		const eventHandlers = new Map<string, (payload: unknown) => void>();
 		const hooks = new Map<string, (...args: any[]) => unknown>();
 		const executions: string[][] = [];
@@ -27,9 +27,15 @@ describe("automatic validation", () => {
 		} as unknown as ExtensionAPI;
 		autoValidation(pi);
 
-		eventHandlers.get("feedback:files-changed")?.({ cwd: REPOSITORY, paths: ["README.md"] });
+		eventHandlers.get("feedback:files-changed")?.({
+			cwd: REPOSITORY,
+			paths: ["README.md"],
+			baseRevision: "before-turn",
+		});
 		await hooks.get("agent_end")?.({}, { cwd: `${REPOSITORY}/nested`, signal: undefined, ui: { notify() {} } });
 
-		expect(executions).toEqual([["git", "-C", REPOSITORY, "diff", "--check"]]);
+		expect(executions).toEqual([
+			["git", "-C", REPOSITORY, "diff", "--check", "before-turn", "--"],
+		]);
 	});
 });

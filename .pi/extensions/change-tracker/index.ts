@@ -77,8 +77,9 @@ export default function changeTracker(pi: ExtensionAPI) {
 
 	pi.on("turn_end", async () => {
 		if (!repository) return;
+		const baseRevision = beforeHead;
 		const afterTurn = await snapshotDirtyFiles(pi, repository);
-		const committed = await committedChanges(pi, repository, beforeHead);
+		const committed = await committedChanges(pi, repository, baseRevision);
 		const observedPaths = turnChangedPaths(beforeTurn, afterTurn, committed.paths);
 		beforeTurn = afterTurn;
 		beforeHead = committed.head;
@@ -86,6 +87,7 @@ export default function changeTracker(pi: ExtensionAPI) {
 
 		pi.events.emit(FILES_CHANGED_EVENT, {
 			cwd: repository,
+			baseRevision,
 			...attributedChanges(observedPaths, explicitlyMutatedPaths),
 			timestamp: Date.now(),
 		});

@@ -9,11 +9,13 @@ const MAX_AUTOMATIC_REPAIR_ROUNDS = 2;
 interface FilesChangedEvent {
 	cwd: string;
 	paths: string[];
+	baseRevision?: string;
 }
 
 export default function autoValidation(pi: ExtensionAPI) {
 	const pendingPaths = new Set<string>();
 	let pendingCwd: string | undefined;
+	let pendingBaseRevision: string | undefined;
 	let lastFailureFingerprint: string | undefined;
 	let automaticRepairRounds = 0;
 	let checking = false;
@@ -21,12 +23,14 @@ export default function autoValidation(pi: ExtensionAPI) {
 	pi.events.on(FILES_CHANGED_EVENT, (data) => {
 		const event = data as FilesChangedEvent;
 		pendingCwd = event.cwd;
+		pendingBaseRevision ??= event.baseRevision;
 		for (const path of event.paths) pendingPaths.add(path);
 	});
 
 	pi.on("session_start", () => {
 		pendingPaths.clear();
 		pendingCwd = undefined;
+		pendingBaseRevision = undefined;
 		lastFailureFingerprint = undefined;
 		automaticRepairRounds = 0;
 		checking = false;
@@ -38,12 +42,14 @@ export default function autoValidation(pi: ExtensionAPI) {
 		checking = true;
 		const cwd = pendingCwd;
 		const paths = [...pendingPaths].sort();
+		const baseRevision = pendingBaseRevision;
 		pendingPaths.clear();
 		pendingCwd = undefined;
+		pendingBaseRevision = undefined;
 		pi.events.emit(VALIDATION_STARTED_EVENT, { cwd, level: "fast", paths });
 
 		try {
-			const result = await runVerification(pi, cwd, paths, "fast", ctx.signal);
+			const result = await runVerification(pi, cwd, paths, "fast", ctx.signal, baseRevision);
 			pi.events.emit(VALIDATION_RESULT_EVENT, result);
 
 			if (result.passed) {

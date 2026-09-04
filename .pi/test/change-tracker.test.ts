@@ -32,6 +32,7 @@ describe("change tracker", () => {
 		await writeFile(join(nested, "file.txt"), "before\n");
 		await run("git", ["add", "."], repository);
 		await run("git", ["commit", "-qm", "Initial commit"], repository);
+		const initialHead = (await run("git", ["rev-parse", "HEAD"], repository)).stdout.trim();
 
 		const hooks = new Map<string, (...args: any[]) => unknown>();
 		const emitted: Array<{ name: string; payload: any }> = [];
@@ -61,6 +62,7 @@ describe("change tracker", () => {
 		expect(emitted[0]?.payload).toMatchObject({
 			cwd: repository,
 			paths: ["nested/file.txt"],
+			baseRevision: initialHead,
 			explicitPaths: ["nested/file.txt"],
 			snapshotPaths: [],
 			attribution: "tool",

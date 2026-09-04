@@ -99,6 +99,14 @@ function displayCommand(command: string, args: string[]): string {
 	return [command, ...args].map(quote).join(" ");
 }
 
+function diffCheck(cwd: string, baseRevision?: string): CheckSpec {
+	return {
+		id: "repository:diff-check",
+		command: "git",
+		args: ["-C", cwd, "diff", "--check", ...(baseRevision ? [baseRevision, "--"] : [])],
+	};
+}
+
 function validationRoot(path: string): string | undefined {
 	if (path === "Cargo.toml" || path === "Cargo.lock") return WORKSPACE_ROOT;
 	if (PI_HARNESS_PATHS.some((root) => path === root || path.startsWith(`${root}/`))) return ".pi";
@@ -123,7 +131,7 @@ function yoctoMetadataCheck(cwd: string): CheckSpec {
 	};
 }
 
-export function selectChecks(cwd: string, paths: string[], level: ValidationLevel): CheckSpec[] {
+export function selectChecks(cwd: string, paths: string[], level: ValidationLevel, baseRevision?: string): CheckSpec[] {
 	const roots = packageRoots(paths);
 	const yoctoMetadataPaths = paths.filter(isYoctoMetadata);
 	const firmwareCodePaths = paths.filter((path) => path.startsWith("apps/firmware/") && !isYoctoMetadata(path));
@@ -131,7 +139,7 @@ export function selectChecks(cwd: string, paths: string[], level: ValidationLeve
 
 	if (paths.length === 0) {
 		if (level === "fast") {
-			return [{ id: "repository:diff-check", command: "git", args: ["-C", cwd, "diff", "--check"] }];
+			return [diffCheck(cwd, baseRevision)];
 		}
 		const recipe = level === "full" ? "precommit" : "test";
 		return [{ id: `repository:${recipe}`, command: "just", args: ["--justfile", join(cwd, "justfile"), recipe] }];
@@ -219,11 +227,7 @@ export function selectChecks(cwd: string, paths: string[], level: ValidationLeve
 			args: ["--justfile", join(cwd, "justfile"), "precommit"],
 		});
 	} else if (hasUnscopedPaths && level === "fast") {
-		checks.push({
-			id: "repository:diff-check",
-			command: "git",
-			args: ["-C", cwd, "diff", "--check"],
-		});
+		checks.push(diffCheck(cwd, baseRevision));
 	} else if (hasUnscopedPaths) {
 		checks.push({
 			id: "repository:test",
@@ -260,9 +264,10 @@ export async function runVerification(
 	paths: string[],
 	level: ValidationLevel,
 	signal?: AbortSignal,
+	baseRevision?: string,
 ): Promise<ValidationResult> {
 	const checks: CheckResult[] = [];
-	for (const spec of selectChecks(cwd, paths, level)) {
+	for (const spec of selectChecks(cwd, paths, level, baseRevision)) {
 		const startedAt = Date.now();
 		const execution = await pi.exec(spec.command, spec.args, { signal, timeout: CHECK_TIMEOUT_MS });
 		const completeOutput = [execution.stdout, execution.stderr].filter(Boolean).join("\n").trim();

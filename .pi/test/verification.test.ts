@@ -161,6 +161,12 @@ describe("selectChecks", () => {
 		expect(checks[0]?.command).toBe("git");
 	});
 
+	test("checks committed unscoped changes from their base revision", () => {
+		const checks = selectChecks(cwd, ["README.md"], "fast", "before-turn");
+
+		expect(checks[0]?.args).toEqual(["-C", cwd, "diff", "--check", "before-turn", "--"]);
+	});
+
 	test("keeps scoped checks when a change set also has unscoped paths", () => {
 		const checks = selectChecks(cwd, [".pi/extensions/change-tracker/index.ts", ".devcontainer/devcontainer.json"], "full");
 
