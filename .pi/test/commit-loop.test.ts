@@ -49,6 +49,7 @@ function createHarness(
 	let commandHandler: ((args: string, ctx: any) => Promise<void>) | undefined;
 	const reviews: string[] = [];
 	const notices: string[] = [];
+	let planningCalls = 0;
 	const sentMessages: string[] = [];
 	const editorCalls: unknown[][] = [];
 	const pi = {
@@ -71,7 +72,9 @@ function createHarness(
 		model: { provider: "faux", id: "planner" },
 		modelRegistry: {
 			hasConfiguredAuth: () => true,
-			complete: async () => ({
+			complete: async () => {
+				planningCalls += 1;
+				return {
 				stopReason: "toolUse",
 				content: [{
 					type: "toolCall",
@@ -79,7 +82,8 @@ function createHarness(
 					name: "submit_commit_plan",
 					arguments: { commits },
 				}],
-			}),
+				};
+			},
 		},
 		sessionManager: { getBranch: () => [] },
 		waitForIdle: async () => {},
@@ -96,7 +100,7 @@ function createHarness(
 			setStatus() {},
 		},
 	};
-	return { commandHandler, context, editorCalls, notices, reviews, sentMessages };
+	return { commandHandler, context, editorCalls, notices, planningCalls: () => planningCalls, reviews, sentMessages };
 }
 
 describe("commit plan validation", () => {
@@ -116,6 +120,22 @@ describe("commit plan validation", () => {
 });
 
 describe("/commit-loop", () => {
+	test("blocks credentials before invoking the planning model", async () => {
+		const repository = await createRepository();
+		await writeFile(join(repository, "README.md"), "fixture\n");
+		await run("git", ["add", "README.md"], repository);
+		await run("git", ["commit", "-qm", "Initial commit"], repository);
+		await writeFile(join(repository, ".env"), "API_KEY=super-secret-value\n");
+		const harness = createHarness(repository, [{ message: "Add environment", paths: [".env"] }]);
+
+		await harness.commandHandler("add environment configuration", harness.context);
+
+		expect(harness.planningCalls()).toBe(0);
+		expect(harness.notices).toEqual([
+			expect.stringContaining("Potential credentials found in outgoing additions"),
+		]);
+	});
+
 	test("stages, reviews, validates, and commits each tiny step", async () => {
 		const repository = await createRepository();
 		await writeFile(join(repository, "README.md"), "before\n");

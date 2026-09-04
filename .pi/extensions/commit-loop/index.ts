@@ -1,4 +1,5 @@
 import type { ExtensionAPI, ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
+import { suspiciousPatchLines } from "../../feedback/secrets.js";
 import { formatValidationResult, preparePiDependencies, runVerification } from "../../feedback/verification.js";
 import { completePatch, createStagedSnapshot, dirtyPaths, git, stagedPaths } from "./git.js";
 import { createCommitPlan, validateCommitPlan } from "./planner.js";
@@ -110,13 +111,19 @@ async function runCommitLoop(
 	if (paths.length === 0) throw new Error("There are no uncommitted changes to review.");
 	const status = await git(pi, repository, ["status", "--short", "--branch"]);
 	const recent = await git(pi, repository, ["log", "-8", "--pretty=format:%s"]);
+	ctx.ui.setStatus("commit-loop", "scanning outgoing changes");
+	const patch = await completePatch(pi, repository, paths);
+	const suspiciousLines = suspiciousPatchLines(patch);
+	if (suspiciousLines.length > 0) {
+		throw new Error(`Potential credentials found in outgoing additions:\n${suspiciousLines.join("\n")}`);
+	}
 	ctx.ui.setStatus("commit-loop", "planning tiny commits");
 	const plan = await createCommitPlan(ctx, {
 		goal,
 		status: status.stdout.trim(),
 		recentCommits: recent.stdout.trim(),
 		conversation: conversationText(ctx),
-		patch: await completePatch(pi, repository, paths),
+		patch,
 	});
 	const selectedPaths = validateCommitPlan(plan, paths);
 	const selected = new Set(selectedPaths);

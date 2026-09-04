@@ -1,5 +1,6 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { pathsFromNameStatus, splitNull } from "../../feedback/git-paths.js";
+export { suspiciousPatchLines } from "../../feedback/secrets.js";
 
 const MAX_PATCH_BYTES = 256 * 1024;
 
@@ -160,20 +161,4 @@ export async function validateBranchName(pi: ExtensionAPI, state: GitState, bran
 	if (branch === state.currentBranch) return;
 	const collision = await git(pi, state.repository, ["show-ref", "--verify", "--quiet", `refs/heads/${branch}`], true);
 	if (collision.code === 0) throw new Error(`Local branch already exists: ${branch}`);
-}
-
-export function suspiciousPatchLines(patch: string): string[] {
-	const patterns = [
-		/[a-z0-9_]*(?:api_?key|secret|password|token)[a-z0-9_]*["']?\s*[:=]\s*["'][^"']{8,}/i,
-		/^\+\s*(?:export\s+)?["']?[a-z0-9_]*(?:api_?key|secret|password|token)[a-z0-9_]*["']?\s*[:=]\s*[^\s#"']{8,}\s*(?:#.*)?$/i,
-		/-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/,
-		/ghp_[A-Za-z0-9]{20,}/,
-		/github_pat_[A-Za-z0-9_]{20,}/,
-		/sk-[A-Za-z0-9_-]{20,}/,
-	];
-	return patch
-		.split("\n")
-		.filter((line) => line.startsWith("+") && !line.startsWith("+++"))
-		.filter((line) => patterns.some((pattern) => pattern.test(line)))
-		.slice(0, 5);
 }
