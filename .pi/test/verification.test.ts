@@ -83,6 +83,15 @@ describe("selectChecks", () => {
 		}
 	});
 
+	test("checks devcontainer shell syntax alongside Pi configuration", () => {
+		const checks = selectChecks(cwd, [".devcontainer/post-create.sh"], "fast");
+
+		expect(checks.map((check) => check.id)).toEqual([
+			".pi:check",
+			".devcontainer/post-create.sh:bash-syntax",
+		]);
+	});
+
 	test("uses a non-invasive diff check for unscoped fast validation", () => {
 		const checks = selectChecks(cwd, ["justfile"], "fast");
 

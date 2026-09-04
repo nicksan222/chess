@@ -122,7 +122,7 @@ export function selectChecks(cwd: string, paths: string[], level: ValidationLeve
 		return [{ id: `repository:${recipe}`, command: "just", args: ["--justfile", join(cwd, "justfile"), recipe] }];
 	}
 
-	const checks = roots.map((root) => {
+	const checks: CheckSpec[] = roots.map((root) => {
 		if (root === ".pi") {
 			return {
 				id: ".pi:check",
@@ -154,6 +154,14 @@ export function selectChecks(cwd: string, paths: string[], level: ValidationLeve
 			args: ["--justfile", join(cwd, root, "justfile"), recipe],
 		};
 	});
+	for (const path of [...new Set(paths.filter((path) => path.startsWith(".devcontainer/") && path.endsWith(".sh")))].sort()) {
+		const absolutePath = join(cwd, path);
+		checks.push({
+			id: `${path}:bash-syntax`,
+			command: "bash",
+			args: ["-c", '[[ ! -e "$1" ]] || bash -n "$1"', "--", absolutePath],
+		});
+	}
 	if (level === "full") {
 		checks.push({
 			id: "repository:precommit",

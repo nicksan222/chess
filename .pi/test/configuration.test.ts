@@ -36,6 +36,9 @@ describe("Pi harness configuration", () => {
 	});
 
 	test("checks the locked Pi project when the devcontainer is created", async () => {
+		const scriptPath = resolve(repository, ".devcontainer/post-create.sh");
+		const syntax = Bun.spawnSync(["bash", "-n", scriptPath]);
+		expect(syntax.exitCode).toBe(0);
 		const script = await text(".devcontainer/post-create.sh");
 		expect(script).toContain("bun install --cwd .pi --frozen-lockfile");
 		expect(script).toContain("bun run --cwd .pi check");
