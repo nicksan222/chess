@@ -40,13 +40,17 @@ container; Yocto owns its caches under `.cache/yocto`.
 
 ## CI
 
-CI prebuilds the development image, then invokes the same package-local recipes
-for code quality, each discovered Rust package, CAD, and PCB. GitHub Actions owns
-only scheduling, caches, artifacts, permissions, and releases.
+Pull request CI prebuilds the development image, then invokes the same
+package-local recipes for code quality, each discovered Rust package, CAD, PCB,
+and fast firmware metadata validation. The stable `Required checks` job fails
+unless every one of those jobs succeeds.
 
-Firmware configuration is checked with `just firmware-check` and built with
-`just firmware`. The full Yocto build is intentionally absent from the everyday
-`just check` gate.
+Full Yocto image builds are isolated in the `Firmware` workflow. They run weekly
+to detect ecosystem drift, for every `v*` release tag, or manually against any
+selected branch with **Actions → Firmware → Run workflow**. Locally,
+`just firmware-check` parses the BitBake configuration and `just firmware`
+builds the complete image. Neither expensive operation blocks ordinary pull
+requests.
 
 The version-controlled Git hook and `.pre-commit-config.yaml` both invoke
 `just precommit`, which excludes expensive CAD renders and PCB fabrication

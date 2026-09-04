@@ -1,0 +1,90 @@
+name: Firmware
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 3 * * 1"
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: firmware-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate metadata
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: extractions/setup-just@v4
+        with:
+          just-version: 1.40.0
+      - run: just --justfile apps/firmware/justfile validate
+
+  build:
+    name: Build image
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v7
+      - uses: extractions/setup-just@v4
+        with:
+          just-version: 1.40.0
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc
+          docker system prune --all --force
+      - id: yocto-cache
+        uses: actions/cache/restore@v6
+        with:
+          path: |
+            .cache/yocto/downloads
+            .cache/yocto/sstate-cache
+          key: ${{ runner.os }}-yocto-${{ hashFiles('apps/firmware/yocto/kas/firmware.yml') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            ${{ runner.os }}-yocto-${{ hashFiles('apps/firmware/yocto/kas/firmware.yml') }}-
+            ${{ runner.os }}-yocto-
+      - run: just --justfile apps/firmware/justfile image
+      - name: Save Yocto cache
+        if: always()
+        uses: actions/cache/save@v6
+        with:
+          path: |
+            .cache/yocto/downloads
+            .cache/yocto/sstate-cache
+          key: ${{ steps.yocto-cache.outputs.cache-primary-key }}
+      - name: Verify image
+        run: |
+          xz --test dist/firmware/firmware-rpi-zero-2w.img.xz
+          (cd dist/firmware && sha256sum --check SHA256SUMS)
+      - uses: actions/upload-artifact@v7
+        with:
+          name: firmware-${{ github.sha }}
+          path: dist/firmware
+          if-no-files-found: error
+
+  release:
+    name: Publish release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: firmware-${{ github.sha }}
+          path: dist/firmware
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1 \
+            || gh release create "${GITHUB_REF_NAME}" --generate-notes
+          gh release upload "${GITHUB_REF_NAME}" dist/firmware/* --clobber

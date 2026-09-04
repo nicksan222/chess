@@ -130,7 +130,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/cache@v6
+      - uses: actions/cache@v5
         with:
           path: target
           key: ${{ runner.os }}-quality-${{ hashFiles('**/Cargo.lock') }}
@@ -151,7 +151,7 @@ jobs:
         package: ${{ fromJSON(needs.crates.outputs.packages) }}
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/cache@v6
+      - uses: actions/cache@v5
         with:
           path: target
           key: ${{ runner.os }}-crate-${{ matrix.package.name }}-${{ hashFiles('**/Cargo.lock') }}
@@ -163,23 +163,10 @@ jobs:
           image: ${{ needs.prebuild.outputs.image }}
           command: just --justfile ${{ matrix.package.directory }}/justfile test
 
-  firmware-check:
-    name: Firmware configuration
-    if: github.event_name == 'pull_request'
-    needs: [cad, pcb, code-quality, crate-test, firmware-metadata]
-    runs-on: ubuntu-24.04
-    timeout-minutes: 45
-    steps:
-      - uses: actions/checkout@v7
-      - uses: extractions/setup-just@v4
-        with:
-          just-version: 1.40.0
-      - run: just --justfile apps/firmware/justfile image-check
-
   required-checks:
     name: Required checks
     if: always() && github.event_name == 'pull_request'
-    needs: [cad, pcb, code-quality, crate-test, firmware-metadata, firmware-check]
+    needs: [cad, pcb, code-quality, crate-test, firmware-metadata]
     runs-on: ubuntu-latest
     steps:
       - name: Verify required jobs succeeded
@@ -188,66 +175,3 @@ jobs:
         run: |
           jq --exit-status 'all(.[]; .result == "success")' \
             <<< "${RESULTS}"
-
-  firmware:
-    name: Firmware
-    if: github.event_name != 'pull_request'
-    needs: [cad, pcb, code-quality, crate-test, firmware-metadata]
-    runs-on: ubuntu-24.04
-    timeout-minutes: 360
-    steps:
-      - uses: actions/checkout@v7
-      - uses: extractions/setup-just@v4
-        with:
-          just-version: 1.40.0
-      - name: Free disk space
-        run: |
-          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc
-          docker system prune --all --force
-      - id: yocto-cache
-        uses: actions/cache/restore@v6
-        with:
-          path: |
-            .cache/yocto/downloads
-            .cache/yocto/sstate-cache
-          key: ${{ runner.os }}-yocto-${{ hashFiles('apps/firmware/yocto/kas/firmware.yml') }}-${{ github.run_id }}-${{ github.run_attempt }}
-          restore-keys: |
-            ${{ runner.os }}-yocto-${{ hashFiles('apps/firmware/yocto/kas/firmware.yml') }}-
-            ${{ runner.os }}-yocto-
-      - run: just --justfile apps/firmware/justfile image
-      - name: Save Yocto cache
-        if: always()
-        uses: actions/cache/save@v6
-        with:
-          path: |
-            .cache/yocto/downloads
-            .cache/yocto/sstate-cache
-          key: ${{ steps.yocto-cache.outputs.cache-primary-key }}
-      - run: |
-          xz --test dist/firmware/firmware-rpi-zero-2w.img.xz
-          (cd dist/firmware && sha256sum --check SHA256SUMS)
-      - uses: actions/upload-artifact@v7
-        with:
-          name: firmware-${{ github.sha }}
-          path: dist/firmware
-          if-no-files-found: error
-
-  firmware-release:
-    name: Firmware release
-    if: startsWith(github.ref, 'refs/tags/v')
-    needs: firmware
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/download-artifact@v8
-        with:
-          name: firmware-${{ github.sha }}
-          path: dist/firmware
-      - name: Publish release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1 \
-            || gh release create "${GITHUB_REF_NAME}" --generate-notes
-          gh release upload "${GITHUB_REF_NAME}" dist/firmware/* --clobber
