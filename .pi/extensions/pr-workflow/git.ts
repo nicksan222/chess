@@ -159,6 +159,7 @@ export async function validateBranchName(pi: ExtensionAPI, state: GitState, bran
 export function suspiciousPatchLines(patch: string): string[] {
 	const patterns = [
 		/(?:api[_-]?key|secret|password|token)\s*[:=]\s*["'][^"']{8,}/i,
+		/^\+(?:export\s+)?(?:api[_-]?key|secret|password|token)\s*=\s*[^\s#"']{8,}\s*$/i,
 		/-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/,
 		/ghp_[A-Za-z0-9]{20,}/,
 		/sk-[A-Za-z0-9_-]{20,}/,

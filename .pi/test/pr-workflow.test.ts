@@ -57,5 +57,8 @@ describe("secret scanning", () => {
 			["+const enabled = true;", "+api_key = \"definitely-not-a-real-secret-value\""].join("\n"),
 		);
 		expect(findings).toEqual(["+api_key = \"definitely-not-a-real-secret-value\""]);
+		expect(suspiciousPatchLines("+API_KEY=super-secret-value\n+MODE=development")).toEqual([
+			"+API_KEY=super-secret-value",
+		]);
 	});
 });
