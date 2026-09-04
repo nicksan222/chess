@@ -124,7 +124,9 @@ function validationRoot(path: string): string | undefined {
 }
 
 function packageRoots(paths: string[]): string[] {
-	return [...new Set(paths.map(validationRoot).filter((root): root is string => root !== undefined))].sort();
+	const roots = paths.map(validationRoot).filter((root): root is string => root !== undefined);
+	if (paths.includes("pyproject.toml")) roots.push(...PYTHON_PACKAGES);
+	return [...new Set(roots)].sort();
 }
 
 function isYoctoMetadata(path: string): boolean {
@@ -145,7 +147,7 @@ export function selectChecks(cwd: string, paths: string[], level: ValidationLeve
 	const roots = packageRoots(paths);
 	const yoctoMetadataPaths = paths.filter(isYoctoMetadata);
 	const firmwareCodePaths = paths.filter((path) => path.startsWith("apps/firmware/") && !isYoctoMetadata(path));
-	const hasUnscopedPaths = paths.some((path) => validationRoot(path) === undefined);
+	const hasUnscopedPaths = paths.some((path) => path !== "pyproject.toml" && validationRoot(path) === undefined);
 
 	if (paths.length === 0) {
 		if (level === "fast") {

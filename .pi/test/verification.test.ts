@@ -66,6 +66,16 @@ describe("selectChecks", () => {
 		expect(checks.map((check) => check.id)).toEqual(["crates/chess:test"]);
 	});
 
+	test("routes root Python configuration through every affected package", () => {
+		const checks = selectChecks(cwd, ["pyproject.toml"], "fast");
+
+		expect(checks.map((check) => check.id)).toEqual([
+			"hardware/cad:quality",
+			"hardware/pcb:quality",
+			"hardware/shared:quality",
+		]);
+	});
+
 	test("runs each affected package in stable order", () => {
 		const checks = selectChecks(
 			cwd,
