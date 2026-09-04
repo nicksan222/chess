@@ -3,7 +3,7 @@ import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import autoValidation from "../extensions/auto-validation/index.js";
 import autoWorktree from "../extensions/auto-worktree/index.js";
 import commitLoop from "../extensions/commit-loop/index.js";
-import changeTracker from "../extensions/change-tracker/index.js";
+import changeTracker, { attributedChanges } from "../extensions/change-tracker/index.js";
 import prWorkflow from "../extensions/pr-workflow/index.js";
 import validationStatus from "../extensions/validation-status/index.js";
 import verifyChanges from "../extensions/verify-changes/index.js";
@@ -67,6 +67,20 @@ describe("project extensions", () => {
 		expect(harness.hooks).toContain("agent_end");
 		expect(harness.busEvents).toContain("feedback:files-changed");
 		expect(harness.busEvents).toContain("feedback:validation-result");
+	});
+
+	test("keeps shell-mutated paths when explicit tool paths also exist", () => {
+		expect(
+			attributedChanges(
+				["explicit.ts", "generated.ts"],
+				new Set(["explicit.ts"]),
+			),
+		).toEqual({
+			paths: ["explicit.ts", "generated.ts"],
+			explicitPaths: ["explicit.ts"],
+			snapshotPaths: ["generated.ts"],
+			attribution: "mixed",
+		});
 	});
 
 	test("queues automatic worktree setup once on process startup", async () => {

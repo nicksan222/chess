@@ -4,6 +4,17 @@ import { changedPaths, snapshotDirtyFiles } from "../../feedback/verification.js
 
 export const FILES_CHANGED_EVENT = "feedback:files-changed";
 
+export function attributedChanges(observedPaths: string[], explicitlyMutatedPaths: ReadonlySet<string>) {
+	const explicitPaths = observedPaths.filter((path) => explicitlyMutatedPaths.has(path));
+	const snapshotPaths = observedPaths.filter((path) => !explicitlyMutatedPaths.has(path));
+	return {
+		paths: observedPaths,
+		explicitPaths,
+		snapshotPaths,
+		attribution: explicitPaths.length === 0 ? "snapshot" : snapshotPaths.length === 0 ? "tool" : "mixed",
+	};
+}
+
 function repositoryPath(cwd: string, inputPath: string): string | undefined {
 	const path = relative(cwd, resolve(cwd, inputPath)).replaceAll("\\", "/");
 	if (!path || path === ".." || path.startsWith("../")) return undefined;
@@ -31,15 +42,11 @@ export default function changeTracker(pi: ExtensionAPI) {
 		const afterTurn = await snapshotDirtyFiles(pi, ctx.cwd);
 		const observedPaths = changedPaths(beforeTurn, afterTurn);
 		beforeTurn = afterTurn;
-		const paths = explicitlyMutatedPaths.size > 0
-			? observedPaths.filter((path) => explicitlyMutatedPaths.has(path))
-			: observedPaths;
-		if (paths.length === 0) return;
+		if (observedPaths.length === 0) return;
 
 		pi.events.emit(FILES_CHANGED_EVENT, {
 			cwd: ctx.cwd,
-			paths,
-			attribution: explicitlyMutatedPaths.size > 0 ? "tool" : "snapshot",
+			...attributedChanges(observedPaths, explicitlyMutatedPaths),
 			timestamp: Date.now(),
 		});
 	});

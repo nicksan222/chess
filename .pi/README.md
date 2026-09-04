@@ -4,8 +4,8 @@ Project-local Pi extensions are intentionally split by responsibility:
 
 - `auto-worktree` creates and switches to a unique `pi/<session-id>` Git
   worktree when a new Pi process starts;
-- `change-tracker` attributes files changed during an agent turn to explicit
-  edit/write calls, with snapshot fallback for shell-only mutation turns;
+- `change-tracker` treats the filesystem snapshot as the changed-path source of
+  truth while recording explicit edit/write paths as attribution metadata;
 - `commit-loop` stages each planned tiny commit for interactive review, validates
   accepted patches, and resumes automatically after requested repair turns;
 - `auto-validation` runs bounded fast validation after changed turns and gives
