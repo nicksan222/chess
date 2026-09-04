@@ -67,11 +67,11 @@ describe("secret scanning", () => {
 			"+STRIPE_SECRET_KEY = 'another-secret-value'",
 		]);
 		expect(suspiciousPatchLines(
-			"+API_KEY=super-secret-value\n+AWS_SECRET_ACCESS_KEY=abcdefghijklmnop # production\n+DATABASE_PASSWORD=secret-value\n+MODE=development",
+			"+API_KEY=super-secret-value\n+AWS_SECRET_ACCESS_KEY=abcdefghijklmnop # production\n+DATABASE_PASSWORD: secret-value\n+MODE=development",
 		)).toEqual([
 			"+API_KEY=super-secret-value",
 			"+AWS_SECRET_ACCESS_KEY=abcdefghijklmnop # production",
-			"+DATABASE_PASSWORD=secret-value",
+			"+DATABASE_PASSWORD: secret-value",
 		]);
 		expect(suspiciousPatchLines(
 			"+credential=github_pat_11AA22BB33CC44DD55EE66FF77GG88HH",
