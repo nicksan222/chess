@@ -119,6 +119,23 @@ describe("standalone /pr workflow", () => {
 		expect(harness.notices.some(({ message, level }) => level === "warning" && message.includes("Created and validated local commits"))).toBe(true);
 	});
 
+	test("blocks credentials echoed into generated PR metadata", async () => {
+		const repository = await createRepository();
+		await writeFile(join(repository, "README.md"), "safe change\n");
+		const plan = {
+			...DOCUMENTATION_PLAN,
+			title: "Fix auth with github_pat_12345678901234567890",
+		};
+		const harness = createHarness(repository, plan);
+
+		await harness.commandHandler("document the workflow", harness.context);
+
+		expect(harness.planningCalls()).toBe(1);
+		expect(harness.confirmations).toHaveLength(0);
+		expect((await run("git", ["branch", "--show-current"], repository)).stdout.trim()).toBe("main");
+		expect(harness.notices.some(({ message }) => message.includes("generated PR plan"))).toBe(true);
+	});
+
 	test("preserves unrelated staged changes exactly", async () => {
 		const repository = await createRepository();
 		await writeFile(join(repository, "unrelated.txt"), "before\n");

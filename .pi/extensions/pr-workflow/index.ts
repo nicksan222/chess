@@ -177,6 +177,15 @@ async function runPr(pi: ExtensionAPI, args: string, ctx: ExtensionCommandContex
 		conversation: conversationText(ctx),
 		patch: state.patch,
 	});
+	const suspiciousPlanMetadata = suspiciousTextLines([
+		plan.branch,
+		plan.title,
+		plan.body,
+		...plan.commits.map((commit) => commit.message),
+	].join("\n"));
+	if (suspiciousPlanMetadata.length > 0) {
+		throw new Error(`Potential secret material found in the generated PR plan; inspect before retrying:\n${suspiciousPlanMetadata.join("\n")}`);
+	}
 	const selectedPaths = validatePrPlan(plan, state.dirtyPaths, state.existingCommits.length > 0);
 	const branch = targetBranch(state, plan.branch);
 	await validateBranchName(pi, state, branch);
