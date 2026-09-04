@@ -140,6 +140,43 @@ describe("/commit-loop", () => {
 		expect(harness.notices.some((message) => message.includes("Commit loop complete"))).toBe(true);
 	});
 
+	test("validates each staged snapshot without later working-tree changes", async () => {
+		const repository = await createRepository();
+		await mkdir(join(repository, "crates/core/src"), { recursive: true });
+		await writeFile(join(repository, "Cargo.toml"), '[workspace]\nmembers = ["crates/core"]\nresolver = "2"\n');
+		await writeFile(join(repository, "crates/core/Cargo.toml"), '[package]\nname = "core"\nversion = "0.1.0"\nedition = "2024"\n');
+		await writeFile(join(repository, "crates/core/src/lib.rs"), "pub fn existing() {}\n");
+		await run("git", ["add", "."], repository);
+		await run("git", ["commit", "-qm", "Initial crate"], repository);
+		await writeFile(join(repository, "crates/core/src/lib.rs"), "mod generated;\npub use generated::value;\n");
+		await writeFile(join(repository, "crates/core/src/generated.rs"), "pub fn value() {}\n");
+
+		const harness = createHarness(repository, [
+			{ message: "Expose generated value", paths: ["crates/core/src/lib.rs"] },
+			{ message: "Implement generated value", paths: ["crates/core/src/generated.rs"] },
+		]);
+		await harness.commandHandler("split the crate update", harness.context);
+
+		expect((await run("git", ["log", "-1", "--pretty=%s"], repository)).stdout.trim()).toBe("Initial crate");
+		expect((await run("git", ["diff", "--cached", "--name-only"], repository)).stdout).toBe("");
+		expect(harness.notices.some((message) => message.includes("Commit validation failed"))).toBe(true);
+	});
+
+	test("rejects whitespace errors in the staged patch", async () => {
+		const repository = await createRepository();
+		await writeFile(join(repository, "README.md"), "clean\n");
+		await run("git", ["add", "README.md"], repository);
+		await run("git", ["commit", "-qm", "Initial content"], repository);
+		await writeFile(join(repository, "README.md"), "trailing whitespace   \n");
+
+		const harness = createHarness(repository, [{ message: "Update readme", paths: ["README.md"] }]);
+		await harness.commandHandler("update readme", harness.context);
+
+		expect((await run("git", ["log", "-1", "--pretty=%s"], repository)).stdout.trim()).toBe("Initial content");
+		expect((await run("git", ["diff", "--cached", "--name-only"], repository)).stdout).toBe("");
+		expect(harness.notices.some((message) => message.includes("Staged patch check failed"))).toBe(true);
+	});
+
 	test("unstages rejected paths when launched from a nested directory", async () => {
 		const repository = await createRepository();
 		const nested = join(repository, "nested");

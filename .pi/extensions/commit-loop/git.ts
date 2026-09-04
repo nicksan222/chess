@@ -1,3 +1,6 @@
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
 const MAX_PATCH_BYTES = 256 * 1024;
@@ -56,4 +59,33 @@ export async function completePatch(
 export async function stagedPaths(pi: ExtensionAPI, cwd: string): Promise<string[]> {
 	const result = await git(pi, cwd, ["diff", "--cached", "--name-only", "-z", "--"]);
 	return splitNull(result.stdout).sort();
+}
+
+export async function createStagedSnapshot(pi: ExtensionAPI, repository: string) {
+	const tree = (await git(pi, repository, ["write-tree"])).stdout.trim();
+	const commit = (await git(pi, repository, [
+		"commit-tree",
+		tree,
+		"-p",
+		"HEAD",
+		"-m",
+		"Pi staged validation snapshot",
+	])).stdout.trim();
+	const parentDirectory = await mkdtemp(join(tmpdir(), "pi-commit-validation-"));
+	const worktree = join(parentDirectory, "worktree");
+
+	try {
+		await git(pi, repository, ["worktree", "add", "--quiet", "--detach", worktree, commit]);
+	} catch (error) {
+		await rm(parentDirectory, { recursive: true, force: true });
+		throw error;
+	}
+
+	return {
+		worktree,
+		cleanup: async () => {
+			await git(pi, repository, ["worktree", "remove", "--force", worktree]);
+			await rm(parentDirectory, { recursive: true, force: true });
+		},
+	};
 }

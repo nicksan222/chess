@@ -1,6 +1,6 @@
 import type { ExtensionAPI, ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
 import { formatValidationResult, runVerification } from "../../feedback/verification.js";
-import { completePatch, dirtyPaths, git, stagedPaths } from "./git.js";
+import { completePatch, createStagedSnapshot, dirtyPaths, git, stagedPaths } from "./git.js";
 import { createCommitPlan, validateCommitPlan } from "./planner.js";
 
 const REVIEW_PATCH_CHARACTERS = 16_000;
@@ -45,6 +45,26 @@ async function stageExact(pi: ExtensionAPI, cwd: string, paths: readonly string[
 	if (JSON.stringify(actual) !== JSON.stringify(expected)) {
 		await unstage(pi, cwd, actual);
 		throw new Error(`Staged paths differ from the plan. Expected ${expected.join(", ")}; found ${actual.join(", ") || "none"}.`);
+	}
+}
+
+async function validateStagedCommit(
+	pi: ExtensionAPI,
+	repository: string,
+	paths: readonly string[],
+	signal?: AbortSignal,
+) {
+	const patchCheck = await git(pi, repository, ["diff", "--cached", "--check", "--", ...paths], true);
+	if (patchCheck.code !== 0) {
+		const output = [patchCheck.stdout, patchCheck.stderr].filter(Boolean).join("\n").trim();
+		throw new Error(`Staged patch check failed:\n${output || `exit ${patchCheck.code}`}`);
+	}
+
+	const snapshot = await createStagedSnapshot(pi, repository);
+	try {
+		return await runVerification(pi, snapshot.worktree, [...paths], "fast", signal);
+	} finally {
+		await snapshot.cleanup();
 	}
 }
 
@@ -129,7 +149,13 @@ async function runCommitLoop(
 		}
 
 		ctx.ui.setStatus("commit-loop", `validating ${index + 1}/${plan.commits.length}`);
-		const validation = await runVerification(pi, repository, commit.paths, "fast", ctx.signal);
+		let validation;
+		try {
+			validation = await validateStagedCommit(pi, repository, commit.paths, ctx.signal);
+		} catch (error) {
+			await unstage(pi, repository, commit.paths);
+			throw error;
+		}
 		pi.events.emit("feedback:validation-result", validation);
 		if (!validation.passed) {
 			await unstage(pi, repository, commit.paths);
