@@ -165,6 +165,19 @@ describe("standalone /pr workflow", () => {
 		expect((await run("git", ["log", "-1", "--pretty=%s"], repository)).stdout.trim()).toBe("Document existing workflow");
 	});
 
+	test("branches from a discovered nonstandard default branch", async () => {
+		const repository = await createRepository("trunk");
+		await run("git", ["update-ref", "refs/remotes/origin/trunk", "HEAD"], repository);
+		await run("git", ["symbolic-ref", "refs/remotes/origin/HEAD", "refs/remotes/origin/trunk"], repository);
+		await writeFile(join(repository, "README.md"), "after\n");
+		const harness = createHarness(repository, DOCUMENTATION_PLAN);
+
+		await harness.commandHandler("document the workflow", harness.context);
+
+		expect((await run("git", ["branch", "--show-current"], repository)).stdout.trim()).toBe(DOCUMENTATION_PLAN.branch);
+		expect(harness.confirmations[0]).toContain("Base: trunk");
+	});
+
 	test("uses local master as the base when no remote branch exists", async () => {
 		const repository = await createRepository("master");
 		await run("git", ["switch", "-q", "-c", "pi/session"], repository);

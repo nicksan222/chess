@@ -12,7 +12,7 @@ import {
 import { conversationText, createPrPlan, validatePrPlan, type PrPlan } from "./planner.js";
 
 function targetBranch(state: GitState, plannedBranch: string): string {
-	return state.currentBranch === "HEAD" || state.currentBranch === "main" || state.currentBranch === "master" || state.currentBranch.startsWith("pi/")
+	return state.currentBranch === "HEAD" || state.currentBranch === state.baseBranch || state.currentBranch.startsWith("pi/")
 		? plannedBranch
 		: state.currentBranch;
 }
