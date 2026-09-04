@@ -37,14 +37,14 @@ build:
 validate:
     cd "{{ root }}" && python3 apps/firmware/yocto/validate_crates.py
 
-# Parse the complete BitBake configuration without building an image.
+# Parse BitBake and dry-run the complete image task graph without executing it.
 image-check: validate _docker
     mkdir -p "{{ cache }}"
     docker run --rm --init --user root \
         -e "USER_ID=$(id -u)" -e "GROUP_ID=$(id -g)" \
         -e KAS_WORK_DIR=/build -e "FIRMWARE_SOURCE_DIR={{ root }}" \
         -v "{{ root }}:{{ root }}" -v "{{ cache }}:/build" -w "{{ root }}" \
-        {{ kas_image }} shell -c 'bitbake -p' "{{ config }}"
+        {{ kas_image }} shell -c 'bitbake -p && bitbake -n firmware-image' "{{ config }}"
 
 # Build and collect the flashable Yocto image.
 image: validate _docker

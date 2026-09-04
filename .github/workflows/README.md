@@ -2,8 +2,10 @@
 
 This directory owns GitHub Actions workflow definitions:
 
-- `ci.yml` runs the required pull request and main-branch checks;
-- `firmware.yml` builds images manually, weekly, and for release tags; and
+- `ci.yml` runs required pull request and main-branch checks, plans firmware
+  without compiling it, and gates release tags;
+- `firmware.yml` is the reusable full image build invoked manually, weekly, or
+  by a successful release-tag CI run; and
 - `dependabot-automerge.yml` queues trusted Dependabot updates for squash merge
   after branch protection reports every required check green.
 

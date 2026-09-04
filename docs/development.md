@@ -40,17 +40,19 @@ container; Yocto owns its caches under `.cache/yocto`.
 
 ## CI
 
-Pull request CI prebuilds the development image, then invokes the same
-package-local recipes for code quality, each discovered Rust package, CAD, PCB,
-and fast firmware metadata validation. The stable `Required checks` job fails
-unless every one of those jobs succeeds.
+Pull request CI invokes package-local recipes for code quality, every Rust
+package, CAD, PCB, and firmware. Firmware validation has two inexpensive layers:
+metadata checks run immediately, while a parallel `Firmware plan` parses the
+complete BitBake configuration and dry-runs the exact `firmware-image` task
+graph without compiling it. The stable `Required checks` job fails unless every
+one of these jobs succeeds.
 
-Full Yocto image builds are isolated in the `Firmware` workflow. They run weekly
-to detect ecosystem drift, for every `v*` release tag, or manually against any
-selected branch with **Actions → Firmware → Run workflow**. Locally,
-`just firmware-check` parses the BitBake configuration and `just firmware`
-builds the complete image. Neither expensive operation blocks ordinary pull
-requests.
+Full Yocto image builds are isolated in the reusable `Firmware` workflow. They
+run weekly to detect ecosystem drift or manually against any selected branch
+with **Actions → Firmware → Run workflow**. A `v*` tag calls the same build only
+after the complete tag CI graph succeeds, and only that gated invocation may
+publish release assets. Locally, `just firmware-check` performs the parse and
+dry-run, while `just firmware` builds the complete image.
 
 The version-controlled Git hook and `.pre-commit-config.yaml` both invoke
 `just precommit`, which excludes expensive CAD renders and PCB fabrication
