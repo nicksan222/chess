@@ -2,6 +2,10 @@ name: CI
 
 on:
   push:
+    branches:
+      - main
+    tags:
+      - "v*"
   pull_request:
 
 permissions:
@@ -171,6 +175,19 @@ jobs:
         with:
           just-version: 1.40.0
       - run: just --justfile apps/firmware/justfile image-check
+
+  required-checks:
+    name: Required checks
+    if: always() && github.event_name == 'pull_request'
+    needs: [cad, pcb, code-quality, crate-test, firmware-metadata, firmware-check]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify required jobs succeeded
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          jq --exit-status 'all(.[]; .result == "success")' \
+            <<< "${RESULTS}"
 
   firmware:
     name: Firmware
