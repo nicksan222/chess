@@ -16,17 +16,23 @@ function targetBranch(state: GitState, plannedBranch: string): string {
 }
 
 function planPreview(state: GitState, plan: PrPlan, branch: string): string {
-	const commits = plan.commits
-		.map((commit, index) => `${index + 1}. ${commit.message.split("\n", 1)[0]}\n   ${commit.paths.join(", ")}`)
-		.join("\n");
+	const plannedCommits = plan.commits.length > 0
+		? plan.commits
+			.map((commit, index) => `${index + 1}. ${commit.message.split("\n", 1)[0]}\n   ${commit.paths.join(", ")}`)
+			.join("\n")
+		: "(none; publish existing commits only)";
+	const existingCommits = state.existingCommits || "(none)";
 	const remote = state.canPublish
 		? `push ${branch} to origin and create a GitHub PR against ${state.baseBranch}`
 		: `create local branch and commits only (${state.publishProblem})`;
 	return [
 		`Branch: ${branch}`,
 		`Base: ${state.baseBranch}`,
-		"Commits:",
-		commits,
+		"Existing commits:",
+		existingCommits,
+		"",
+		"Planned commits:",
+		plannedCommits,
 		"",
 		`PR title: ${plan.title}`,
 		plan.body,
@@ -79,9 +85,11 @@ async function reviewCommits(
 	state: GitState,
 	selectedPaths: readonly string[],
 ): Promise<string> {
-	const remaining = await git(pi, state.repository, ["status", "--porcelain", "--", ...selectedPaths]);
-	if (remaining.stdout.trim()) {
-		throw new Error(`Selected task paths remain uncommitted:\n${remaining.stdout.trim()}`);
+	if (selectedPaths.length > 0) {
+		const remaining = await git(pi, state.repository, ["status", "--porcelain", "--", ...selectedPaths]);
+		if (remaining.stdout.trim()) {
+			throw new Error(`Selected task paths remain uncommitted:\n${remaining.stdout.trim()}`);
+		}
 	}
 	await git(pi, state.repository, ["diff", "--check", `${state.baseOid}..HEAD`, "--"]);
 	const log = await git(pi, state.repository, [
@@ -136,11 +144,12 @@ async function runPr(pi: ExtensionAPI, args: string, ctx: ExtensionCommandContex
 		currentBranch: state.currentBranch,
 		baseBranch: state.baseBranch,
 		status: state.status,
+		existingCommits: state.existingCommits,
 		recentCommits: state.recentCommits,
 		conversation: conversationText(ctx),
 		patch: state.patch,
 	});
-	const selectedPaths = validatePrPlan(plan, state.dirtyPaths);
+	const selectedPaths = validatePrPlan(plan, state.dirtyPaths, state.existingCommits.length > 0);
 	const branch = targetBranch(state, plan.branch);
 	await validateBranchName(pi, state, branch);
 
@@ -154,7 +163,8 @@ async function runPr(pi: ExtensionAPI, args: string, ctx: ExtensionCommandContex
 	await createBranch(pi, state, branch);
 	await createCommits(pi, ctx, state, plan, selectedPaths);
 	ctx.ui.setStatus("pr-workflow", "running full validation");
-	const validation = await runVerification(pi, state.repository, selectedPaths, "full", ctx.signal);
+	const validationPaths = [...new Set([...state.existingPaths, ...selectedPaths])].sort();
+	const validation = await runVerification(pi, state.repository, validationPaths, "full", ctx.signal);
 	pi.events.emit("feedback:validation-result", validation);
 	if (!validation.passed) {
 		throw new Error(`Commits were created, but publishing was stopped because validation failed.\n${formatValidationResult(validation)}`);

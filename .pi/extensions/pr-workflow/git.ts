@@ -7,6 +7,8 @@ export interface GitState {
 	currentBranch: string;
 	baseBranch: string;
 	baseOid: string;
+	existingCommits: string;
+	existingPaths: string[];
 	dirtyPaths: string[];
 	stagedPaths: string[];
 	status: string;
@@ -80,8 +82,23 @@ export async function inspectGitState(pi: ExtensionAPI, cwd: string): Promise<Gi
 	const mergeBase = await git(pi, repository, ["merge-base", "HEAD", remoteBase], true);
 	const head = await git(pi, repository, ["rev-parse", "HEAD"]);
 	const baseOid = mergeBase.code === 0 ? mergeBase.stdout.trim() : head.stdout.trim();
+	const existingCommits = (await git(pi, repository, [
+		"log",
+		"--reverse",
+		"--pretty=format:%h %s",
+		`${baseOid}..HEAD`,
+	])).stdout.trim();
+	const existingPaths = splitNull((await git(pi, repository, [
+		"diff",
+		"--name-only",
+		"-z",
+		`${baseOid}..HEAD`,
+		"--",
+	])).stdout).sort();
 	const paths = await dirtyPaths(pi, repository);
-	if (paths.length === 0) throw new Error("There are no uncommitted changes to prepare.");
+	if (paths.length === 0 && !existingCommits) {
+		throw new Error("There are no commits or uncommitted changes to prepare.");
+	}
 
 	const status = await git(pi, repository, ["status", "--short", "--branch"]);
 	const staged = await git(pi, repository, ["diff", "--cached", "--name-only", "-z", "--"]);
@@ -101,6 +118,8 @@ export async function inspectGitState(pi: ExtensionAPI, cwd: string): Promise<Gi
 		currentBranch,
 		baseBranch: selectedBase,
 		baseOid,
+		existingCommits,
+		existingPaths,
 		dirtyPaths: paths,
 		stagedPaths: splitNull(staged.stdout),
 		status: status.stdout.trim(),

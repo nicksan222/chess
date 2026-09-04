@@ -51,6 +51,7 @@ export interface PlanningInput {
 	currentBranch: string;
 	baseBranch: string;
 	status: string;
+	existingCommits: string;
 	recentCommits: string;
 	conversation: string;
 	patch: string;
@@ -61,7 +62,8 @@ function planningPrompt(input: PlanningInput): string {
 		"Plan a high-quality pull request from the repository state below.",
 		"Call submit_pr_plan exactly once and emit no prose.",
 		"Choose only changes belonging to the stated goal and conversation; omit unrelated dirty paths.",
-		"Group selected paths into the smallest useful ordered commits. A path can occur in only one commit, so keep inseparable same-file changes together.",
+		"Group selected dirty paths into the smallest useful ordered commits. A path can occur in only one commit, so keep inseparable same-file changes together.",
+		"Existing commits are already part of the pull request: describe them in the title and body, but do not recreate them. If there are no dirty task changes, return an empty commits array.",
 		"Use imperative commit subjects matching recent repository style.",
 		"Use a semantic branch name: feat/, fix/, refactor/, docs/, test/, ci/, build/, perf/, or chore/ followed by concise kebab-case.",
 		"The PR body must contain '## Summary' and '## Validation' sections. Do not claim checks have passed yet; list the validation that will be run.",
@@ -78,6 +80,10 @@ function planningPrompt(input: PlanningInput): string {
 		"<status>",
 		input.status,
 		"</status>",
+		"",
+		"<existing-pr-commits>",
+		input.existingCommits || "(none)",
+		"</existing-pr-commits>",
 		"",
 		"<recent-commits>",
 		input.recentCommits,
@@ -127,7 +133,7 @@ export async function createPrPlan(ctx: ExtensionCommandContext, input: Planning
 	return validateToolCall([PLANNING_TOOL], call) as PrPlan;
 }
 
-export function validatePrPlan(plan: PrPlan, dirtyPaths: readonly string[]): string[] {
+export function validatePrPlan(plan: PrPlan, dirtyPaths: readonly string[], allowEmpty = false): string[] {
 	const allowed = new Set(dirtyPaths);
 	const selected = new Set<string>();
 	for (const commit of plan.commits) {
@@ -137,7 +143,7 @@ export function validatePrPlan(plan: PrPlan, dirtyPaths: readonly string[]): str
 			selected.add(path);
 		}
 	}
-	if (selected.size === 0) throw new Error("PR plan did not select any task changes.");
+	if (selected.size === 0 && !allowEmpty) throw new Error("PR plan did not select any task changes.");
 	if (!/^(feat|fix|refactor|docs|test|ci|build|perf|chore)\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(plan.branch)) {
 		throw new Error(`PR plan returned an invalid semantic branch name: ${plan.branch}`);
 	}

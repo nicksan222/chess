@@ -37,6 +37,7 @@ function createHarness(repository: string, plan: PrPlan) {
 	let commandHandler: ((args: string, ctx: any) => Promise<void>) | undefined;
 	let planningCalls = 0;
 	const notices: Array<{ message: string; level: string }> = [];
+	const confirmations: string[] = [];
 	const pi = {
 		registerCommand(name: string, registration: { handler: (args: string, ctx: any) => Promise<void> }) {
 			if (name === "pr") commandHandler = registration.handler;
@@ -74,12 +75,15 @@ function createHarness(repository: string, plan: PrPlan) {
 		sessionManager: { getBranch: () => [] },
 		waitForIdle: async () => {},
 		ui: {
-			confirm: async () => true,
+			confirm: async (_title: string, details: string) => {
+				confirmations.push(details);
+				return true;
+			},
 			notify: (message: string, level: string) => notices.push({ message, level }),
 			setStatus() {},
 		},
 	};
-	return { commandHandler, context, notices, planningCalls: () => planningCalls };
+	return { commandHandler, confirmations, context, notices, planningCalls: () => planningCalls };
 }
 
 const DOCUMENTATION_PLAN: PrPlan = {
@@ -102,6 +106,33 @@ describe("standalone /pr workflow", () => {
 		expect((await run("git", ["status", "--porcelain"], repository)).stdout.trim()).toBe("");
 		expect(await readFile(join(repository, "README.md"), "utf8")).toContain("after");
 		expect(harness.notices.some(({ message, level }) => level === "warning" && message.includes("Created and validated local commits"))).toBe(true);
+	});
+
+	test("shows and publishes existing branch commits without recreating them", async () => {
+		const repository = await createRepository();
+		const remote = await mkdtemp(join(tmpdir(), "pi-pr-workflow-remote-"));
+		temporaryDirectories.push(remote);
+		await run("git", ["init", "--bare", "-q"], remote);
+		await run("git", ["remote", "add", "origin", remote], repository);
+		await run("git", ["push", "-q", "-u", "origin", "main"], repository);
+		await run("git", ["switch", "-q", "-c", "pi/session"], repository);
+		await writeFile(join(repository, "README.md"), "committed change\n");
+		await run("git", ["add", "README.md"], repository);
+		await run("git", ["commit", "-qm", "Document existing workflow"], repository);
+		const plan: PrPlan = {
+			...DOCUMENTATION_PLAN,
+			branch: "docs/existing-workflow",
+			commits: [],
+		};
+		const harness = createHarness(repository, plan);
+
+		await harness.commandHandler("publish the existing commit", harness.context);
+
+		expect(harness.confirmations[0]).toContain("Existing commits:\n");
+		expect(harness.confirmations[0]).toContain("Document existing workflow");
+		expect(harness.confirmations[0]).toContain("Planned commits:\n(none; publish existing commits only)");
+		expect((await run("git", ["branch", "--show-current"], repository)).stdout.trim()).toBe("docs/existing-workflow");
+		expect((await run("git", ["log", "-1", "--pretty=%s"], repository)).stdout.trim()).toBe("Document existing workflow");
 	});
 
 	test("blocks suspicious additions before invoking the planning model", async () => {
