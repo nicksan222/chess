@@ -24,16 +24,19 @@ const PARAMETERS = Type.Object({
 	),
 });
 
-async function verify(
+export async function verify(
 	pi: ExtensionAPI,
 	cwd: string,
 	level: ValidationLevel,
 	paths: string[] | undefined,
 	signal?: AbortSignal,
 ) {
-	const selectedPaths = paths?.length ? [...new Set(paths)].sort() : await getDirtyPaths(pi, cwd);
-	pi.events.emit(VALIDATION_STARTED_EVENT, { cwd, level, paths: selectedPaths });
-	const result = await runVerification(pi, cwd, selectedPaths, level, signal);
+	const topLevel = await pi.exec("git", ["-C", cwd, "rev-parse", "--show-toplevel"]);
+	if (topLevel.code !== 0) throw new Error("Changed-file validation requires a Git worktree.");
+	const repository = topLevel.stdout.trim();
+	const selectedPaths = paths?.length ? [...new Set(paths)].sort() : await getDirtyPaths(pi, repository);
+	pi.events.emit(VALIDATION_STARTED_EVENT, { cwd: repository, level, paths: selectedPaths });
+	const result = await runVerification(pi, repository, selectedPaths, level, signal);
 	pi.events.emit(VALIDATION_RESULT_EVENT, result);
 	return result;
 }
