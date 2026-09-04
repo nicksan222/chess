@@ -17,8 +17,10 @@ devcontainer exec --workspace-folder . just check
 
 The image provides:
 
-- Node.js 22 and the [Pi coding agent](https://pi.dev/), installed during
-  container creation;
+- Node.js 22, Bun 1.4, and the [Pi coding agent](https://pi.dev/), installed
+  during container creation;
+- a Bun-managed `.pi` TypeScript project with pinned Pi API types, workspace
+  IntelliSense, and `bun run --cwd .pi check` validation for project extensions;
 - stable Rust with `rustfmt`, Clippy, Just, and the AArch64 GNU target/linker;
 - Ruff for CAD, PCB, and shared Python;
 - KiCad 9 with `kicad-cli` and `pcbnew`;
@@ -47,6 +49,7 @@ who run the tools outside the container.
 After create:
 
 ```sh
+bun run --cwd .pi check    # type-check project Pi extensions
 pi                         # start the coding agent; use /login for OAuth
 just pcb                    # test, then generate PCB review output
 just cad                    # test, then generate CAD output

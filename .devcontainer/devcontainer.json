@@ -10,6 +10,9 @@
   "features": {
     "ghcr.io/devcontainers/features/node:1": {
       "version": "22"
+    },
+    "ghcr.io/devcontainers-extra/features/bun:1": {
+      "version": "1.4.0"
     }
   },
   "remoteUser": "vscode",
@@ -86,6 +89,7 @@
         "fill-labs.dependi",
         "GitHub.vscode-github-actions",
         "ms-azuretools.vscode-containers",
+        "oven.bun-vscode",
         "ms-python.debugpy",
         "ms-python.python",
         "ms-python.vscode-pylance",
@@ -125,7 +129,9 @@
         "rust-analyzer.linkedProjects": [
           "Cargo.toml"
         ],
-        "terminal.integrated.defaultProfile.linux": "bash"
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "typescript.tsdk": ".pi/node_modules/typescript/lib",
+        "typescript.enablePromptUseWorkspaceTsdk": true
       }
     }
   }
