@@ -1,0 +1,193 @@
+import type { ExtensionAPI, ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
+import { formatValidationResult, runVerification } from "../../feedback/verification.js";
+import {
+	git,
+	inspectGitState,
+	patchForPaths,
+	suspiciousPatchLines,
+	validateBranchName,
+	type GitState,
+} from "./git.js";
+import { conversationText, createPrPlan, validatePrPlan, type PrPlan } from "./planner.js";
+
+function targetBranch(state: GitState, plannedBranch: string): string {
+	return state.currentBranch === "HEAD" || state.currentBranch === "main" || state.currentBranch === "master" || state.currentBranch.startsWith("pi/")
+		? plannedBranch
+		: state.currentBranch;
+}
+
+function planPreview(state: GitState, plan: PrPlan, branch: string): string {
+	const commits = plan.commits
+		.map((commit, index) => `${index + 1}. ${commit.message.split("\n", 1)[0]}\n   ${commit.paths.join(", ")}`)
+		.join("\n");
+	const remote = state.canPublish
+		? `push ${branch} to origin and create a GitHub PR against ${state.baseBranch}`
+		: `create local branch and commits only (${state.publishProblem})`;
+	return [
+		`Branch: ${branch}`,
+		`Base: ${state.baseBranch}`,
+		"Commits:",
+		commits,
+		"",
+		`PR title: ${plan.title}`,
+		plan.body,
+		"",
+		`Action: ${remote}`,
+	].join("\n");
+}
+
+async function createBranch(pi: ExtensionAPI, state: GitState, branch: string): Promise<void> {
+	if (branch === state.currentBranch) return;
+	if (state.currentBranch.startsWith("pi/")) {
+		await git(pi, state.repository, ["branch", "-m", branch]);
+		return;
+	}
+	await git(pi, state.repository, ["switch", "-c", branch]);
+}
+
+async function createCommits(
+	pi: ExtensionAPI,
+	ctx: ExtensionCommandContext,
+	state: GitState,
+	plan: PrPlan,
+	selectedPaths: readonly string[],
+): Promise<void> {
+	const selected = new Set(selectedPaths);
+	const unrelatedStaged = state.stagedPaths.filter((path) => !selected.has(path));
+	if (unrelatedStaged.length > 0) {
+		throw new Error(`Refusing to alter the index because unrelated paths are staged: ${unrelatedStaged.join(", ")}`);
+	}
+	const selectedStaged = state.stagedPaths.filter((path) => selected.has(path));
+	if (selectedStaged.length > 0) {
+		await git(pi, state.repository, ["restore", "--staged", "--", ...selectedStaged]);
+	}
+
+	for (const [index, commit] of plan.commits.entries()) {
+		ctx.ui.setStatus("pr-workflow", `committing ${index + 1}/${plan.commits.length}`);
+		await git(pi, state.repository, ["add", "--", ...commit.paths]);
+		const staged = await git(pi, state.repository, ["diff", "--cached", "--name-only", "-z", "--"]);
+		const actualPaths = staged.stdout.split("\0").filter(Boolean).sort();
+		const expectedPaths = [...commit.paths].sort();
+		if (JSON.stringify(actualPaths) !== JSON.stringify(expectedPaths)) {
+			throw new Error(`Staged paths differ from commit plan. Expected ${expectedPaths.join(", ")}; found ${actualPaths.join(", ") || "none"}.`);
+		}
+		await git(pi, state.repository, ["commit", "-m", commit.message]);
+	}
+}
+
+async function reviewCommits(
+	pi: ExtensionAPI,
+	state: GitState,
+	selectedPaths: readonly string[],
+): Promise<string> {
+	const remaining = await git(pi, state.repository, ["status", "--porcelain", "--", ...selectedPaths]);
+	if (remaining.stdout.trim()) {
+		throw new Error(`Selected task paths remain uncommitted:\n${remaining.stdout.trim()}`);
+	}
+	await git(pi, state.repository, ["diff", "--check", `${state.baseOid}..HEAD`, "--"]);
+	const log = await git(pi, state.repository, [
+		"log",
+		"--reverse",
+		"--pretty=format:%h %s",
+		`${state.baseOid}..HEAD`,
+	]);
+	return log.stdout.trim();
+}
+
+async function publish(
+	pi: ExtensionAPI,
+	state: GitState,
+	branch: string,
+	plan: PrPlan,
+): Promise<string> {
+	await git(pi, state.repository, ["push", "--set-upstream", "origin", branch]);
+	const result = await pi.exec("gh", [
+		"pr",
+		"create",
+		"--base",
+		state.baseBranch,
+		"--head",
+		branch,
+		"--title",
+		plan.title,
+		"--body",
+		plan.body,
+	]);
+	if (result.code !== 0) {
+		throw new Error(
+			`Branch was pushed, but PR creation failed: ${[result.stderr, result.stdout].filter(Boolean).join("\n").trim()}\nRetry: gh pr create --base ${state.baseBranch} --head ${branch}`,
+		);
+	}
+	return result.stdout.trim();
+}
+
+async function runPr(pi: ExtensionAPI, args: string, ctx: ExtensionCommandContext): Promise<void> {
+	if (!ctx.hasUI) throw new Error("/pr requires TUI or RPC mode for publish confirmation.");
+	await ctx.waitForIdle();
+	ctx.ui.setStatus("pr-workflow", "inspecting changes");
+	const state = await inspectGitState(pi, ctx.cwd);
+	ctx.ui.setStatus("pr-workflow", "planning commits");
+	const plan = await createPrPlan(ctx, {
+		goal: args.trim(),
+		currentBranch: state.currentBranch,
+		baseBranch: state.baseBranch,
+		status: state.status,
+		recentCommits: state.recentCommits,
+		conversation: conversationText(ctx),
+		patch: state.patch,
+	});
+	const selectedPaths = validatePrPlan(plan, state.dirtyPaths);
+	const branch = targetBranch(state, plan.branch);
+	await validateBranchName(pi, state, branch);
+
+	const selectedPatch = await patchForPaths(pi, state, selectedPaths);
+	const suspicious = suspiciousPatchLines(selectedPatch);
+	if (suspicious.length > 0) {
+		throw new Error(`Potential secret material found in selected additions; inspect before retrying:\n${suspicious.join("\n")}`);
+	}
+
+	const approved = await ctx.ui.confirm("Create and publish pull request?", planPreview(state, plan, branch));
+	if (!approved) {
+		ctx.ui.notify("PR preparation cancelled without changing Git state.", "info");
+		return;
+	}
+
+	await createBranch(pi, state, branch);
+	await createCommits(pi, ctx, state, plan, selectedPaths);
+	ctx.ui.setStatus("pr-workflow", "running full validation");
+	const validation = await runVerification(pi, state.repository, selectedPaths, "full", ctx.signal);
+	pi.events.emit("feedback:validation-result", validation);
+	if (!validation.passed) {
+		throw new Error(`Commits were created, but publishing was stopped because validation failed.\n${formatValidationResult(validation)}`);
+	}
+
+	ctx.ui.setStatus("pr-workflow", "reviewing commit range");
+	const commitLog = await reviewCommits(pi, state, selectedPaths);
+	if (!state.canPublish) {
+		ctx.ui.notify(
+			`Created and validated local commits:\n${commitLog}\n${state.publishProblem}\nNext: git push --set-upstream origin ${branch}`,
+			"warning",
+		);
+		return;
+	}
+
+	ctx.ui.setStatus("pr-workflow", "publishing PR");
+	const url = await publish(pi, state, branch, plan);
+	pi.setSessionName(plan.title);
+	ctx.ui.notify(`Pull request created: ${url}`, "info");
+}
+
+export default function prWorkflow(pi: ExtensionAPI) {
+	pi.registerCommand("pr", {
+		description: "Plan, commit, validate, push, and create a pull request: /pr [goal]",
+		handler: async (args, ctx) => {
+			try {
+				await runPr(pi, args, ctx);
+			} catch (error) {
+				ctx.ui.notify(error instanceof Error ? error.message : String(error), "error");
+			} finally {
+				ctx.ui.setStatus("pr-workflow", undefined);
+			}
+		},
+	});
+}

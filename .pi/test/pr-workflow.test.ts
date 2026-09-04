@@ -1,0 +1,61 @@
+import { describe, expect, test } from "bun:test";
+import { suspiciousPatchLines } from "../extensions/pr-workflow/git.js";
+import { validatePrPlan, type PrPlan } from "../extensions/pr-workflow/planner.js";
+
+function plan(overrides: Partial<PrPlan> = {}): PrPlan {
+	return {
+		branch: "feat/pi-feedback-loop",
+		title: "Add a modular Pi feedback loop",
+		body: "## Summary\n\nAdd feedback hooks.\n\n## Validation\n\n- Bun checks",
+		commits: [
+			{ message: "Add Pi validation hooks", paths: [".pi/extensions/verify-changes/index.ts"] },
+		],
+		...overrides,
+	};
+}
+
+describe("PR plan validation", () => {
+	test("allows the plan to omit unrelated dirty files", () => {
+		expect(
+			validatePrPlan(plan(), [
+				".pi/extensions/verify-changes/index.ts",
+				"crates/chess/src/lib.rs",
+			]),
+		).toEqual([".pi/extensions/verify-changes/index.ts"]);
+	});
+
+	test("rejects duplicate paths across sequential commits", () => {
+		expect(() =>
+			validatePrPlan(
+				plan({
+					commits: [
+						{ message: "Add hooks", paths: [".pi/package.json"] },
+						{ message: "Test hooks", paths: [".pi/package.json"] },
+					],
+				}),
+				[".pi/package.json"],
+			),
+		).toThrow("same path more than once");
+	});
+
+	test("rejects non-semantic branch names", () => {
+		expect(() =>
+			validatePrPlan(plan({ branch: "my changes" }), [".pi/extensions/verify-changes/index.ts"]),
+		).toThrow("invalid semantic branch name");
+	});
+
+	test("rejects incomplete PR body structure", () => {
+		expect(() =>
+			validatePrPlan(plan({ body: "Just some prose" }), [".pi/extensions/verify-changes/index.ts"]),
+		).toThrow("## Summary and ## Validation");
+	});
+});
+
+describe("secret scanning", () => {
+	test("flags likely added credentials but ignores ordinary additions", () => {
+		const findings = suspiciousPatchLines(
+			["+const enabled = true;", "+api_key = \"definitely-not-a-real-secret-value\""].join("\n"),
+		);
+		expect(findings).toEqual(["+api_key = \"definitely-not-a-real-secret-value\""]);
+	});
+});
