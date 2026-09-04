@@ -70,10 +70,14 @@ describe("selectChecks", () => {
 		expect(checks[0]?.command).toBe("just");
 	});
 
-	test("dry-runs BitBake for Yocto metadata changes", () => {
+	test("validates Yocto metadata without requiring nested Docker", () => {
 		for (const level of ["fast", "full"] as const) {
 			const checks = selectChecks(cwd, ["apps/firmware/yocto/kas/firmware.yml"], level);
-			expect(checks[0]?.id).toBe("apps/firmware:image-check");
+			expect(checks[0]).toEqual({
+				id: "apps/firmware:yocto-metadata",
+				command: "python3",
+				args: ["/repo/apps/firmware/yocto/validate_crates.py"],
+			});
 		}
 	});
 
@@ -85,7 +89,7 @@ describe("selectChecks", () => {
 		);
 
 		expect(checks.map((check) => check.id)).toEqual([
-			"apps/firmware:image-check",
+			"apps/firmware:yocto-metadata",
 			"crates/core:cargo-check",
 		]);
 	});
@@ -99,7 +103,7 @@ describe("selectChecks", () => {
 
 		expect(checks.map((check) => check.id)).toEqual([
 			"apps/firmware:quality",
-			"apps/firmware:image-check",
+			"apps/firmware:yocto-metadata",
 		]);
 	});
 

@@ -115,6 +115,14 @@ function isYoctoMetadata(path: string): boolean {
 		&& YOCTO_METADATA_EXTENSIONS.some((extension) => path.endsWith(extension));
 }
 
+function yoctoMetadataCheck(cwd: string): CheckSpec {
+	return {
+		id: "apps/firmware:yocto-metadata",
+		command: "python3",
+		args: [join(cwd, "apps/firmware/yocto/validate_crates.py")],
+	};
+}
+
 export function selectChecks(cwd: string, paths: string[], level: ValidationLevel): CheckSpec[] {
 	const roots = packageRoots(paths);
 	const yoctoMetadataPaths = paths.filter(isYoctoMetadata);
@@ -165,11 +173,7 @@ export function selectChecks(cwd: string, paths: string[], level: ValidationLeve
 			? paths.filter((path) => path.startsWith("apps/firmware/yocto/"))
 			: [];
 		if (root === "apps/firmware" && yoctoMetadataPaths.length > 0 && firmwareCodePaths.length === 0) {
-			return {
-				id: "apps/firmware:image-check",
-				command: "just",
-				args: ["--justfile", join(cwd, "apps/firmware/justfile"), "image-check"],
-			};
+			return yoctoMetadataCheck(cwd);
 		}
 
 		if (level === "fast" && RUST_PACKAGES.has(root) && firmwareYoctoPaths.length === 0) {
@@ -194,11 +198,7 @@ export function selectChecks(cwd: string, paths: string[], level: ValidationLeve
 		};
 	});
 	if (yoctoMetadataPaths.length > 0 && firmwareCodePaths.length > 0) {
-		checks.push({
-			id: "apps/firmware:image-check",
-			command: "just",
-			args: ["--justfile", join(cwd, "apps/firmware/justfile"), "image-check"],
-		});
+		checks.push(yoctoMetadataCheck(cwd));
 	}
 	const harnessShellPaths = paths.filter((path) =>
 		path.endsWith(".sh") && (path.startsWith(".devcontainer/") || path.startsWith(".github/"))
