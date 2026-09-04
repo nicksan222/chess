@@ -14,7 +14,7 @@ sqlite = ["std", "dep:rusqlite"]
 
 [dependencies]
 chess-core = { path = "../core" }
-rusqlite = { version = "0.37.0", optional = true, features = ["bundled"] }
+rusqlite = { version = "0.40.2", optional = true, features = ["bundled"] }
 
 [[test]]
 name = "unit"
