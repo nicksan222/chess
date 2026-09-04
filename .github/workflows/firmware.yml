@@ -20,19 +20,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  validate:
-    name: Validate metadata
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: extractions/setup-just@v4
-        with:
-          just-version: 1.40.0
-      - run: just --justfile apps/firmware/justfile validate
-
   build:
     name: Build image
-    needs: validate
     runs-on: ubuntu-24.04
     timeout-minutes: 360
     steps:

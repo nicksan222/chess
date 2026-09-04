@@ -23,6 +23,7 @@ RUN apt-get update \
         libgl1-mesa-dri \
         libgles2 \
         libice6 \
+        libc6-dev-arm64-cross \
         libsm6 \
         libudev-dev \
         libusb-1.0-0-dev \

@@ -21,5 +21,6 @@ The container is ready. Hardware toolchains and Pi are installed.
   just cad                    test, then generate CAD output
   just pcb                    test, then generate PCB review output
   just quality                lint and format-check every package
+  just firmware-binary        link the firmware for AArch64
   just check                  all domains, sequentially
 EOF

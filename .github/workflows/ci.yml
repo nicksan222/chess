@@ -179,7 +179,7 @@ jobs:
       - uses: ./.github/actions/run-in-devcontainer
         with:
           image: ${{ needs.prebuild.outputs.image }}
-          command: just --justfile apps/firmware/justfile cross-build
+          command: just firmware-binary
       - uses: actions/upload-artifact@v7
         with:
           name: firmware-aarch64-${{ github.sha }}

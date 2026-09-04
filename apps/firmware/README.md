@@ -5,7 +5,7 @@ container includes the AArch64 linker and Rust target used by CI.
 
 ```sh
 # Compile and link the complete Rust dependency graph for the Pi architecture.
-just --justfile apps/firmware/justfile cross-build
+just firmware-binary
 
 # Validate or build the Yocto image; these commands require Docker.
 just --justfile apps/firmware/justfile image-check

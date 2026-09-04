@@ -54,8 +54,8 @@ run weekly to detect ecosystem drift or manually against any selected branch
 with **Actions → Firmware → Run workflow**. A `v*` tag calls the same build only
 after the complete tag CI graph succeeds, and only that gated invocation may
 publish release assets. Locally, `just firmware-check` parses and dry-runs the
-BitBake image graph, `just --justfile apps/firmware/justfile cross-build` builds
-the AArch64 application, and `just firmware` constructs the complete image.
+BitBake image graph, `just firmware-binary` builds the AArch64 application, and
+`just firmware` constructs the complete image.
 
 The version-controlled Git hook and `.pre-commit-config.yaml` both invoke
 `just precommit`, which excludes expensive CAD renders and PCB fabrication

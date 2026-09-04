@@ -35,11 +35,17 @@ build:
     cd "{{ root }}" && cargo build --package "{{ package }}" --all-targets --all-features
 
 # Compile and link the complete firmware crate graph for the Pi architecture.
-cross-build:
+cross-build: _cross-toolchain
     cd "{{ root }}" && CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc \
         cargo build --locked --release --package "{{ package }}" --target "{{ target }}"
     aarch64-linux-gnu-readelf --file-header \
         "{{ root }}/target/{{ target }}/release/{{ package }}" | grep --quiet 'Machine:.*AArch64'
+
+[private]
+_cross-toolchain:
+    @command -v aarch64-linux-gnu-gcc >/dev/null || { echo 'error: the AArch64 GCC linker is required; use the development container' >&2; exit 1; }
+    @command -v aarch64-linux-gnu-readelf >/dev/null || { echo 'error: AArch64 binutils are required; use the development container' >&2; exit 1; }
+    @rustc --target "{{ target }}" --print target-libdir >/dev/null 2>&1 || { echo 'error: the Rust AArch64 target is required; use the development container' >&2; exit 1; }
 
 # Validate crate metadata consumed by BitBake.
 validate:

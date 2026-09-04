@@ -69,6 +69,10 @@ pcb:
 pcb-release:
     just --justfile hardware/pcb/justfile release
 
+# Compile and link the complete firmware crate graph for AArch64.
+firmware-binary:
+    just --justfile apps/firmware/justfile cross-build
+
 # Validate the complete Yocto configuration.
 firmware-check:
     just --justfile apps/firmware/justfile image-check
