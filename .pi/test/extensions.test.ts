@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import autoValidation from "../extensions/auto-validation/index.js";
-import autoWorktree from "../extensions/auto-worktree/index.js";
+import autoWorktree, { installWorktreeDependencies } from "../extensions/auto-worktree/index.js";
 import commitLoop from "../extensions/commit-loop/index.js";
 import changeTracker, { attributedChanges } from "../extensions/change-tracker/index.js";
 import prWorkflow from "../extensions/pr-workflow/index.js";
@@ -81,6 +81,26 @@ describe("project extensions", () => {
 			snapshotPaths: ["generated.ts"],
 			attribution: "mixed",
 		});
+	});
+
+	test("installs locked Pi dependencies in automatic worktrees", async () => {
+		const executions: string[][] = [];
+		const pi = {
+			exec: async (command: string, args: string[]) => {
+				executions.push([command, ...args]);
+				return { stdout: "", stderr: "", code: 0, killed: false };
+			},
+		} as unknown as ExtensionAPI;
+
+		await installWorktreeDependencies(pi, "/tmp/pi-worktree");
+
+		expect(executions).toEqual([[
+			"bun",
+			"install",
+			"--cwd",
+			"/tmp/pi-worktree/.pi",
+			"--frozen-lockfile",
+		]]);
 	});
 
 	test("queues automatic worktree setup once on process startup", async () => {

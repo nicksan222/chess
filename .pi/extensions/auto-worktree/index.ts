@@ -40,6 +40,19 @@ function createTargetSession(ctx: ExtensionCommandContext, targetPath: string): 
 	return targetFile;
 }
 
+export async function installWorktreeDependencies(pi: ExtensionAPI, targetPath: string): Promise<void> {
+	const result = await pi.exec("bun", [
+		"install",
+		"--cwd",
+		join(targetPath, ".pi"),
+		"--frozen-lockfile",
+	]);
+	if (result.code !== 0) {
+		const output = [result.stderr, result.stdout].filter(Boolean).join("\n").trim();
+		throw new Error(`Could not install Pi dependencies: ${output || `exit ${result.code}`}`);
+	}
+}
+
 async function bootstrap(pi: ExtensionAPI, ctx: ExtensionCommandContext): Promise<void> {
 	await ctx.waitForIdle();
 	const topLevel = await git(pi, ctx.cwd, ["rev-parse", "--show-toplevel"]);
@@ -67,9 +80,10 @@ async function bootstrap(pi: ExtensionAPI, ctx: ExtensionCommandContext): Promis
 
 	let targetSession: string;
 	try {
+		await installWorktreeDependencies(pi, targetPath);
 		targetSession = createTargetSession(ctx, targetPath);
 	} catch (error) {
-		throw new Error(`Worktree retained at ${targetPath}, but Pi session creation failed: ${error instanceof Error ? error.message : String(error)}`);
+		throw new Error(`Worktree retained at ${targetPath}, but initialization failed: ${error instanceof Error ? error.message : String(error)}`);
 	}
 
 	const switched = await ctx.switchSession(targetSession, {
