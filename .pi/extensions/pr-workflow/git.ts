@@ -18,7 +18,7 @@ export interface GitState {
 }
 
 function splitNull(value: string): string[] {
-	return value.split("\0").map((item) => item.trim()).filter(Boolean);
+	return value.split("\0").filter((item) => item.length > 0);
 }
 
 function output(result: { stdout: string; stderr: string }): string {

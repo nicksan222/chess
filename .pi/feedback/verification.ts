@@ -47,7 +47,7 @@ const MAX_RESULT_BYTES = 16 * 1024;
 const CHECK_TIMEOUT_MS = 2 * 60 * 1000;
 
 function splitNull(value: string): string[] {
-	return value.split("\0").map((path) => path.trim()).filter(Boolean);
+	return value.split("\0").filter((path) => path.length > 0);
 }
 
 export async function getDirtyPaths(pi: ExtensionAPI, cwd: string): Promise<string[]> {

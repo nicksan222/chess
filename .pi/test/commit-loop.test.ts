@@ -49,6 +49,7 @@ describe("/commit-loop", () => {
 		await run("git", ["commit", "-qm", "Initial commit"], repository);
 		await writeFile(join(repository, "README.md"), "before\n\nafter\n");
 		await writeFile(join(repository, "NOTES.md"), "notes\n");
+		await writeFile(join(repository, " leading.md"), "leading-space path\n");
 
 		let commandHandler: ((args: string, ctx: any) => Promise<void>) | undefined;
 		const reviews: string[] = [];
@@ -82,6 +83,7 @@ describe("/commit-loop", () => {
 								commits: [
 									{ message: "Update the readme", paths: ["README.md"] },
 									{ message: "Add development notes", paths: ["NOTES.md"] },
+									{ message: "Add unusual path fixture", paths: [" leading.md"] },
 								],
 							},
 						},
@@ -101,11 +103,16 @@ describe("/commit-loop", () => {
 			},
 		});
 
-		const log = (await run("git", ["log", "-2", "--reverse", "--pretty=%s"], repository)).stdout.trim();
-		expect(log.split("\n")).toEqual(["Update the readme", "Add development notes"]);
-		expect(reviews).toHaveLength(2);
-		expect(reviews[0]).toContain("Staged commit 1/2");
-		expect(reviews[1]).toContain("Staged commit 2/2");
+		const log = (await run("git", ["log", "-3", "--reverse", "--pretty=%s"], repository)).stdout.trim();
+		expect(log.split("\n")).toEqual([
+			"Update the readme",
+			"Add development notes",
+			"Add unusual path fixture",
+		]);
+		expect(reviews).toHaveLength(3);
+		expect(reviews[0]).toContain("Staged commit 1/3");
+		expect(reviews[1]).toContain("Staged commit 2/3");
+		expect(reviews[2]).toContain("Staged commit 3/3");
 		expect((await run("git", ["status", "--porcelain"], repository)).stdout).toBe("");
 		expect(notices.some((message) => message.includes("Commit loop complete"))).toBe(true);
 	});

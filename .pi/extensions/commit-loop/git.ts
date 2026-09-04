@@ -3,7 +3,7 @@ import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 const MAX_PATCH_BYTES = 256 * 1024;
 
 function splitNull(value: string): string[] {
-	return value.split("\0").map((item) => item.trim()).filter(Boolean);
+	return value.split("\0").filter((item) => item.length > 0);
 }
 
 function combinedOutput(result: { stdout: string; stderr: string }): string {
