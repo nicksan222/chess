@@ -119,6 +119,29 @@ describe("standalone /pr workflow", () => {
 		expect(harness.notices.some(({ message, level }) => level === "warning" && message.includes("Created and validated local commits"))).toBe(true);
 	});
 
+	test("preserves both sides of an initially staged rename", async () => {
+		const repository = await createRepository();
+		await writeFile(join(repository, "old.txt"), "renamed content\n");
+		await run("git", ["add", "old.txt"], repository);
+		await run("git", ["commit", "-qm", "Add rename fixture"], repository);
+		await run("git", ["mv", "old.txt", "new.txt"], repository);
+		await writeFile(join(repository, "README.md"), "updated separately\n");
+		const plan: PrPlan = {
+			...DOCUMENTATION_PLAN,
+			commits: [
+				{ message: "Update documentation", paths: ["README.md"] },
+				{ message: "Rename fixture", paths: ["old.txt", "new.txt"] },
+			],
+		};
+		const harness = createHarness(repository, plan);
+
+		await harness.commandHandler("update and rename files", harness.context);
+
+		const log = (await run("git", ["log", "-2", "--reverse", "--pretty=%s"], repository)).stdout.trim();
+		expect(log.split("\n")).toEqual(["Update documentation", "Rename fixture"]);
+		expect((await run("git", ["status", "--porcelain"], repository)).stdout).toBe("");
+	});
+
 	test("shows and publishes existing branch commits without recreating them", async () => {
 		const repository = await createRepository();
 		await run("git", ["switch", "-q", "-c", "pi/session"], repository);

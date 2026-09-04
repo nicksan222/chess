@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { truncateTail } from "@earendil-works/pi-coding-agent";
+import { pathsFromNameStatus, splitNull } from "./git-paths.js";
 
 export type ValidationLevel = "fast" | "test" | "full";
 
@@ -48,12 +49,8 @@ const MAX_RESULT_LINES = 160;
 const MAX_RESULT_BYTES = 16 * 1024;
 const CHECK_TIMEOUT_MS = 2 * 60 * 1000;
 
-function splitNull(value: string): string[] {
-	return value.split("\0").filter((path) => path.length > 0);
-}
-
 export async function getDirtyPaths(pi: ExtensionAPI, cwd: string): Promise<string[]> {
-	const tracked = await pi.exec("git", ["-C", cwd, "diff", "--name-only", "-z", "HEAD", "--"]);
+	const tracked = await pi.exec("git", ["-C", cwd, "diff", "--name-status", "-z", "HEAD", "--"]);
 	if (tracked.code !== 0) return [];
 
 	const untracked = await pi.exec("git", [
@@ -67,7 +64,7 @@ export async function getDirtyPaths(pi: ExtensionAPI, cwd: string): Promise<stri
 	]);
 	if (untracked.code !== 0) return [];
 
-	return [...new Set([...splitNull(tracked.stdout), ...splitNull(untracked.stdout)])].sort();
+	return [...new Set([...pathsFromNameStatus(tracked.stdout), ...splitNull(untracked.stdout)])].sort();
 }
 
 export async function snapshotDirtyFiles(pi: ExtensionAPI, cwd: string): Promise<Map<string, string>> {

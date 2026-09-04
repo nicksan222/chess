@@ -1,4 +1,5 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import { pathsFromNameStatus, splitNull } from "../../feedback/git-paths.js";
 
 const MAX_PATCH_BYTES = 256 * 1024;
 
@@ -20,10 +21,6 @@ export interface GitState {
 	publishProblem?: string;
 }
 
-function splitNull(value: string): string[] {
-	return value.split("\0").filter((item) => item.length > 0);
-}
-
 function output(result: { stdout: string; stderr: string }): string {
 	return [result.stdout, result.stderr].filter(Boolean).join("\n").trim();
 }
@@ -37,9 +34,9 @@ export async function git(pi: ExtensionAPI, cwd: string, args: string[], allowFa
 }
 
 async function dirtyPaths(pi: ExtensionAPI, cwd: string): Promise<string[]> {
-	const tracked = await git(pi, cwd, ["diff", "--name-only", "-z", "HEAD", "--"]);
+	const tracked = await git(pi, cwd, ["diff", "--name-status", "-z", "HEAD", "--"]);
 	const untracked = await git(pi, cwd, ["ls-files", "--others", "--exclude-standard", "-z", "--"]);
-	return [...new Set([...splitNull(tracked.stdout), ...splitNull(untracked.stdout)])].sort();
+	return [...new Set([...pathsFromNameStatus(tracked.stdout), ...splitNull(untracked.stdout)])].sort();
 }
 
 async function completePatch(pi: ExtensionAPI, cwd: string, paths: readonly string[]): Promise<string> {
@@ -113,20 +110,20 @@ export async function inspectGitState(pi: ExtensionAPI, cwd: string): Promise<Gi
 	if (Buffer.byteLength(existingPatch) > MAX_PATCH_BYTES) {
 		throw new Error(`The committed patch exceeds ${MAX_PATCH_BYTES / 1024}KB. Review and publish it manually.`);
 	}
-	const existingPaths = splitNull((await git(pi, repository, [
+	const existingPaths = pathsFromNameStatus((await git(pi, repository, [
 		"diff",
-		"--name-only",
+		"--name-status",
 		"-z",
 		`${baseOid}..HEAD`,
 		"--",
-	])).stdout).sort();
+	])).stdout);
 	const paths = await dirtyPaths(pi, repository);
 	if (paths.length === 0 && !existingCommits) {
 		throw new Error("There are no commits or uncommitted changes to prepare.");
 	}
 
 	const status = await git(pi, repository, ["status", "--short", "--branch"]);
-	const staged = await git(pi, repository, ["diff", "--cached", "--name-only", "-z", "--"]);
+	const staged = await git(pi, repository, ["diff", "--cached", "--name-status", "-z", "--"]);
 	const recent = await git(pi, repository, ["log", "-8", "--pretty=format:%s"]);
 	const origin = await git(pi, repository, ["remote", "get-url", "origin"], true);
 	const gh = await pi.exec("gh", ["auth", "status"]);
@@ -147,7 +144,7 @@ export async function inspectGitState(pi: ExtensionAPI, cwd: string): Promise<Gi
 		existingPatch,
 		existingPaths,
 		dirtyPaths: paths,
-		stagedPaths: splitNull(staged.stdout),
+		stagedPaths: pathsFromNameStatus(staged.stdout),
 		status: status.stdout.trim(),
 		recentCommits: recent.stdout.trim(),
 		patch: await completePatch(pi, repository, paths),

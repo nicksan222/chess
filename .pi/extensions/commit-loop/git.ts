@@ -1,11 +1,8 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import { pathsFromNameStatus, splitNull } from "../../feedback/git-paths.js";
 import { createValidationWorktree } from "../../feedback/snapshot.js";
 
 const MAX_PATCH_BYTES = 256 * 1024;
-
-function splitNull(value: string): string[] {
-	return value.split("\0").filter((item) => item.length > 0);
-}
 
 function combinedOutput(result: { stdout: string; stderr: string }): string {
 	return [result.stdout, result.stderr].filter(Boolean).join("\n").trim();
@@ -20,9 +17,9 @@ export async function git(pi: ExtensionAPI, cwd: string, args: string[], allowFa
 }
 
 export async function dirtyPaths(pi: ExtensionAPI, cwd: string): Promise<string[]> {
-	const tracked = await git(pi, cwd, ["diff", "--name-only", "-z", "HEAD", "--"]);
+	const tracked = await git(pi, cwd, ["diff", "--name-status", "-z", "HEAD", "--"]);
 	const untracked = await git(pi, cwd, ["ls-files", "--others", "--exclude-standard", "-z", "--"]);
-	return [...new Set([...splitNull(tracked.stdout), ...splitNull(untracked.stdout)])].sort();
+	return [...new Set([...pathsFromNameStatus(tracked.stdout), ...splitNull(untracked.stdout)])].sort();
 }
 
 export async function completePatch(
@@ -55,8 +52,8 @@ export async function completePatch(
 }
 
 export async function stagedPaths(pi: ExtensionAPI, cwd: string): Promise<string[]> {
-	const result = await git(pi, cwd, ["diff", "--cached", "--name-only", "-z", "--"]);
-	return splitNull(result.stdout).sort();
+	const result = await git(pi, cwd, ["diff", "--cached", "--name-status", "-z", "--"]);
+	return pathsFromNameStatus(result.stdout);
 }
 
 export async function createStagedSnapshot(pi: ExtensionAPI, repository: string) {

@@ -1,5 +1,6 @@
 import { relative, resolve } from "node:path";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import { pathsFromNameStatus } from "../../feedback/git-paths.js";
 import { changedPaths, snapshotDirtyFiles } from "../../feedback/verification.js";
 
 export const FILES_CHANGED_EVENT = "feedback:files-changed";
@@ -41,10 +42,8 @@ async function committedChanges(
 ): Promise<{ head: string | undefined; paths: string[] }> {
 	const head = await currentHead(pi, repository);
 	if (!beforeHead || !head || head === beforeHead) return { head, paths: [] };
-	const result = await pi.exec("git", ["-C", repository, "diff", "--name-only", "-z", beforeHead, head, "--"]);
-	const paths = result.code === 0
-		? result.stdout.split("\0").filter((path) => path.length > 0)
-		: [];
+	const result = await pi.exec("git", ["-C", repository, "diff", "--name-status", "-z", beforeHead, head, "--"]);
+	const paths = result.code === 0 ? pathsFromNameStatus(result.stdout) : [];
 	return { head, paths };
 }
 

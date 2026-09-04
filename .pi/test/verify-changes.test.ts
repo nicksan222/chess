@@ -14,8 +14,8 @@ describe("verify_changes", () => {
 				if (args.includes("--show-toplevel")) {
 					return { stdout: `${REPOSITORY}\n`, stderr: "", code: 0, killed: false };
 				}
-				if (args.includes("--name-only")) {
-					return { stdout: "README.md\0", stderr: "", code: 0, killed: false };
+				if (args.includes("--name-status")) {
+					return { stdout: "M\0README.md\0", stderr: "", code: 0, killed: false };
 				}
 				return { stdout: "", stderr: "", code: 0, killed: false };
 			},

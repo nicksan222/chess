@@ -1,4 +1,5 @@
 import type { ExtensionAPI, ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
+import { pathsFromNameStatus } from "../../feedback/git-paths.js";
 import { createValidationWorktree } from "../../feedback/snapshot.js";
 import { formatValidationResult, preparePiDependencies, runVerification } from "../../feedback/verification.js";
 import {
@@ -71,8 +72,8 @@ async function createCommits(
 	for (const [index, commit] of plan.commits.entries()) {
 		ctx.ui.setStatus("pr-workflow", `committing ${index + 1}/${plan.commits.length}`);
 		await git(pi, state.repository, ["add", "--", ...commit.paths]);
-		const staged = await git(pi, state.repository, ["diff", "--cached", "--name-only", "-z", "--"]);
-		const actualPaths = staged.stdout.split("\0").filter(Boolean).sort();
+		const staged = await git(pi, state.repository, ["diff", "--cached", "--name-status", "-z", "--"]);
+		const actualPaths = pathsFromNameStatus(staged.stdout);
 		const expectedPaths = [...commit.paths].sort();
 		if (JSON.stringify(actualPaths) !== JSON.stringify(expectedPaths)) {
 			throw new Error(`Staged paths differ from commit plan. Expected ${expectedPaths.join(", ")}; found ${actualPaths.join(", ") || "none"}.`);
