@@ -124,17 +124,16 @@ export function selectChecks(cwd: string, paths: string[], level: ValidationLeve
 		return [{ id: `repository:${recipe}`, command: "just", args: ["--justfile", join(cwd, "justfile"), recipe] }];
 	}
 
-	if (roots.includes(WORKSPACE_ROOT) && level !== "fast") {
-		const recipe = level === "test" ? "test" : "precommit";
-		return [{
-			id: `repository:${recipe}`,
-			command: "just",
-			args: ["--justfile", join(cwd, "justfile"), recipe],
-		}];
-	}
-
 	const checks: CheckSpec[] = roots.map((root) => {
 		if (root === WORKSPACE_ROOT) {
+			if (level !== "fast") {
+				const recipe = level === "test" ? "test" : "precommit";
+				return {
+					id: `repository:${recipe}`,
+					command: "just",
+					args: ["--justfile", join(cwd, "justfile"), recipe],
+				};
+			}
 			return {
 				id: "workspace:cargo-check",
 				command: "cargo",

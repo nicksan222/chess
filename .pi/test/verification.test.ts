@@ -101,6 +101,10 @@ describe("selectChecks", () => {
 		expect(selectChecks(cwd, ["Cargo.toml"], "full").map((check) => check.id)).toEqual([
 			"repository:precommit",
 		]);
+		expect(selectChecks(cwd, ["Cargo.toml", ".pi/package.json"], "full").map((check) => check.id)).toEqual([
+			".pi:check",
+			"repository:precommit",
+		]);
 	});
 
 	test("uses a non-invasive diff check for unscoped fast validation", () => {
