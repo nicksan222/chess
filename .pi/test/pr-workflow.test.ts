@@ -64,5 +64,8 @@ describe("secret scanning", () => {
 			"+AWS_SECRET_ACCESS_KEY=abcdefghijklmnop",
 			"+DATABASE_PASSWORD=secret-value",
 		]);
+		expect(suspiciousPatchLines(
+			"+credential=github_pat_11AA22BB33CC44DD55EE66FF77GG88HH",
+		)).toEqual(["+credential=github_pat_11AA22BB33CC44DD55EE66FF77GG88HH"]);
 	});
 });
