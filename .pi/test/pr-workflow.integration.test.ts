@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test } from "bun:test";
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
@@ -33,7 +33,11 @@ async function createRepository(): Promise<string> {
 	return repository;
 }
 
-function createHarness(repository: string, plan: PrPlan) {
+function createHarness(
+	repository: string,
+	plan: PrPlan,
+	execute?: (command: string, args: string[]) => Promise<Awaited<ReturnType<typeof run>> | undefined>,
+) {
 	let commandHandler: ((args: string, ctx: any) => Promise<void>) | undefined;
 	let planningCalls = 0;
 	const notices: Array<{ message: string; level: string }> = [];
@@ -43,6 +47,8 @@ function createHarness(repository: string, plan: PrPlan) {
 			if (name === "pr") commandHandler = registration.handler;
 		},
 		async exec(command: string, args: string[]) {
+			const overridden = await execute?.(command, args);
+			if (overridden) return overridden;
 			if (command === "gh") return { stdout: "", stderr: "not authenticated", code: 1, killed: false };
 			if (command === "just") return { stdout: "validation passed", stderr: "", code: 0, killed: false };
 			return run(command, args, repository);
@@ -133,6 +139,38 @@ describe("standalone /pr workflow", () => {
 		expect(harness.confirmations[0]).toContain("Planned commits:\n(none; publish existing commits only)");
 		expect((await run("git", ["branch", "--show-current"], repository)).stdout.trim()).toBe("docs/existing-workflow");
 		expect((await run("git", ["log", "-1", "--pretty=%s"], repository)).stdout.trim()).toBe("Document existing workflow");
+	});
+
+	test("validates committed changes without omitted working-tree files", async () => {
+		const repository = await createRepository();
+		await mkdir(join(repository, "crates/core/src"), { recursive: true });
+		await writeFile(join(repository, "crates/core/src/lib.rs"), "pub fn existing() {}\n");
+		await run("git", ["add", "."], repository);
+		await run("git", ["commit", "-qm", "Add core fixture"], repository);
+		await writeFile(join(repository, "crates/core/src/lib.rs"), "mod generated;\npub use generated::value;\n");
+		await writeFile(join(repository, "crates/core/src/generated.rs"), "pub fn value() {}\n");
+		const plan: PrPlan = {
+			...DOCUMENTATION_PLAN,
+			branch: "feat/isolated-validation",
+			commits: [{ message: "Expose generated value", paths: ["crates/core/src/lib.rs"] }],
+		};
+		const harness = createHarness(repository, plan, async (command, args) => {
+			if (command !== "just" || !args.some((arg) => arg.endsWith("/crates/core/justfile"))) return undefined;
+			const justfile = args[args.indexOf("--justfile") + 1];
+			const snapshotRoot = justfile?.replace(/\/crates\/core\/justfile$/, "") ?? repository;
+			const dependencyExists = await Bun.file(join(snapshotRoot, "crates/core/src/generated.rs")).exists();
+			return {
+				stdout: "",
+				stderr: dependencyExists ? "" : "generated module is missing",
+				code: dependencyExists ? 0 : 1,
+				killed: false,
+			};
+		});
+
+		await harness.commandHandler("publish only the core API change", harness.context);
+
+		expect(harness.notices.some(({ message }) => message.includes("publishing was stopped"))).toBe(true);
+		expect((await run("git", ["status", "--porcelain", "--", "crates/core/src/generated.rs"], repository)).stdout).not.toBe("");
 	});
 
 	test("blocks secrets in existing commits before invoking the planning model", async () => {

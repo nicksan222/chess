@@ -1,5 +1,6 @@
 import type { ExtensionAPI, ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
-import { formatValidationResult, runVerification } from "../../feedback/verification.js";
+import { createValidationWorktree } from "../../feedback/snapshot.js";
+import { formatValidationResult, preparePiDependencies, runVerification } from "../../feedback/verification.js";
 import {
 	git,
 	inspectGitState,
@@ -163,7 +164,14 @@ async function runPr(pi: ExtensionAPI, args: string, ctx: ExtensionCommandContex
 	await createCommits(pi, ctx, state, plan, selectedPaths);
 	ctx.ui.setStatus("pr-workflow", "running full validation");
 	const validationPaths = [...new Set([...state.existingPaths, ...selectedPaths])].sort();
-	const validation = await runVerification(pi, state.repository, validationPaths, "full", ctx.signal);
+	const snapshot = await createValidationWorktree(pi, state.repository, "HEAD");
+	let validation;
+	try {
+		await preparePiDependencies(pi, snapshot.worktree, validationPaths, ctx.signal);
+		validation = await runVerification(pi, snapshot.worktree, validationPaths, "full", ctx.signal);
+	} finally {
+		await snapshot.cleanup();
+	}
 	pi.events.emit("feedback:validation-result", validation);
 	if (!validation.passed) {
 		throw new Error(`Commits were created, but publishing was stopped because validation failed.\n${formatValidationResult(validation)}`);
