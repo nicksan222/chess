@@ -2,6 +2,7 @@ set shell := ["bash", "-euo", "pipefail", "-c"]
 
 root := justfile_directory() + "/../.."
 package := "firmware"
+target := "aarch64-unknown-linux-gnu"
 cache := root + "/.cache/yocto"
 config := root + "/apps/firmware/yocto/kas/firmware.yml"
 machine := "raspberrypi0-2w-64"
@@ -32,6 +33,13 @@ check: quality test validate
 # Build the firmware application without constructing an OS image.
 build:
     cd "{{ root }}" && cargo build --package "{{ package }}" --all-targets --all-features
+
+# Compile and link the complete firmware crate graph for the Pi architecture.
+cross-build:
+    cd "{{ root }}" && CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc \
+        cargo build --locked --release --package "{{ package }}" --target "{{ target }}"
+    aarch64-linux-gnu-readelf --file-header \
+        "{{ root }}/target/{{ target }}/release/{{ package }}" | grep --quiet 'Machine:.*AArch64'
 
 # Validate crate metadata consumed by BitBake.
 validate:
