@@ -33,15 +33,17 @@ export default function autoValidation(pi: ExtensionAPI) {
 	});
 
 	pi.on("agent_end", async (_event, ctx) => {
-		if (checking || pendingPaths.size === 0 || pendingCwd !== ctx.cwd) return;
+		if (checking || pendingPaths.size === 0 || !pendingCwd) return;
 
 		checking = true;
+		const cwd = pendingCwd;
 		const paths = [...pendingPaths].sort();
 		pendingPaths.clear();
-		pi.events.emit(VALIDATION_STARTED_EVENT, { cwd: ctx.cwd, level: "fast", paths });
+		pendingCwd = undefined;
+		pi.events.emit(VALIDATION_STARTED_EVENT, { cwd, level: "fast", paths });
 
 		try {
-			const result = await runVerification(pi, ctx.cwd, paths, "fast", ctx.signal);
+			const result = await runVerification(pi, cwd, paths, "fast", ctx.signal);
 			pi.events.emit(VALIDATION_RESULT_EVENT, result);
 
 			if (result.passed) {
