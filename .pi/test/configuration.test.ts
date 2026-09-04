@@ -21,6 +21,7 @@ describe("Pi harness configuration", () => {
 		const config = JSON.parse(await text(".devcontainer/devcontainer.json"));
 		expect(config.mounts).toContain("source=chess-pi-agent,target=/home/vscode/.pi/agent,type=volume");
 		expect(config.mounts).toContain("source=chess-pi-worktrees,target=/home/vscode/.worktrees,type=volume");
+		expect(config.features["ghcr.io/devcontainers/features/docker-in-docker:4"]).toEqual({});
 	});
 
 	test("keeps every GitHub workflow and action parseable", async () => {

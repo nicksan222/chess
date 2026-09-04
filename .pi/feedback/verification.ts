@@ -117,9 +117,9 @@ function isYoctoMetadata(path: string): boolean {
 
 function yoctoMetadataCheck(cwd: string): CheckSpec {
 	return {
-		id: "apps/firmware:yocto-metadata",
-		command: "python3",
-		args: [join(cwd, "apps/firmware/yocto/validate_crates.py")],
+		id: "apps/firmware:image-check",
+		command: "just",
+		args: ["--justfile", join(cwd, "apps/firmware/justfile"), "image-check"],
 	};
 }
 

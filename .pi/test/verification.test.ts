@@ -70,13 +70,13 @@ describe("selectChecks", () => {
 		expect(checks[0]?.command).toBe("just");
 	});
 
-	test("validates Yocto metadata without requiring nested Docker", () => {
+	test("parses selected Yocto metadata through the container image check", () => {
 		for (const level of ["fast", "full"] as const) {
 			const checks = selectChecks(cwd, ["apps/firmware/yocto/kas/firmware.yml"], level);
 			expect(checks[0]).toEqual({
-				id: "apps/firmware:yocto-metadata",
-				command: "python3",
-				args: ["/repo/apps/firmware/yocto/validate_crates.py"],
+				id: "apps/firmware:image-check",
+				command: "just",
+				args: ["--justfile", "/repo/apps/firmware/justfile", "image-check"],
 			});
 		}
 	});
@@ -89,7 +89,7 @@ describe("selectChecks", () => {
 		);
 
 		expect(checks.map((check) => check.id)).toEqual([
-			"apps/firmware:yocto-metadata",
+			"apps/firmware:image-check",
 			"crates/core:cargo-check",
 		]);
 	});
@@ -103,7 +103,7 @@ describe("selectChecks", () => {
 
 		expect(checks.map((check) => check.id)).toEqual([
 			"apps/firmware:quality",
-			"apps/firmware:yocto-metadata",
+			"apps/firmware:image-check",
 		]);
 	});
 

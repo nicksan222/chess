@@ -13,7 +13,8 @@
     },
     "ghcr.io/devcontainers-extra/features/bun:1": {
       "version": "1.4.0"
-    }
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:4": {}
   },
   "remoteUser": "vscode",
   "updateRemoteUserUID": true,

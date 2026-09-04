@@ -26,7 +26,8 @@ The image provides:
 - KiCad 9 with `kicad-cli` and `pcbnew`;
 - a checksum-verified Blender at `/opt/blender`;
 - X11/GL/EGL, Mesa, Xvfb, and `xauth` so headless Blender can render;
-- native build, USB, and udev development libraries;
+- an in-container Docker daemon for Yocto metadata validation, plus native build,
+  USB, and udev development libraries;
 - rust-src, Pylance, YAML, ShellCheck, Docker, Cargo.toml, TOML, LLDB,
   Markdown, and GitHub Actions editor integration.
 
