@@ -41,11 +41,13 @@ container; Yocto owns its caches under `.cache/yocto`.
 ## CI
 
 Pull request CI invokes package-local recipes for code quality, every Rust
-package, CAD, PCB, and firmware. Firmware validation has two inexpensive layers:
-metadata checks run immediately, while a parallel `Firmware plan` parses the
-complete BitBake configuration and dry-runs the exact `firmware-image` task
-graph without compiling it. The stable `Required checks` job fails unless every
-one of these jobs succeeds.
+package, CAD, PCB, and firmware. Firmware metadata checks run immediately. When
+a PR changes firmware, its Rust dependencies, the build configuration, or the
+toolchain, a parallel `Firmware plan` parses the complete BitBake configuration
+and dry-runs the exact `firmware-image` task graph without compiling it. For
+unrelated PRs the plan reuses the validated base assumption and finishes
+immediately. The stable `Required checks` job fails unless every applicable job
+succeeds.
 
 Full Yocto image builds are isolated in the reusable `Firmware` workflow. They
 run weekly to detect ecosystem drift or manually against any selected branch

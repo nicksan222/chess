@@ -171,10 +171,35 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
-      - uses: extractions/setup-just@v4
+        with:
+          fetch-depth: 0
+      - id: changes
+        name: Detect firmware inputs
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          if git diff --quiet "${BASE_SHA}" "${HEAD_SHA}" -- \
+            .devcontainer/Dockerfile \
+            .github/workflows/ci.yml \
+            .github/workflows/firmware.yml \
+            apps/firmware \
+            crates/logger \
+            Cargo.lock \
+            Cargo.toml \
+            rust-toolchain.toml; then
+            echo 'required=false' >> "${GITHUB_OUTPUT}"
+          else
+            echo 'required=true' >> "${GITHUB_OUTPUT}"
+          fi
+      - if: steps.changes.outputs.required == 'true'
+        uses: extractions/setup-just@v4
         with:
           just-version: 1.40.0
-      - run: just --justfile apps/firmware/justfile image-check
+      - if: steps.changes.outputs.required == 'true'
+        run: just --justfile apps/firmware/justfile image-check
+      - if: steps.changes.outputs.required != 'true'
+        run: echo 'Firmware inputs are unchanged; the validated base image plan remains applicable.'
 
   required-checks:
     name: Required checks
