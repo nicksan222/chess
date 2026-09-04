@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test } from "bun:test";
-import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { chmod, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
@@ -105,6 +105,9 @@ describe("standalone /pr workflow", () => {
 	test("creates a semantic branch and local validated commits without a remote", async () => {
 		const repository = await createRepository();
 		await writeFile(join(repository, "README.md"), "before\n\nafter\n");
+		const hook = join(repository, ".git/hooks/pre-commit");
+		await writeFile(hook, "#!/bin/sh\nexit 1\n");
+		await chmod(hook, 0o755);
 		const harness = createHarness(repository, DOCUMENTATION_PLAN);
 
 		await harness.commandHandler("document the change", harness.context);

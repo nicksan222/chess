@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from "bun:test";
 import { existsSync } from "node:fs";
-import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { chmod, mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
@@ -124,6 +124,9 @@ describe("/commit-loop", () => {
 		await writeFile(join(repository, "README.md"), "before\n\nafter\n");
 		await writeFile(join(repository, "NOTES.md"), "notes\n");
 		await writeFile(join(repository, " leading.md"), "leading-space path\n");
+		const hook = join(repository, ".git/hooks/pre-commit");
+		await writeFile(hook, "#!/bin/sh\nexit 1\n");
+		await chmod(hook, 0o755);
 
 		const harness = createHarness(repository, [
 			{ message: "Update the readme", paths: ["README.md"] },

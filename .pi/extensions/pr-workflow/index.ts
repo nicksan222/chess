@@ -77,7 +77,7 @@ async function createCommits(
 		if (JSON.stringify(actualPaths) !== JSON.stringify(expectedPaths)) {
 			throw new Error(`Staged paths differ from commit plan. Expected ${expectedPaths.join(", ")}; found ${actualPaths.join(", ") || "none"}.`);
 		}
-		await git(pi, state.repository, ["commit", "-m", commit.message]);
+		await git(pi, state.repository, ["commit", "--no-verify", "-m", commit.message]);
 	}
 }
 

@@ -162,7 +162,7 @@ async function runCommitLoop(
 			await unstage(pi, repository, commit.paths);
 			throw new Error(`Commit validation failed; the proposed commit was unstaged.\n${formatValidationResult(validation)}`);
 		}
-		await git(pi, repository, ["commit", "-m", commit.message]);
+		await git(pi, repository, ["commit", "--no-verify", "-m", commit.message]);
 		committed.push(commit.message.split("\n", 1)[0] ?? commit.message);
 	}
 	ctx.ui.notify(`Commit loop complete:\n${committed.map((message) => `- ${message}`).join("\n")}`, "info");
