@@ -183,6 +183,32 @@ describe("/commit-loop", () => {
 		expect(harness.notices.some((message) => message.includes("Commit validation failed"))).toBe(true);
 	});
 
+	test("installs dependencies before validating Pi changes in a snapshot", async () => {
+		const repository = await createRepository();
+		await writeFile(join(repository, "README.md"), "initial\n");
+		await run("git", ["add", "."], repository);
+		await run("git", ["commit", "-qm", "Initial commit"], repository);
+		await mkdir(join(repository, ".pi"));
+		await writeFile(join(repository, ".pi/example.ts"), "export const example = true;\n");
+		const bunCalls: string[][] = [];
+		const harness = createHarness(
+			repository,
+			[{ message: "Add Pi example", paths: [".pi/example.ts"] }],
+			{
+				execute: async (command, args) => {
+					if (command !== "bun") return run(command, args, repository);
+					bunCalls.push(args);
+					return { stdout: "", stderr: "", code: 0, killed: false };
+				},
+			},
+		);
+
+		await harness.commandHandler("add a Pi example", harness.context);
+
+		expect(bunCalls.map((args) => args[0])).toEqual(["install", "run"]);
+		expect((await run("git", ["log", "-1", "--pretty=%s"], repository)).stdout.trim()).toBe("Add Pi example");
+	});
+
 	test("rejects whitespace errors in the staged patch", async () => {
 		const repository = await createRepository();
 		await writeFile(join(repository, "README.md"), "clean\n");

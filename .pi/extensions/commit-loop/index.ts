@@ -1,5 +1,5 @@
 import type { ExtensionAPI, ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
-import { formatValidationResult, runVerification } from "../../feedback/verification.js";
+import { formatValidationResult, preparePiDependencies, runVerification } from "../../feedback/verification.js";
 import { completePatch, createStagedSnapshot, dirtyPaths, git, stagedPaths } from "./git.js";
 import { createCommitPlan, validateCommitPlan } from "./planner.js";
 
@@ -62,6 +62,7 @@ async function validateStagedCommit(
 
 	const snapshot = await createStagedSnapshot(pi, repository);
 	try {
+		await preparePiDependencies(pi, snapshot.worktree, [...paths], signal);
 		return await runVerification(pi, snapshot.worktree, [...paths], "fast", signal);
 	} finally {
 		await snapshot.cleanup();

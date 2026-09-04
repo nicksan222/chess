@@ -174,6 +174,26 @@ export function selectChecks(cwd: string, paths: string[], level: ValidationLeve
 	return checks;
 }
 
+export async function preparePiDependencies(
+	pi: ExtensionAPI,
+	cwd: string,
+	paths: string[],
+	signal?: AbortSignal,
+): Promise<void> {
+	const needsPiDependencies = selectChecks(cwd, paths, "fast").some((check) => check.id === ".pi:check");
+	if (!needsPiDependencies) return;
+
+	const result = await pi.exec(
+		"bun",
+		["install", "--cwd", join(cwd, ".pi"), "--frozen-lockfile"],
+		{ signal, timeout: CHECK_TIMEOUT_MS },
+	);
+	if (result.code !== 0) {
+		const output = [result.stdout, result.stderr].filter(Boolean).join("\n").trim();
+		throw new Error(`Could not install Pi dependencies in the validation snapshot: ${output || `exit ${result.code}`}`);
+	}
+}
+
 export async function runVerification(
 	pi: ExtensionAPI,
 	cwd: string,
