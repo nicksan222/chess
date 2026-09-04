@@ -101,11 +101,18 @@ function displayCommand(command: string, args: string[]): string {
 	return [command, ...args].map(quote).join(" ");
 }
 
-function diffCheck(cwd: string, baseRevision?: string): CheckSpec {
+function diffCheck(cwd: string, paths: string[], baseRevision?: string): CheckSpec {
 	return {
 		id: "repository:diff-check",
 		command: "git",
-		args: ["-C", cwd, "diff", "--check", ...(baseRevision ? [baseRevision, "--"] : [])],
+		args: [
+			"-C",
+			cwd,
+			"diff",
+			"--check",
+			...(baseRevision ? [baseRevision] : []),
+			...(paths.length > 0 ? ["--", ...paths] : []),
+		],
 	};
 }
 
@@ -142,7 +149,7 @@ export function selectChecks(cwd: string, paths: string[], level: ValidationLeve
 
 	if (paths.length === 0) {
 		if (level === "fast") {
-			return [diffCheck(cwd, baseRevision)];
+			return [diffCheck(cwd, paths, baseRevision)];
 		}
 		const recipe = level === "full" ? "precommit" : "test";
 		return [{ id: `repository:${recipe}`, command: "just", args: ["--justfile", join(cwd, "justfile"), recipe] }];
@@ -230,7 +237,7 @@ export function selectChecks(cwd: string, paths: string[], level: ValidationLeve
 			args: ["--justfile", join(cwd, "justfile"), "precommit"],
 		});
 	} else if (hasUnscopedPaths && level === "fast") {
-		checks.push(diffCheck(cwd, baseRevision));
+		checks.push(diffCheck(cwd, paths, baseRevision));
 	} else if (hasUnscopedPaths) {
 		checks.push({
 			id: "repository:test",

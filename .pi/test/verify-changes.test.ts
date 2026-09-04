@@ -24,6 +24,6 @@ describe("verify_changes", () => {
 		const result = await verify(pi, `${REPOSITORY}/nested`, "fast", undefined);
 
 		expect(result.paths).toEqual(["README.md"]);
-		expect(executions.at(-1)).toEqual(["git", "-C", REPOSITORY, "diff", "--check"]);
+		expect(executions.at(-1)).toEqual(["git", "-C", REPOSITORY, "diff", "--check", "--", "README.md"]);
 	});
 });

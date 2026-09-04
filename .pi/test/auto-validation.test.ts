@@ -35,7 +35,7 @@ describe("automatic validation", () => {
 		await hooks.get("agent_end")?.({}, { cwd: `${REPOSITORY}/nested`, signal: undefined, ui: { notify() {} } });
 
 		expect(executions).toEqual([
-			["git", "-C", REPOSITORY, "diff", "--check", "before-turn", "--"],
+			["git", "-C", REPOSITORY, "diff", "--check", "before-turn", "--", "README.md"],
 		]);
 	});
 });

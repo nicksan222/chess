@@ -160,12 +160,13 @@ describe("selectChecks", () => {
 
 		expect(checks.map((check) => check.id)).toEqual(["repository:diff-check"]);
 		expect(checks[0]?.command).toBe("git");
+		expect(checks[0]?.args).toEqual(["-C", cwd, "diff", "--check", "--", "justfile"]);
 	});
 
 	test("checks committed unscoped changes from their base revision", () => {
 		const checks = selectChecks(cwd, ["README.md"], "fast", "before-turn");
 
-		expect(checks[0]?.args).toEqual(["-C", cwd, "diff", "--check", "before-turn", "--"]);
+		expect(checks[0]?.args).toEqual(["-C", cwd, "diff", "--check", "before-turn", "--", "README.md"]);
 	});
 
 	test("keeps scoped checks when a change set also has unscoped paths", () => {
