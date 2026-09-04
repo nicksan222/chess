@@ -196,6 +196,8 @@ describe("standalone /pr workflow", () => {
 		await writeFile(join(repository, "credentials.env"), 'api_key = "committed-secret-value"\n');
 		await run("git", ["add", "credentials.env"], repository);
 		await run("git", ["commit", "-qm", "Add accidental credential"], repository);
+		await run("git", ["rm", "-q", "credentials.env"], repository);
+		await run("git", ["commit", "-qm", "Remove accidental credential"], repository);
 		const harness = createHarness(repository, { ...DOCUMENTATION_PLAN, commits: [] });
 
 		await harness.commandHandler("prepare the pull request", harness.context);
