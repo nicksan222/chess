@@ -16,7 +16,9 @@ Project-local Pi extensions are intentionally split by responsibility:
   performs Git mutations, validates, pushes, and opens the pull request.
 
 The extensions communicate through `pi.events`; common validation routing and
-result formatting live in `feedback/verification.ts`.
+result formatting live in `feedback/verification.ts`. Fast checks stay scoped,
+while full validation also runs the repository precommit gate so reverse
+package dependents are covered.
 
 ## Commands
 

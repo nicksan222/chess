@@ -73,9 +73,18 @@ describe("selectChecks", () => {
 		expect(checks.map((check) => check.id)).toEqual([".pi:check", "repository:precommit"]);
 	});
 
-	test("avoids PCB previews during full changed-file validation", () => {
+	test("adds the repository gate for reverse dependents during full validation", () => {
+		const checks = selectChecks(cwd, ["crates/core/src/lib.rs"], "full");
+
+		expect(checks.map((check) => check.id)).toEqual(["crates/core:check", "repository:precommit"]);
+	});
+
+	test("avoids PCB previews but still runs the repository gate during full validation", () => {
 		const checks = selectChecks(cwd, ["hardware/pcb/generate.py"], "full");
 
-		expect(checks.map((check) => check.id)).toEqual(["hardware/pcb:check-fast"]);
+		expect(checks.map((check) => check.id)).toEqual([
+			"hardware/pcb:check-fast",
+			"repository:precommit",
+		]);
 	});
 });

@@ -152,21 +152,24 @@ export function selectChecks(cwd: string, paths: string[], level: ValidationLeve
 			args: ["--justfile", join(cwd, root, "justfile"), recipe],
 		};
 	});
-	if (hasUnscopedPaths) {
-		if (level === "fast") {
-			checks.push({
-				id: "repository:diff-check",
-				command: "git",
-				args: ["-C", cwd, "diff", "--check"],
-			});
-		} else {
-			const recipe = level === "full" ? "precommit" : "test";
-			checks.push({
-				id: `repository:${recipe}`,
-				command: "just",
-				args: ["--justfile", join(cwd, "justfile"), recipe],
-			});
-		}
+	if (level === "full") {
+		checks.push({
+			id: "repository:precommit",
+			command: "just",
+			args: ["--justfile", join(cwd, "justfile"), "precommit"],
+		});
+	} else if (hasUnscopedPaths && level === "fast") {
+		checks.push({
+			id: "repository:diff-check",
+			command: "git",
+			args: ["-C", cwd, "diff", "--check"],
+		});
+	} else if (hasUnscopedPaths) {
+		checks.push({
+			id: "repository:test",
+			command: "just",
+			args: ["--justfile", join(cwd, "justfile"), "test"],
+		});
 	}
 	return checks;
 }
