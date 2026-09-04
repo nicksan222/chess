@@ -40,6 +40,7 @@ function createHarness(
 ) {
 	let commandHandler: ((args: string, ctx: any) => Promise<void>) | undefined;
 	let planningCalls = 0;
+	const planningPrompts: string[] = [];
 	const notices: Array<{ message: string; level: string }> = [];
 	const confirmations: string[] = [];
 	const pi = {
@@ -65,8 +66,9 @@ function createHarness(
 		model: { provider: "faux", id: "planner" },
 		modelRegistry: {
 			hasConfiguredAuth: () => true,
-			complete: async () => {
+			complete: async (_model: unknown, request: any) => {
 				planningCalls += 1;
+				planningPrompts.push(request.messages[0].content[0].text);
 				return {
 					stopReason: "toolUse",
 					content: [{
@@ -89,7 +91,7 @@ function createHarness(
 			setStatus() {},
 		},
 	};
-	return { commandHandler, confirmations, context, notices, planningCalls: () => planningCalls };
+	return { commandHandler, confirmations, context, notices, planningCalls: () => planningCalls, planningPrompts };
 }
 
 const DOCUMENTATION_PLAN: PrPlan = {
@@ -132,6 +134,7 @@ describe("standalone /pr workflow", () => {
 		expect(harness.confirmations[0]).toContain("Existing commits:\n");
 		expect(harness.confirmations[0]).toContain("Document existing workflow");
 		expect(harness.confirmations[0]).toContain("Planned commits:\n(none; publish existing commits only)");
+		expect(harness.planningPrompts[0]).toContain("+committed change");
 		expect((await run("git", ["branch", "--show-current"], repository)).stdout.trim()).toBe("docs/existing-workflow");
 		expect((await run("git", ["log", "-1", "--pretty=%s"], repository)).stdout.trim()).toBe("Document existing workflow");
 	});

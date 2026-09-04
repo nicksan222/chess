@@ -52,6 +52,7 @@ export interface PlanningInput {
 	baseBranch: string;
 	status: string;
 	existingCommits: string;
+	existingPatch: string;
 	recentCommits: string;
 	conversation: string;
 	patch: string;
@@ -89,9 +90,13 @@ function planningPrompt(input: PlanningInput): string {
 		input.recentCommits,
 		"</recent-commits>",
 		"",
-		"<complete-patch>",
-		input.patch,
-		"</complete-patch>",
+		"<existing-commit-patch>",
+		input.existingPatch || "(none)",
+		"</existing-commit-patch>",
+		"",
+		"<dirty-patch>",
+		input.patch || "(none)",
+		"</dirty-patch>",
 	].join("\n");
 }
 

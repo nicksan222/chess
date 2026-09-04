@@ -146,6 +146,7 @@ async function runPr(pi: ExtensionAPI, args: string, ctx: ExtensionCommandContex
 		baseBranch: state.baseBranch,
 		status: state.status,
 		existingCommits: state.existingCommits,
+		existingPatch: state.existingPatch,
 		recentCommits: state.recentCommits,
 		conversation: conversationText(ctx),
 		patch: state.patch,
