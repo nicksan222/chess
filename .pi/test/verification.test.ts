@@ -77,6 +77,7 @@ describe("selectChecks", () => {
 				id: "apps/firmware:image-check",
 				command: "just",
 				args: ["--justfile", "/repo/apps/firmware/justfile", "image-check"],
+				timeoutMs: 15 * 60 * 1000,
 			});
 		}
 	});

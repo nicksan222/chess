@@ -29,6 +29,7 @@ interface CheckSpec {
 	id: string;
 	command: string;
 	args: string[];
+	timeoutMs?: number;
 }
 
 const RUST_PACKAGES = new Map([
@@ -48,6 +49,7 @@ const YOCTO_METADATA_EXTENSIONS = [".bb", ".bbappend", ".conf", ".inc", ".yaml",
 const MAX_RESULT_LINES = 160;
 const MAX_RESULT_BYTES = 16 * 1024;
 const CHECK_TIMEOUT_MS = 2 * 60 * 1000;
+const YOCTO_CHECK_TIMEOUT_MS = 15 * 60 * 1000;
 
 export async function getDirtyPaths(pi: ExtensionAPI, cwd: string): Promise<string[]> {
 	const tracked = await pi.exec("git", ["-C", cwd, "diff", "--name-status", "-z", "HEAD", "--"]);
@@ -128,6 +130,7 @@ function yoctoMetadataCheck(cwd: string): CheckSpec {
 		id: "apps/firmware:image-check",
 		command: "just",
 		args: ["--justfile", join(cwd, "apps/firmware/justfile"), "image-check"],
+		timeoutMs: YOCTO_CHECK_TIMEOUT_MS,
 	};
 }
 
@@ -269,7 +272,10 @@ export async function runVerification(
 	const checks: CheckResult[] = [];
 	for (const spec of selectChecks(cwd, paths, level, baseRevision)) {
 		const startedAt = Date.now();
-		const execution = await pi.exec(spec.command, spec.args, { signal, timeout: CHECK_TIMEOUT_MS });
+		const execution = await pi.exec(spec.command, spec.args, {
+			signal,
+			timeout: spec.timeoutMs ?? CHECK_TIMEOUT_MS,
+		});
 		const completeOutput = [execution.stdout, execution.stderr].filter(Boolean).join("\n").trim();
 		const truncation = truncateTail(completeOutput || "(no output)", {
 			maxLines: MAX_RESULT_LINES,
