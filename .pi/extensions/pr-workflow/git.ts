@@ -120,10 +120,6 @@ export async function validateBranchName(pi: ExtensionAPI, state: GitState, bran
 	if (collision.code === 0) throw new Error(`Local branch already exists: ${branch}`);
 }
 
-export async function patchForPaths(pi: ExtensionAPI, state: GitState, paths: readonly string[]): Promise<string> {
-	return completePatch(pi, state.repository, paths);
-}
-
 export function suspiciousPatchLines(patch: string): string[] {
 	const patterns = [
 		/(?:api[_-]?key|secret|password|token)\s*[:=]\s*["'][^"']{8,}/i,

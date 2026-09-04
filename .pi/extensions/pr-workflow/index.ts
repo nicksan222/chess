@@ -3,7 +3,6 @@ import { formatValidationResult, runVerification } from "../../feedback/verifica
 import {
 	git,
 	inspectGitState,
-	patchForPaths,
 	suspiciousPatchLines,
 	validateBranchName,
 	type GitState,
@@ -126,6 +125,11 @@ async function runPr(pi: ExtensionAPI, args: string, ctx: ExtensionCommandContex
 	await ctx.waitForIdle();
 	ctx.ui.setStatus("pr-workflow", "inspecting changes");
 	const state = await inspectGitState(pi, ctx.cwd);
+	const suspicious = suspiciousPatchLines(state.patch);
+	if (suspicious.length > 0) {
+		throw new Error(`Potential secret material found in dirty additions; inspect before retrying:\n${suspicious.join("\n")}`);
+	}
+
 	ctx.ui.setStatus("pr-workflow", "planning commits");
 	const plan = await createPrPlan(ctx, {
 		goal: args.trim(),
@@ -140,11 +144,6 @@ async function runPr(pi: ExtensionAPI, args: string, ctx: ExtensionCommandContex
 	const branch = targetBranch(state, plan.branch);
 	await validateBranchName(pi, state, branch);
 
-	const selectedPatch = await patchForPaths(pi, state, selectedPaths);
-	const suspicious = suspiciousPatchLines(selectedPatch);
-	if (suspicious.length > 0) {
-		throw new Error(`Potential secret material found in selected additions; inspect before retrying:\n${suspicious.join("\n")}`);
-	}
 
 	const approved = await ctx.ui.confirm("Create and publish pull request?", planPreview(state, plan, branch));
 	if (!approved) {
