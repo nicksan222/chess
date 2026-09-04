@@ -1,11 +1,11 @@
 import type { ExtensionAPI, ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
 import { pathsFromNameStatus } from "../../feedback/git-paths.js";
+import { suspiciousPatchLines, suspiciousTextLines } from "../../feedback/secrets.js";
 import { createValidationWorktree } from "../../feedback/snapshot.js";
 import { formatValidationResult, preparePiDependencies, runVerification } from "../../feedback/verification.js";
 import {
 	git,
 	inspectGitState,
-	suspiciousPatchLines,
 	validateBranchName,
 	type GitState,
 } from "./git.js";
@@ -135,9 +135,12 @@ async function runPr(pi: ExtensionAPI, args: string, ctx: ExtensionCommandContex
 	await ctx.waitForIdle();
 	ctx.ui.setStatus("pr-workflow", "inspecting changes");
 	const state = await inspectGitState(pi, ctx.cwd);
-	const suspicious = suspiciousPatchLines(`${state.existingPatch}\n${state.patch}`);
+	const suspicious = [
+		...suspiciousTextLines(state.existingCommits),
+		...suspiciousPatchLines(`${state.existingPatch}\n${state.patch}`),
+	].slice(0, 5);
 	if (suspicious.length > 0) {
-		throw new Error(`Potential secret material found in dirty additions; inspect before retrying:\n${suspicious.join("\n")}`);
+		throw new Error(`Potential secret material found in outgoing changes; inspect before retrying:\n${suspicious.join("\n")}`);
 	}
 
 	ctx.ui.setStatus("pr-workflow", "planning commits");

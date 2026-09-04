@@ -94,7 +94,7 @@ export async function inspectGitState(pi: ExtensionAPI, cwd: string): Promise<Gi
 	const existingCommits = (await git(pi, repository, [
 		"log",
 		"--reverse",
-		"--pretty=format:%h %s",
+		"--pretty=format:%h %s%n%b",
 		`${baseOid}..HEAD`,
 	])).stdout.trim();
 	const existingPatch = (await git(pi, repository, [

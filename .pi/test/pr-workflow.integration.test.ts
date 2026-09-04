@@ -224,6 +224,20 @@ describe("standalone /pr workflow", () => {
 		expect((await run("git", ["status", "--porcelain", "--", "crates/core/src/generated.rs"], repository)).stdout).not.toBe("");
 	});
 
+	test("blocks secrets in outgoing commit metadata before planning", async () => {
+		const repository = await createRepository();
+		await run("git", ["switch", "-q", "-c", "pi/session"], repository);
+		await writeFile(join(repository, "NOTES.md"), "safe content\n");
+		await run("git", ["add", "NOTES.md"], repository);
+		await run("git", ["commit", "-qm", "Fix auth with github_pat_12345678901234567890"], repository);
+		const harness = createHarness(repository, { ...DOCUMENTATION_PLAN, commits: [] });
+
+		await harness.commandHandler("prepare the pull request", harness.context);
+
+		expect(harness.planningCalls()).toBe(0);
+		expect(harness.notices.some(({ message }) => message.includes("Potential secret material"))).toBe(true);
+	});
+
 	test("blocks secrets in existing commits before invoking the planning model", async () => {
 		const repository = await createRepository();
 		const remote = await mkdtemp(join(tmpdir(), "pi-pr-workflow-secret-remote-"));
