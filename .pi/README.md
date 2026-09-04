@@ -37,11 +37,12 @@ to commit, request changes, or stop. Each accepted patch is checked in a
 temporary worktree containing only `HEAD` plus the staged snapshot. Requested
 changes are safely unstaged and handed back to the agent before the loop resumes.
 
-`/pr` scans the complete dirty patch for likely secrets before sending it to the
-active planning model. The extension then creates or renames the branch, creates
-ordered path-scoped commits, runs full validation, pushes, and invokes
-`gh pr create`. Existing branch commits and newly planned commits are both shown
-in one confirmation before any Git mutation or remote action.
+`/pr` scans both existing branch commits and the complete dirty patch for likely
+secrets before sending anything to the active planning model. The extension then
+creates or renames the branch, creates ordered path-scoped commits, validates a
+clean committed snapshot, pushes, and invokes `gh pr create`. Existing branch
+commits and newly planned commits are both shown in one confirmation before any
+Git mutation or remote action.
 
 ## Automatic worktrees
 
