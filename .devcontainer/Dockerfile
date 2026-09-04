@@ -14,8 +14,9 @@ RUN apt-get update \
         clang \
         cmake \
         curl \
-        git \
         gcc-aarch64-linux-gnu \
+        git \
+        libc6-dev-arm64-cross \
         libdecor-0-0 \
         libdecor-0-plugin-1-cairo \
         libegl1 \
@@ -23,7 +24,6 @@ RUN apt-get update \
         libgl1-mesa-dri \
         libgles2 \
         libice6 \
-        libc6-dev-arm64-cross \
         libsm6 \
         libudev-dev \
         libusb-1.0-0-dev \

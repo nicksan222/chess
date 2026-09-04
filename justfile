@@ -12,6 +12,7 @@ check: _automation-format
     #!/usr/bin/env bash
     set -euo pipefail
     for package in {{ rust_packages }}; do just --justfile "$package/justfile" check; done
+    just firmware-binary
     just --justfile hardware/shared/justfile check
     just --justfile hardware/cad/justfile check
     just --justfile hardware/pcb/justfile review
@@ -21,6 +22,7 @@ precommit: _automation-format
     #!/usr/bin/env bash
     set -euo pipefail
     for package in {{ rust_packages }}; do just --justfile "$package/justfile" check; done
+    just firmware-binary
     just --justfile hardware/shared/justfile check
     just --justfile hardware/cad/justfile check-fast
     just --justfile hardware/pcb/justfile check-fast

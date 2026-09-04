@@ -52,10 +52,6 @@ jobs:
             .cache/yocto/downloads
             .cache/yocto/sstate-cache
           key: ${{ steps.yocto-cache.outputs.cache-primary-key }}
-      - name: Verify image
-        run: |
-          xz --test dist/firmware/firmware-rpi-zero-2w.img.xz
-          (cd dist/firmware && sha256sum --check SHA256SUMS)
       - uses: actions/upload-artifact@v7
         with:
           name: firmware-${{ github.sha }}

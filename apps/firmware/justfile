@@ -45,7 +45,7 @@ cross-build: _cross-toolchain
 _cross-toolchain:
     @command -v aarch64-linux-gnu-gcc >/dev/null || { echo 'error: the AArch64 GCC linker is required; use the development container' >&2; exit 1; }
     @command -v aarch64-linux-gnu-readelf >/dev/null || { echo 'error: AArch64 binutils are required; use the development container' >&2; exit 1; }
-    @rustc --target "{{ target }}" --print target-libdir >/dev/null 2>&1 || { echo 'error: the Rust AArch64 target is required; use the development container' >&2; exit 1; }
+    @target_libdir="$(rustc --target '{{ target }}' --print target-libdir)"; compgen -G "$target_libdir/libstd-*.rlib" >/dev/null || { echo 'error: the Rust AArch64 target is required; use the development container' >&2; exit 1; }
 
 # Validate crate metadata consumed by BitBake.
 validate:
@@ -58,7 +58,7 @@ image-check: validate _docker
         -e "USER_ID=$(id -u)" -e "GROUP_ID=$(id -g)" \
         -e KAS_WORK_DIR=/build -e "FIRMWARE_SOURCE_DIR={{ root }}" \
         -v "{{ root }}:{{ root }}" -v "{{ cache }}:/build" -w "{{ root }}" \
-        {{ kas_image }} shell -c 'bitbake -p && bitbake -n firmware-image' "{{ config }}"
+        {{ kas_image }} shell -c 'bitbake -n firmware-image' "{{ config }}"
 
 # Build and collect the flashable Yocto image.
 image: validate _docker
@@ -79,6 +79,8 @@ image: validate _docker
     cp "$firmware" "{{ output }}/firmware-rpi-zero-2w.img.xz"
     cp "$bmap" "{{ output }}/firmware-rpi-zero-2w.bmap"
     (cd "{{ output }}" && sha256sum -- * > SHA256SUMS)
+    xz --test "{{ output }}/firmware-rpi-zero-2w.img.xz"
+    (cd "{{ output }}" && sha256sum --check SHA256SUMS)
 
 [private]
 _docker:
