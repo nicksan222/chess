@@ -21,10 +21,10 @@ async function run(command: string, args: string[], cwd: string) {
 	return { stdout, stderr, code, killed: false };
 }
 
-async function createRepository(): Promise<string> {
+async function createRepository(defaultBranch = "main"): Promise<string> {
 	const repository = await mkdtemp(join(tmpdir(), "pi-pr-workflow-test-"));
 	temporaryDirectories.push(repository);
-	await run("git", ["init", "-q", "-b", "main"], repository);
+	await run("git", ["init", "-q", "-b", defaultBranch], repository);
 	await run("git", ["config", "user.name", "Pi Test"], repository);
 	await run("git", ["config", "user.email", "pi@example.invalid"], repository);
 	await writeFile(join(repository, "README.md"), "before\n");
@@ -137,6 +137,20 @@ describe("standalone /pr workflow", () => {
 		expect(harness.planningPrompts[0]).toContain("+committed change");
 		expect((await run("git", ["branch", "--show-current"], repository)).stdout.trim()).toBe("docs/existing-workflow");
 		expect((await run("git", ["log", "-1", "--pretty=%s"], repository)).stdout.trim()).toBe("Document existing workflow");
+	});
+
+	test("uses local master as the base when no remote branch exists", async () => {
+		const repository = await createRepository("master");
+		await run("git", ["switch", "-q", "-c", "pi/session"], repository);
+		await writeFile(join(repository, "README.md"), "master-based change\n");
+		await run("git", ["add", "README.md"], repository);
+		await run("git", ["commit", "-qm", "Document master-based workflow"], repository);
+		const harness = createHarness(repository, { ...DOCUMENTATION_PLAN, commits: [] });
+
+		await harness.commandHandler("publish the existing commit", harness.context);
+
+		expect(harness.confirmations[0]).toContain("Base: master");
+		expect(harness.confirmations[0]).toContain("Document master-based workflow");
 	});
 
 	test("validates committed changes without omitted working-tree files", async () => {

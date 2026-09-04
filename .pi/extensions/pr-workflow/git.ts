@@ -70,7 +70,12 @@ async function baseBranch(pi: ExtensionAPI, cwd: string): Promise<string> {
 			return candidate;
 		}
 	}
-	return "main";
+	for (const candidate of ["main", "master"]) {
+		if ((await git(pi, cwd, ["show-ref", "--verify", "--quiet", `refs/heads/${candidate}`], true)).code === 0) {
+			return candidate;
+		}
+	}
+	throw new Error("Could not find a main or master base branch locally or on origin.");
 }
 
 export async function inspectGitState(pi: ExtensionAPI, cwd: string): Promise<GitState> {
