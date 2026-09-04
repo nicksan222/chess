@@ -54,9 +54,18 @@ describe("PR plan validation", () => {
 describe("secret scanning", () => {
 	test("flags likely added credentials but ignores ordinary additions", () => {
 		const findings = suspiciousPatchLines(
-			["+const enabled = true;", "+api_key = \"definitely-not-a-real-secret-value\""].join("\n"),
+			[
+				"+const enabled = true;",
+				'+api_key = "definitely-not-a-real-secret-value"',
+				'+AWS_SECRET_ACCESS_KEY = "quoted-secret-value"',
+				"+STRIPE_SECRET_KEY = 'another-secret-value'",
+			].join("\n"),
 		);
-		expect(findings).toEqual(["+api_key = \"definitely-not-a-real-secret-value\""]);
+		expect(findings).toEqual([
+			'+api_key = "definitely-not-a-real-secret-value"',
+			'+AWS_SECRET_ACCESS_KEY = "quoted-secret-value"',
+			"+STRIPE_SECRET_KEY = 'another-secret-value'",
+		]);
 		expect(suspiciousPatchLines(
 			"+API_KEY=super-secret-value\n+AWS_SECRET_ACCESS_KEY=abcdefghijklmnop # production\n+DATABASE_PASSWORD=secret-value\n+MODE=development",
 		)).toEqual([
