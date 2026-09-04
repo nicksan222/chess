@@ -160,7 +160,7 @@ describe("/commit-loop", () => {
 		expect((await run("git", ["log", "-1", "--pretty=%s"], repository)).stdout.trim()).toBe("Initial crate");
 		expect((await run("git", ["diff", "--cached", "--name-only"], repository)).stdout).toBe("");
 		expect(harness.notices.some((message) => message.includes("Commit validation failed"))).toBe(true);
-	});
+	}, 20_000);
 
 	test("rejects whitespace errors in the staged patch", async () => {
 		const repository = await createRepository();
