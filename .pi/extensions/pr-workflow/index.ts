@@ -87,6 +87,13 @@ async function createCommits(
 			if (JSON.stringify(actualPaths) !== JSON.stringify(expectedPaths)) {
 				throw new Error(`Staged paths differ from commit plan. Expected ${expectedPaths.join(", ")}; found ${actualPaths.join(", ") || "none"}.`);
 			}
+			const stagedPatch = await git(pi, state.repository, [
+				"diff", "--cached", "--no-ext-diff", "--no-color", "--",
+			]);
+			const suspicious = suspiciousPatchLines(stagedPatch.stdout);
+			if (suspicious.length > 0) {
+				throw new Error(`Potential secret material found in staged additions; inspect before retrying:\n${suspicious.join("\n")}`);
+			}
 			await git(pi, state.repository, ["commit", "--no-verify", "-m", commit.message]);
 		}
 	} finally {

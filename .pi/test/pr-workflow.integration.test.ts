@@ -137,6 +137,25 @@ describe("standalone /pr workflow", () => {
 			.toBe("Document the PR workflow");
 	});
 
+	test("rescans selected content immediately before committing", async () => {
+		const repository = await createRepository();
+		await writeFile(join(repository, "README.md"), "safe planned change\n");
+		let injected = false;
+		const harness = createHarness(repository, DOCUMENTATION_PLAN, async (command, args) => {
+			if (command === "git" && args.includes("switch") && !injected) {
+				injected = true;
+				await writeFile(join(repository, "README.md"), "API_KEY=late-secret-value\n");
+			}
+			return undefined;
+		});
+
+		await harness.commandHandler("document the workflow", harness.context);
+
+		expect(harness.planningCalls()).toBe(1);
+		expect(harness.notices.some(({ message }) => message.includes("staged additions"))).toBe(true);
+		expect((await run("git", ["log", "-1", "--pretty=%s"], repository)).stdout.trim()).toBe("Initial commit");
+	});
+
 	test("preserves both sides of an initially staged rename", async () => {
 		const repository = await createRepository();
 		await writeFile(join(repository, "old.txt"), "renamed content\n");
