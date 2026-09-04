@@ -63,6 +63,13 @@ describe("selectChecks", () => {
 		]);
 	});
 
+	test("runs firmware quality checks for Yocto Python changes", () => {
+		const checks = selectChecks(cwd, ["apps/firmware/yocto/validate_crates.py"], "fast");
+
+		expect(checks.map((check) => check.id)).toEqual(["apps/firmware:quality"]);
+		expect(checks[0]?.command).toBe("just");
+	});
+
 	test("validates Pi extension changes with the Bun project", () => {
 		const checks = selectChecks(cwd, [".pi/extensions/change-tracker/index.ts"], "fast");
 

@@ -131,7 +131,9 @@ export function selectChecks(cwd: string, paths: string[], level: ValidationLeve
 			};
 		}
 
-		if (level === "fast" && RUST_PACKAGES.has(root)) {
+		const includesFirmwarePython = root === "apps/firmware"
+			&& paths.some((path) => path.startsWith("apps/firmware/yocto/"));
+		if (level === "fast" && RUST_PACKAGES.has(root) && !includesFirmwarePython) {
 			const packageName = RUST_PACKAGES.get(root)!;
 			const args = [
 				"check",
