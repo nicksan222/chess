@@ -60,6 +60,12 @@ describe("selectChecks", () => {
 		expect(checks[0]?.args).toEqual(["run", "--cwd", "/repo/.pi", "check"]);
 	});
 
+	test("routes CI and devcontainer configuration through the Pi harness", () => {
+		for (const path of [".github/workflows/ci.yml", ".devcontainer/devcontainer.json"]) {
+			expect(selectChecks(cwd, [path], "fast").map((check) => check.id)).toEqual([".pi:check"]);
+		}
+	});
+
 	test("uses a non-invasive diff check for unscoped fast validation", () => {
 		const checks = selectChecks(cwd, ["justfile"], "fast");
 

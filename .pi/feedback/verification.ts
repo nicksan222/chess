@@ -41,7 +41,7 @@ const RUST_PACKAGES = new Map([
 ]);
 
 const PYTHON_PACKAGES = ["hardware/shared", "hardware/cad", "hardware/pcb"] as const;
-const TOOLING_PACKAGES = [".pi"] as const;
+const PI_HARNESS_PATHS = [".pi", ".github", ".devcontainer"] as const;
 const MAX_RESULT_LINES = 160;
 const MAX_RESULT_BYTES = 16 * 1024;
 const CHECK_TIMEOUT_MS = 2 * 60 * 1000;
@@ -100,19 +100,19 @@ function displayCommand(command: string, args: string[]): string {
 	return [command, ...args].map(quote).join(" ");
 }
 
+function validationRoot(path: string): string | undefined {
+	if (PI_HARNESS_PATHS.some((root) => path === root || path.startsWith(`${root}/`))) return ".pi";
+	return [...RUST_PACKAGES.keys(), ...PYTHON_PACKAGES]
+		.find((root) => path === root || path.startsWith(`${root}/`));
+}
+
 function packageRoots(paths: string[]): string[] {
-	const roots = new Set<string>();
-	for (const path of paths) {
-		for (const root of [...RUST_PACKAGES.keys(), ...PYTHON_PACKAGES, ...TOOLING_PACKAGES]) {
-			if (path === root || path.startsWith(`${root}/`)) roots.add(root);
-		}
-	}
-	return [...roots].sort();
+	return [...new Set(paths.map(validationRoot).filter((root): root is string => root !== undefined))].sort();
 }
 
 export function selectChecks(cwd: string, paths: string[], level: ValidationLevel): CheckSpec[] {
 	const roots = packageRoots(paths);
-	const hasUnscopedPaths = paths.some((path) => !roots.some((root) => path === root || path.startsWith(`${root}/`)));
+	const hasUnscopedPaths = paths.some((path) => validationRoot(path) === undefined);
 
 	if (paths.length === 0) {
 		if (level === "fast") {
