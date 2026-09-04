@@ -32,9 +32,9 @@ interface CheckSpec {
 
 const RUST_PACKAGES = new Map([
 	["apps/firmware", "firmware"],
-	["apps/simulator", "simulator"],
+	["apps/simulator", "chess-simulator"],
 	["crates/chess", "chess"],
-	["crates/core", "core"],
+	["crates/core", "chess-core"],
 	["crates/logger", "logger"],
 	["crates/menu", "menu"],
 	["crates/persistence", "persistence"],

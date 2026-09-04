@@ -30,6 +30,16 @@ describe("selectChecks", () => {
 		expect(checks[0]?.args).toContain("chess");
 	});
 
+	test("uses manifest package names for renamed workspace crates", () => {
+		for (const [path, packageName] of [
+			["apps/simulator/src/main.rs", "chess-simulator"],
+			["crates/core/src/lib.rs", "chess-core"],
+		] as const) {
+			const check = selectChecks(cwd, [path], "fast")[0];
+			expect(check?.args).toContain(packageName);
+		}
+	});
+
 	test("deduplicates checks for files in the same package", () => {
 		const checks = selectChecks(
 			cwd,
