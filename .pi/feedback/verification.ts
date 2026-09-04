@@ -203,7 +203,10 @@ export function selectChecks(cwd: string, paths: string[], level: ValidationLeve
 			args: ["--justfile", join(cwd, "apps/firmware/justfile"), "image-check"],
 		});
 	}
-	for (const path of [...new Set(paths.filter((path) => path.startsWith(".devcontainer/") && path.endsWith(".sh")))].sort()) {
+	const harnessShellPaths = paths.filter((path) =>
+		path.endsWith(".sh") && (path.startsWith(".devcontainer/") || path.startsWith(".github/"))
+	);
+	for (const path of [...new Set(harnessShellPaths)].sort()) {
 		const absolutePath = join(cwd, path);
 		checks.push({
 			id: `${path}:bash-syntax`,

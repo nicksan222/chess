@@ -26,6 +26,16 @@ describe("Pi harness configuration", () => {
 		}
 	});
 
+	test("keeps every harness shell script parseable", () => {
+		const paths = [".github", ".devcontainer"].flatMap((directory) =>
+			[...new Bun.Glob(`${directory}/**/*.sh`).scanSync({ cwd: repository })]
+		);
+		expect(paths.length).toBeGreaterThan(0);
+		for (const path of paths) {
+			expect(Bun.spawnSync(["bash", "-n", resolve(repository, path)]).exitCode).toBe(0);
+		}
+	});
+
 	test("keeps the CI workflow parseable and requires Bun validation", async () => {
 		const workflow = await text(".github/workflows/ci.yml");
 		expect(() => YAML.parse(workflow)).not.toThrow();
@@ -36,9 +46,6 @@ describe("Pi harness configuration", () => {
 	});
 
 	test("checks the locked Pi project when the devcontainer is created", async () => {
-		const scriptPath = resolve(repository, ".devcontainer/post-create.sh");
-		const syntax = Bun.spawnSync(["bash", "-n", scriptPath]);
-		expect(syntax.exitCode).toBe(0);
 		const script = await text(".devcontainer/post-create.sh");
 		expect(script).toContain("bun install --cwd .pi --frozen-lockfile");
 		expect(script).toContain("bun run --cwd .pi check");

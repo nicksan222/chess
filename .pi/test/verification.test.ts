@@ -116,13 +116,14 @@ describe("selectChecks", () => {
 		}
 	});
 
-	test("checks devcontainer shell syntax alongside Pi configuration", () => {
-		const checks = selectChecks(cwd, [".devcontainer/post-create.sh"], "fast");
-
-		expect(checks.map((check) => check.id)).toEqual([
-			".pi:check",
-			".devcontainer/post-create.sh:bash-syntax",
-		]);
+	test("checks harness shell syntax alongside Pi configuration", () => {
+		for (const path of [".devcontainer/post-create.sh", ".github/scripts/with-devcontainer.sh"]) {
+			const checks = selectChecks(cwd, [path], "fast");
+			expect(checks.map((check) => check.id)).toEqual([
+				".pi:check",
+				`${path}:bash-syntax`,
+			]);
+		}
 	});
 
 	test("checks root Cargo metadata across the workspace", () => {
