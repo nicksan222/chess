@@ -4,10 +4,10 @@ Project-local Pi extensions are intentionally split by responsibility:
 
 - `auto-worktree` creates and switches to a unique `pi/<session-id>` Git
   worktree when a new Pi process starts;
-- `change-tracker` treats the filesystem snapshot as the changed-path source of
-  truth while recording explicit edit/write paths as attribution metadata;
+- `change-tracker` combines filesystem snapshots with commits created during a
+  turn, while recording explicit edit/write paths as attribution metadata;
 - `commit-loop` stages each planned tiny commit for interactive review, validates
-  accepted patches, and resumes automatically after requested repair turns;
+  the exact staged snapshot, and resumes automatically after requested repairs;
 - `auto-validation` runs bounded fast validation after changed turns and gives
   failures back to the agent for at most two repair rounds;
 - `verify-changes` provides the `verify_changes` tool and `/verify` command;
@@ -33,14 +33,15 @@ package dependents are covered.
 `/worktree` is supplied by the installed `@narumitw/pi-worktree` package for
 manual inspection, switching, and cleanup. `/commit-loop` uses the active model
 to propose ordered path-scoped commits, stages one at a time, and asks whether
-to commit, request changes, or stop. Requested changes are safely unstaged and
-handed back to the agent before the loop resumes automatically.
+to commit, request changes, or stop. Each accepted patch is checked in a
+temporary worktree containing only `HEAD` plus the staged snapshot. Requested
+changes are safely unstaged and handed back to the agent before the loop resumes.
 
-`/pr` uses the active model once to
-produce a typed plan, then the extension itself creates or renames the branch,
-creates ordered path-scoped commits, runs full validation, pushes, and invokes
-`gh pr create`. It shows one complete plan and asks for confirmation before any
-Git mutation or remote action.
+`/pr` scans the complete dirty patch for likely secrets before sending it to the
+active planning model. The extension then creates or renames the branch, creates
+ordered path-scoped commits, runs full validation, pushes, and invokes
+`gh pr create`. Existing branch commits and newly planned commits are both shown
+in one confirmation before any Git mutation or remote action.
 
 ## Automatic worktrees
 

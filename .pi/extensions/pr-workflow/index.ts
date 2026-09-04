@@ -153,7 +153,6 @@ async function runPr(pi: ExtensionAPI, args: string, ctx: ExtensionCommandContex
 	const branch = targetBranch(state, plan.branch);
 	await validateBranchName(pi, state, branch);
 
-
 	const approved = await ctx.ui.confirm("Create and publish pull request?", planPreview(state, plan, branch));
 	if (!approved) {
 		ctx.ui.notify("PR preparation cancelled without changing Git state.", "info");
