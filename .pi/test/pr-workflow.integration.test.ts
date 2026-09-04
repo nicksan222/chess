@@ -206,7 +206,7 @@ describe("standalone /pr workflow", () => {
 
 	test("blocks suspicious additions before invoking the planning model", async () => {
 		const repository = await createRepository();
-		await writeFile(join(repository, "credentials.env"), "API_KEY=super-secret-value\n");
+		await writeFile(join(repository, "credentials.env"), "AWS_SECRET_ACCESS_KEY=super-secret-value\n");
 		const harness = createHarness(repository, DOCUMENTATION_PLAN);
 
 		await harness.commandHandler("prepare the pull request", harness.context);
