@@ -3,8 +3,8 @@ set -euo pipefail
 
 git config --local core.hooksPath .githooks
 
-# Docker creates a new named volume as root; Pi must be able to persist logins.
-sudo chown "$(id -u):$(id -g)" "${HOME}/.pi/agent"
+# Docker creates new named volumes as root; Pi must be able to persist state.
+sudo chown "$(id -u):$(id -g)" "${HOME}/.pi/agent" "${HOME}/.worktrees"
 npm install --global --ignore-scripts @earendil-works/pi-coding-agent
 bun install --cwd .pi --frozen-lockfile
 bun run --cwd .pi check

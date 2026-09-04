@@ -53,6 +53,7 @@ describe("Pi harness configuration", () => {
 
 	test("checks the locked Pi project when the devcontainer is created", async () => {
 		const script = await text(".devcontainer/post-create.sh");
+		expect(script).toContain('"${HOME}/.pi/agent" "${HOME}/.worktrees"');
 		expect(script).toContain("bun install --cwd .pi --frozen-lockfile");
 		expect(script).toContain("bun run --cwd .pi check");
 	});
