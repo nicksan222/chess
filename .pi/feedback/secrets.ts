@@ -1,7 +1,7 @@
 const PATTERNS = [
 	/[a-z0-9_-]*(?:api[-_]?key|secret|password|token)[a-z0-9_-]*["']?\s*[:=]\s*["'][^"']{8,}/i,
 	/^\+\s*(?:export\s+)?["']?[a-z0-9_-]*(?:api[-_]?key|secret|password|token)[a-z0-9_-]*["']?\s*[:=]\s*[^\s#"']{8,}\s*(?:#.*)?$/i,
-	/-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/,
+	/-----BEGIN (?:[A-Z0-9]+ )*PRIVATE KEY-----/,
 	/ghp_[A-Za-z0-9]{20,}/,
 	/github_pat_[A-Za-z0-9_]{20,}/,
 	/sk-[A-Za-z0-9_-]{20,}/,
