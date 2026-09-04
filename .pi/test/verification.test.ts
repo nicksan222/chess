@@ -77,6 +77,19 @@ describe("selectChecks", () => {
 		}
 	});
 
+	test("retains firmware code checks in mixed Yocto batches", () => {
+		const checks = selectChecks(
+			cwd,
+			["apps/firmware/src/main.rs", "apps/firmware/yocto/kas/firmware.yml"],
+			"fast",
+		);
+
+		expect(checks.map((check) => check.id)).toEqual([
+			"apps/firmware:quality",
+			"apps/firmware:image-check",
+		]);
+	});
+
 	test("validates Pi extension changes with the Bun project", () => {
 		const checks = selectChecks(cwd, [".pi/extensions/change-tracker/index.ts"], "fast");
 

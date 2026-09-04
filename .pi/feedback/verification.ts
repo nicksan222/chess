@@ -43,6 +43,7 @@ const RUST_PACKAGES = new Map([
 const PYTHON_PACKAGES = ["hardware/shared", "hardware/cad", "hardware/pcb"] as const;
 const PI_HARNESS_PATHS = [".pi", ".github", ".devcontainer"] as const;
 const WORKSPACE_ROOT = "<workspace>";
+const YOCTO_METADATA_EXTENSIONS = [".bb", ".bbappend", ".conf", ".inc", ".yaml", ".yml"] as const;
 const MAX_RESULT_LINES = 160;
 const MAX_RESULT_BYTES = 16 * 1024;
 const CHECK_TIMEOUT_MS = 2 * 60 * 1000;
@@ -112,8 +113,15 @@ function packageRoots(paths: string[]): string[] {
 	return [...new Set(paths.map(validationRoot).filter((root): root is string => root !== undefined))].sort();
 }
 
+function isYoctoMetadata(path: string): boolean {
+	return path.startsWith("apps/firmware/yocto/")
+		&& YOCTO_METADATA_EXTENSIONS.some((extension) => path.endsWith(extension));
+}
+
 export function selectChecks(cwd: string, paths: string[], level: ValidationLevel): CheckSpec[] {
 	const roots = packageRoots(paths);
+	const yoctoMetadataPaths = paths.filter(isYoctoMetadata);
+	const firmwareCodePaths = paths.filter((path) => path.startsWith("apps/firmware/") && !isYoctoMetadata(path));
 	const hasUnscopedPaths = paths.some((path) => validationRoot(path) === undefined);
 
 	if (paths.length === 0) {
@@ -159,10 +167,7 @@ export function selectChecks(cwd: string, paths: string[], level: ValidationLeve
 		const firmwareYoctoPaths = root === "apps/firmware"
 			? paths.filter((path) => path.startsWith("apps/firmware/yocto/"))
 			: [];
-		const includesYoctoMetadata = firmwareYoctoPaths.some((path) =>
-			[".bb", ".bbappend", ".conf", ".inc", ".yaml", ".yml"].some((extension) => path.endsWith(extension))
-		);
-		if (includesYoctoMetadata) {
+		if (yoctoMetadataPaths.length > 0 && firmwareCodePaths.length === 0) {
 			return {
 				id: "apps/firmware:image-check",
 				command: "just",
@@ -191,6 +196,13 @@ export function selectChecks(cwd: string, paths: string[], level: ValidationLeve
 			args: ["--justfile", join(cwd, root, "justfile"), recipe],
 		};
 	});
+	if (yoctoMetadataPaths.length > 0 && firmwareCodePaths.length > 0) {
+		checks.push({
+			id: "apps/firmware:image-check",
+			command: "just",
+			args: ["--justfile", join(cwd, "apps/firmware/justfile"), "image-check"],
+		});
+	}
 	for (const path of [...new Set(paths.filter((path) => path.startsWith(".devcontainer/") && path.endsWith(".sh")))].sort()) {
 		const absolutePath = join(cwd, path);
 		checks.push({
