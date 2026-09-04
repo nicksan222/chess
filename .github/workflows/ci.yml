@@ -22,9 +22,9 @@ jobs:
     outputs:
       image: ${{ steps.image.outputs.image }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: docker/login-action@v3
+      - uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -72,8 +72,8 @@ jobs:
     name: Firmware metadata
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: extractions/setup-just@v2
+      - uses: actions/checkout@v7
+      - uses: extractions/setup-just@v4
         with:
           just-version: 1.40.0
       - run: just --justfile apps/firmware/justfile validate
@@ -85,7 +85,7 @@ jobs:
     outputs:
       packages: ${{ steps.packages.outputs.packages }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - id: packages
         name: Read workspace packages
         run: |
@@ -98,12 +98,12 @@ jobs:
     needs: prebuild
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/run-in-devcontainer
         with:
           image: ${{ needs.prebuild.outputs.image }}
           command: just --justfile hardware/cad/justfile check
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:
           name: cad-generated
@@ -113,12 +113,12 @@ jobs:
     needs: prebuild
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/run-in-devcontainer
         with:
           image: ${{ needs.prebuild.outputs.image }}
           command: just --justfile hardware/pcb/justfile review
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:
           name: pcb-generated
@@ -129,8 +129,8 @@ jobs:
     needs: prebuild
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/cache@v4
+      - uses: actions/checkout@v7
+      - uses: actions/cache@v6
         with:
           path: target
           key: ${{ runner.os }}-quality-${{ hashFiles('**/Cargo.lock') }}
@@ -150,8 +150,8 @@ jobs:
       matrix:
         package: ${{ fromJSON(needs.crates.outputs.packages) }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/cache@v4
+      - uses: actions/checkout@v7
+      - uses: actions/cache@v6
         with:
           path: target
           key: ${{ runner.os }}-crate-${{ matrix.package.name }}-${{ hashFiles('**/Cargo.lock') }}
@@ -170,8 +170,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
-      - uses: extractions/setup-just@v2
+      - uses: actions/checkout@v7
+      - uses: extractions/setup-just@v4
         with:
           just-version: 1.40.0
       - run: just --justfile apps/firmware/justfile image-check
@@ -196,8 +196,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 360
     steps:
-      - uses: actions/checkout@v4
-      - uses: extractions/setup-just@v2
+      - uses: actions/checkout@v7
+      - uses: extractions/setup-just@v4
         with:
           just-version: 1.40.0
       - name: Free disk space
@@ -205,7 +205,7 @@ jobs:
           sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc
           docker system prune --all --force
       - id: yocto-cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         with:
           path: |
             .cache/yocto/downloads
@@ -217,7 +217,7 @@ jobs:
       - run: just --justfile apps/firmware/justfile image
       - name: Save Yocto cache
         if: always()
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v6
         with:
           path: |
             .cache/yocto/downloads
@@ -226,7 +226,7 @@ jobs:
       - run: |
           xz --test dist/firmware/firmware-rpi-zero-2w.img.xz
           (cd dist/firmware && sha256sum --check SHA256SUMS)
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: firmware-${{ github.sha }}
           path: dist/firmware
@@ -240,7 +240,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: firmware-${{ github.sha }}
           path: dist/firmware
