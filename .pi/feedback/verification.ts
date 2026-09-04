@@ -42,6 +42,7 @@ const RUST_PACKAGES = new Map([
 
 const PYTHON_PACKAGES = ["hardware/shared", "hardware/cad", "hardware/pcb"] as const;
 const PI_HARNESS_PATHS = [".pi", ".github", ".devcontainer"] as const;
+const WORKSPACE_ROOT = "<workspace>";
 const MAX_RESULT_LINES = 160;
 const MAX_RESULT_BYTES = 16 * 1024;
 const CHECK_TIMEOUT_MS = 2 * 60 * 1000;
@@ -101,6 +102,7 @@ function displayCommand(command: string, args: string[]): string {
 }
 
 function validationRoot(path: string): string | undefined {
+	if (path === "Cargo.toml" || path === "Cargo.lock") return WORKSPACE_ROOT;
 	if (PI_HARNESS_PATHS.some((root) => path === root || path.startsWith(`${root}/`))) return ".pi";
 	return [...RUST_PACKAGES.keys(), ...PYTHON_PACKAGES]
 		.find((root) => path === root || path.startsWith(`${root}/`));
@@ -122,7 +124,31 @@ export function selectChecks(cwd: string, paths: string[], level: ValidationLeve
 		return [{ id: `repository:${recipe}`, command: "just", args: ["--justfile", join(cwd, "justfile"), recipe] }];
 	}
 
+	if (roots.includes(WORKSPACE_ROOT) && level !== "fast") {
+		const recipe = level === "test" ? "test" : "precommit";
+		return [{
+			id: `repository:${recipe}`,
+			command: "just",
+			args: ["--justfile", join(cwd, "justfile"), recipe],
+		}];
+	}
+
 	const checks: CheckSpec[] = roots.map((root) => {
+		if (root === WORKSPACE_ROOT) {
+			return {
+				id: "workspace:cargo-check",
+				command: "cargo",
+				args: [
+					"check",
+					"--manifest-path",
+					join(cwd, "Cargo.toml"),
+					"--workspace",
+					"--all-targets",
+					"--all-features",
+				],
+			};
+		}
+
 		if (root === ".pi") {
 			return {
 				id: ".pi:check",
@@ -162,7 +188,7 @@ export function selectChecks(cwd: string, paths: string[], level: ValidationLeve
 			args: ["-c", '[[ ! -e "$1" ]] || bash -n "$1"', "--", absolutePath],
 		});
 	}
-	if (level === "full") {
+	if (level === "full" && !checks.some((check) => check.id === "repository:precommit")) {
 		checks.push({
 			id: "repository:precommit",
 			command: "just",

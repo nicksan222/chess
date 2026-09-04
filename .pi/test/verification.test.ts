@@ -92,6 +92,17 @@ describe("selectChecks", () => {
 		]);
 	});
 
+	test("checks root Cargo metadata across the workspace", () => {
+		for (const path of ["Cargo.toml", "Cargo.lock"]) {
+			const checks = selectChecks(cwd, [path], "fast");
+			expect(checks.map((check) => check.id)).toEqual(["workspace:cargo-check"]);
+			expect(checks[0]?.args).toContain("--workspace");
+		}
+		expect(selectChecks(cwd, ["Cargo.toml"], "full").map((check) => check.id)).toEqual([
+			"repository:precommit",
+		]);
+	});
+
 	test("uses a non-invasive diff check for unscoped fast validation", () => {
 		const checks = selectChecks(cwd, ["justfile"], "fast");
 
