@@ -3,7 +3,7 @@
 #[path = "../src/pins/mod.rs"]
 mod pins;
 
-use pins::{BoardPins, Gpio, InputOutput, Level, Pin, ReadLevel, Readable, Writable, WriteLevel};
+use pins::{BoardPins, GPIO, InputOutput, Level, Pin, ReadLevel, Readable, Writable, WriteLevel};
 
 struct Lines {
     level: Level,
@@ -12,7 +12,7 @@ struct Lines {
 impl ReadLevel for Lines {
     type Error = ();
 
-    fn read_level(&mut self, _: Gpio) -> Result<Level, Self::Error> {
+    fn read_level(&mut self, _: GPIO) -> Result<Level, Self::Error> {
         Ok(self.level)
     }
 }
@@ -20,7 +20,7 @@ impl ReadLevel for Lines {
 impl WriteLevel for Lines {
     type Error = ();
 
-    fn write_level(&mut self, _: Gpio, level: Level) -> Result<(), Self::Error> {
+    fn write_level(&mut self, _: GPIO, level: Level) -> Result<(), Self::Error> {
         self.level = level;
         Ok(())
     }
@@ -28,9 +28,9 @@ impl WriteLevel for Lines {
 
 #[test]
 fn gpio_values_are_bcm_numbers() {
-    assert_eq!(Gpio::I2cData.bcm_number(), 2);
-    assert_eq!(Gpio::UpButton.bcm_number(), 5);
-    assert_eq!(Gpio::LedData.bcm_number(), 10);
+    assert_eq!(GPIO::I2cData.bcm_number(), 2);
+    assert_eq!(GPIO::UpButton.bcm_number(), 5);
+    assert_eq!(GPIO::LedData.bcm_number(), 10);
 }
 
 #[test]

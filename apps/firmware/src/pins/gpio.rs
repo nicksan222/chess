@@ -1,6 +1,6 @@
 use core::marker::PhantomData;
 
-use super::Gpio;
+use super::GPIO;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Level {
@@ -24,23 +24,23 @@ impl Writable for InputOutput {}
 pub trait ReadLevel {
     type Error;
 
-    fn read_level(&mut self, gpio: Gpio) -> Result<Level, Self::Error>;
+    fn read_level(&mut self, gpio: GPIO) -> Result<Level, Self::Error>;
 }
 
 /// Writes electrical levels to GPIOs.
 pub trait WriteLevel {
     type Error;
 
-    fn write_level(&mut self, gpio: Gpio, level: Level) -> Result<(), Self::Error>;
+    fn write_level(&mut self, gpio: GPIO, level: Level) -> Result<(), Self::Error>;
 }
 
 pub struct Pin<const BCM: u8, Capability> {
-    gpio: Gpio,
+    gpio: GPIO,
     capability: PhantomData<Capability>,
 }
 
 impl<const BCM: u8, Capability> Pin<BCM, Capability> {
-    pub(super) const fn new(gpio: Gpio) -> Self {
+    pub(super) const fn new(gpio: GPIO) -> Self {
         assert!(gpio.bcm_number() == BCM, "GPIO and BCM number differ");
         Self {
             gpio,
@@ -48,7 +48,7 @@ impl<const BCM: u8, Capability> Pin<BCM, Capability> {
         }
     }
 
-    pub const fn gpio(&self) -> Gpio {
+    pub const fn gpio(&self) -> GPIO {
         self.gpio
     }
 

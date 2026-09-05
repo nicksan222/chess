@@ -7,7 +7,8 @@ pub use gpio::{Input, InputOutput, Level, Output, Pin, ReadLevel, Readable, Writ
 /// Linux BCM GPIO numbers used by the board.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 #[repr(u8)]
-pub enum Gpio {
+#[allow(clippy::upper_case_acronyms)]
+pub enum GPIO {
     I2cData = 2,
     I2cClock = 3,
     UpButton = 5,
@@ -26,7 +27,7 @@ pub enum Gpio {
     FunctionFiveButton = 24,
 }
 
-impl Gpio {
+impl GPIO {
     pub const fn bcm_number(self) -> u8 {
         self as u8
     }
@@ -55,22 +56,22 @@ pub struct BoardPins {
 impl BoardPins {
     pub const fn get() -> Self {
         Self {
-            i2c_data: Pin::new(Gpio::I2cData),
-            i2c_clock: Pin::new(Gpio::I2cClock),
-            up_button: Pin::new(Gpio::UpButton),
-            down_button: Pin::new(Gpio::DownButton),
-            led_data: Pin::new(Gpio::LedData),
-            led_clock: Pin::new(Gpio::LedClock),
-            left_button: Pin::new(Gpio::LeftButton),
-            right_button: Pin::new(Gpio::RightButton),
-            ok_button: Pin::new(Gpio::OkButton),
-            reset_button: Pin::new(Gpio::ResetButton),
-            pass_button: Pin::new(Gpio::PassButton),
-            function_one_button: Pin::new(Gpio::FunctionOneButton),
-            function_two_button: Pin::new(Gpio::FunctionTwoButton),
-            function_three_button: Pin::new(Gpio::FunctionThreeButton),
-            function_four_button: Pin::new(Gpio::FunctionFourButton),
-            function_five_button: Pin::new(Gpio::FunctionFiveButton),
+            i2c_data: Pin::new(GPIO::I2cData),
+            i2c_clock: Pin::new(GPIO::I2cClock),
+            up_button: Pin::new(GPIO::UpButton),
+            down_button: Pin::new(GPIO::DownButton),
+            led_data: Pin::new(GPIO::LedData),
+            led_clock: Pin::new(GPIO::LedClock),
+            left_button: Pin::new(GPIO::LeftButton),
+            right_button: Pin::new(GPIO::RightButton),
+            ok_button: Pin::new(GPIO::OkButton),
+            reset_button: Pin::new(GPIO::ResetButton),
+            pass_button: Pin::new(GPIO::PassButton),
+            function_one_button: Pin::new(GPIO::FunctionOneButton),
+            function_two_button: Pin::new(GPIO::FunctionTwoButton),
+            function_three_button: Pin::new(GPIO::FunctionThreeButton),
+            function_four_button: Pin::new(GPIO::FunctionFourButton),
+            function_five_button: Pin::new(GPIO::FunctionFiveButton),
         }
     }
 }
