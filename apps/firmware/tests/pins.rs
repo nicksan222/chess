@@ -1,29 +1,54 @@
 #![allow(dead_code)]
 
-#[path = "../src/pins.rs"]
+#[path = "../src/pins/mod.rs"]
 mod pins;
 
 use std::collections::HashSet;
 
-use pins::{ALL, BUTTONS, Capability, I2C_DATA, LED_DATA, RESET_BUTTON, UP_BUTTON};
+use pins::{
+    ALL, BUTTONS, BoardPins, Capability, CapabilityKind, Gpio, InputOutput, Pin, Readable, Writable,
+};
 
 #[test]
-fn gpio_descriptors_expose_identity_and_capabilities() {
-    assert_eq!(I2C_DATA.name(), "I2C data");
-    assert_eq!(I2C_DATA.bcm_number(), 2);
-    assert_eq!(I2C_DATA.header_pin(), 3);
-    assert_eq!(I2C_DATA.capability(), Capability::InputOutput);
-    assert!(I2C_DATA.can_read());
-    assert!(I2C_DATA.can_write());
+fn gpio_enum_exposes_board_metadata() {
+    assert_eq!(Gpio::I2cData.name(), "I2C data");
+    assert_eq!(Gpio::I2cData.bcm_number(), 2);
+    assert_eq!(Gpio::I2cData.header_pin(), 3);
+    assert_eq!(Gpio::I2cData.capability(), CapabilityKind::InputOutput);
+    assert!(Gpio::I2cData.can_read());
+    assert!(Gpio::I2cData.can_write());
 
-    assert_eq!(LED_DATA.bcm_number(), 10);
-    assert!(!LED_DATA.can_read());
-    assert!(LED_DATA.can_write());
+    assert!(!Gpio::LedData.can_read());
+    assert!(Gpio::LedData.can_write());
+    assert!(Gpio::UpButton.is_active_low());
+}
 
-    assert_eq!(UP_BUTTON.bcm_number(), 5);
-    assert!(UP_BUTTON.can_read());
-    assert!(!UP_BUTTON.can_write());
-    assert!(UP_BUTTON.is_active_low());
+#[test]
+fn pin_types_encode_line_and_capability() {
+    fn capability<const BCM: u8, C: Capability>(_: &Pin<BCM, C>) -> CapabilityKind {
+        C::KIND
+    }
+
+    fn read<const BCM: u8, C: Readable>(pin: &Pin<BCM, C>) -> u8 {
+        pin.bcm_number()
+    }
+
+    fn write<const BCM: u8, C: Writable>(pin: &Pin<BCM, C>) -> u8 {
+        pin.bcm_number()
+    }
+
+    fn i2c_data(pin: &Pin<2, InputOutput>) -> Gpio {
+        pin.gpio()
+    }
+
+    let pins = BoardPins::new();
+
+    assert_eq!(capability(&pins.up_button), CapabilityKind::Input);
+    assert_eq!(read(&pins.up_button), 5);
+    assert_eq!(read(&pins.i2c_data), 2);
+    assert_eq!(write(&pins.led_data), 10);
+    assert_eq!(write(&pins.i2c_data), 2);
+    assert_eq!(i2c_data(&pins.i2c_data), Gpio::I2cData);
 }
 
 #[test]
@@ -43,7 +68,7 @@ fn every_connected_gpio_has_a_unique_identity_and_meaningful_name() {
 #[test]
 fn panel_buttons_are_active_low_inputs() {
     assert_eq!(BUTTONS.len(), 12);
-    assert!(BUTTONS.contains(&RESET_BUTTON));
+    assert!(BUTTONS.contains(&Gpio::ResetButton));
     assert!(BUTTONS.iter().all(|button| button.can_read()));
     assert!(BUTTONS.iter().all(|button| !button.can_write()));
     assert!(BUTTONS.iter().all(|button| button.is_active_low()));

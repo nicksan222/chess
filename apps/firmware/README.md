@@ -17,4 +17,6 @@ The flashable files are written to `dist/firmware`.
 Hardware workers are not implemented yet. The board contract uses polled
 TCA9554 input-port reads at eight addresses, not a GPIO sensor interrupt; see
 [host acquisition](../../docs/host.md#reading-the-board). Reusable, function-named
-GPIO descriptors live in `src/pins.rs`; unused GPIO4 is deliberately absent.
+GPIO identities and type-safe descriptors live in `src/pins/`; unused GPIO4 is
+deliberately absent. `pins/mod.rs` owns the `Gpio` board map and `BoardPins`,
+while `pins/pin.rs` defines the generic `Pin<const BCM: u8, Capability>` type.
