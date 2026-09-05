@@ -49,6 +49,7 @@ impl Gpio {
         capability: Capability,
         active_low: bool,
     ) -> Self {
+        assert!(!name.is_empty(), "GPIO name must not be empty");
         assert!(bcm_number <= 27, "invalid Raspberry Pi Zero GPIO number");
         assert!(header_pin >= 1 && header_pin <= 40, "invalid header pin");
 
