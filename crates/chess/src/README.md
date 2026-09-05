@@ -1,5 +1,10 @@
 # Chess domain source
 
+This map is for maintainers. External consumption — which types a caller holds,
+which methods they invoke, and which values may leave the process — lives in
+[`DESIGN.md`](../DESIGN.md). The public API is the crate root; these directories
+are private.
+
 The source tree is organized around one-way dependencies:
 
 - `model/` contains notation-independent values and complete board state;

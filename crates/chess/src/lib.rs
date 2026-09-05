@@ -1,9 +1,10 @@
 //! A `no_std`, integration-neutral chess engine.
 //!
-//! The crate separates immutable domain values ([`Square`], [`Piece`],
-//! [`ChessMove`], and [`Board`]) from the [`Game`] aggregate. A game retains an
-//! initial board, a derived current-board cache, and one authoritative
-//! [`GameHistory`].
+//! The crate root is the entire public API. Domain values ([`Square`],
+//! [`Piece`], [`ChessMove`], and [`Board`]) are independent of a match. The
+//! [`Game`] aggregate retains an initial board, a derived current-board cache,
+//! and one authoritative [`GameHistory`]. Firmware, persistence, transport, and
+//! tests consume those crate-root types; they do not import internal modules.
 //!
 //! # Authoritative events
 //!
@@ -30,6 +31,8 @@
 //! Hardware observation, persistence, transport, authentication, user
 //! interfaces, and logging backends remain outside this crate. Lifecycle
 //! diagnostics are emitted only when an application has registered a logger.
+//!
+//! The in-tree `DESIGN.md` is the consumption contract for this package.
 
 #![no_std]
 #![forbid(unsafe_code)]

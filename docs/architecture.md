@@ -34,7 +34,8 @@ the two component choices that make it possible.
 ## Layers
 
 - **`crates/chess`** is the game: board state, move generation, history. It has
-  no idea a physical board exists.
+  no idea a physical board exists. Applications consume it through the crate
+  root; see [`crates/chess/DESIGN.md`](../crates/chess/DESIGN.md).
 - **`crates/core`** holds small integration-neutral building blocks.
 - **`crates/menu`** owns the board's headless menu definition and the reusable
   cursor and navigation model behind it. Input mapping and presentation remain
