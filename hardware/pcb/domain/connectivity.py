@@ -6,8 +6,8 @@ from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from typing import TypeGuard
 
-from base.component import BoundPin, Endpoint, EndpointResolver
-from base.placement import Placement
+from domain.component import BoundPin, Endpoint, EndpointResolver
+from domain.placement import Placement
 
 EndpointKey = tuple[str, str]
 
@@ -70,7 +70,7 @@ class ConnectionGraph:
         components: Mapping[str, EndpointResolver] | None = None,
     ) -> ConnectionGraph:
         """Resolve serialized logical pins, including KiCad no-connect net names."""
-        from base.connection_contract import ConnectionContract
+        from domain.connection_contract import ConnectionContract
 
         return ConnectionContract(placements, components).build(
             serialized, graph_type=cls

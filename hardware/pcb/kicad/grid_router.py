@@ -13,24 +13,24 @@ from dataclasses import dataclass
 from itertools import pairwise
 from typing import TypedDict
 
-from base import rules
-from base.kicad.api import pcbnew
-from base.kicad.routing_grid import (
+from domain import rules
+from kicad.api import pcbnew
+from kicad.routing_grid import (
     GRID_MM,
     TRACK_KEEP_OUT_MM,
     TRACK_MM,
     VIA_KEEP_OUT_MM,
 )
-from base.kicad.routing_grid import (
+from kicad.routing_grid import (
     blocked_cells as _blocked,
 )
-from base.kicad.routing_grid import (
+from kicad.routing_grid import (
     cell as _cell,
 )
-from base.kicad.routing_grid import (
+from kicad.routing_grid import (
     mm as _mm,
 )
-from base.kicad.routing_grid import (
+from kicad.routing_grid import (
     position as _position,
 )
 

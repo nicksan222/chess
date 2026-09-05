@@ -4,9 +4,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from base import rules, sources
-from base.kicad import board as kicad
-from base.kicad.api import pcbnew
 from board import definition as board_definition
 from board.wiring.nets import Net
 from board.wiring.silkscreen import (
@@ -25,6 +22,9 @@ from board.wiring.silkscreen import (
 from board.wiring.silkscreen import (
     square_grid_dot_positions as _square_grid_dot_positions,
 )
+from domain import rules, sources
+from kicad import board as kicad
+from kicad.api import pcbnew
 
 # Preserve the original module entry points while implementations live nearby.
 __all__ = [

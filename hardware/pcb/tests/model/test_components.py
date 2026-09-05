@@ -12,8 +12,6 @@ PCB_ROOT = Path(__file__).resolve().parents[2]
 if str(PCB_ROOT) not in sys.path:
     sys.path.insert(0, str(PCB_ROOT))
 
-from base import sources
-from base.component import ComponentReference, Endpoint
 from components import footprints
 from components.ahct125 import Ahct125Pin
 from components.barrel_jack import DC_INPUT_JACK, BarrelJackPin
@@ -23,6 +21,8 @@ from components.fuse import INPUT_FUSE, FusePin
 from components.hall_sensor import HallSensorPin
 from components.sk9822 import Sk9822, Sk9822Pin
 from components.tca9554 import Tca9554Pin
+from domain import sources
+from domain.component import ComponentReference, Endpoint
 
 
 class ComponentModelTest(unittest.TestCase):

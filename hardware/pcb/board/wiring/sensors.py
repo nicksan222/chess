@@ -5,14 +5,14 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import dataclass
 
-from base.connectivity import EndpointKey
-from base.design import BoardDesign
-from base.kicad import board as kicad
-from base.kicad.api import pcbnew
 from board import hall_banks
 from board.wiring import common
 from board.wiring.context import WiringContext, WiringStage
 from components.tca9554 import Tca9554
+from domain.connectivity import EndpointKey
+from domain.design import BoardDesign
+from kicad import board as kicad
+from kicad.api import pcbnew
 from shared.dimensions import PLAYING_SPAN_MM, SQUARE_SIZE_MM
 from shared.hall_banks import BANK_FILES, BANK_RANKS, HallBank
 

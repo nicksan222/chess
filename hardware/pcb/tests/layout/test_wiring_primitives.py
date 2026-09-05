@@ -3,14 +3,14 @@
 import unittest
 
 try:
-    from base.kicad.api import pcbnew
+    from kicad.api import pcbnew
 except ModuleNotFoundError:  # Host-only unit runs do not install KiCad.
     pcbnew = None
 
 if pcbnew is not None:
-    from base.kicad import board as kicad
     from board import definition
     from board.wiring import common, power, sensors
+    from kicad import board as kicad
     from shared.dimensions import HALL_BANKS
 
 

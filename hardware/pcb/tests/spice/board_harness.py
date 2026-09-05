@@ -10,7 +10,6 @@ from __future__ import annotations
 import re
 from fractions import Fraction
 
-from base.design import BoardDesign
 from components.ahct125 import Ahct125Pin
 from components.barrel_jack import DC_INPUT_JACK, BarrelJackPin
 from components.capacitor import CapacitorPin
@@ -29,6 +28,7 @@ from components.sk9822 import Sk9822Pin
 from components.tactile_switch import TactileSwitchPin
 from components.tca9554 import Tca9554Pin
 from components.test_point import TestPointPin
+from domain.design import BoardDesign
 from shared import wiring
 from spice.circuit import SpiceCircuit
 from spice.movement import MovementCase

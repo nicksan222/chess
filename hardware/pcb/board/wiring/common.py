@@ -7,15 +7,15 @@ from collections import defaultdict
 from collections.abc import Iterator, Mapping, Sequence
 from typing import Unpack
 
-from base.component import ComponentReference
-from base.connectivity import EndpointKey
-from base.kicad import board as kicad
-from base.kicad import grid_router
-from base.kicad.api import pcbnew
 from board.wiring.nets import ButtonNet, Net
 from components import catalog
 from components.raspberry_pi_header import RaspberryPiHeader
 from components.tca9554 import Tca9554
+from domain.component import ComponentReference
+from domain.connectivity import EndpointKey
+from kicad import board as kicad
+from kicad import grid_router
+from kicad.api import pcbnew
 
 INTERNAL_SIGNAL_LAYERS = (pcbnew.In4_Cu, pcbnew.In5_Cu, pcbnew.In6_Cu)
 SENSOR_ROUTING_LAYERS = (pcbnew.F_Cu, pcbnew.B_Cu, *INTERNAL_SIGNAL_LAYERS)

@@ -5,13 +5,11 @@ from dataclasses import FrozenInstanceError
 from unittest.mock import patch
 
 try:
-    from base.kicad.api import pcbnew
+    from kicad.api import pcbnew
 except ModuleNotFoundError:
     pcbnew = None
 
 if pcbnew is not None:
-    from base.connectivity import Connection, ConnectionGraph
-    from base.kicad.board import KiCadBoard
     from board import definition
     from board.wiring import common
     from board.wiring.buttons import ButtonWiring
@@ -23,6 +21,8 @@ if pcbnew is not None:
     from board.wiring.router import ChessBoardRouter
     from board.wiring.sensors import HallSensorWiring
     from board.wiring.signal_tree import SignalTreeWiring
+    from domain.connectivity import Connection, ConnectionGraph
+    from kicad.board import KiCadBoard
 
 
 @unittest.skipUnless(pcbnew is not None, "KiCad pcbnew is not installed")

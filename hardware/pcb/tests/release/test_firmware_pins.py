@@ -16,8 +16,8 @@ except ModuleNotFoundError:
     pcbnew = None
 
 if pcbnew is not None:
-    import generate_firmware_pins
-    from generate_firmware_pins import OUTPUT_PATH, connected_pins, render
+    from tools import generate_firmware_pins
+    from tools.generate_firmware_pins import OUTPUT_PATH, connected_pins, render
 
 
 @unittest.skipUnless(pcbnew is not None, "KiCad pcbnew is not installed")

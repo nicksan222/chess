@@ -4,15 +4,15 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
-from base.component import ComponentReference
-from base.connectivity import ConnectionGraph, EndpointKey
-from base.kicad import board as kicad
-from base.kicad import grid_router
-from base.kicad.api import pcbnew
 from board.wiring import common
 from board.wiring.context import WiringContext, WiringStage
 from board.wiring.nets import ButtonNet
 from components.tactile_switch import TactileSwitchPad
+from domain.component import ComponentReference
+from domain.connectivity import ConnectionGraph, EndpointKey
+from kicad import board as kicad
+from kicad import grid_router
+from kicad.api import pcbnew
 
 
 class ButtonWiring(WiringStage):

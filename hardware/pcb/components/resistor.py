@@ -1,6 +1,6 @@
 """PCB specialization of the approved pull-up resistor."""
 
-from base.footprint import Footprint, two_terminal_smd
+from domain.footprint import Footprint, two_terminal_smd
 from shared.electronics.passives import ResistorComponent, ResistorPin
 
 

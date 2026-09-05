@@ -6,12 +6,14 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent
-HARDWARE = ROOT.parent
-sys.path[:0] = [str(ROOT), str(HARDWARE)]
+PCB_ROOT = Path(__file__).resolve().parents[1]
+HARDWARE_ROOT = PCB_ROOT.parent
+sys.path[:0] = [str(PCB_ROOT), str(HARDWARE_ROOT)]
 
-from base.design import BoardDesign
-from base.schematic import (
+from board import artifacts
+from board import definition as board_definition
+from domain.design import BoardDesign
+from domain.schematic import (
     SYMBOL_COLUMN_PITCH_MM,
     SYMBOL_COLUMNS,
     SYMBOL_ROW_GAP_MM,
@@ -19,17 +21,15 @@ from base.schematic import (
     connectivity,
     row_centres,
 )
-from base.schematic import (
+from domain.schematic import (
     render as render_design,
 )
-from base.schematic_symbols import (
+from domain.schematic_symbols import (
     NAMESPACE,
     ROOT_UUID,
     render_symbol_library,
     uid,
 )
-from board import artifacts
-from board import definition as board_definition
 
 # Preserve the original module entry points while implementations live nearby.
 __all__ = [

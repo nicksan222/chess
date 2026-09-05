@@ -11,7 +11,7 @@ from xml.etree import ElementTree
 from board import artifacts, definition
 
 try:
-    from base.kicad.api import pcbnew
+    from kicad.api import pcbnew
 except ModuleNotFoundError:  # Host-only unit runs do not install KiCad.
     pcbnew = None
 

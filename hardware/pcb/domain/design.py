@@ -6,10 +6,10 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from types import MappingProxyType
 
-from base.component import BoundPin, EndpointResolver
-from base.connectivity import ConnectionGraph
-from base.placement import Placement
-from base.validation import is_string_mapping
+from domain.component import BoundPin, EndpointResolver
+from domain.connectivity import ConnectionGraph
+from domain.placement import Placement
+from domain.validation import is_string_mapping
 
 
 @dataclass(frozen=True)

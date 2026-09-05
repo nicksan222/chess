@@ -8,14 +8,14 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-PCB_ROOT = Path(__file__).resolve().parent
+PCB_ROOT = Path(__file__).resolve().parents[1]
 HARDWARE_ROOT = PCB_ROOT.parent
 REPOSITORY_ROOT = HARDWARE_ROOT.parent
 for path in (PCB_ROOT, HARDWARE_ROOT):
     sys.path.insert(0, str(path))
 
-from base.kicad.api import pcbnew
 from board import artifacts
+from kicad.api import pcbnew
 
 BOARD_PATH = artifacts.BOARD
 OUTPUT_PATH = REPOSITORY_ROOT / "apps/firmware/src/generated_pins.rs"

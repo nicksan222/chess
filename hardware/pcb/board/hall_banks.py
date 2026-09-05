@@ -2,9 +2,9 @@
 
 from collections.abc import Iterator
 
-from base.design import BoardDesign, ComponentInstance
 from components.hall_sensor import HallSensor, HallSensorPin
 from components.tca9554 import Tca9554, Tca9554Pin
+from domain.design import BoardDesign, ComponentInstance
 from shared.dimensions import HALL_BANKS
 from shared.hall_banks import HallBank, square
 from shared.wiring import SCL_NET, SDA_NET, sense_net

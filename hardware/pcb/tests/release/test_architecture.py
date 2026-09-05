@@ -16,7 +16,7 @@ if str(PCB_ROOT) not in sys.path:
 class DependencyBoundaryTest(unittest.TestCase):
     def test_pcbnew_is_confined_to_the_kicad_adapter(self) -> None:
         offenders = []
-        api_boundary = PCB_ROOT / "base" / "kicad" / "api.py"
+        api_boundary = PCB_ROOT / "kicad" / "api.py"
         for path in PCB_ROOT.rglob("*.py"):
             if path == api_boundary or "tests" in path.parts:
                 continue
@@ -30,9 +30,9 @@ class DependencyBoundaryTest(unittest.TestCase):
                     offenders.append(path.relative_to(PCB_ROOT))
         self.assertEqual(offenders, [])
 
-    def test_reusable_base_does_not_import_board_definitions(self) -> None:
+    def test_reusable_domain_does_not_import_board_definitions(self) -> None:
         offenders = []
-        for path in (PCB_ROOT / "base").rglob("*.py"):
+        for path in (PCB_ROOT / "domain").rglob("*.py"):
             tree = ast.parse(path.read_text())
             for node in ast.walk(tree):
                 if isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
@@ -58,9 +58,9 @@ class NoKiCad(importlib.abc.MetaPathFinder):
             raise ModuleNotFoundError("KiCad deliberately unavailable", name=fullname)
 
 sys.meta_path.insert(0, NoKiCad())
-from base.design import BoardDesign
-from base.schematic import render
-from base.schematic_symbols import render_symbol_library
+from domain.design import BoardDesign
+from domain.schematic import render
+from domain.schematic_symbols import render_symbol_library
 from board import definition
 design = definition.load()
 assert isinstance(design, BoardDesign)
@@ -79,7 +79,13 @@ assert result.wasSuccessful()
 assert len(result.skipped) == 2, result.skipped
 assert result.testsRun > len(result.skipped)
 """
-        paths = (PCB_ROOT, PCB_ROOT.parent, PCB_ROOT / "tests")
+        paths = (
+            PCB_ROOT,
+            PCB_ROOT.parent,
+            PCB_ROOT / "tests",
+            PCB_ROOT / "tests" / "layout",
+            PCB_ROOT / "tests" / "model",
+        )
         completed = subprocess.run(
             [
                 sys.executable,

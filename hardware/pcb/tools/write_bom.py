@@ -9,13 +9,13 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-PCB = Path(__file__).resolve().parent
-HARDWARE = PCB.parent
-sys.path.insert(0, str(HARDWARE))
+PCB_ROOT = Path(__file__).resolve().parents[1]
+HARDWARE_ROOT = PCB_ROOT.parent
+sys.path[:0] = [str(PCB_ROOT), str(HARDWARE_ROOT)]
 
-from base.design import BoardDesign
 from board import artifacts
 from board import definition as board_definition
+from domain.design import BoardDesign
 from shared.components import COMPONENTS
 
 EXTRA_ASSEMBLY_PARTS = (

@@ -4,11 +4,6 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
-from base import rules
-from base.component import ComponentReference
-from base.connectivity import EndpointKey
-from base.kicad import board as kicad
-from base.kicad.api import pcbnew
 from board.wiring.context import WiringContext, WiringStage
 from board.wiring.nets import Net
 from components import catalog
@@ -16,6 +11,11 @@ from components.barrel_jack import DC_INPUT_JACK, BarrelJackPin
 from components.fuse import INPUT_FUSE, FusePin
 from components.power_switch import MAIN_POWER_SWITCH, PowerSwitchPin
 from components.raspberry_pi_header import RaspberryPiHeader
+from domain import rules
+from domain.component import ComponentReference
+from domain.connectivity import EndpointKey
+from kicad import board as kicad
+from kicad.api import pcbnew
 
 
 class InputPowerWiring(WiringStage):

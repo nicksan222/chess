@@ -10,11 +10,11 @@ PCB_ROOT = Path(__file__).resolve().parents[2]
 if str(PCB_ROOT) not in sys.path:
     sys.path.insert(0, str(PCB_ROOT))
 
-from base.connectivity import CircuitBuilder
 from board import definition as board_definition
 from board.wiring.nets import Net
 from components.capacitor import Capacitor, CapacitorPin
 from components.hall_sensor import HallSensor, HallSensorPin
+from domain.connectivity import CircuitBuilder
 
 
 class BoardDesignTest(unittest.TestCase):

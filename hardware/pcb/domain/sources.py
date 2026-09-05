@@ -7,14 +7,14 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Protocol
 
-from base.validation import is_string_mapping
+from domain.validation import is_string_mapping
 from shared import dimensions as shared_dimensions
 from shared import wiring as shared_wiring
 
 PCB_ROOT = Path(__file__).resolve().parents[1]
 HARDWARE_ROOT = PCB_ROOT.parent
 REPOSITORY_ROOT = HARDWARE_ROOT.parent
-NETLIST_PATH = PCB_ROOT / "board" / "netlist.json"
+NETLIST_PATH = PCB_ROOT / "board" / "data" / "netlist.json"
 PROJECT_NAME = "board"
 
 

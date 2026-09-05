@@ -1,7 +1,7 @@
 """PCB specialization of the main latching rocker switch SW13."""
 
-from base.component import ComponentReference
-from base.footprint import Footprint, two_pad_axial
+from domain.component import ComponentReference
+from domain.footprint import Footprint, two_pad_axial
 from shared.electronics.passives import PowerSwitchComponent, PowerSwitchPin
 
 

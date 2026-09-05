@@ -3,7 +3,6 @@
 import unittest
 from pathlib import Path
 
-from base import sources
 from board import definition
 from components.ahct125 import Ahct125
 from components.barrel_jack import BarrelJack
@@ -20,6 +19,7 @@ from components.tactile_switch import TactileSwitch
 from components.tca9554 import Tca9554
 from components.test_point import TestPoint
 from components.tvs_diode import TvsDiode
+from domain import sources
 from shared.electronics import (
     Ahct125Component,
     BarrelJackComponent,
@@ -83,7 +83,7 @@ class ComponentInheritanceTest(unittest.TestCase):
         )
 
     def test_silkscreen_has_no_parallel_pi_pinout_constant(self):
-        root = Path(__file__).resolve().parents[1]
+        root = Path(__file__).resolve().parents[2]
         for relative in ("board/wiring/silkscreen.py", "board/wiring/geometry.py"):
             self.assertNotIn("PI_HEADER_PINOUT", (root / relative).read_text())
 

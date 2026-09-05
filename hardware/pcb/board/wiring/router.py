@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from base.kicad import board as kicad
 from board.wiring import common
 from board.wiring.buttons import ButtonWiring
 from board.wiring.context import WiringContext, WiringStage
@@ -10,6 +9,7 @@ from board.wiring.controls import ControlSignalWiring, InternalBusWiring
 from board.wiring.led import LedChainWiring
 from board.wiring.power import InputPowerWiring, PowerFanoutWiring
 from board.wiring.sensors import HallSensorWiring
+from kicad import board as kicad
 
 
 class ChessBoardRouter:

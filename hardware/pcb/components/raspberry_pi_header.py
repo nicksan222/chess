@@ -1,7 +1,7 @@
 """PCB specialization of the Raspberry Pi 40-pin GPIO header."""
 
-from base.component import ComponentReference
-from base.footprint import Footprint, pin_header
+from domain.component import ComponentReference
+from domain.footprint import Footprint, pin_header
 from shared.electronics.raspberry_pi_header import (
     HeaderLegend,
     HeaderLegendEntry,

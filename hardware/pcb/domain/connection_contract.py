@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
 
-from base.component import EndpointResolver
-from base.connectivity import (
+from domain.component import EndpointResolver
+from domain.connectivity import (
     Connection,
     ConnectionGraph,
     EndpointKey,
@@ -13,7 +13,7 @@ from base.connectivity import (
     serialized_endpoint,
     typed_endpoint,
 )
-from base.placement import Placement
+from domain.placement import Placement
 
 
 class ConnectionContract:

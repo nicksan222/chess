@@ -2,16 +2,16 @@
 
 from typing import assert_type
 
-from base.component import ComponentPin, Endpoint
-from base.connectivity import CircuitBuilder, Connection, ConnectionGraph
-from base.kicad.api import pcbnew
-from base.kicad.board import KiCadBoard
-from base.kicad.grid_router import RoutingOptions
 from board.wiring.context import WiringContext
 from board.wiring.controls import ControlSignalWiring
 from board.wiring.nets import Net
 from components.hall_sensor import HallSensor, HallSensorPin
 from components.tca9554 import Tca9554, Tca9554Pin
+from domain.component import ComponentPin, Endpoint
+from domain.connectivity import CircuitBuilder, Connection, ConnectionGraph
+from kicad.api import pcbnew
+from kicad.board import KiCadBoard
+from kicad.grid_router import RoutingOptions
 
 
 def typed_connections() -> None:

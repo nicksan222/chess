@@ -14,18 +14,18 @@ for path in (PCB_ROOT, HARDWARE_ROOT):
         sys.path.insert(0, str(path))
 
 try:
-    from base.kicad.api import pcbnew
+    from kicad.api import pcbnew
 except ModuleNotFoundError:  # Host-only unit runs do not install KiCad.
     pcbnew = None
 
 if pcbnew is not None:
-    from base import footprint as footprint_base
-    from base import rules, sources
-    from base.kicad import board as kicad
     from board import definition
     from board.wiring import geometry as board_builder
     from components.hall_sensor import HallSensorPin
     from components.raspberry_pi_header import RaspberryPiHeader
+    from domain import footprint as footprint_base
+    from domain import rules, sources
+    from kicad import board as kicad
 
 
 @unittest.skipUnless(pcbnew is not None, "KiCad pcbnew is not installed")

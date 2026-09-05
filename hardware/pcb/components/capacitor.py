@@ -2,7 +2,7 @@
 
 from typing import ClassVar
 
-from base.footprint import Footprint, two_pad_axial, two_terminal_smd
+from domain.footprint import Footprint, two_pad_axial, two_terminal_smd
 from shared.electronics.passives import CapacitorComponent, CapacitorPin
 
 

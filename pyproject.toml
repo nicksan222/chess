@@ -11,7 +11,7 @@ force-exclude = true
 ignore = ["TRY004"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["base", "blocks", "board", "components", "shared"]
+known-first-party = ["blocks", "board", "components", "domain", "kicad", "shared", "tools"]
 
 [tool.ruff.lint.per-file-ignores]
 # Footprints are discovered at import time, so __all__ cannot be a static list.

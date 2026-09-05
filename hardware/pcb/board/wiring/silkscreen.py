@@ -6,15 +6,14 @@ native coordinates. Hole clearances keep grid dots away from screw openings.
 
 from __future__ import annotations
 
-from base import board_placement as placement
-from base import rules, sources
-from base.design import BoardDesign
-from base.kicad import board as kicad
-from base.kicad.api import pcbnew
-from board import hall_banks
+from board import hall_banks, placement
 from components.raspberry_pi_header import RaspberryPiHeader
 from components.tactile_switch import TactileSwitch
 from components.tca9554 import Tca9554
+from domain import rules, sources
+from domain.design import BoardDesign
+from kicad import board as kicad
+from kicad.api import pcbnew
 
 SQUARE_LABEL_OFFSET_MM = (-12.0, 0.0)
 SQUARE_GRID_DOT_PITCH_MM = 8.0

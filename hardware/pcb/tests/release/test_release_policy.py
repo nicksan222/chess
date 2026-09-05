@@ -4,17 +4,17 @@ import json
 import unittest
 from pathlib import Path
 
-from base import rules
 from board import artifacts
 from board import definition as board_definition
 from components import footprints
-from configure_project import render as render_project
-from polish_previews import polish_svg
+from domain import rules
 from shared.components import COMPONENTS
-from write_bom import render as render_bom
-from write_bom import render_assembly_csv
-from write_schematic import render as render_schematic
-from write_schematic import render_symbol_library, row_centres
+from tools.configure_project import render as render_project
+from tools.polish_previews import polish_svg
+from tools.write_bom import render as render_bom
+from tools.write_bom import render_assembly_csv
+from tools.write_schematic import render as render_schematic
+from tools.write_schematic import render_symbol_library, row_centres
 
 PCB = Path(__file__).resolve().parents[2]
 
@@ -49,7 +49,7 @@ class ReleasePolicyTest(unittest.TestCase):
         self.assertTrue(all(path.parent == artifacts.GENERATED_DIR for path in paths))
 
     def test_every_single_pad_group_is_an_explicit_no_connect(self):
-        design = json.loads((PCB / "board/netlist.json").read_text())
+        design = json.loads((PCB / "board/data/netlist.json").read_text())
         for connection in design["projects"]["board"]["connections"]:
             with self.subTest(connection=connection):
                 self.assertEqual(
@@ -57,7 +57,7 @@ class ReleasePolicyTest(unittest.TestCase):
                 )
 
     def test_every_placed_part_resolves_to_an_approved_product(self):
-        design = json.loads((PCB / "board/netlist.json").read_text())
+        design = json.loads((PCB / "board/data/netlist.json").read_text())
         for reference, component in design["projects"]["board"]["components"].items():
             with self.subTest(reference=reference):
                 spec = COMPONENTS[component["part_key"]]

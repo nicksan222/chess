@@ -15,7 +15,7 @@ PCB_ROOT = Path(__file__).resolve().parents[2]
 if str(PCB_ROOT) not in sys.path:
     sys.path.insert(0, str(PCB_ROOT))
 
-from base import rules
+from domain import rules
 
 
 class CapabilityTest(unittest.TestCase):

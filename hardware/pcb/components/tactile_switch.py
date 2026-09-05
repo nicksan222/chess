@@ -1,7 +1,7 @@
 """PCB specialization of the four-leg tactile panel switch."""
 
-from base import rules
-from base.footprint import RECT, ROUND, Footprint, Pad, courtyard_for
+from domain import rules
+from domain.footprint import RECT, ROUND, Footprint, Pad, courtyard_for
 from shared.electronics.tactile_switch import (
     TactileSwitchComponent,
     TactileSwitchPad,

@@ -10,8 +10,8 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from enum import StrEnum
 
-from base.validation import is_string_mapping
 from components.capacitor import Capacitor
+from domain.validation import is_string_mapping
 
 
 class SquareRole(StrEnum):

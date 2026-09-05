@@ -27,18 +27,18 @@ quality:
 
 # Generate the approved BOM and native KiCad project.
 generate: doctor
-    cd "{{ root }}" && python3 hardware/pcb/write_bom.py
-    cd "{{ root }}" && python3 hardware/pcb/write_schematic.py
-    cd "{{ root }}" && python3 hardware/pcb/generate.py
-    cd "{{ root }}" && python3 hardware/pcb/configure_project.py
+    cd "{{ root }}" && PYTHONPATH=hardware:hardware/pcb python3 -m tools.write_bom
+    cd "{{ root }}" && PYTHONPATH=hardware:hardware/pcb python3 -m tools.write_schematic
+    cd "{{ root }}" && PYTHONPATH=hardware:hardware/pcb python3 -m tools.generate
+    cd "{{ root }}" && PYTHONPATH=hardware:hardware/pcb python3 -m tools.configure_project
 
 # Write firmware GPIO markers from the regenerated native board.
 pins: generate
-    cd "{{ root }}" && python3 hardware/pcb/generate_firmware_pins.py
+    cd "{{ root }}" && PYTHONPATH=hardware:hardware/pcb python3 -m tools.generate_firmware_pins
 
 # Verify generated firmware pins against the board without silently updating them.
 pins-check: generate
-    cd "{{ root }}" && python3 hardware/pcb/generate_firmware_pins.py --check
+    cd "{{ root }}" && PYTHONPATH=hardware:hardware/pcb python3 -m tools.generate_firmware_pins --check
 
 # Run native KiCad ERC.
 erc: generate
@@ -65,7 +65,7 @@ previews: test
     kicad-cli pcb export svg "${options[@]}" -l F.Cu,F.Mask,F.Silkscreen,Edge.Cuts -o "{{ out }}/board-top.svg" "{{ board }}"
     kicad-cli pcb export svg "${options[@]}" --mirror -l B.Cu,B.Mask,B.Silkscreen,Edge.Cuts -o "{{ out }}/board-bottom.svg" "{{ board }}"
     cd "{{ root }}"
-    python3 hardware/pcb/polish_previews.py
+    PYTHONPATH=hardware:hardware/pcb python3 -m tools.polish_previews
     kicad-cli pcb render --quality high --width 1800 --height 1200 --background opaque --floor --perspective --rotate 325,0,35 --zoom 0.75 -o "{{ out }}/board-3d.png" "{{ board }}"
     kicad-cli pcb render --quality high --width 1400 --height 1400 --background opaque --side top --zoom 0.82 -o "{{ out }}/board-top.png" "{{ board }}"
     kicad-cli pcb render --quality high --width 1400 --height 1400 --background opaque --side bottom --zoom 0.82 -o "{{ out }}/board-bottom.png" "{{ board }}"

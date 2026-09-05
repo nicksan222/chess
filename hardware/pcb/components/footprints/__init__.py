@@ -14,7 +14,7 @@ import importlib
 import pkgutil
 from types import FunctionType
 
-from base.footprint import Footprint, Pad
+from domain.footprint import Footprint, Pad
 
 CATALOG: dict[str, Footprint] = {}
 
@@ -43,8 +43,6 @@ def _export(module) -> list[str]:
 def _discover() -> list[str]:
     found: list[str] = []
     for info in sorted(pkgutil.iter_modules(__path__), key=lambda m: m.name):
-        if info.name == "base":
-            continue
         found += _export(importlib.import_module(f"{__name__}.{info.name}"))
     return found
 

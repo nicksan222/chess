@@ -1,15 +1,14 @@
-"""Compose this chess board's reviewed definitions into reusable base models."""
+"""Compose this chess board's reviewed definitions from reusable models."""
 
 from __future__ import annotations
 
 from collections.abc import Mapping
 
-from base import board_placement as placement
-from base import connectivity, sources
-from base.design import BoardDesign, ComponentInstance, ComponentSpec
-from base.envelope import BoardEnvelope
-from board import hall_banks
+from board import hall_banks, placement
 from components.catalog import for_netlist_entry
+from domain import connectivity, sources
+from domain.design import BoardDesign, ComponentInstance, ComponentSpec
+from domain.envelope import BoardEnvelope
 
 
 def envelope() -> BoardEnvelope:

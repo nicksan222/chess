@@ -1,7 +1,7 @@
 """PCB specialization of the centre-positive Same Sky PJ-102A jack."""
 
-from base.component import ComponentReference
-from base.footprint import RECT, ROUND, Footprint, Pad, courtyard_for
+from domain.component import ComponentReference
+from domain.footprint import RECT, ROUND, Footprint, Pad, courtyard_for
 from shared.electronics.barrel_jack import (
     BarrelJackComponent,
     BarrelJackPad,

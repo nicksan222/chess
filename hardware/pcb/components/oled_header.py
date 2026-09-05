@@ -1,7 +1,7 @@
 """PCB specialization of the four-pin I2C OLED connector J2."""
 
-from base.component import ComponentReference
-from base.footprint import Footprint, pin_header
+from domain.component import ComponentReference
+from domain.footprint import Footprint, pin_header
 from shared.electronics.connectors import OledHeaderComponent, OledHeaderPin
 
 

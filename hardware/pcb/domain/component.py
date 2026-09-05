@@ -7,7 +7,7 @@ remain stable through this intentionally thin boundary.
 
 from typing import Protocol
 
-from base.footprint import Footprint
+from domain.footprint import Footprint
 from shared.electronics import (
     BoundPin,
     ComponentPin,

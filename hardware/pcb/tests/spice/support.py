@@ -15,7 +15,7 @@ PCB_ROOT = Path(__file__).resolve().parents[2]
 
 def board_circuits() -> BoardHarness:
     """Build the circuit DSL against the current validated board definition."""
-    manufacturing = json.loads((PCB_ROOT / "board/manufacturing.json").read_text())
+    manufacturing = json.loads((PCB_ROOT / "board/data/manufacturing.json").read_text())
     numerator, denominator = manufacturing["power"]["led_global_brightness_max"].split(
         "/"
     )

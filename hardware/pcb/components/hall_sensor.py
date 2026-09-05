@@ -1,6 +1,6 @@
 """PCB specialization of the active-low TI DRV5032 Hall sensor."""
 
-from base.footprint import OBLONG, RECT, Footprint, Pad, courtyard_for
+from domain.footprint import OBLONG, RECT, Footprint, Pad, courtyard_for
 from shared.electronics.hall_sensor import HallSensorComponent, HallSensorPin
 
 

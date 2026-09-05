@@ -1,6 +1,6 @@
 """PCB specialization of the TI TCA9554DWR GPIO expander."""
 
-from base.footprint import Footprint, soic
+from domain.footprint import Footprint, soic
 from shared.electronics.tca9554 import Tca9554Component, Tca9554Pin
 
 

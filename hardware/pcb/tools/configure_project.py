@@ -6,11 +6,11 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from base import rules
 from board import artifacts
+from domain import rules
 
-ROOT = Path(__file__).resolve().parent
-TEMPLATE = ROOT / "board" / "project-template.json"
+PCB_ROOT = Path(__file__).resolve().parents[1]
+TEMPLATE = PCB_ROOT / "board" / "data" / "project-template.json"
 STRICT_RULES = (
     "footprint_filters_mismatch",
     "footprint_type_mismatch",

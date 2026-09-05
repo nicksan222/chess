@@ -11,7 +11,7 @@ Pi Zero 2 W. There is no microcontroller and no separate schematic source tree.
   component identities and physical package metadata.
 - [`hardware/shared/dimensions.py`](../hardware/shared/dimensions.py) owns the
   board envelope and feature positions shared with CAD.
-- [`hardware/pcb/board/netlist.json`](../hardware/pcb/board/netlist.json) is the
+- [`hardware/pcb/board/data/netlist.json`](../hardware/pcb/board/data/netlist.json) is the
   reviewed component and connectivity contract.
 - [`hardware/pcb/generated/bom.md`](../hardware/pcb/generated/bom.md) is the
   generated assembly manifest.

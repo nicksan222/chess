@@ -4,11 +4,11 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
-from base.connectivity import ConnectionGraph, EndpointKey
-from base.kicad import board as kicad
-from base.kicad.api import pcbnew
 from board.wiring.context import WiringContext, WiringStage
 from components.sk9822 import Sk9822, Sk9822Pin
+from domain.connectivity import ConnectionGraph, EndpointKey
+from kicad import board as kicad
+from kicad.api import pcbnew
 
 
 class LedChainWiring(WiringStage):

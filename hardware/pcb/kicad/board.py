@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from base import footprint as footprint_base
-from base import rules
-from base.connectivity import ConnectionGraph, EndpointKey
-from base.design import BoardDesign, ComponentInstance
-from base.kicad.api import pcbnew
-from base.placement import Placement
+from domain import footprint as footprint_base
+from domain import rules
+from domain.connectivity import ConnectionGraph, EndpointKey
+from domain.design import BoardDesign, ComponentInstance
+from domain.placement import Placement
+from kicad.api import pcbnew
 from shared.components import COMPONENTS
 
 ORIGIN_X_MM = 200.0

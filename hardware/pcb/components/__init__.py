@@ -4,7 +4,7 @@ Each physical component type owns a class and pin enum in its own module. Board
 routing uses these models rather than unlabelled ``(reference, pin)`` strings.
 """
 
-from base.component import BoardComponent, ComponentPin, ComponentReference, Endpoint
+from domain.component import BoardComponent, ComponentPin, ComponentReference, Endpoint
 
 from .ahct125 import LED_LEVEL_SHIFTER, Ahct125, Ahct125Pin
 from .barrel_jack import DC_INPUT_JACK, BarrelJack, BarrelJackPad, BarrelJackPin

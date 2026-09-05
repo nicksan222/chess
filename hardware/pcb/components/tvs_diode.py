@@ -1,7 +1,7 @@
 """PCB specialization of the unidirectional input TVS diode D1."""
 
-from base.component import ComponentReference
-from base.footprint import Footprint, two_terminal_smd
+from domain.component import ComponentReference
+from domain.footprint import Footprint, two_terminal_smd
 from shared.electronics.passives import TvsDiodeComponent, TvsDiodePin
 
 

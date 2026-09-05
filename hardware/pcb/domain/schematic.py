@@ -8,8 +8,13 @@ from __future__ import annotations
 
 from itertools import pairwise
 
-from base.design import BoardDesign
-from base.schematic_symbols import ROOT_UUID, instance_lines, library_symbol_lines, uid
+from domain.design import BoardDesign
+from domain.schematic_symbols import (
+    ROOT_UUID,
+    instance_lines,
+    library_symbol_lines,
+    uid,
+)
 from shared.components import COMPONENTS
 
 SYMBOL_COLUMNS = 20
@@ -65,7 +70,7 @@ def render(design: BoardDesign) -> str:
         f'    (title "{design.title}")',
         f'    (rev "{design.revision}")',
         '    (company "Chess")',
-        '    (comment 1 "Generated from board/netlist.json; do not hand edit")',
+        '    (comment 1 "Generated from board/data/netlist.json; do not hand edit")',
         "  )",
         "  (lib_symbols",
     ]

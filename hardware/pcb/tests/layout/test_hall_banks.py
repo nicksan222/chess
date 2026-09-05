@@ -6,20 +6,20 @@ import unittest
 from collections import defaultdict
 from pathlib import Path
 
-from base import sources
 from board import definition
 from components.footprints import TCA9554_SOIC
 from components.tca9554 import Tca9554Pin
+from domain import sources
 from shared import dimensions, wiring
 from shared.components import TCA9554
 
 try:
-    from base.kicad.api import pcbnew
+    from kicad.api import pcbnew
 except ModuleNotFoundError:  # Host-only unit runs do not install KiCad.
     pcbnew = None
 
 if pcbnew is not None:
-    from base.kicad import board as kicad
+    from kicad import board as kicad
 
 
 class HallBankContractTest(unittest.TestCase):
@@ -141,7 +141,7 @@ class HallBankContractTest(unittest.TestCase):
 class HallBankCopperTest(unittest.TestCase):
     def test_generated_hall_copper_is_local_and_shorter_than_quadrant_baseline(self):
         board = pcbnew.LoadBoard(
-            str(Path(__file__).resolve().parents[1] / "generated/chess-board.kicad_pcb")
+            str(Path(__file__).resolve().parents[2] / "generated/chess-board.kicad_pcb")
         )
         lengths = defaultdict(float)
         vias = 0

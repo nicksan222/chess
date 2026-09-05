@@ -1,7 +1,7 @@
 """PCB specialization of the SN74AHCT125 level shifter."""
 
-from base.component import ComponentReference
-from base.footprint import Footprint, soic
+from domain.component import ComponentReference
+from domain.footprint import Footprint, soic
 from shared.electronics.ahct125 import Ahct125Component, Ahct125Pin
 
 

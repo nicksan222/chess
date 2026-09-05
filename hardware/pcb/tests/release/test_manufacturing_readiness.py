@@ -35,9 +35,9 @@ class ProductSelectionTest(unittest.TestCase):
 class ElectricalReadinessTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.board = json.loads((PCB / "board/netlist.json").read_text())["projects"][
-            "board"
-        ]
+        cls.board = json.loads((PCB / "board/data/netlist.json").read_text())[
+            "projects"
+        ]["board"]
         cls.connections = {
             connection["name"]: connection
             for connection in cls.board["connections"]
@@ -77,7 +77,7 @@ class ElectricalReadinessTest(unittest.TestCase):
         self.assertEqual(attached, expected)
 
     def test_power_limit_and_pcbway_order_requirements_are_recorded(self):
-        manufacturing = json.loads((PCB / "board/manufacturing.json").read_text())
+        manufacturing = json.loads((PCB / "board/data/manufacturing.json").read_text())
         self.assertEqual(
             manufacturing["power"]["led_global_brightness_max"],
             "3/31",

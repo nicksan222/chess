@@ -5,12 +5,12 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from typing import Unpack
 
-from base.component import ComponentReference
-from base.connectivity import Connection, EndpointKey
-from base.kicad.api import pcbnew
-from base.kicad.grid_router import RoutingOptions
 from board.wiring import common
 from board.wiring.context import WiringStage
+from domain.component import ComponentReference
+from domain.connectivity import Connection, EndpointKey
+from kicad.api import pcbnew
+from kicad.grid_router import RoutingOptions
 
 
 class SignalTreeWiring(WiringStage):

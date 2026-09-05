@@ -227,7 +227,7 @@ def two_pad_axial(
     pin_numbers: Sequence[str],
 ) -> Footprint:
     """Build a leaded part lying flat, with both holes on the X axis."""
-    from base import rules
+    from domain import rules
 
     if len(pin_numbers) != 2:
         raise ValueError(f"{package}: expected two pin numbers")
@@ -259,7 +259,7 @@ def pin_header(
     Pin 1 sits at the top left, pin 2 beside it, and numbering advances along
     the short axis first.
     """
-    from base import rules
+    from domain import rules
 
     count = columns * rows
     if len(pin_numbers) != count:

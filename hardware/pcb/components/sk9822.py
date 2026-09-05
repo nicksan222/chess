@@ -1,6 +1,6 @@
 """PCB specialization of the six-pad SK9822 5050 LED."""
 
-from base.footprint import OBLONG, RECT, Footprint, Pad, courtyard_for
+from domain.footprint import OBLONG, RECT, Footprint, Pad, courtyard_for
 from shared.electronics.sk9822 import Sk9822Component, Sk9822Pin
 
 

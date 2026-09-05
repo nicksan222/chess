@@ -9,8 +9,8 @@ from __future__ import annotations
 
 import math
 
-from base import rules
-from base.kicad.api import pcbnew
+from domain import rules
+from kicad.api import pcbnew
 
 # Fine enough to escape 1.27 mm SOIC pitch while retaining conservative clearance.
 GRID_MM = 0.25

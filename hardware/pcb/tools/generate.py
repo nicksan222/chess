@@ -6,15 +6,15 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-PCB_ROOT = Path(__file__).resolve().parent
+PCB_ROOT = Path(__file__).resolve().parents[1]
 HARDWARE_ROOT = PCB_ROOT.parent
 sys.path.insert(0, str(PCB_ROOT))
 sys.path.insert(0, str(HARDWARE_ROOT))
 
-from base.kicad import board as kicad
 from board import artifacts, definition
 from board.wiring import geometry as board_builder
 from board.wiring import router
+from kicad import board as kicad
 
 
 class ChessBoardProject:

@@ -4,13 +4,13 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
-from base.connectivity import ConnectionGraph, EndpointKey
-from base.kicad.api import pcbnew
 from board.wiring import common
 from board.wiring.buttons import route_buttons
 from board.wiring.context import WiringContext
 from board.wiring.nets import Net
 from board.wiring.signal_tree import SignalTreeWiring
+from domain.connectivity import ConnectionGraph, EndpointKey
+from kicad.api import pcbnew
 
 __all__ = [
     "ControlSignalWiring",

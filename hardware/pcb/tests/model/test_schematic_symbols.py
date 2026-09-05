@@ -3,7 +3,7 @@
 import unittest
 import uuid
 
-from base.schematic_symbols import (
+from domain.schematic_symbols import (
     ROOT_UUID,
     instance_lines,
     library_symbol_lines,

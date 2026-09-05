@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping
 
-from base.component import PcbComponent
+from domain.component import PcbComponent
 from shared.components import (
     AHCT125,
     CAP_10U,

@@ -7,12 +7,12 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Unpack
 
-from base.connectivity import Connection, ConnectionGraph, EndpointKey
-from base.design import BoardDesign
-from base.kicad import grid_router
-from base.kicad.api import pcbnew
-from base.kicad.board import KiCadBoard
 from board.wiring import common
+from domain.connectivity import Connection, ConnectionGraph, EndpointKey
+from domain.design import BoardDesign
+from kicad import grid_router
+from kicad.api import pcbnew
+from kicad.board import KiCadBoard
 
 
 @dataclass(frozen=True)

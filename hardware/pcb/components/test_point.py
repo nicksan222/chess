@@ -1,6 +1,6 @@
 """PCB specialization of the low-profile probe point."""
 
-from base.footprint import RECT, Footprint, Pad, courtyard_for
+from domain.footprint import RECT, Footprint, Pad, courtyard_for
 from shared.electronics.test_point import TestPointComponent, TestPointPin
 
 

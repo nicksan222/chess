@@ -8,10 +8,10 @@ from dataclasses import replace
 from pathlib import Path
 from unittest.mock import patch
 
-import write_schematic
-from base import schematic
-from base.schematic_symbols import render_symbol_library
 from board import definition
+from domain import schematic
+from domain.schematic_symbols import render_symbol_library
+from tools import write_schematic
 
 
 class SchematicTest(unittest.TestCase):

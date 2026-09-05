@@ -2,11 +2,11 @@
 
 import unittest
 
-from base.component import Endpoint
-from base.connection_contract import ConnectionContract
-from base.connectivity import CircuitBuilder, Connection, ConnectionGraph
 from board import definition
 from components.hall_sensor import HallSensor, HallSensorPin
+from domain.component import Endpoint
+from domain.connection_contract import ConnectionContract
+from domain.connectivity import CircuitBuilder, Connection, ConnectionGraph
 
 
 class ConnectionObjectsTest(unittest.TestCase):
@@ -63,7 +63,7 @@ class ConnectionObjectsTest(unittest.TestCase):
             ConnectionGraph(()).named("MISSING")
 
     def test_contract_object_preserves_typed_graph_and_physical_no_connect_names(self):
-        from base import sources
+        from domain import sources
 
         design = definition.load()
         contract = ConnectionContract(

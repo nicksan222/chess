@@ -4,13 +4,13 @@ import unittest
 from itertools import pairwise
 
 try:
-    from base.kicad.api import pcbnew
+    from kicad.api import pcbnew
 except ModuleNotFoundError:  # Host-only unit runs do not install KiCad.
     pcbnew = None
 
 if pcbnew is not None:
-    from base import rules
-    from base.kicad import grid_router
+    from domain import rules
+    from kicad import grid_router
 
 
 @unittest.skipUnless(pcbnew is not None, "KiCad pcbnew is not installed")

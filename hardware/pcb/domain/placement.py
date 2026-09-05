@@ -6,7 +6,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Protocol
 
-from base.footprint import Footprint
+from domain.footprint import Footprint
 
 
 @dataclass(frozen=True)

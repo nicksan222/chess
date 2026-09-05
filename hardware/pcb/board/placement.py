@@ -10,12 +10,13 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import dataclass
 
-from base import sources, square
-from base.component import ComponentReference
-from base.placement import Placement, PlacementPlanner, PlacementRule
-from base.validation import is_string_mapping
+from board import square
 from components import catalog
 from components.tca9554 import Tca9554
+from domain import sources
+from domain.component import ComponentReference
+from domain.placement import Placement, PlacementPlanner, PlacementRule
+from domain.validation import is_string_mapping
 
 
 @dataclass(frozen=True)
@@ -110,7 +111,7 @@ class ExpanderPlacementRule:
             raise RuntimeError(
                 f"{reference}: unknown expander bank {bank!r}"
             ) from error
-        return _placement(reference, entry, position)
+        return _placement(reference, entry, (position[0], position[1]))
 
 
 class ControlPlacementRule:

@@ -1,27 +1,36 @@
 # PCB source map
 
 The Python source turns the reviewed board contract into native KiCad artifacts.
-Edit source, not `generated/`; the root scripts remain the command-line entry points.
+Edit source and reviewed data, not `generated/`. Automation lives in `tools/`.
+
+```text
+domain/      KiCad-independent electrical and physical primitives
+components/  Approved parts and footprint catalog
+board/       This product's definition, reviewed data, placement, and wiring
+kicad/       The native KiCad adapter and routing engine
+tools/       BOM, schematic, board, project, pin, and preview generators
+tests/       Model, layout, SPICE, and release checks
+typings/     The pcbnew API subset used by the adapter
+generated/   Checked-in review and manufacturing artifacts
+```
+
+The dependency direction is `domain` → `components` → `board`; `kicad` adapts
+the domain model, and `board/wiring` composes both. Only `kicad/api.py` imports `pcbnew`.
 
 | Location | Responsibility |
 | --- | --- |
-| `board/definition.py`, `board/netlist.json` | Load the board design and its reviewed electrical connections. |
+| `board/definition.py`, `board/data/netlist.json` | Load the board design and its reviewed electrical connections. |
+| `board/data/` | Reviewed netlist, manufacturing requirements, and KiCad project template. |
 | `components/`, `components/footprints/` | Approved component implementations and physical pad geometry. |
-| `base/design.py`, `base/connectivity.py` | KiCad-independent design, checked product access, connection objects, and indexed endpoint ownership. |
-| `base/connection_contract.py` | Resolve reviewed JSON through component-owned pin types and validate complete placement coverage. |
-| `base/board_placement.py`, `base/placement.py`, `base/square.py` | Placement rules, ownership checks, and repeated square assemblies. |
-| `base/kicad/board.py`, `base/kicad/api.py` | Native board adapter and the only direct `pcbnew` import boundary. |
-| `base/kicad/grid_router.py` | Route bounds, deterministic path search, and track/via creation. |
-| `base/kicad/routing_grid.py` | Grid coordinates and copper-to-raster keepouts; vias must clear every copper layer. |
-| `board/wiring/context.py`, `board/wiring/router.py` | Borrowed native state, the routing-stage interface, and ordered composition. |
-| `board/wiring/signal_tree.py`, `board/wiring/controls.py` | Shared host-rooted tree behavior; control signals and I2C specialize reservation/layer policy. |
-| `board/wiring/power.py`, `led.py`, `sensors.py`, `buttons.py` | Subsystem wiring objects own their copper policies; Hall wiring retains reservations across stages. |
-| `board/wiring/geometry.py` | Mechanical outline, mounting holes, power planes, and native serialization. |
-| `board/wiring/silkscreen.py` | Playing-grid dots, connector pinouts, and bring-up labels. |
-| `base/schematic.py` | Sheet layout and logical net/no-connect labels, without native KiCad dependencies. |
-| `base/schematic_symbols.py` | Physical-pin symbol templates, product metadata, and stable KiCad UUIDs. |
-| `write_schematic.py` | Default board selection and schematic/symbol-library file writing. Existing rendering imports remain available here. |
-| `board/artifacts.py` | Canonical output paths used by the generation scripts. |
+| `domain/design.py`, `domain/connectivity.py` | KiCad-independent design, checked product access, connection objects, and indexed endpoint ownership. |
+| `domain/connection_contract.py` | Resolve reviewed JSON through component-owned pin types and validate complete placement coverage. |
+| `board/placement.py`, `board/square.py`, `domain/placement.py` | Product placement, repeated square assemblies, and reusable placement primitives. |
+| `kicad/board.py`, `kicad/api.py` | Native board adapter and the only direct `pcbnew` import boundary. |
+| `kicad/grid_router.py`, `kicad/routing_grid.py` | Deterministic routing, grid coordinates, and copper keepouts. |
+| `board/wiring/` | Ordered subsystem routing, geometry, power planes, and silkscreen. |
+| `domain/schematic.py`, `domain/schematic_symbols.py` | Logical sheet layout and physical-pin symbol templates. |
+| `tools/` | Command implementations invoked by the `justfile`. |
+| `board/artifacts.py` | Canonical generated-output paths. |
 
 Mechanical coordinates are centred on the playing area, with the control strip
 in negative Y; the KiCad board adapter handles native coordinates. Schematic pin
