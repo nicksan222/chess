@@ -15,7 +15,6 @@ class Net(StrEnum):
     DC_FUSED = "DC_FUSED"
     I2C_SDA = "I2C_SDA"
     I2C_SCL = "I2C_SCL"
-    SENSE_IRQ = "SENSE_IRQ"
     SPI_CLOCK = "SPI_CLK_3V3"
     SPI_DATA = "SPI_DATA_3V3"
     LED_CLOCK = "LED_CLK_5V"

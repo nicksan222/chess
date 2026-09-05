@@ -2,16 +2,13 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from base import footprint as footprint_base
 from base import rules
 from base.connectivity import ConnectionGraph, EndpointKey
+from base.design import BoardDesign, ComponentInstance
 from base.kicad.api import pcbnew
+from base.placement import Placement
 from shared.components import COMPONENTS
-
-if TYPE_CHECKING:
-    from base.design import BoardDesign, ComponentInstance
 
 ORIGIN_X_MM = 200.0
 ORIGIN_Y_MM = 220.0
@@ -26,11 +23,11 @@ def point(x: float, y: float) -> pcbnew.VECTOR2I:
 
 
 def add_trace(
-    board,
-    net,
-    start,
-    end,
-    layer=pcbnew.F_Cu,
+    board: pcbnew.BOARD,
+    net: pcbnew.NETINFO_ITEM,
+    start: pcbnew.VECTOR2I,
+    end: pcbnew.VECTOR2I,
+    layer: int = pcbnew.F_Cu,
     width: float = rules.TRACE_WIDTH_MM,
 ) -> None:
     """Add one exact point-to-point copper segment."""
@@ -43,7 +40,7 @@ def add_trace(
     board.Add(trace)
 
 
-def add_via(board, net, at) -> None:
+def add_via(board: pcbnew.BOARD, net: pcbnew.NETINFO_ITEM, at: pcbnew.VECTOR2I) -> None:
     """Add one standard through-via at an exact position."""
     via = pcbnew.PCB_VIA(board)
     via.SetPosition(at)
@@ -59,10 +56,14 @@ class KiCadBoard:
     def __init__(self, design: BoardDesign | ConnectionGraph) -> None:
         pcbnew.KIID.SeedGenerator(0x43484553)
         self.native = pcbnew.BOARD()
-        self.design = design if hasattr(design, "components") else None
-        self.connections = design.connections if self.design else design
+        self.design: BoardDesign | None = None
+        if isinstance(design, BoardDesign):
+            self.design = design
+            self.connections = design.connections
+        else:
+            self.connections = design
         self.nets = self._add_nets(self.connections.names)
-        self.pads: dict[EndpointKey, object] = {}
+        self.pads: dict[EndpointKey, pcbnew.PAD] = {}
         self._configure_rules()
 
     def _configure_rules(self) -> None:
@@ -82,8 +83,8 @@ class KiCadBoard:
         settings.m_SilkClearance = pcbnew.FromMM(rules.PCBWAY_MIN_MASK_DAM_MM)
         settings.m_SolderMaskMinWidth = pcbnew.FromMM(rules.PCBWAY_MIN_MASK_DAM_MM)
 
-    def _add_nets(self, names: tuple[str, ...]) -> dict[str, object]:
-        nets = {}
+    def _add_nets(self, names: tuple[str, ...]) -> dict[str, pcbnew.NETINFO_ITEM]:
+        nets: dict[str, pcbnew.NETINFO_ITEM] = {}
         for code, name in enumerate(names, 1):
             net = pcbnew.NETINFO_ITEM(self.native, name, code)
             self.native.Add(net)
@@ -98,7 +99,9 @@ class KiCadBoard:
             component.spec.package,
         )
 
-    def _attach_placement(self, item, part_key: object, package: str) -> None:
+    def _attach_placement(
+        self, item: Placement, part_key: object, package: str
+    ) -> None:
         """The only component-to-pcbnew materialization implementation."""
         if not isinstance(part_key, str):
             raise ValueError(f"{item.reference}: missing product key")
@@ -127,7 +130,7 @@ class KiCadBoard:
             module.Add(pad)
             self.pads[endpoint] = pad
 
-    def _add_package_outlines(self, module, item) -> None:
+    def _add_package_outlines(self, module: pcbnew.FOOTPRINT, item: Placement) -> None:
         width, height = item.footprint.courtyard_at(item.rotation)
         for layer, inset in (
             (pcbnew.F_CrtYd, 0.0),
@@ -136,22 +139,28 @@ class KiCadBoard:
             x0, x1 = item.x - width / 2 + inset, item.x + width / 2 - inset
             y0, y1 = item.y - height / 2 + inset, item.y + height / 2 - inset
             corners = ((x0, y0), (x1, y0), (x1, y1), (x0, y1))
+            line_width = (
+                rules.COURTYARD_LINE_MM
+                if layer == pcbnew.F_CrtYd
+                else rules.FAB_LINE_MM
+            )
             for index, start in enumerate(corners):
                 line = pcbnew.PCB_SHAPE(module)
                 line.SetShape(pcbnew.SHAPE_T_SEGMENT)
                 line.SetStart(point(*start))
                 line.SetEnd(point(*corners[(index + 1) % 4]))
                 line.SetLayer(layer)
-                width = (
-                    rules.COURTYARD_LINE_MM
-                    if layer == pcbnew.F_CrtYd
-                    else rules.FAB_LINE_MM
-                )
-                line.SetWidth(pcbnew.FromMM(width))
+                line.SetWidth(pcbnew.FromMM(line_width))
                 module.Add(line)
 
     @staticmethod
-    def _new_pad(module, number, x, y, definition):
+    def _new_pad(
+        module: pcbnew.FOOTPRINT,
+        number: str,
+        x: float,
+        y: float,
+        definition: footprint_base.Pad,
+    ) -> pcbnew.PAD:
         pad = pcbnew.PAD(module)
         pad.SetNumber(number)
         pad.SetPosition(point(x, y))
@@ -186,13 +195,13 @@ class KiCadBoard:
         pad.SetLocalSolderMaskMargin(pcbnew.FromMM(rules.MASK_EXPANSION_MM))
         return pad
 
-    def net(self, name: str):
+    def net(self, name: str) -> pcbnew.NETINFO_ITEM:
         try:
             return self.nets[name]
         except KeyError as error:
             raise KeyError(f"KiCad board has no net {name!r}") from error
 
-    def pad(self, endpoint: EndpointKey):
+    def pad(self, endpoint: EndpointKey) -> pcbnew.PAD:
         try:
             return self.pads[endpoint]
         except KeyError as error:
@@ -200,13 +209,13 @@ class KiCadBoard:
 
     def trace(
         self,
-        net,
-        start,
-        end,
-        layer=pcbnew.F_Cu,
+        net: pcbnew.NETINFO_ITEM,
+        start: pcbnew.VECTOR2I,
+        end: pcbnew.VECTOR2I,
+        layer: int = pcbnew.F_Cu,
         width: float = rules.TRACE_WIDTH_MM,
     ) -> None:
         add_trace(self.native, net, start, end, layer, width)
 
-    def via(self, net, at) -> None:
+    def via(self, net: pcbnew.NETINFO_ITEM, at: pcbnew.VECTOR2I) -> None:
         add_via(self.native, net, at)

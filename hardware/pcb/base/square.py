@@ -10,7 +10,8 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from enum import StrEnum
 
-from shared import dimensions as shared
+from base.validation import is_string_mapping
+from components.capacitor import Capacitor
 
 
 class SquareRole(StrEnum):
@@ -155,14 +156,14 @@ class SquareAssembly:
             SquarePartPlacement(
                 self.led_bypass.reference,
                 self.led_bypass.package,
-                led_x + shared.LED_BYPASS_OFFSET_MM[0],
-                led_y + shared.LED_BYPASS_OFFSET_MM[1],
+                led_x + Capacitor.LED_BYPASS_OFFSET_MM[0],
+                led_y + Capacitor.LED_BYPASS_OFFSET_MM[1],
             ),
             SquarePartPlacement(
                 self.hall_bypass.reference,
                 self.hall_bypass.package,
-                x + shared.HALL_BYPASS_OFFSET_MM[0],
-                y + shared.HALL_BYPASS_OFFSET_MM[1],
+                x + Capacitor.HALL_BYPASS_OFFSET_MM[0],
+                y + Capacitor.HALL_BYPASS_OFFSET_MM[1],
             ),
         )
 
@@ -192,8 +193,8 @@ def build_all(
 
 def _extras(entry: Mapping[str, object]) -> Mapping[str, object]:
     extras = entry.get("extras")
-    if not isinstance(extras, Mapping):
-        raise ValueError("component extras must be a mapping")
+    if not is_string_mapping(extras):
+        raise ValueError("component extras must have string keys")
     return extras
 
 

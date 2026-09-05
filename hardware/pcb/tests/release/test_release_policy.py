@@ -132,15 +132,6 @@ class ReleasePolicyTest(unittest.TestCase):
         self.assertEqual(drc["violations"], [])
         self.assertEqual(drc["unconnected_items"], [])
         self.assertEqual(drc["schematic_parity"], [])
-        descriptions = "\n".join(
-            item["description"]
-            for violation in drc["unconnected_items"]
-            for item in violation["items"]
-        )
-        for routed_prefix in ("[SQ_", "[LED_", "[SPI_", "[DC_"):
-            with self.subTest(prefix=routed_prefix):
-                self.assertNotIn(routed_prefix, descriptions)
-        self.assertFalse(any("[N$" in line for line in descriptions.splitlines()))
 
     def test_native_erc_is_clean(self):
         erc = json.loads((PCB / "generated/erc.json").read_text())

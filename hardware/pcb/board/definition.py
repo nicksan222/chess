@@ -8,6 +8,7 @@ from base import board_placement as placement
 from base import connectivity, sources
 from base.design import BoardDesign, ComponentInstance, ComponentSpec
 from base.envelope import BoardEnvelope
+from board import hall_banks
 from components.catalog import for_netlist_entry
 
 
@@ -24,7 +25,11 @@ def load() -> BoardDesign:
 
 
 def from_contract(contract: Mapping[str, object]) -> BoardDesign:
-    """Compose one serialized board contract into a typed object graph."""
+    """Compose a typed graph from authoritative ``connections``.
+
+    The serialized ``nets`` field is a compatibility projection, checked against
+    named connections by the contract tests rather than consumed here.
+    """
     raw_components = contract.get("components")
     raw_connections = contract.get("connections")
     if not isinstance(raw_components, Mapping):
@@ -61,10 +66,12 @@ def from_contract(contract: Mapping[str, object]) -> BoardDesign:
     revision = contract.get("revision")
     if not isinstance(title, str) or not isinstance(revision, str):
         raise ValueError("board title and revision must be strings")
-    return BoardDesign.create(
+    design = BoardDesign.create(
         title=title,
         revision=revision,
         components=instances,
         connections=graph,
         placements=placed,
     )
+    hall_banks.validate(design)
+    return design

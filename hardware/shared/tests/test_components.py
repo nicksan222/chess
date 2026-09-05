@@ -8,6 +8,7 @@ from shared.components import (
     POWER_SUPPLY,
     SK9822,
     ComponentImplementation,
+    ComponentSpec,
 )
 
 
@@ -26,6 +27,10 @@ class ComponentsTest(unittest.TestCase):
                 self.assertTrue(spec.manufacturer)
                 self.assertTrue(spec.mpn)
                 self.assertTrue(spec.package)
+
+    def test_invalid_component_envelopes_fail_at_definition_time(self) -> None:
+        with self.assertRaisesRegex(ValueError, "body dimensions must be positive"):
+            ComponentSpec("X", "invalid", "pkg", "maker", "mpn", (1.0, 0.0, 1.0))
 
     def test_required_body_dimensions_fail_clearly_when_absent(self) -> None:
         self.assertEqual(SK9822.require_body_mm(), (5.4, 5.0, 1.57))

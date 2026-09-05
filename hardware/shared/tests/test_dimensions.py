@@ -21,14 +21,6 @@ class SharedPlacementTest(unittest.TestCase):
         self.assertIn("J3", dimensions.PCB_STRIP_PLACEMENTS_MM)
         self.assertIn("SW13", dimensions.PCB_STRIP_PLACEMENTS_MM)
 
-    def test_square_subassembly_offsets_remain_inside_one_square(self):
-        half_square = dimensions.SQUARE_SIZE_MM / 2.0
-        for offset in (
-            dimensions.LED_BYPASS_OFFSET_MM,
-            dimensions.HALL_BYPASS_OFFSET_MM,
-        ):
-            self.assertLess(max(map(abs, offset)), half_square)
-
 
 if __name__ == "__main__":
     unittest.main()

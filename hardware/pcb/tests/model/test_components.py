@@ -21,8 +21,8 @@ from components.capacitor import CapacitorPin
 from components.catalog import for_netlist_entry, known_part_keys
 from components.fuse import INPUT_FUSE, FusePin
 from components.hall_sensor import HallSensorPin
-from components.mcp23017 import Mcp23017Pin
 from components.sk9822 import Sk9822, Sk9822Pin
+from components.tca9554 import Tca9554Pin
 
 
 class ComponentModelTest(unittest.TestCase):
@@ -50,11 +50,11 @@ class ComponentModelTest(unittest.TestCase):
         self.assertNotIn("DIP28_SOCKET", by_key)
         self.assertNotIn("REED_SWITCH", by_key)
         self.assertEqual(len(by_key["HALL_SENSOR"]), 64)
-        self.assertEqual(len(by_key["MCP23017"]), 4)
+        self.assertEqual(len(by_key["TCA9554"]), 8)
         self.assertTrue(
             all(
-                entry["package"] == "SOIC-28W 1.27 mm"
-                for _reference, entry in by_key["MCP23017"]
+                entry["package"] == "SOIC-16W 1.27 mm"
+                for _reference, entry in by_key["TCA9554"]
             )
         )
         self.assertEqual(len(by_key["AHCT125"]), 1)
@@ -90,7 +90,7 @@ class ComponentModelTest(unittest.TestCase):
             for _reference, entry in by_key["CAP_100N"]
             if "For" in entry["extras"]
         }
-        self.assertEqual(expander_caps, {"U1", "U2", "U3", "U4"})
+        self.assertEqual(expander_caps, {r for r, _e in by_key["TCA9554"]})
 
     def test_every_footprint_exposes_exactly_its_models_logical_pins(self) -> None:
         for reference, entry in self.netlist["components"].items():
@@ -173,12 +173,13 @@ class ComponentModelTest(unittest.TestCase):
         self.assertEqual(HallSensorPin.ACTIVE_LOW_OUTPUT, "2")
         self.assertEqual(HallSensorPin.GROUND, "3")
 
-        # Microchip DS20001952D table 2-1 (SOIC column).
-        self.assertEqual(Mcp23017Pin.GPIO_B0, "1")
-        self.assertEqual(Mcp23017Pin.INTERRUPT_B, "19")
-        self.assertEqual(Mcp23017Pin.INTERRUPT_A, "20")
-        self.assertEqual(Mcp23017Pin.GPIO_A7, "28")
-        self.assertEqual(Mcp23017Pin.SUPPLY, "9")
+        # TI SCPS233E section 5; all eight port pins are input capable.
+        self.assertEqual(Tca9554Pin.P0, "4")
+        self.assertEqual(Tca9554Pin.P3, "7")
+        self.assertEqual(Tca9554Pin.P4, "9")
+        self.assertEqual(Tca9554Pin.P7, "12")
+        self.assertEqual(Tca9554Pin.INTERRUPT, "13")
+        self.assertEqual(Tca9554Pin.SUPPLY, "16")
 
         # SK9822 manufacturer specification section 5.
         self.assertEqual(Sk9822Pin.DATA_IN, "1")
@@ -194,9 +195,11 @@ class ComponentModelTest(unittest.TestCase):
             for connection in self.netlist["connections"]
             if connection.get("name")
         }
-        for reference in ("U1", "U2", "U3", "U4"):
-            self.assertIn((reference, Mcp23017Pin.SUPPLY), pads_by_net["+3V3"])
-            self.assertIn((reference, Mcp23017Pin.GROUND), pads_by_net["GND"])
+        for reference, entry in self.netlist["components"].items():
+            if entry["part_key"] != "TCA9554":
+                continue
+            self.assertIn((reference, Tca9554Pin.SUPPLY), pads_by_net["+3V3"])
+            self.assertIn((reference, Tca9554Pin.GROUND), pads_by_net["GND"])
         self.assertIn(("U5", Ahct125Pin.SUPPLY), pads_by_net["+5V"])
         self.assertIn(("U5", Ahct125Pin.GROUND), pads_by_net["GND"])
         self.assertIn(("J3", BarrelJackPin.SWITCHED_SLEEVE_GROUND), pads_by_net["GND"])

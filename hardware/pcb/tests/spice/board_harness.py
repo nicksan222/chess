@@ -23,11 +23,11 @@ from components.electrical import (
 )
 from components.fuse import INPUT_FUSE, FusePin
 from components.hall_sensor import HallSensorPin
-from components.mcp23017 import Mcp23017Pin
 from components.power_switch import MAIN_POWER_SWITCH, PowerSwitchPin
 from components.raspberry_pi_header import RaspberryPiHeaderPin
 from components.sk9822 import Sk9822Pin
 from components.tactile_switch import TactileSwitchPin
+from components.tca9554 import Tca9554Pin
 from components.test_point import TestPointPin
 from shared import wiring
 from spice.circuit import SpiceCircuit
@@ -83,9 +83,14 @@ class BoardHarness:
                 raise ValueError(f"{reference} has no square identity")
             file_index, rank_index = wiring.parse_square(square)
             expander_index, gpio_index = wiring.expander_of(file_index, rank_index)
-            port = "A" if gpio_index < 8 else "B"
-            port_index = gpio_index % 8
-            expander_pin = Mcp23017Pin[f"GPIO_{port}{port_index}"]
+            expander_pin = Tca9554Pin[f"P{gpio_index}"]
+            bank_label = wiring.HALL_BANKS[expander_index].label
+            expander_reference = next(
+                candidate_reference
+                for candidate_reference, candidate in self.design.components.items()
+                if candidate.spec.part_key == "TCA9554"
+                and candidate.spec.extras.get("Bank") == bank_label
+            )
             self._required_net(reference, HallSensorPin.SUPPLY, "+3V3")
             self._required_net(reference, HallSensorPin.GROUND, "GND")
             net = wiring.sense_net(square)
@@ -93,7 +98,7 @@ class BoardHarness:
                 net,
                 {
                     (reference, str(HallSensorPin.ACTIVE_LOW_OUTPUT)),
-                    (f"U{expander_index + 1}", str(expander_pin)),
+                    (expander_reference, str(expander_pin)),
                 },
             )
             found[square] = net
@@ -346,27 +351,32 @@ class BoardHarness:
         return "\n".join(lines) + "\n"
 
     def _open_drain_inputs(self) -> str:
-        bus_nets = (wiring.SDA_NET, wiring.SCL_NET, wiring.SENSE_IRQ_NET)
+        bus_nets = (wiring.SDA_NET, wiring.SCL_NET)
+        expander_references = tuple(
+            reference
+            for reference, component in self.design.components.items()
+            if component.spec.part_key == "TCA9554"
+        )
         bus_endpoints = {
             wiring.SDA_NET: {
                 ("J1", str(RaspberryPiHeaderPin.I2C_SDA)),
                 ("J2", "4"),
                 ("R1", "2"),
                 ("TP7", str(TestPointPin.PROBE)),
-                *((f"U{index}", str(Mcp23017Pin.I2C_DATA)) for index in range(1, 5)),
+                *(
+                    (reference, str(Tca9554Pin.I2C_DATA))
+                    for reference in expander_references
+                ),
             },
             wiring.SCL_NET: {
                 ("J1", str(RaspberryPiHeaderPin.I2C_SCL)),
                 ("J2", "3"),
                 ("R2", "2"),
                 ("TP6", str(TestPointPin.PROBE)),
-                *((f"U{index}", str(Mcp23017Pin.I2C_CLOCK)) for index in range(1, 5)),
-            },
-            wiring.SENSE_IRQ_NET: {
-                ("J1", str(RaspberryPiHeaderPin.SENSE_IRQ_GPIO4)),
-                ("R3", "2"),
-                ("TP8", str(TestPointPin.PROBE)),
-                *((f"U{index}", str(Mcp23017Pin.INTERRUPT_A)) for index in range(1, 5)),
+                *(
+                    (reference, str(Tca9554Pin.I2C_CLOCK))
+                    for reference in expander_references
+                ),
             },
         }
         for net, endpoints in bus_endpoints.items():

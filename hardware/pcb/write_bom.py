@@ -33,11 +33,17 @@ def reference_sort_key(reference: str) -> tuple[str, int]:
     return prefix, int(suffix) if suffix else 0
 
 
-def render(design: BoardDesign | None = None) -> str:
-    design = design or board_definition.load()
+def _references_by_part(design: BoardDesign) -> dict[str, list[str]]:
+    """Group only board-fitted references by approved product identity."""
     references: dict[str, list[str]] = defaultdict(list)
     for component in design.components.values():
         references[component.spec.part_key].append(component.reference)
+    return references
+
+
+def render(design: BoardDesign | None = None) -> str:
+    design = design or board_definition.load()
+    references = _references_by_part(design)
     for key in EXTRA_ASSEMBLY_PARTS:
         references[key].append("—")
 
@@ -68,9 +74,7 @@ def render(design: BoardDesign | None = None) -> str:
 def render_assembly_csv(design: BoardDesign | None = None) -> str:
     """Render a PCBWay-friendly BOM containing board-fitted parts only."""
     design = design or board_definition.load()
-    references: dict[str, list[str]] = defaultdict(list)
-    for component in design.components.values():
-        references[component.spec.part_key].append(component.reference)
+    references = _references_by_part(design)
 
     output = io.StringIO(newline="")
     writer = csv.writer(output, lineterminator="\n")

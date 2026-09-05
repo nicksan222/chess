@@ -4,8 +4,9 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
+from typing import TypeGuard
 
-from base.component import BoardComponent, ComponentPin, Endpoint
+from base.component import BoundPin, Endpoint, EndpointResolver
 from base.placement import Placement
 
 EndpointKey = tuple[str, str]
@@ -19,6 +20,21 @@ class Connection:
     endpoints: tuple[EndpointKey, ...]
     no_connect: bool = False
 
+    def __post_init__(self) -> None:
+        if not self.endpoints:
+            raise ValueError("a connection needs at least one endpoint")
+        if self.no_connect and len(self.endpoints) != 1:
+            raise ValueError("a no-connect group must contain exactly one endpoint")
+        if len(set(self.endpoints)) != len(self.endpoints):
+            raise ValueError("an endpoint belongs to multiple nets or is repeated")
+
+    @classmethod
+    def from_pins(
+        cls, name: str, *pins: BoundPin, no_connect: bool = False
+    ) -> Connection:
+        """Define an electrical group using bound component pins, not pad strings."""
+        return cls(name, tuple(pin.endpoint for pin in pins), no_connect)
+
     def touches(self, reference: str) -> bool:
         return any(endpoint[0] == reference for endpoint in self.endpoints)
 
@@ -30,7 +46,11 @@ class ConnectionGraph:
         self.connections = tuple(connections)
         endpoint_nets: dict[EndpointKey, str] = {}
         endpoint_connections: dict[EndpointKey, Connection] = {}
+        names: set[str] = set()
         for connection in self.connections:
+            if connection.name in names:
+                raise ValueError(f"duplicate connection name {connection.name!r}")
+            names.add(connection.name)
             for endpoint in connection.endpoints:
                 if endpoint in endpoint_nets:
                     raise ValueError(f"endpoint {endpoint} belongs to multiple nets")
@@ -38,69 +58,35 @@ class ConnectionGraph:
                 endpoint_connections[endpoint] = connection
         self._endpoint_nets = endpoint_nets
         self._endpoint_connections = endpoint_connections
+        self._connections_by_name = {
+            connection.name: connection for connection in self.connections
+        }
 
     @classmethod
     def from_contract(
         cls,
         serialized: Iterable[Mapping[str, object]],
         placements: Iterable[Placement],
-        components: Mapping[str, BoardComponent] | None = None,
+        components: Mapping[str, EndpointResolver] | None = None,
     ) -> ConnectionGraph:
         """Resolve serialized logical pins, including KiCad no-connect net names."""
-        placed = tuple(placements)
-        physical_numbers: dict[EndpointKey, str] = {}
-        expected_endpoints: set[EndpointKey] = set()
-        for item in placed:
-            for logical, physical, _position, _definition in item.pads():
-                endpoint = (item.reference, logical)
-                physical_numbers.setdefault(endpoint, physical)
-                expected_endpoints.add(endpoint)
+        from base.connection_contract import ConnectionContract
 
-        connections = []
-        for index, entry in enumerate(serialized, 1):
-            raw_endpoints = entry.get("pads")
-            if not isinstance(raw_endpoints, list):
-                raise ValueError("connection pads must be a list")
-            endpoints = tuple(
-                typed_endpoint(value, components) if components else _endpoint(value)
-                for value in raw_endpoints
-            )
-            no_connect = bool(entry.get("no_connect", False))
-            if no_connect and len(endpoints) != 1:
-                raise ValueError("a no-connect group must contain exactly one endpoint")
-
-            raw_name = entry.get("name")
-            if raw_name is not None and not isinstance(raw_name, str):
-                raise ValueError("connection name must be a string or null")
-            if no_connect:
-                reference, logical = endpoints[0]
-                try:
-                    physical = physical_numbers[(reference, logical)]
-                except KeyError as error:
-                    raise ValueError(
-                        f"unknown endpoint {(reference, logical)}"
-                    ) from error
-                name = f"unconnected-({reference}-Pad{physical})"
-            else:
-                name = raw_name or f"N${index}"
-            connections.append(Connection(name, endpoints, no_connect))
-
-        graph = cls(connections)
-        actual_endpoints = set(graph._endpoint_nets)
-        unknown = actual_endpoints - expected_endpoints
-        missing = expected_endpoints - actual_endpoints
-        if unknown:
-            raise ValueError(
-                f"connections contain unknown endpoints: {sorted(unknown)}"
-            )
-        if missing:
-            raise ValueError(f"component endpoints lack connections: {sorted(missing)}")
-        return graph
+        return ConnectionContract(placements, components).build(
+            serialized, graph_type=cls
+        )
 
     @property
     def names(self) -> tuple[str, ...]:
         """Return deterministic unique net names."""
         return tuple(sorted({connection.name for connection in self.connections}))
+
+    def named(self, name: str) -> Connection:
+        """Resolve a subsystem's net without rebuilding a separate wiring map."""
+        try:
+            return self._connections_by_name[name]
+        except KeyError as error:
+            raise KeyError(f"no connection named {name!r}") from error
 
     def connection_for(self, endpoint: EndpointKey) -> Connection:
         """Return the complete connection containing ``endpoint``."""
@@ -115,7 +101,7 @@ class ConnectionGraph:
         except KeyError as error:
             raise KeyError(f"no connection for endpoint {endpoint}") from error
 
-    def peers(self, endpoint: EndpointKey) -> tuple[Endpoint, ...]:
+    def peers(self, endpoint: EndpointKey) -> tuple[Endpoint[str], ...]:
         """Return typed endpoints electrically attached to ``endpoint``."""
         return tuple(
             Endpoint(reference, pin)
@@ -141,7 +127,7 @@ class CircuitBuilder:
 
     def connect(
         self,
-        *pins: ComponentPin,
+        *pins: BoundPin,
         name: str | None = None,
         no_connect: bool = False,
     ) -> CircuitBuilder:
@@ -149,16 +135,25 @@ class CircuitBuilder:
             raise ValueError("a connection needs at least one pin")
         if no_connect and len(pins) != 1:
             raise ValueError("a no-connect group must contain exactly one pin")
-        endpoints = tuple(pin.endpoint for pin in pins)
-        duplicate = self._attached.intersection(endpoints)
+        connection_name = name or f"N${len(self._connections) + 1}"
+        return self.add(
+            Connection.from_pins(connection_name, *pins, no_connect=no_connect)
+        )
+
+    def add(self, connection: Connection) -> CircuitBuilder:
+        """Attach an object definition atomically; a pin has exactly one owner.
+
+        Name collisions are checked by ``build`` as before. Failed endpoint
+        validation leaves the builder unchanged so callers can correct a group.
+        """
+        duplicate = self._attached.intersection(connection.endpoints)
         if duplicate:
             raise ValueError(f"pins already attached: {sorted(duplicate)}")
-        connection_name = name or f"N${len(self._connections) + 1}"
-        self._connections.append(Connection(connection_name, endpoints, no_connect))
-        self._attached.update(endpoints)
+        self._connections.append(connection)
+        self._attached.update(connection.endpoints)
         return self
 
-    def no_connect(self, pin: ComponentPin) -> CircuitBuilder:
+    def no_connect(self, pin: BoundPin) -> CircuitBuilder:
         return self.connect(pin, name=f"NC:{pin.endpoint!s}", no_connect=True)
 
     def build(self) -> ConnectionGraph:
@@ -167,19 +162,25 @@ class CircuitBuilder:
 
 def typed_endpoint(
     value: object,
-    components: Mapping[str, BoardComponent],
-) -> Endpoint:
+    components: Mapping[str, EndpointResolver],
+) -> Endpoint[str]:
     """Resolve one serialized endpoint to its component's semantic pin enum."""
-    reference, number = _endpoint(value)
+    reference, number = serialized_endpoint(value)
     try:
         component = components[reference]
     except KeyError as error:
         raise ValueError(f"unknown component {reference!r}") from error
-    return component.endpoint(component.get_pin_by_number(number))
+    return component.resolve_endpoint(number)
 
 
-def _endpoint(value: object) -> EndpointKey:
-    if not isinstance(value, list) or len(value) != 2:
+def is_object_list(value: object) -> TypeGuard[list[object]]:
+    """Narrow JSON arrays without treating their unchecked elements as Any."""
+    return isinstance(value, list)
+
+
+def serialized_endpoint(value: object) -> EndpointKey:
+    """Validate the two string fields before component-specific pin resolution."""
+    if not is_object_list(value) or len(value) != 2:
         raise ValueError(f"invalid serialized endpoint {value!r}")
     reference, pin = value
     if not isinstance(reference, str) or not isinstance(pin, str):

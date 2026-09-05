@@ -229,12 +229,12 @@ class PerSquareFeatureTest(unittest.TestCase):
 
 
 class ExpanderEnvelopeTest(unittest.TestCase):
-    def test_all_four_quadrant_positions_are_shared_with_pcb_placement(self) -> None:
+    def test_all_eight_bank_positions_are_shared_with_pcb_placement(self) -> None:
         self.assertEqual(
-            set(cad.EXPANDER_POSITIONS_BY_QUADRANT_MM),
-            {"A1-D4", "E1-H4", "A5-D8", "E5-H8"},
+            set(cad.EXPANDER_POSITIONS_BY_BANK_MM),
+            {"A1-D2", "E1-H2", "A3-D4", "E3-H4", "A5-D6", "E5-H6", "A7-D8", "E7-H8"},
         )
-        self.assertEqual(cad.EXPANDER_BODY_MM, (10.3, 17.9, 2.65))
+        self.assertEqual(cad.EXPANDER_BODY_MM, (7.5, 10.3, 2.65))
 
 
 class BoardSupportTest(unittest.TestCase):

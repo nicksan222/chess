@@ -11,6 +11,7 @@ connectivity check compare component endpoints without a translation table.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from math import cos, radians, sin
 
@@ -49,6 +50,20 @@ class Pad:
     shape: str = ROUND
     drill: float = 0.0
     drill_height: float = 0.0
+
+    def __post_init__(self) -> None:
+        """Reject impossible land-pattern geometry at its construction boundary."""
+        if not self.number:
+            raise ValueError("pad number must not be empty")
+        if self.width <= 0.0 or self.height <= 0.0:
+            raise ValueError(f"pad {self.number}: dimensions must be positive")
+        if self.shape not in SHAPES:
+            raise ValueError(f"pad {self.number}: unknown shape {self.shape!r}")
+        if self.drill < 0.0 or self.drill_height < 0.0:
+            raise ValueError(f"pad {self.number}: drill dimensions cannot be negative")
+        drill_width, drill_height = self.drill_size
+        if drill_width > self.width or drill_height > self.height:
+            raise ValueError(f"pad {self.number}: drill must fit inside copper pad")
 
     @property
     def plated_through(self) -> bool:
@@ -102,6 +117,17 @@ class Footprint:
     # parts have not been placed on top of each other.
     courtyard: tuple[float, float]
 
+    def __post_init__(self) -> None:
+        if not self.package:
+            raise ValueError("footprint package must not be empty")
+        if not self.pads:
+            raise ValueError(f"{self.package}: footprint must define at least one pad")
+        if any(axis <= 0.0 for axis in self.courtyard):
+            raise ValueError(f"{self.package}: courtyard dimensions must be positive")
+        numbers = tuple(pad.number for pad in self.pads)
+        if len(numbers) != len(set(numbers)):
+            raise ValueError(f"{self.package}: pad numbers must be unique")
+
     def pad(self, number: str) -> Pad:
         for pad in self.pads:
             if pad.number == number:
@@ -117,17 +143,94 @@ class Footprint:
         return (height, width) if degrees % 180 == 90 else (width, height)
 
 
+def two_terminal_smd(
+    package: str,
+    description: str,
+    pitch_mm: float,
+    pad_size_mm: tuple[float, float],
+    body_size_mm: tuple[float, float],
+    pin_numbers: Sequence[str],
+) -> Footprint:
+    """Build a symmetric two-terminal chip land pattern."""
+    if len(pin_numbers) != 2:
+        raise ValueError(f"{package}: expected two pin numbers")
+    if pitch_mm <= 0.0 or any(axis <= 0.0 for axis in (*pad_size_mm, *body_size_mm)):
+        raise ValueError(f"{package}: dimensions must be positive")
+    width, height = pad_size_mm
+    pads = (
+        Pad(pin_numbers[0], -pitch_mm / 2.0, 0.0, width, height, RECT),
+        Pad(pin_numbers[1], pitch_mm / 2.0, 0.0, width, height, RECT),
+    )
+    return Footprint(package, description, pads, courtyard_for(pads, body_size_mm))
+
+
+def soic(
+    package: str,
+    description: str,
+    ways: int,
+    row_pitch_mm: float,
+    body_size_mm: tuple[float, float],
+    pin_numbers: Sequence[str],
+    *,
+    pin_pitch_mm: float = 1.27,
+    pad_size_mm: tuple[float, float] = (1.55, 0.60),
+) -> Footprint:
+    """Build an SOIC with counter-clockwise datasheet pin numbering."""
+    if ways <= 0 or ways % 2:
+        raise ValueError(f"{package}: an SOIC needs a positive even pin count")
+    if len(pin_numbers) != ways:
+        raise ValueError(f"{package}: expected {ways} pin numbers")
+    if row_pitch_mm <= 0.0 or pin_pitch_mm <= 0.0:
+        raise ValueError(f"{package}: pitches must be positive")
+    if any(axis <= 0.0 for axis in (*body_size_mm, *pad_size_mm)):
+        raise ValueError(f"{package}: dimensions must be positive")
+
+    per_side = ways // 2
+    span = (per_side - 1) * pin_pitch_mm
+    pad_width, pad_height = pad_size_mm
+    pads: list[Pad] = []
+    for index in range(per_side):
+        number = pin_numbers[index]
+        pads.append(
+            Pad(
+                number,
+                -row_pitch_mm / 2.0,
+                span / 2.0 - index * pin_pitch_mm,
+                pad_width,
+                pad_height,
+                RECT if number == "1" else OBLONG,
+            )
+        )
+    for index in range(per_side):
+        pads.append(
+            Pad(
+                pin_numbers[ways - index - 1],
+                row_pitch_mm / 2.0,
+                span / 2.0 - index * pin_pitch_mm,
+                pad_width,
+                pad_height,
+                OBLONG,
+            )
+        )
+    finished = tuple(pads)
+    return Footprint(
+        package, description, finished, courtyard_for(finished, body_size_mm)
+    )
+
+
 def two_pad_axial(
     package: str,
     description: str,
     pitch: float,
     lead_diameter: float,
     body: tuple[float, float],
-    pin_numbers: tuple[str, str],
+    pin_numbers: Sequence[str],
 ) -> Footprint:
     """Build a leaded part lying flat, with both holes on the X axis."""
     from base import rules
 
+    if len(pin_numbers) != 2:
+        raise ValueError(f"{package}: expected two pin numbers")
     drill = rules.drill_for_lead(lead_diameter)
     pad = rules.pad_for_drill(drill)
     pads = (
@@ -165,7 +268,7 @@ def pin_header(
     pad = rules.pad_for_drill(drill)
     span_x = (rows - 1) * pitch
     span_y = (columns - 1) * pitch
-    pads = []
+    pads: list[Pad] = []
     for column in range(columns):
         for row in range(rows):
             number = column * rows + row + 1

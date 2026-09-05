@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "C-PROTOTYPE",
+  "revision": "D-PROTOTYPE",
   "power": {
     "supply_volts": 5.0,
     "supply_amps": 2.0,

@@ -125,14 +125,14 @@ class GridAlignmentTest(unittest.TestCase):
         self.assertEqual(centres["H8"], (half - offset, half - offset))
         self.assertEqual(centres["A8"], (-half + offset, half - offset))
 
-    def test_expanders_sit_beside_the_quadrant_they_serve(self) -> None:
+    def test_expanders_sit_beside_the_bank_they_serve(self) -> None:
         square_centres = placement.square_centres(self.shared)
         for reference, entry in self.netlist["components"].items():
-            if entry["lib"] != "MCP23017":
+            if entry["lib"] != "TCA9554":
                 continue
             item = self.by_reference[reference]
-            quadrant = entry["extras"]["Quadrant"]
-            first, last = quadrant.split("-")
+            bank = entry["extras"]["Bank"]
+            first, last = bank.split("-")
             centre = tuple(
                 (left + right) / 2.0
                 for left, right in zip(
@@ -142,18 +142,18 @@ class GridAlignmentTest(unittest.TestCase):
             with self.subTest(expander=reference):
                 self.assertEqual(
                     (item.x, item.y),
-                    self.shared.EXPANDER_POSITIONS_BY_QUADRANT_MM[quadrant],
+                    self.shared.EXPANDER_POSITIONS_BY_BANK_MM[bank],
                 )
-                # Preserve the short quadrant fanout and avoid the centre LED.
-                self.assertAlmostEqual(item.x - centre[0], 14.0, places=6)
-                self.assertAlmostEqual(item.y - centre[1], 0.0, places=6)
+                # Preserve the short bank fanout and avoid the centre LED.
+                self.assertAlmostEqual(item.x - centre[0], 0.0, places=6)
+                self.assertAlmostEqual(item.y - centre[1], 2.0, places=6)
 
-    def test_hall_output_traces_stay_short(self) -> None:
-        """The whole reason for four expanders instead of one."""
+    def test_hall_to_expander_centres_stay_local(self) -> None:
+        """Footprint-centre locality, distinct from actual copper lengths."""
         expanders = {
             reference: self.by_reference[reference]
             for reference, entry in self.netlist["components"].items()
-            if entry["lib"] == "MCP23017"
+            if entry["lib"] == "TCA9554"
         }
         sensors = {
             reference: self.by_reference[reference]
@@ -173,7 +173,7 @@ class GridAlignmentTest(unittest.TestCase):
             ) ** 0.5
             worst = max(worst, distance)
         self.assertGreater(worst, 0.0, "no Hall-to-expander pairs found")
-        self.assertLess(worst, 110.0, f"longest Hall run is {worst:.1f} mm")
+        self.assertLess(worst, 65.0, f"largest Hall centre distance is {worst:.1f} mm")
 
 
 if __name__ == "__main__":

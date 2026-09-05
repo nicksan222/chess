@@ -11,10 +11,11 @@ square centres, LED positions and Hall-sensor positions stay symmetric about
 that origin.
 """
 
-from math import isclose
+from math import ceil, isclose
 from types import MappingProxyType
 
-from .components import BUTTON, HALL_SENSOR, MCP23017, OLED_MODULE, SK9822
+from .components import BUTTON, HALL_SENSOR, OLED_MODULE, SK9822, TCA9554
+from .hall_banks import banks
 
 # Unit contract. One Blender unit represents one millimetre in generated files.
 MILLIMETRES_PER_METRE = 1_000.0
@@ -78,26 +79,42 @@ HALL_SENSOR_BODY_MM = HALL_SENSOR_PACKAGE_MM[:2]
 HALL_SENSOR_HEIGHT_MM = HALL_SENSOR_PACKAGE_MM[2]
 HALL_SENSOR_POSITION_MM = (0.0, 0.0)
 HALL_SENSOR_STANDOFF_MM = 0.0
-LED_BYPASS_OFFSET_MM = (0.0, -8.0)
-HALL_BYPASS_OFFSET_MM = (0.0, -3.0)
-
 # Expander package orientation and centres are shared because the CAD proxy must
 # depict the same physical obstructions that PCB placement and routing use.
-_EXPANDER_PACKAGE_MM = MCP23017.require_body_mm()
+_EXPANDER_PACKAGE_MM = TCA9554.require_body_mm()
 EXPANDER_BODY_MM = (
     _EXPANDER_PACKAGE_MM[1],
     _EXPANDER_PACKAGE_MM[0],
     _EXPANDER_PACKAGE_MM[2],
 )
-EXPANDER_POSITIONS_BY_QUADRANT_MM = MappingProxyType(
+HALL_BANKS = banks(GRID_COUNT)
+# Lift the package above the nearest LED row, including its body and a 1 mm gap.
+# This keeps the unchanged horizontal LED links out of the SOIC fanout.
+EXPANDER_OFFSET_MM = (
+    0.0,
+    float(
+        ceil(
+            LED_POSITION_MM[1]
+            - SQUARE_SIZE_MM / 2
+            + LED_PACKAGE_MAX_SIZE_MM[1] / 2
+            + EXPANDER_BODY_MM[1] / 2
+            + 1.0
+        )
+    ),
+)
+EXPANDER_POSITIONS_BY_BANK_MM = MappingProxyType(
     {
-        "A1-D4": (-66.0, -80.0),
-        "E1-H4": (94.0, -80.0),
-        "A5-D8": (-66.0, 80.0),
-        "E5-H8": (94.0, 80.0),
+        bank.label: tuple(
+            a + b
+            for a, b in zip(
+                bank.centre(SQUARE_SIZE_MM, PLAYING_SPAN_MM),
+                EXPANDER_OFFSET_MM,
+                strict=True,
+            )
+        )
+        for bank in HALL_BANKS
     }
 )
-EXPANDER_CAP_OFFSET_MM = (0.0, -12.0)
 
 # --- Printed circuit board --------------------------------------------------
 # One board spans the playing area plus a 40 mm control strip along the front,
@@ -204,7 +221,6 @@ PCB_STRIP_PLACEMENTS_MM = MappingProxyType(
         "C7": (-58.0, -180.0, 0.0),
         "R1": (-50.0, -170.0, 0.0),
         "R2": (-50.0, -176.0, 0.0),
-        "R3": (-19.0, -173.0, 0.0),
         "TP1": (-47.0, -165.0, 0.0),
         "TP2": (-40.0, -165.0, 0.0),
         "TP3": (-33.0, -165.0, 0.0),
@@ -212,7 +228,6 @@ PCB_STRIP_PLACEMENTS_MM = MappingProxyType(
         "TP5": (-19.0, -165.0, 0.0),
         "TP6": (-12.0, -165.0, 0.0),
         "TP7": (-47.0, -196.0, 0.0),
-        "TP8": (-40.0, -196.0, 0.0),
     }
 )
 
@@ -514,9 +529,9 @@ def validate() -> None:
     ):
         raise ValueError("Display window must be smaller than the module behind it")
 
-    if len(EXPANDER_POSITIONS_BY_QUADRANT_MM) != 4:
-        raise ValueError("Board composition must place four GPIO expanders")
-    if len(set(EXPANDER_POSITIONS_BY_QUADRANT_MM.values())) != 4:
+    if len(EXPANDER_POSITIONS_BY_BANK_MM) != 8:
+        raise ValueError("Board composition must place eight GPIO expanders")
+    if len(set(EXPANDER_POSITIONS_BY_BANK_MM.values())) != 8:
         raise ValueError("GPIO expander positions must be unique")
 
     for name, count in (

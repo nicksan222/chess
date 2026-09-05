@@ -16,8 +16,18 @@ if str(PCB_ROOT) not in sys.path:
     sys.path.insert(0, str(PCB_ROOT))
 
 from base import rules, sources
-from base.footprint import RECT, SHAPES
+from base.footprint import RECT, SHAPES, Footprint, Pad
 from components import footprints
+
+
+class InvalidGeometryTest(unittest.TestCase):
+    def test_invalid_geometry_fails_at_definition_time(self):
+        with self.assertRaisesRegex(ValueError, "dimensions must be positive"):
+            Pad("1", 0.0, 0.0, 0.0, 1.0)
+        with self.assertRaisesRegex(ValueError, "drill must fit"):
+            Pad("1", 0.0, 0.0, 1.0, 1.0, drill=1.2)
+        with self.assertRaisesRegex(ValueError, "at least one pad"):
+            Footprint("empty", "invalid", (), (1.0, 1.0))
 
 
 class CoverageTest(unittest.TestCase):
@@ -122,14 +132,14 @@ class GeometryTest(unittest.TestCase):
 
 class RotationTest(unittest.TestCase):
     def test_a_quarter_turn_swaps_the_axes(self) -> None:
-        pad = footprints.for_package("SOIC-28W 1.27 mm").pad("1")
+        pad = footprints.for_package("SOIC-16W 1.27 mm").pad("1")
         turned = pad.rotated(90)
         self.assertAlmostEqual(turned.x, -pad.y, places=4)
         self.assertAlmostEqual(turned.y, pad.x, places=4)
         self.assertAlmostEqual(turned.width, pad.height, places=4)
 
     def test_no_rotation_returns_the_same_pad(self) -> None:
-        pad = footprints.for_package("SOIC-28W 1.27 mm").pad("1")
+        pad = footprints.for_package("SOIC-16W 1.27 mm").pad("1")
         self.assertIs(pad.rotated(0), pad)
 
     def test_courtyard_turns_with_the_part(self) -> None:
@@ -148,7 +158,7 @@ class ExtraPadTest(unittest.TestCase):
         self.assertEqual({pad.net_number for pad in tactile.pads}, {"1", "2"})
 
     def test_a_plain_pin_number_is_its_own_net_number(self) -> None:
-        for pad in footprints.for_package("SOIC-28W 1.27 mm").pads:
+        for pad in footprints.for_package("SOIC-16W 1.27 mm").pads:
             self.assertEqual(pad.net_number, pad.number)
 
 

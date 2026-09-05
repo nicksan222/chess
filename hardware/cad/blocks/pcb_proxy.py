@@ -15,7 +15,7 @@ from core import dimensions as shared
 from core import materials, modeling
 
 EXPANDER_BODY_MM = shared.EXPANDER_BODY_MM
-EXPANDER_POSITIONS_MM = tuple(shared.EXPANDER_POSITIONS_BY_QUADRANT_MM.values())
+EXPANDER_POSITIONS_MM = tuple(shared.EXPANDER_POSITIONS_BY_BANK_MM.values())
 
 
 def create_materials() -> dict[str, bpy.types.Material]:
@@ -105,7 +105,7 @@ def _add_expanders(
             collection,
         )
         chip.data.materials.append(palette["body"])
-        chip["purpose"] = "SMD MCP23017, one per board quadrant"
+        chip["purpose"] = "SMD TCA9554, one per compact 2x4 Hall bank"
 
 
 def _add_host(

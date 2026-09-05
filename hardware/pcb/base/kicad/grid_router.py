@@ -1,7 +1,7 @@
-"""Deterministic multilayer orthogonal router for the repeated board grid.
+"""Deterministic multilayer path search and native track/via creation.
 
 This is intentionally conservative: raster cells are blocked by copper plus the
-full board clearance. Through-via sites are kept clear on every routed layer.
+full board clearance. Through-via sites are kept clear across all copper layers.
 KiCad remains authoritative and checks the resulting exact geometry.
 """
 
@@ -11,125 +11,73 @@ import heapq
 import math
 from dataclasses import dataclass
 from itertools import pairwise
+from typing import TypedDict
 
 from base import rules
 from base.kicad.api import pcbnew
+from base.kicad.routing_grid import (
+    GRID_MM,
+    TRACK_KEEP_OUT_MM,
+    TRACK_MM,
+    VIA_KEEP_OUT_MM,
+)
+from base.kicad.routing_grid import (
+    blocked_cells as _blocked,
+)
+from base.kicad.routing_grid import (
+    cell as _cell,
+)
+from base.kicad.routing_grid import (
+    mm as _mm,
+)
+from base.kicad.routing_grid import (
+    position as _position,
+)
 
-# Fine enough to escape 1.27 mm SOIC pitch while retaining conservative clearance.
-GRID_MM = 0.25
-TRACK_MM = rules.TRACE_WIDTH_MM
-KEEP_OUT_MM = rules.CLEARANCE_MM + TRACK_MM / 2 + 0.02
+# Preserve the original module entry points while implementations live nearby.
+__all__ = [
+    "GRID_MM",
+    "LAYERS",
+    "TRACK_KEEP_OUT_MM",
+    "TRACK_MM",
+    "VIA_KEEP_OUT_MM",
+    "Route",
+    "RoutingOptions",
+    "apply_route",
+    "find_route",
+]
+
+
 LAYERS = (pcbnew.F_Cu, pcbnew.B_Cu)
 
 
-def _mm(value: int) -> float:
-    return pcbnew.ToMM(value)
+class RoutingOptions(TypedDict, total=False):
+    """Typed search-policy keywords shared by native subsystem routing stages.
 
+    Via keepouts are deliberately absent: the board-level routing boundary owns
+    those, rather than allowing individual stages to bypass header protection.
+    """
 
-def _cell(position: pcbnew.VECTOR2I) -> tuple[int, int]:
-    return (round(_mm(position.x) / GRID_MM), round(_mm(position.y) / GRID_MM))
-
-
-def _position(cell: tuple[int, int]) -> pcbnew.VECTOR2I:
-    return pcbnew.VECTOR2I(
-        pcbnew.FromMM(cell[0] * GRID_MM), pcbnew.FromMM(cell[1] * GRID_MM)
-    )
-
-
-def _blocked(
-    board: pcbnew.BOARD,
-    netcode: int,
-    bounds: tuple[int, int, int, int],
-    layers: tuple[int, ...],
-    additional_via_keepouts: frozenset[tuple[int, int]],
-):
-    x0, y0, x1, y1 = bounds
-    blocked = {layer: set() for layer in layers}
-    via_forbidden = set(additional_via_keepouts)
-
-    def mark_circle(position, radius, target_layers):
-        centre_x, centre_y = _mm(position.x), _mm(position.y)
-        reach = radius + KEEP_OUT_MM
-        left = math.floor((centre_x - reach) / GRID_MM)
-        right = math.ceil((centre_x + reach) / GRID_MM)
-        top = math.floor((centre_y - reach) / GRID_MM)
-        bottom = math.ceil((centre_y + reach) / GRID_MM)
-        for layer in target_layers:
-            cells = blocked[layer]
-            for ix in range(max(x0, left), min(x1, right) + 1):
-                for iy in range(max(y0, top), min(y1, bottom) + 1):
-                    dx = ix * GRID_MM - centre_x
-                    dy = iy * GRID_MM - centre_y
-                    if dx * dx + dy * dy <= reach * reach:
-                        cells.add((ix, iy))
-
-    def mark_box(box, target_layers, extra=KEEP_OUT_MM):
-        left = math.floor((_mm(box.GetLeft()) - extra) / GRID_MM)
-        right = math.ceil((_mm(box.GetRight()) + extra) / GRID_MM)
-        top = math.floor((_mm(box.GetTop()) - extra) / GRID_MM)
-        bottom = math.ceil((_mm(box.GetBottom()) + extra) / GRID_MM)
-        for layer in target_layers:
-            cells = blocked[layer]
-            for ix in range(max(x0, left), min(x1, right) + 1):
-                for iy in range(max(y0, top), min(y1, bottom) + 1):
-                    cells.add((ix, iy))
-
-    for footprint in board.GetFootprints():
-        for pad in footprint.Pads():
-            if pad.GetAttribute() in {pcbnew.PAD_ATTRIB_PTH, pcbnew.PAD_ATTRIB_NPTH}:
-                box = pad.GetBoundingBox()
-                left = math.floor((_mm(box.GetLeft()) - 0.25) / GRID_MM)
-                right = math.ceil((_mm(box.GetRight()) + 0.25) / GRID_MM)
-                top = math.floor((_mm(box.GetTop()) - 0.25) / GRID_MM)
-                bottom = math.ceil((_mm(box.GetBottom()) + 0.25) / GRID_MM)
-                for ix in range(max(x0, left), min(x1, right) + 1):
-                    for iy in range(max(y0, top), min(y1, bottom) + 1):
-                        via_forbidden.add((ix, iy))
-            # Same-net copper is a valid destination/tree. NPTH holes have no net
-            # and must always remain clear on both outer layers.
-            if pad.GetNetCode() == netcode and netcode != 0:
-                continue
-            copper_layers = [layer for layer in layers if pad.IsOnLayer(layer)]
-            if pad.GetAttribute() == pcbnew.PAD_ATTRIB_NPTH:
-                copper_layers = list(layers)
-            if copper_layers:
-                if pad.GetShape() == pcbnew.PAD_SHAPE_CIRCLE:
-                    size = pad.GetSize()
-                    mark_circle(
-                        pad.GetPosition(),
-                        max(_mm(size.x), _mm(size.y)) / 2,
-                        copper_layers,
-                    )
-                else:
-                    mark_box(pad.GetBoundingBox(), copper_layers)
-
-    for track in board.GetTracks():
-        if track.GetNetCode() == netcode and netcode != 0:
-            continue
-        box = track.GetBoundingBox()
-        left = math.floor((_mm(box.GetLeft()) - KEEP_OUT_MM) / GRID_MM)
-        right = math.ceil((_mm(box.GetRight()) + KEEP_OUT_MM) / GRID_MM)
-        top = math.floor((_mm(box.GetTop()) - KEEP_OUT_MM) / GRID_MM)
-        bottom = math.ceil((_mm(box.GetBottom()) + KEEP_OUT_MM) / GRID_MM)
-        for ix in range(max(x0, left), min(x1, right) + 1):
-            for iy in range(max(y0, top), min(y1, bottom) + 1):
-                via_forbidden.add((ix, iy))
-        if isinstance(track, pcbnew.PCB_VIA):
-            mark_box(track.GetBoundingBox(), layers)
-        elif track.GetLayer() in layers:
-            mark_box(track.GetBoundingBox(), (track.GetLayer(),))
-    return blocked, via_forbidden
+    margin_mm: float
+    preferred_layer_index: int | None
+    required_end_layer_index: int | None
+    allow_vias: bool
+    layers: tuple[int, ...]
+    diagonals: bool
+    routing_bounds_mm: tuple[float, float, float, float] | None
 
 
 @dataclass(frozen=True)
 class Route:
+    """Simplified raster points with layer indices, not native KiCad layer IDs."""
+
     points: tuple[tuple[int, int, int], ...]
     layers: tuple[int, ...]
 
 
 def find_route(
     board: pcbnew.BOARD,
-    net,
+    net: pcbnew.NETINFO_ITEM,
     start: pcbnew.VECTOR2I,
     end: pcbnew.VECTOR2I,
     margin_mm: float = 150.0,
@@ -139,8 +87,15 @@ def find_route(
     layers: tuple[int, ...] = LAYERS,
     diagonals: bool = False,
     additional_via_keepouts: frozenset[tuple[int, int]] = frozenset(),
+    routing_bounds_mm: tuple[float, float, float, float] | None = None,
 ) -> Route:
-    """Find a path whose point layers are indices into ``layers``."""
+    """Find a path whose point layers are indices into ``layers``.
+
+    ``routing_bounds_mm`` is an absolute KiCad-coordinate rectangle ordered
+    (left, top, right, bottom), with Y increasing downward. It limits track
+    centre lines (including exact endpoint stubs), not the full copper width.
+    Board-edge restrictions additionally reserve clearance for tracks and vias.
+    """
     if not layers:
         raise ValueError("at least one routing layer is required")
     for label, index in (
@@ -150,15 +105,45 @@ def find_route(
         if index is not None and not 0 <= index < len(layers):
             raise ValueError(f"{label} layer index {index} is outside {layers}")
 
+    # Check exact endpoints before snapping: a legal cell can hide an illegal stub.
     start_cell, end_cell = _cell(start), _cell(end)
     margin = round(margin_mm / GRID_MM)
     edge = board.GetBoardEdgesBoundingBox()
     inset = rules.POUR_TO_OUTLINE_MM + TRACK_MM / 2
+    exact_bounds = (
+        _mm(edge.GetLeft()) + inset,
+        _mm(edge.GetTop()) + inset,
+        _mm(edge.GetRight()) - inset,
+        _mm(edge.GetBottom()) - inset,
+    )
+    if routing_bounds_mm is not None:
+        left, top, right, bottom = routing_bounds_mm
+        exact_bounds = (
+            max(exact_bounds[0], left),
+            max(exact_bounds[1], top),
+            min(exact_bounds[2], right),
+            min(exact_bounds[3], bottom),
+        )
+    left, top, right, bottom = exact_bounds
+    if left > right or top > bottom:
+        raise ValueError(f"empty routing bounds: {exact_bounds}")
+    for label, endpoint in (("start", start), ("end", end)):
+        if not (left <= _mm(endpoint.x) <= right and top <= _mm(endpoint.y) <= bottom):
+            raise ValueError(
+                f"{label} endpoint is outside routing bounds {exact_bounds}"
+            )
     board_bounds = (
-        math.ceil((_mm(edge.GetLeft()) + inset) / GRID_MM),
-        math.ceil((_mm(edge.GetTop()) + inset) / GRID_MM),
-        math.floor((_mm(edge.GetRight()) - inset) / GRID_MM),
-        math.floor((_mm(edge.GetBottom()) - inset) / GRID_MM),
+        math.ceil(left / GRID_MM),
+        math.ceil(top / GRID_MM),
+        math.floor(right / GRID_MM),
+        math.floor(bottom / GRID_MM),
+    )
+    via_inset = rules.POUR_TO_OUTLINE_MM + rules.VIA_PAD_MM / 2
+    via_bounds = (
+        math.ceil((_mm(edge.GetLeft()) + via_inset) / GRID_MM),
+        math.ceil((_mm(edge.GetTop()) + via_inset) / GRID_MM),
+        math.floor((_mm(edge.GetRight()) - via_inset) / GRID_MM),
+        math.floor((_mm(edge.GetBottom()) - via_inset) / GRID_MM),
     )
     bounds = (
         max(board_bounds[0], min(start_cell[0], end_cell[0]) - margin),
@@ -166,6 +151,15 @@ def find_route(
         min(board_bounds[2], max(start_cell[0], end_cell[0]) + margin),
         min(board_bounds[3], max(start_cell[1], end_cell[1]) + margin),
     )
+    if bounds[0] > bounds[2] or bounds[1] > bounds[3]:
+        raise ValueError(f"empty routing cell bounds: {bounds}")
+    for label, cell in (("start", start_cell), ("end", end_cell)):
+        if not (
+            bounds[0] <= cell[0] <= bounds[2] and bounds[1] <= cell[1] <= bounds[3]
+        ):
+            raise ValueError(
+                f"snapped {label} endpoint is outside routing cell bounds {bounds}"
+            )
     blocked, via_forbidden = _blocked(
         board,
         net.GetNetCode(),
@@ -189,10 +183,12 @@ def find_route(
         else (required_end_layer_index,)
     )
     targets = {(end_cell[0], end_cell[1], layer) for layer in target_layers}
+    # Serial numbers preserve neighbour order when A* scores tie. Via changes cost
+    # more than planar steps so the search prefers staying on the current layer.
     queue: list[tuple[int, int, tuple[int, int, int]]] = []
     serial = 0
-    distance = {}
-    previous = {}
+    distance: dict[tuple[int, int, int], int] = {}
+    previous: dict[tuple[int, int, int], tuple[int, int, int]] = {}
     for node in starts:
         distance[node] = 0
         heuristic = abs(node[0] - end_cell[0]) + abs(node[1] - end_cell[1])
@@ -244,7 +240,12 @@ def find_route(
             # A through via needs clearance on its source and destination. The
             # layer-independent via_forbidden map covers copper on other layers.
             if nl != layer_index and (
-                cell in blocked[layers[layer_index]] or cell in via_forbidden
+                cell in blocked[layers[layer_index]]
+                or cell in via_forbidden
+                or not (
+                    via_bounds[0] <= nx <= via_bounds[2]
+                    and via_bounds[1] <= ny <= via_bounds[3]
+                )
             ):
                 continue
             candidate = (nx, ny, nl)
@@ -275,13 +276,19 @@ def find_route(
     return Route(tuple(simple), layers)
 
 
-def apply_route(board: pcbnew.BOARD, net, start, end, route: Route) -> None:
+def apply_route(
+    board: pcbnew.BOARD,
+    net: pcbnew.NETINFO_ITEM,
+    start: pcbnew.VECTOR2I,
+    end: pcbnew.VECTOR2I,
+    route: Route,
+) -> None:
     """Materialize a raster route as exact KiCad tracks and vias."""
     points = list(route.points)
     first = _position(points[0][:2])
     last = _position(points[-1][:2])
 
-    def trace(a, b, layer_index):
+    def trace(a: pcbnew.VECTOR2I, b: pcbnew.VECTOR2I, layer_index: int) -> None:
         if a == b:
             return
         item = pcbnew.PCB_TRACK(board)

@@ -9,6 +9,8 @@ This directory is the tool-independent contract between hardware domains.
 - `components.py` is the approved-parts catalog: manufacturer, exact MPN,
   package, body metadata, and datasheet links, plus the
   `ComponentImplementation` base class for tool-specific representations.
+- `hall_banks.py` owns compact bank membership, P-port order, labels, and address
+  straps; dimensions and wiring consume it.
 - `wiring.py` owns net names, host GPIO assignments, square-to-sensor mapping,
   and LED chain order.
 

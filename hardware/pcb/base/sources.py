@@ -1,52 +1,104 @@
-"""Read shared contracts and the design contract's generated netlist.
-
-The shared package deliberately has no CAD, EDA, or PCB dependency, so future
-KiCad and other domain adapters can consume the same definitions.
-"""
+"""Typed access to shared definitions and the reviewed board contract."""
 
 from __future__ import annotations
 
-import importlib
 import json
-import sys
+from collections.abc import Mapping
 from pathlib import Path
-from types import ModuleType
+from typing import Protocol
+
+from base.validation import is_string_mapping
+from shared import dimensions as shared_dimensions
+from shared import wiring as shared_wiring
 
 PCB_ROOT = Path(__file__).resolve().parents[1]
 HARDWARE_ROOT = PCB_ROOT.parent
 REPOSITORY_ROOT = HARDWARE_ROOT.parent
-
 NETLIST_PATH = PCB_ROOT / "board" / "netlist.json"
-
 PROJECT_NAME = "board"
 
 
-def _shared(module: str) -> ModuleType:
-    if str(HARDWARE_ROOT) not in sys.path:
-        sys.path.insert(0, str(HARDWARE_ROOT))
-    return importlib.import_module(f"shared.{module}")
+class DimensionsSource(Protocol):
+    """Read-only mechanical values consumed by PCB placement and markings."""
+
+    @property
+    def GRID_COUNT(self) -> int: ...
+
+    @property
+    def SQUARE_SIZE_MM(self) -> float: ...
+
+    @property
+    def PLAYING_SPAN_MM(self) -> float: ...
+
+    @property
+    def LED_POSITION_MM(self) -> tuple[float, float]: ...
+
+    @property
+    def BOARD_SQUARE_CENTERS_MM(
+        self,
+    ) -> tuple[tuple[int, int, float, float], ...]: ...
+
+    @property
+    def PCB_SUPPORT_POSITIONS_MM(self) -> tuple[tuple[float, float], ...]: ...
+
+    @property
+    def PANEL_BUTTON_POSITIONS_MM(self) -> tuple[tuple[float, float], ...]: ...
+
+    @property
+    def PANEL_ORIGIN_Y_MM(self) -> float: ...
+
+    @property
+    def PI_BAY_CENTER_MM(self) -> tuple[float, float]: ...
+
+    @property
+    def PI_HEADER_ROTATION_DEG(self) -> float: ...
+
+    @property
+    def EXPANDER_POSITIONS_BY_BANK_MM(
+        self,
+    ) -> Mapping[str, tuple[float, ...]]: ...
+
+    @property
+    def PCB_STRIP_PLACEMENTS_MM(
+        self,
+    ) -> Mapping[str, tuple[float, ...]]: ...
 
 
-def dimensions() -> ModuleType:
-    """The shared mechanical envelope and feature positions."""
-    return _shared("dimensions")
+class WiringNamesSource(Protocol):
+    @property
+    def BUTTON_NAMES(self) -> tuple[str, ...]: ...
+
+    @property
+    def FILES(self) -> str: ...
 
 
-def names() -> ModuleType:
-    """The shared wiring assignment, net names, and host lines."""
-    return _shared("wiring")
+def dimensions() -> DimensionsSource:
+    return shared_dimensions
 
 
-def netlist() -> dict:
-    """The reviewed source connectivity for the board project."""
+def names() -> WiringNamesSource:
+    return shared_wiring
+
+
+def _string_mapping(value: object, *, label: str) -> Mapping[str, object]:
+    if not is_string_mapping(value):
+        raise ValueError(f"{label} must be an object with string keys")
+    return value
+
+
+def netlist() -> Mapping[str, object]:
+    """Load the JSON contract while containing its untyped data at this boundary."""
     if not NETLIST_PATH.is_file():
         raise RuntimeError(
             f"{NETLIST_PATH} is missing. The PCB connectivity contract is required."
         )
-    published = json.loads(NETLIST_PATH.read_text())
-    if published.get("schema") != 1:
-        raise RuntimeError(f"Unsupported netlist schema {published.get('schema')}")
-    projects = published["projects"]
-    if PROJECT_NAME not in projects:
-        raise RuntimeError(f"Netlist has no {PROJECT_NAME!r} project")
-    return projects[PROJECT_NAME]
+    published: object = json.loads(NETLIST_PATH.read_text())
+    root = _string_mapping(published, label="netlist")
+    if root.get("schema") != 1:
+        raise RuntimeError(f"Unsupported netlist schema {root.get('schema')}")
+    projects = _string_mapping(root.get("projects"), label="netlist projects")
+    try:
+        project = projects[PROJECT_NAME]
+    except KeyError as error:
+        raise RuntimeError(f"Netlist has no {PROJECT_NAME!r} project") from error
+    return _string_mapping(project, label=f"{PROJECT_NAME} project")

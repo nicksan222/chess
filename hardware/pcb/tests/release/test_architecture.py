@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ast
+import subprocess
 import sys
 import unittest
 from pathlib import Path
@@ -44,13 +45,53 @@ class DependencyBoundaryTest(unittest.TestCase):
                     offenders.append(path.relative_to(PCB_ROOT))
         self.assertEqual(offenders, [])
 
-    def test_domain_model_import_does_not_require_kicad(self) -> None:
-        from base.design import BoardDesign
-        from board import definition as board_definition
+    def test_domain_and_hall_contract_tests_run_without_kicad(self) -> None:
+        # A fresh process prevents cached native modules from hiding dependencies.
+        script = """
+import importlib.abc
+import sys
+import unittest
 
-        design = board_definition.load()
-        self.assertIsInstance(design, BoardDesign)
-        self.assertGreater(len(design.components), 0)
+class NoKiCad(importlib.abc.MetaPathFinder):
+    def find_spec(self, fullname, path=None, target=None):
+        if fullname == "pcbnew":
+            raise ModuleNotFoundError("KiCad deliberately unavailable", name=fullname)
+
+sys.meta_path.insert(0, NoKiCad())
+from base.design import BoardDesign
+from base.schematic import render
+from base.schematic_symbols import render_symbol_library
+from board import definition
+design = definition.load()
+assert isinstance(design, BoardDesign)
+schematic = render(design)
+assert schematic.startswith("(kicad_sch")
+assert render_symbol_library(schematic).startswith("(kicad_symbol_lib")
+
+from test_hall_banks import HallBankContractTest, HallBankCopperTest
+from test_schematic_connectivity import SchematicConnectivityTest
+suite = unittest.TestSuite(
+    unittest.defaultTestLoader.loadTestsFromTestCase(test_class)
+    for test_class in (HallBankContractTest, HallBankCopperTest, SchematicConnectivityTest)
+)
+result = unittest.TextTestRunner().run(suite)
+assert result.wasSuccessful()
+assert len(result.skipped) == 2, result.skipped
+assert result.testsRun > len(result.skipped)
+"""
+        paths = (PCB_ROOT, PCB_ROOT.parent, PCB_ROOT / "tests")
+        completed = subprocess.run(
+            [
+                sys.executable,
+                "-B",
+                "-c",
+                f"import sys; sys.path[:0] = {list(map(str, paths))!r}\n" + script,
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
 
 
 if __name__ == "__main__":

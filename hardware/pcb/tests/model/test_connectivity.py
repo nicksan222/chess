@@ -82,6 +82,41 @@ class ConnectionGraphTest(unittest.TestCase):
         self.assertEqual(tuple(sorted(self.graph.names)), self.graph.names)
         self.assertEqual(len(self.graph.names), len(set(self.graph.names)))
 
+    def test_duplicate_final_names_are_rejected(self) -> None:
+        hall = HallSensor("HS1")
+        for first_name, second_name in (("SUPPLY", "SUPPLY"), ("N$2", None)):
+            with self.subTest(first_name=first_name, second_name=second_name):
+                builder = connectivity.CircuitBuilder()
+                builder.connect(hall.pin(HallSensorPin.SUPPLY), name=first_name)
+                builder.connect(hall.pin(HallSensorPin.GROUND), name=second_name)
+                with self.assertRaisesRegex(ValueError, "duplicate connection name"):
+                    builder.build()
+
+    def test_unique_named_groups_remain_separate(self) -> None:
+        hall = HallSensor("HS1")
+        graph = (
+            connectivity.CircuitBuilder()
+            .connect(hall.pin(HallSensorPin.SUPPLY), name="SUPPLY")
+            .connect(hall.pin(HallSensorPin.GROUND), name="GROUND")
+            .build()
+        )
+        self.assertEqual(graph.names, ("GROUND", "SUPPLY"))
+        self.assertEqual(graph.peers(hall.endpoint(HallSensorPin.SUPPLY)), ())
+
+    def test_serialized_duplicate_names_are_rejected(self) -> None:
+        connections = copy.deepcopy(self.contract["connections"])
+        connections[1]["name"] = connections[0]["name"]
+        with self.assertRaisesRegex(ValueError, "duplicate connection name"):
+            connectivity.ConnectionGraph.from_contract(connections, self.placements)
+
+    def test_named_nets_are_the_projection_of_authoritative_connections(self) -> None:
+        expected = {
+            connection["name"]: connection["pads"]
+            for connection in self.contract["connections"]
+            if connection["name"] is not None
+        }
+        self.assertEqual(self.contract["nets"], expected)
+
     def test_duplicate_endpoint_is_rejected(self) -> None:
         connections = copy.deepcopy(self.contract["connections"])
         connections[1]["pads"].append(connections[0]["pads"][0])

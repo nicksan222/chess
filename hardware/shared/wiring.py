@@ -6,20 +6,17 @@ parallel naming and mapping decisions.
 
 from __future__ import annotations
 
-from .dimensions import GRID_COUNT
+from .dimensions import GRID_COUNT, HALL_BANKS
+from .hall_banks import FILES, square
 
-FILES = "ABCDEFGH"
 GRID = 2.54
 
 # --- I2C bus ----------------------------------------------------------------
-# Four expanders, one per 4x4 quadrant, plus the display. A2 is always grounded
-# and A1/A0 encode the quadrant index, so the addresses run consecutively.
-EXPANDER_COUNT = 4
-EXPANDER_BASE_ADDRESS = 0x20
+# Eight compact Hall banks share the bus with the display. Acquisition is polled.
+EXPANDER_COUNT = len(HALL_BANKS)
 OLED_ADDRESS = 0x3C
 SDA_NET = "I2C_SDA"
 SCL_NET = "I2C_SCL"
-SENSE_IRQ_NET = "SENSE_IRQ"
 
 # --- LED chain --------------------------------------------------------------
 # The Pi drives 3.3 V SPI into a buffer; the chain itself runs at 5 V.
@@ -52,21 +49,15 @@ BUTTON_NAMES = tuple(BUTTON_GPIO)
 # --- Pi line assignment -----------------------------------------------------
 SDA_GPIO = 2
 SCL_GPIO = 3
-SENSE_IRQ_GPIO = 4
 SPI_DATA_GPIO = 10
 SPI_CLOCK_GPIO = 11
 ASSIGNED_GPIO = (
     SDA_GPIO,
     SCL_GPIO,
-    SENSE_IRQ_GPIO,
     SPI_DATA_GPIO,
     SPI_CLOCK_GPIO,
     *BUTTON_GPIO.values(),
 )
-
-
-def square(file_index: int, rank: int) -> str:
-    return f"{FILES[file_index]}{rank + 1}"
 
 
 def parse_square(name: str) -> tuple[int, int]:
@@ -88,43 +79,25 @@ def button_net(name: str) -> str:
 
 
 def expander_address(index: int) -> int:
-    return EXPANDER_BASE_ADDRESS + index
+    return HALL_BANKS[index].address
 
 
 def expander_straps(index: int) -> tuple[bool, bool, bool]:
-    """A0, A1, A2 strap levels. True means tied to 3.3 V."""
-    return (bool(index & 1), bool(index & 2), False)
+    return HALL_BANKS[index].straps
 
 
 def expander_of(file_index: int, rank: int) -> tuple[int, int]:
-    """Which expander reads a square, and which of its sixteen pins.
-
-    Quadrants keep every sensor trace short on a 320 mm board: an expander sits at
-    the centre of the sixteen squares it serves. Pins 0-7 are port A, the lower
-    two ranks of the quadrant, and 8-15 are port B, the upper two.
-    """
-    index = (rank // 4) * 2 + (file_index // 4)
-    pin = (rank % 4) * 4 + (file_index % 4)
-    return index, pin
-
-
-def expander_quadrant(index: int) -> str:
-    """The square range an expander covers, for labelling the sheet."""
-    first_file = (index % 2) * 4
-    first_rank = (index // 2) * 4
-    return f"{square(first_file, first_rank)}-{square(first_file + 3, first_rank + 3)}"
+    """Bank and P0–P7 channel owning this square."""
+    for bank in HALL_BANKS:
+        if (file_index, rank) in bank.members:
+            return bank.index, bank.members.index((file_index, rank))
+    raise ValueError(f"invalid square coordinates {(file_index, rank)}")
 
 
 def expander_squares(index: int) -> list[tuple[int, str]]:
-    """Every square an expander reads, ordered by its own pin number."""
-    found: list[tuple[int, str]] = []
-    for rank in range(GRID_COUNT):
-        for file_index in range(GRID_COUNT):
-            owner, pin = expander_of(file_index, rank)
-            if owner == index:
-                found.append((pin, square(file_index, rank)))
-    found.sort()
-    return found
+    return [
+        (pin, square(*member)) for pin, member in enumerate(HALL_BANKS[index].members)
+    ]
 
 
 def led_chain_order() -> list[tuple[str, int, int]]:

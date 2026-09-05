@@ -15,8 +15,9 @@ for path in (PCB_ROOT, HARDWARE_ROOT):
     sys.path.insert(0, str(path))
 
 from base.kicad.api import pcbnew
+from board import artifacts
 
-BOARD_PATH = PCB_ROOT / "generated/chess-board.kicad_pcb"
+BOARD_PATH = artifacts.BOARD
 OUTPUT_PATH = REPOSITORY_ROOT / "apps/firmware/src/generated_pins.rs"
 HOST_HEADER_REFERENCE = "J1"
 
@@ -117,6 +118,9 @@ impl RaspberryPiPin for Gpio{pin.bcm} {{
 }}"""
         )
 
+    definition_block = "\n\n".join(definitions)
+    if definitions:
+        definition_block += "\n"
     return f"""// @generated from pcbnew's native board model; do not edit.
 
 /// A Raspberry Pi GPIO that the native PCB connects.
@@ -131,7 +135,7 @@ pub trait RaspberryPiPin {{
     const HEADER_PIN: u8;
 }}
 
-{chr(10).join(f"{definition}{chr(10)}" for definition in definitions)}"""
+{definition_block}"""
 
 
 def main() -> None:
@@ -148,7 +152,7 @@ def main() -> None:
     if arguments.check:
         if current != expected:
             raise SystemExit(
-                "firmware pins are stale; run `just --justfile hardware/pcb/justfile generate`"
+                "firmware pins are stale; run `just --justfile hardware/pcb/justfile pins`"
             )
         return
     OUTPUT_PATH.write_text(expected)

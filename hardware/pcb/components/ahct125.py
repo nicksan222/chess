@@ -1,29 +1,34 @@
-"""SN74AHCT125 quad level-shifting buffer U5."""
+"""PCB specialization of the SN74AHCT125 level shifter."""
 
-from enum import StrEnum
-
-from base.component import BoardComponent, ComponentReference
-
-
-class Ahct125Pin(StrEnum):
-    BUFFER_1_OUTPUT_ENABLE = "1"
-    BUFFER_1_INPUT = "2"
-    BUFFER_1_OUTPUT = "3"
-    BUFFER_2_OUTPUT_ENABLE = "4"
-    BUFFER_2_INPUT = "5"
-    BUFFER_2_OUTPUT = "6"
-    GROUND = "7"
-    BUFFER_3_OUTPUT = "8"
-    BUFFER_3_INPUT = "9"
-    BUFFER_3_OUTPUT_ENABLE = "10"
-    BUFFER_4_OUTPUT = "11"
-    BUFFER_4_INPUT = "12"
-    BUFFER_4_OUTPUT_ENABLE = "13"
-    SUPPLY = "14"
+from base.component import ComponentReference
+from base.footprint import Footprint, soic
+from shared.electronics.ahct125 import Ahct125Component, Ahct125Pin
 
 
-class Ahct125(BoardComponent[Ahct125Pin]):
-    pin_type = Ahct125Pin
+class Ahct125(Ahct125Component):
+    """Own the U5 land pattern and dense-pin routing escape."""
+
+    SIGNAL_ESCAPE_HORIZONTAL = True
+    POWER_ESCAPE_MM = 1.2
+    POWER_ESCAPE_HORIZONTAL = True
+    FOOTPRINT = soic(
+        "SOIC-14 1.27 mm",
+        "SN74AHCT125DR narrow SOIC",
+        14,
+        5.40,
+        (6.2, 8.7),
+        tuple(Ahct125Pin),
+    )
+
+    def footprint_for(self, package: str) -> Footprint:
+        if package != self.FOOTPRINT.package:
+            raise KeyError(f"{self.reference}: unsupported package {package!r}")
+        return self.FOOTPRINT
+
+    @staticmethod
+    def signal_escape_distance_mm(pin_number: str) -> float:
+        return 2.0 + (int(pin_number) - 1) % 4
 
 
 LED_LEVEL_SHIFTER = Ahct125(ComponentReference.LED_LEVEL_SHIFTER)
+AHCT125_SOIC = Ahct125.FOOTPRINT

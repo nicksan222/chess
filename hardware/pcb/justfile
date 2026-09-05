@@ -32,7 +32,11 @@ generate: doctor
     cd "{{ root }}" && python3 hardware/pcb/generate.py
     cd "{{ root }}" && python3 hardware/pcb/configure_project.py
 
-# Verify generated firmware pins against the board.
+# Write firmware GPIO markers from the regenerated native board.
+pins: generate
+    cd "{{ root }}" && python3 hardware/pcb/generate_firmware_pins.py
+
+# Verify generated firmware pins against the board without silently updating them.
 pins-check: generate
     cd "{{ root }}" && python3 hardware/pcb/generate_firmware_pins.py --check
 

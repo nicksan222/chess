@@ -12,7 +12,6 @@ from .capacitor import Capacitor, CapacitorPin
 from .catalog import for_netlist_entry, known_part_keys
 from .fuse import INPUT_FUSE, Fuse, FusePin
 from .hall_sensor import HallSensor, HallSensorPin
-from .mcp23017 import Mcp23017, Mcp23017Pin
 from .oled_header import DISPLAY_HEADER, OledHeader, OledHeaderPin
 from .power_switch import MAIN_POWER_SWITCH, PowerSwitch, PowerSwitchPin
 from .raspberry_pi_header import (
@@ -23,6 +22,7 @@ from .raspberry_pi_header import (
 from .resistor import Resistor, ResistorPin
 from .sk9822 import Sk9822, Sk9822Pin
 from .tactile_switch import TactileSwitch, TactileSwitchPad, TactileSwitchPin
+from .tca9554 import Tca9554, Tca9554Pin
 from .test_point import TestPoint, TestPointPin
 from .tvs_diode import INPUT_TVS, TvsDiode, TvsDiodePin
 
@@ -49,8 +49,6 @@ __all__ = [
     "FusePin",
     "HallSensor",
     "HallSensorPin",
-    "Mcp23017",
-    "Mcp23017Pin",
     "OledHeader",
     "OledHeaderPin",
     "PowerSwitch",
@@ -64,6 +62,8 @@ __all__ = [
     "TactileSwitch",
     "TactileSwitchPad",
     "TactileSwitchPin",
+    "Tca9554",
+    "Tca9554Pin",
     "TestPoint",
     "TestPointPin",
     "TvsDiode",

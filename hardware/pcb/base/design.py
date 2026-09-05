@@ -6,9 +6,10 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from types import MappingProxyType
 
-from base.component import BoardComponent, ComponentPin
+from base.component import BoundPin, EndpointResolver
 from base.connectivity import ConnectionGraph
 from base.placement import Placement
+from base.validation import is_string_mapping
 
 
 @dataclass(frozen=True)
@@ -36,8 +37,8 @@ class ComponentSpec:
             return value
 
         extras = entry.get("extras")
-        if not isinstance(extras, Mapping):
-            raise ValueError(f"{reference}: component extras must be a mapping")
+        if not is_string_mapping(extras):
+            raise ValueError(f"{reference}: component extras must have string keys")
         return cls(
             reference=reference,
             part_key=text("part_key"),
@@ -54,15 +55,25 @@ class ComponentInstance:
     """One product, its typed pinout, metadata, and physical placement."""
 
     spec: ComponentSpec
-    model: BoardComponent
+    model: EndpointResolver
     placement: Placement
 
     @property
     def reference(self) -> str:
         return self.spec.reference
 
+    def model_as[Model: EndpointResolver](self, model_type: type[Model]) -> Model:
+        """Require a specific product before using its semantic pin operations.
+
+        The board aggregate holds heterogeneous models. Routing should narrow a
+        model through this checked accessor, never cast it to a convenient type.
+        """
+        if not isinstance(self.model, model_type):
+            raise ValueError(f"{self.reference}: expected {model_type.__name__}")
+        return self.model
+
     @property
-    def pins(self) -> tuple[ComponentPin, ...]:
+    def pins(self) -> tuple[BoundPin, ...]:
         return self.model.pins
 
 
@@ -100,7 +111,6 @@ class BoardDesign:
         except KeyError as error:
             raise KeyError(f"board has no component {reference!r}") from error
 
-    def pin(self, reference: str, number: str) -> ComponentPin:
-        """Resolve a serialized datasheet number to a capable typed pin object."""
-        component = self.component(reference).model
-        return component.pin(component.get_pin_by_number(number))
+    def pin(self, reference: str, number: str) -> BoundPin:
+        """Resolve a serialized number through the owning component boundary."""
+        return self.component(reference).model.bind_pin(number)

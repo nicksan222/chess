@@ -44,10 +44,19 @@ class ElectricalReadinessTest(unittest.TestCase):
             if connection["name"] is not None
         }
 
-    def test_shared_interrupt_has_a_physical_pull_up(self):
-        self.assertEqual(self.board["components"]["R3"]["value"], "4.7k")
-        self.assertIn(["R3", "1"], self.connections["+3V3"]["pads"])
-        self.assertIn(["R3", "2"], self.connections["SENSE_IRQ"]["pads"])
+    def test_polled_sensors_have_no_global_irq_circuit(self):
+        self.assertNotIn("SENSE_IRQ", self.connections)
+        self.assertNotIn("R3", self.board["components"])
+        self.assertNotIn("TP8", self.board["components"])
+        no_connects = {
+            tuple(c["pads"][0])
+            for c in self.board["connections"]
+            if c.get("no_connect")
+        }
+        self.assertIn(("J1", "7"), no_connects)
+        for ref, component in self.board["components"].items():
+            if component["part_key"] == "TCA9554":
+                self.assertIn((ref, "13"), no_connects)
 
     def test_bring_up_points_cover_rails_buses_and_led_input(self):
         expected = {
@@ -58,7 +67,6 @@ class ElectricalReadinessTest(unittest.TestCase):
             "TP5": "+3V3",
             "TP6": "I2C_SCL",
             "TP7": "I2C_SDA",
-            "TP8": "SENSE_IRQ",
         }
         attached = {
             endpoint[0]: name
@@ -90,7 +98,7 @@ class PhysicalReleaseEvidenceTest(unittest.TestCase):
         self.assertTrue(evidence_path.is_file(), f"missing {evidence_path}")
         record = json.loads(evidence_path.read_text())
         self.assertEqual(record.get("schema"), 1)
-        self.assertEqual(record.get("board_revision"), "C-PROTOTYPE")
+        self.assertEqual(record.get("board_revision"), "D-PROTOTYPE")
         self.assertEqual(record.get("sensor_mpn"), "DRV5032FCDBZR")
         self.assertIs(record.get("pass"), True)
         final_gap = record.get("final_gap_mm")

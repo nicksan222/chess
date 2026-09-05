@@ -26,6 +26,14 @@ class ComponentSpec:
     body_mm: tuple[float, float, float] | None = None
     datasheet: str = ""
 
+    def __post_init__(self) -> None:
+        """Keep invalid purchasing and envelope data out of every domain."""
+        for field_name in ("key", "description", "package", "manufacturer", "mpn"):
+            if not getattr(self, field_name):
+                raise ValueError(f"component {field_name} must not be empty")
+        if self.body_mm is not None and any(axis <= 0.0 for axis in self.body_mm):
+            raise ValueError(f"{self.key}: body dimensions must be positive")
+
     def require_body_mm(self) -> tuple[float, float, float]:
         """Return the body envelope, failing clearly when geometry is unspecified."""
         if self.body_mm is None:
@@ -85,15 +93,14 @@ HALL_SENSOR = part(
     (2.92, 1.30, 1.12),
     "https://www.ti.com/lit/ds/symlink/drv5032.pdf",
 )
-MCP23017 = part(
-    "MCP23017",
-    "16-bit I2C GPIO expander",
-    "SOIC-28W 1.27 mm",
-    "Microchip Technology",
-    "MCP23017-E/SO",
-    (17.9, 10.3, 2.65),
-    "https://ww1.microchip.com/downloads/aemDocuments/documents/APID/"
-    "ProductDocuments/DataSheets/MCP23017-Data-Sheet-DS20001952.pdf",
+TCA9554 = part(
+    "TCA9554",
+    "8-bit I2C GPIO expander with input pull-ups",
+    "SOIC-16W 1.27 mm",
+    "Texas Instruments",
+    "TCA9554DWR",
+    (10.3, 7.5, 2.65),
+    "https://www.ti.com/lit/ds/symlink/tca9554.pdf",
 )
 AHCT125 = part(
     "AHCT125",
@@ -235,7 +242,7 @@ MICRO_SD = part(
 APPROVED_COMPONENTS = (
     SK9822,
     HALL_SENSOR,
-    MCP23017,
+    TCA9554,
     AHCT125,
     CAP_100N,
     CAP_10U,

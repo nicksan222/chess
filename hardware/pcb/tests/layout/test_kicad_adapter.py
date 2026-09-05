@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import sys
 import unittest
+from dataclasses import replace
 from pathlib import Path
 
 PCB_ROOT = Path(__file__).resolve().parents[2]
@@ -18,11 +19,13 @@ except ModuleNotFoundError:  # Host-only unit runs do not install KiCad.
     pcbnew = None
 
 if pcbnew is not None:
+    from base import footprint as footprint_base
     from base import rules, sources
     from base.kicad import board as kicad
     from board import definition
     from board.wiring import geometry as board_builder
     from components.hall_sensor import HallSensorPin
+    from components.raspberry_pi_header import RaspberryPiHeader
 
 
 @unittest.skipUnless(pcbnew is not None, "KiCad pcbnew is not installed")
@@ -38,6 +41,51 @@ class KiCadBoardAdapterTest(unittest.TestCase):
         for reference in references:
             layout.attach(self.design.component(reference))
         return layout
+
+    def test_package_outlines_preserve_dimensions_and_layer_strokes(self) -> None:
+        component = self.design.component("U1")
+        for rotation in (0.0, 90.0):
+            with self.subTest(rotation=rotation):
+                placement = replace(component.placement, rotation=rotation)
+                layout = kicad.KiCadBoard(self.design)
+                layout.attach(replace(component, placement=placement))
+                module = layout.native.FindFootprintByReference("U1")
+                width, height = placement.footprint.courtyard_at(rotation)
+                self.assertNotEqual(width, height)
+                for layer, inset, stroke in (
+                    (pcbnew.F_CrtYd, 0.0, rules.COURTYARD_LINE_MM),
+                    (
+                        pcbnew.F_Fab,
+                        footprint_base.COURTYARD_MARGIN_MM,
+                        rules.FAB_LINE_MM,
+                    ),
+                ):
+                    lines = [
+                        item
+                        for item in module.GraphicalItems()
+                        if item.GetLayer() == layer
+                    ]
+                    self.assertEqual(len(lines), 4)
+                    points = [
+                        point
+                        for line in lines
+                        for point in (line.GetStart(), line.GetEnd())
+                    ]
+                    xs = [pcbnew.ToMM(point.x) - kicad.ORIGIN_X_MM for point in points]
+                    ys = [kicad.ORIGIN_Y_MM - pcbnew.ToMM(point.y) for point in points]
+                    for actual, expected in zip(
+                        (min(xs), max(xs), min(ys), max(ys)),
+                        (
+                            placement.x - width / 2 + inset,
+                            placement.x + width / 2 - inset,
+                            placement.y - height / 2 + inset,
+                            placement.y + height / 2 - inset,
+                        ),
+                        strict=True,
+                    ):
+                        self.assertAlmostEqual(actual, expected)
+                    for line in lines:
+                        self.assertAlmostEqual(pcbnew.ToMM(line.GetWidth()), stroke)
 
     def test_native_board_owns_reviewed_manufacturing_rules(self) -> None:
         layout = kicad.KiCadBoard(self.design)
@@ -139,8 +187,15 @@ class KiCadBoardAdapterTest(unittest.TestCase):
         self.assertTrue(
             {f"{file}{rank}" for file in "ABCDEFGH" for rank in range(1, 9)} <= labels
         )
-        self.assertTrue(set(board_builder.PI_HEADER_PINOUT) <= labels)
-        self.assertTrue({text for text, _at in board_builder.EXPANDER_LABELS} <= labels)
+        self.assertTrue(set(RaspberryPiHeader.silkscreen_pinout_lines()) <= labels)
+        expected_banks = {
+            f"{c.reference}  I2C {c.spec.extras['Address']}  {c.spec.extras['Bank']}"
+            for c in self.design.components.values()
+            if c.spec.part_key == "TCA9554"
+        }
+        self.assertEqual(len(expected_banks), 8)
+        self.assertTrue(expected_banks <= labels)
+        self.assertFalse(any("IRQ" in label for label in labels))
         self.assertIn("U5  SPI 3V3 -> LED 5V", labels)
         self.assertIn("LED DATA + CLK IN", labels)
         self.assertIn("LED CHAIN END", labels)
