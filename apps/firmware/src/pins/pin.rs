@@ -1,63 +1,6 @@
-//! Generic, capability-checked GPIO pins.
-
 use core::marker::PhantomData;
 
-use super::Gpio;
-
-/// Runtime representation of a pin's compile-time capability.
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
-pub enum CapabilityKind {
-    Input,
-    Output,
-    InputOutput,
-}
-
-impl CapabilityKind {
-    pub const fn can_read(self) -> bool {
-        matches!(self, Self::Input | Self::InputOutput)
-    }
-
-    pub const fn can_write(self) -> bool {
-        matches!(self, Self::Output | Self::InputOutput)
-    }
-}
-
-/// Associates a mode marker with its runtime representation.
-pub trait Capability {
-    const KIND: CapabilityKind;
-}
-
-#[derive(Debug, Eq, Hash, PartialEq)]
-pub struct Input;
-
-#[derive(Debug, Eq, Hash, PartialEq)]
-pub struct Output;
-
-#[derive(Debug, Eq, Hash, PartialEq)]
-pub struct InputOutput;
-
-impl Capability for Input {
-    const KIND: CapabilityKind = CapabilityKind::Input;
-}
-
-impl Capability for Output {
-    const KIND: CapabilityKind = CapabilityKind::Output;
-}
-
-impl Capability for InputOutput {
-    const KIND: CapabilityKind = CapabilityKind::InputOutput;
-}
-
-/// Implemented by modes that may be sampled.
-pub trait Readable: Capability {}
-
-/// Implemented by modes that may be driven.
-pub trait Writable: Capability {}
-
-impl Readable for Input {}
-impl Readable for InputOutput {}
-impl Writable for Output {}
-impl Writable for InputOutput {}
+use super::{Capability, CapabilityKind, Gpio, Level, OutputBackend, Writable};
 
 /// A GPIO whose BCM number and capability are part of its type.
 #[derive(Debug, Eq, Hash, PartialEq)]
@@ -103,5 +46,48 @@ impl<const BCM: u8, C: Capability> Pin<BCM, C> {
 
     pub const fn is_active_low(&self) -> bool {
         self.gpio.is_active_low()
+    }
+}
+
+impl<const BCM: u8, C: Writable> Pin<BCM, C> {
+    /// Drives the line to an explicit electrical level.
+    pub fn set_level<B: OutputBackend>(
+        &self,
+        backend: &mut B,
+        level: Level,
+    ) -> Result<(), B::Error> {
+        backend.set_level(self.gpio, level)
+    }
+
+    pub fn set_high<B: OutputBackend>(&self, backend: &mut B) -> Result<(), B::Error> {
+        self.set_level(backend, Level::High)
+    }
+
+    pub fn set_low<B: OutputBackend>(&self, backend: &mut B) -> Result<(), B::Error> {
+        self.set_level(backend, Level::Low)
+    }
+
+    /// Asserts the pin's logical function, accounting for active-low wiring.
+    pub fn turn_on<B: OutputBackend>(&self, backend: &mut B) -> Result<(), B::Error> {
+        self.set_level(
+            backend,
+            if self.is_active_low() {
+                Level::Low
+            } else {
+                Level::High
+            },
+        )
+    }
+
+    /// Deasserts the pin's logical function, accounting for active-low wiring.
+    pub fn turn_off<B: OutputBackend>(&self, backend: &mut B) -> Result<(), B::Error> {
+        self.set_level(
+            backend,
+            if self.is_active_low() {
+                Level::High
+            } else {
+                Level::Low
+            },
+        )
     }
 }

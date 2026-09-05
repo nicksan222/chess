@@ -6,8 +6,23 @@ mod pins;
 use std::collections::HashSet;
 
 use pins::{
-    ALL, BUTTONS, BoardPins, Capability, CapabilityKind, Gpio, InputOutput, Pin, Readable, Writable,
+    BoardPins, Capability, CapabilityKind, Gpio, InputOutput, Level, OutputBackend, Pin, Readable,
+    Writable,
 };
+
+#[derive(Default)]
+struct FakeOutput {
+    writes: Vec<(Gpio, Level)>,
+}
+
+impl OutputBackend for FakeOutput {
+    type Error = ();
+
+    fn set_level(&mut self, gpio: Gpio, level: Level) -> Result<(), Self::Error> {
+        self.writes.push((gpio, level));
+        Ok(())
+    }
+}
 
 #[test]
 fn gpio_enum_exposes_board_metadata() {
@@ -52,24 +67,51 @@ fn pin_types_encode_line_and_capability() {
 }
 
 #[test]
+fn writable_pins_expose_electrical_and_logical_output_actions() {
+    let pins = BoardPins::new();
+    let mut backend = FakeOutput::default();
+
+    pins.led_data.set_high(&mut backend).unwrap();
+    pins.led_data.set_low(&mut backend).unwrap();
+    pins.led_data.turn_on(&mut backend).unwrap();
+    pins.led_data.turn_off(&mut backend).unwrap();
+    pins.i2c_data.set_high(&mut backend).unwrap();
+
+    assert_eq!(
+        backend.writes,
+        [
+            (Gpio::LedData, Level::High),
+            (Gpio::LedData, Level::Low),
+            (Gpio::LedData, Level::High),
+            (Gpio::LedData, Level::Low),
+            (Gpio::I2cData, Level::High),
+        ]
+    );
+}
+
+#[test]
 fn every_connected_gpio_has_a_unique_identity_and_meaningful_name() {
-    assert_eq!(ALL.len(), 16);
+    assert_eq!(Gpio::ALL.len(), 16);
 
-    let bcm_numbers: HashSet<_> = ALL.iter().map(|gpio| gpio.bcm_number()).collect();
-    let header_pins: HashSet<_> = ALL.iter().map(|gpio| gpio.header_pin()).collect();
-    let names: HashSet<_> = ALL.iter().map(|gpio| gpio.name()).collect();
+    let bcm_numbers: HashSet<_> = Gpio::ALL.iter().map(|gpio| gpio.bcm_number()).collect();
+    let header_pins: HashSet<_> = Gpio::ALL.iter().map(|gpio| gpio.header_pin()).collect();
+    let names: HashSet<_> = Gpio::ALL.iter().map(|gpio| gpio.name()).collect();
 
-    assert_eq!(bcm_numbers.len(), ALL.len());
-    assert_eq!(header_pins.len(), ALL.len());
-    assert_eq!(names.len(), ALL.len());
-    assert!(ALL.iter().all(|gpio| !gpio.name().starts_with("GPIO")));
+    assert_eq!(bcm_numbers.len(), Gpio::ALL.len());
+    assert_eq!(header_pins.len(), Gpio::ALL.len());
+    assert_eq!(names.len(), Gpio::ALL.len());
+    assert!(
+        Gpio::ALL
+            .iter()
+            .all(|gpio| !gpio.name().starts_with("GPIO"))
+    );
 }
 
 #[test]
 fn panel_buttons_are_active_low_inputs() {
-    assert_eq!(BUTTONS.len(), 12);
-    assert!(BUTTONS.contains(&Gpio::ResetButton));
-    assert!(BUTTONS.iter().all(|button| button.can_read()));
-    assert!(BUTTONS.iter().all(|button| !button.can_write()));
-    assert!(BUTTONS.iter().all(|button| button.is_active_low()));
+    assert_eq!(Gpio::BUTTONS.len(), 12);
+    assert!(Gpio::BUTTONS.contains(&Gpio::ResetButton));
+    assert!(Gpio::BUTTONS.iter().all(|button| button.can_read()));
+    assert!(Gpio::BUTTONS.iter().all(|button| !button.can_write()));
+    assert!(Gpio::BUTTONS.iter().all(|button| button.is_active_low()));
 }
