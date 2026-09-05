@@ -1,11 +1,7 @@
-name: CI
+name: PR
 
 on:
-  push:
-    branches:
-      - main
-    tags:
-      - "v*"
+  pull_request:
 
 permissions:
   contents: read
@@ -57,12 +53,25 @@ jobs:
     with:
       image: ${{ needs.prebuild.outputs.image }}
 
-  firmware:
-    name: Firmware
-    if: startsWith(github.ref, 'refs/tags/v')
-    needs: [hardware, quality, pi-harness]
+  firmware-check:
+    name: Firmware checks
+    needs: prebuild
     permissions:
-      contents: write
-    uses: ./.github/workflows/firmware.yml
+      contents: read
+      packages: write
+    uses: ./.github/workflows/firmware-check.yml
     with:
-      publish: true
+      image: ${{ needs.prebuild.outputs.image }}
+
+  required-checks:
+    name: Required checks
+    if: always()
+    needs: [hardware, quality, pi-harness, firmware-check]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify required jobs succeeded
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          jq --exit-status 'all(.[]; .result == "success")' \
+            <<< "${RESULTS}"

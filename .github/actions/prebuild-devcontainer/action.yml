@@ -1,0 +1,58 @@
+name: Prebuild development container
+description: Build the Dev Container image, push it to GHCR, and output the SHA tag
+
+outputs:
+  image:
+    description: SHA-tagged GHCR image reference
+    value: ${{ steps.image.outputs.image }}
+
+runs:
+  using: composite
+  steps:
+    - uses: docker/login-action@v4
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ github.token }}
+
+    - name: Install Dev Container CLI
+      shell: bash
+      run: npm install --global @devcontainers/cli
+
+    - id: image
+      name: Image names
+      shell: bash
+      run: |
+        image="$(printf 'ghcr.io/%s/devcontainer:%s' \
+          '${{ github.repository }}' '${{ github.sha }}' \
+          | tr '[:upper:]' '[:lower:]')"
+        latest="$(printf 'ghcr.io/%s/devcontainer:latest' \
+          '${{ github.repository }}' \
+          | tr '[:upper:]' '[:lower:]')"
+        echo "image=${image}" >> "${GITHUB_OUTPUT}"
+        echo "latest=${latest}" >> "${GITHUB_OUTPUT}"
+
+    - name: Build development container
+      shell: bash
+      env:
+        IMAGE: ${{ steps.image.outputs.image }}
+        LATEST: ${{ steps.image.outputs.latest }}
+      run: |
+        docker pull "${LATEST}" || true
+        devcontainer build \
+          --workspace-folder . \
+          --image-name "${IMAGE}" \
+          --cache-from "${LATEST}"
+
+    - name: Push development container
+      shell: bash
+      env:
+        IMAGE: ${{ steps.image.outputs.image }}
+        LATEST: ${{ steps.image.outputs.latest }}
+      run: |
+        docker push "${IMAGE}"
+        if [[ "${{ github.event_name }}" == "push" \
+           && "${{ github.ref }}" == "refs/heads/main" ]]; then
+          docker tag "${IMAGE}" "${LATEST}"
+          docker push "${LATEST}"
+        fi

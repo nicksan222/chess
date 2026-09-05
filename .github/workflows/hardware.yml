@@ -1,0 +1,44 @@
+name: Hardware
+
+on:
+  workflow_call:
+    inputs:
+      image:
+        description: Prebuilt development container image
+        type: string
+        required: true
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  cad:
+    name: CAD
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/run-in-devcontainer
+        with:
+          image: ${{ inputs.image }}
+          command: just --justfile hardware/cad/justfile check
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: cad-generated
+          path: hardware/cad/generated
+
+  pcb:
+    name: PCB
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/run-in-devcontainer
+        with:
+          image: ${{ inputs.image }}
+          command: just --justfile hardware/pcb/justfile review
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: pcb-generated
+          path: hardware/pcb/generated
