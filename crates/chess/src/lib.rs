@@ -27,9 +27,11 @@
 //! # Ok::<(), Box<dyn core::error::Error>>(())
 //! ```
 //!
-//! Hardware observation, persistence, transport, authentication, user
-//! interfaces, and logging backends remain outside this crate. Lifecycle
-//! diagnostics are emitted only when an application has registered a logger.
+//! [`Player`] and [`GameSession`] provide one stable interface for human,
+//! computer, and online play. Player implementations receive only a restricted
+//! position view. Actual transports, hardware observation, persistence,
+//! authentication, user interfaces, and logging backends remain outside this
+//! crate.
 
 #![no_std]
 #![forbid(unsafe_code)]
@@ -39,13 +41,16 @@
 mod macros;
 
 mod game;
+mod history;
 mod model;
+mod player;
+mod rules;
+mod session;
 
-pub use game::{
-    DrawClaim, DrawClaimError, DrawClaims, DrawReason, FinalState, ForceMoveError, ForcedMove,
-    Game, GameHistory, GameHistoryIter, GameStatus, GameSyncError, GameVerificationError,
-    HistoryCount, HistoryError, HistoryEvent, HistoryEventKind, HistoryHash, HistoryStep,
-    InvalidPly, InvalidState, MoveError, Ply,
+pub use game::{DrawClaim, DrawClaims, DrawReason, Game, GameStatus, GameVerificationError};
+pub use history::{
+    FinalState, GameHistory, GameHistoryIter, GameSyncError, HistoryCount, HistoryError,
+    HistoryEvent, HistoryEventKind, HistoryHash, HistoryStep, InvalidPly, InvalidState, Ply,
 };
 pub use model::{
     AllSquares, Board, BoardDirection, BoardEdge, BoardPieces, CastlingRights, ChessMove, Color,
@@ -53,3 +58,6 @@ pub use model::{
     InvalidSquare, ParseMoveError, ParseSquareError, Piece, PieceKind, Rank, RankOffset, Square,
     SquareCount, SquareIndex, SquareOffset, SquareRay, SquareSet, SquareSetSquares,
 };
+pub use player::{ComputerError, Difficulty, Player, PlayerError, SubmitError};
+pub use rules::{DrawClaimError, ForceMoveError, ForcedMove, MoveError};
+pub use session::{GameSession, SessionError, SessionUpdate};

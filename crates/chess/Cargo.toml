@@ -9,20 +9,33 @@ autobenches = false
 
 [dependencies]
 chess-core = { path = "../core" }
+embedded-chess-engine = { package = "chess-engine", version = "0.1.2", default-features = false }
 logger = { path = "../logger" }
 sha2 = { version = "0.11.0", default-features = false }
 
 [[test]]
-name = "unit"
-path = "tests/unit/main.rs"
+name = "model"
+path = "tests/model/main.rs"
 
 [[test]]
-name = "logic"
-path = "tests/logic/main.rs"
+name = "rules"
+path = "tests/rules/main.rs"
 
 [[test]]
-name = "e2e"
-path = "tests/e2e/main.rs"
+name = "game"
+path = "tests/game/main.rs"
+
+[[test]]
+name = "history"
+path = "tests/history/main.rs"
+
+[[test]]
+name = "player"
+path = "tests/player/main.rs"
+
+[[test]]
+name = "session"
+path = "tests/session/main.rs"
 
 [[test]]
 name = "perft"
