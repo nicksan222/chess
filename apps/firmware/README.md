@@ -16,5 +16,5 @@ The flashable files are written to `dist/firmware`.
 
 Hardware workers are not implemented yet. The board contract uses polled
 TCA9554 input-port reads at eight addresses, not a GPIO sensor interrupt; see
-[host acquisition](../../docs/host.md#reading-the-board). Generated GPIO markers
-come from the actual KiCad board, including removal of unused GPIO4.
+[host acquisition](../../docs/host.md#reading-the-board). Reusable, function-named
+GPIO descriptors live in `src/pins.rs`; unused GPIO4 is deliberately absent.
