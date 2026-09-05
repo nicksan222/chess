@@ -1,7 +1,5 @@
 import type { ExtensionAPI, ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
-import { suspiciousPatchLines } from "../../feedback/secrets.js";
-import { formatValidationResult, preparePiDependencies, runVerification } from "../../feedback/verification.js";
-import { completePatch, createStagedSnapshot, dirtyPaths, git, stagedPaths } from "./git.js";
+import { completePatch, dirtyPaths, git, stagedPaths } from "./git.js";
 import { createCommitPlan, validateCommitPlan } from "./planner.js";
 
 const REVIEW_PATCH_CHARACTERS = 16_000;
@@ -49,27 +47,6 @@ async function stageExact(pi: ExtensionAPI, cwd: string, paths: readonly string[
 	}
 }
 
-async function validateStagedCommit(
-	pi: ExtensionAPI,
-	repository: string,
-	paths: readonly string[],
-	signal?: AbortSignal,
-) {
-	const patchCheck = await git(pi, repository, ["diff", "--cached", "--check", "--", ...paths], true);
-	if (patchCheck.code !== 0) {
-		const output = [patchCheck.stdout, patchCheck.stderr].filter(Boolean).join("\n").trim();
-		throw new Error(`Staged patch check failed:\n${output || `exit ${patchCheck.code}`}`);
-	}
-
-	const snapshot = await createStagedSnapshot(pi, repository);
-	try {
-		await preparePiDependencies(pi, snapshot.worktree, [...paths], signal);
-		return await runVerification(pi, snapshot.worktree, [...paths], "fast", signal);
-	} finally {
-		await snapshot.cleanup();
-	}
-}
-
 async function requestChanges(
 	pi: ExtensionAPI,
 	ctx: ExtensionCommandContext,
@@ -113,10 +90,6 @@ async function runCommitLoop(
 	const recent = await git(pi, repository, ["log", "-8", "--pretty=format:%s"]);
 	ctx.ui.setStatus("commit-loop", "scanning outgoing changes");
 	const patch = await completePatch(pi, repository, paths);
-	const suspiciousLines = suspiciousPatchLines(patch);
-	if (suspiciousLines.length > 0) {
-		throw new Error(`Potential credentials found in outgoing additions:\n${suspiciousLines.join("\n")}`);
-	}
 	ctx.ui.setStatus("commit-loop", "planning tiny commits");
 	const plan = await createCommitPlan(ctx, {
 		goal,
@@ -157,31 +130,13 @@ async function runCommitLoop(
 			return;
 		}
 
-		ctx.ui.setStatus("commit-loop", `validating ${index + 1}/${plan.commits.length}`);
-		let validation;
-		try {
-			validation = await validateStagedCommit(pi, repository, commit.paths, ctx.signal);
-		} catch (error) {
-			await unstage(pi, repository, commit.paths);
-			throw error;
-		}
-		pi.events.emit("feedback:validation-result", validation);
-		if (!validation.passed) {
-			await unstage(pi, repository, commit.paths);
-			throw new Error(`Commit validation failed; the proposed commit was unstaged.\n${formatValidationResult(validation)}`);
-		}
 		const currentTree = (await git(pi, repository, ["write-tree"])).stdout.trim();
 		if (currentTree !== reviewedTree) {
 			await unstage(pi, repository, commit.paths);
-			throw new Error("The staged index changed during review or validation; the proposed commit was unstaged.");
+			throw new Error("The staged index changed during review; the proposed commit was unstaged.");
 		}
-		const currentPatch = await git(pi, repository, ["diff", "--cached", "--no-ext-diff", "--no-color", "--"]);
-		const suspicious = suspiciousPatchLines(currentPatch.stdout);
-		if (suspicious.length > 0) {
-			await unstage(pi, repository, commit.paths);
-			throw new Error(`Potential credentials found in staged additions:\n${suspicious.join("\n")}`);
-		}
-		await git(pi, repository, ["commit", "--no-verify", "-m", commit.message]);
+		ctx.ui.setStatus("commit-loop", `committing ${index + 1}/${plan.commits.length}`);
+		await git(pi, repository, ["commit", "-m", commit.message]);
 		committed.push(commit.message.split("\n", 1)[0] ?? commit.message);
 	}
 	ctx.ui.notify(`Commit loop complete:\n${committed.map((message) => `- ${message}`).join("\n")}`, "info");
@@ -192,7 +147,7 @@ export default function commitLoop(pi: ExtensionAPI) {
 	let resumeQueued = false;
 
 	pi.registerCommand("commit-loop", {
-		description: "Stage, review, validate, and create tiny sequential commits: /commit-loop [goal]",
+		description: "Stage, review, and create tiny sequential commits: /commit-loop [goal]",
 		handler: async (args, ctx) => {
 			resumeQueued = false;
 			try {

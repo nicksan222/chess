@@ -1,8 +1,25 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
-import { pathsFromNameStatus, splitNull } from "../../feedback/git-paths.js";
-import { createValidationWorktree } from "../../feedback/snapshot.js";
 
 const MAX_PATCH_BYTES = 256 * 1024;
+
+function splitNull(value: string): string[] {
+	return value.split("\0").filter(Boolean);
+}
+
+function pathsFromNameStatus(value: string): string[] {
+	const fields = splitNull(value);
+	const paths: string[] = [];
+	for (let index = 0; index < fields.length;) {
+		const status = fields[index++];
+		const firstPath = fields[index++];
+		if (firstPath) paths.push(firstPath);
+		if (status?.startsWith("R") || status?.startsWith("C")) {
+			const secondPath = fields[index++];
+			if (secondPath) paths.push(secondPath);
+		}
+	}
+	return [...new Set(paths)].sort();
+}
 
 function combinedOutput(result: { stdout: string; stderr: string }): string {
 	return [result.stdout, result.stderr].filter(Boolean).join("\n").trim();
@@ -54,17 +71,4 @@ export async function completePatch(
 export async function stagedPaths(pi: ExtensionAPI, cwd: string): Promise<string[]> {
 	const result = await git(pi, cwd, ["diff", "--cached", "--name-status", "-z", "--"]);
 	return pathsFromNameStatus(result.stdout);
-}
-
-export async function createStagedSnapshot(pi: ExtensionAPI, repository: string) {
-	const tree = (await git(pi, repository, ["write-tree"])).stdout.trim();
-	const commit = (await git(pi, repository, [
-		"commit-tree",
-		tree,
-		"-p",
-		"HEAD",
-		"-m",
-		"Pi staged validation snapshot",
-	])).stdout.trim();
-	return createValidationWorktree(pi, repository, commit);
 }

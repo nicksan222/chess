@@ -1,8 +1,45 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
-import { pathsFromNameStatus, splitNull } from "../../feedback/git-paths.js";
-export { suspiciousPatchLines } from "../../feedback/secrets.js";
 
 const MAX_PATCH_BYTES = 256 * 1024;
+const SECRET_PATTERNS = [
+	/[a-z0-9_-]*(?:api[-_]?key|secret|password|token)[a-z0-9_-]*["']?\s*[:=]\s*["'][^"']{8,}/i,
+	/^\+\s*(?:-\s+)?(?:export\s+)?["']?[a-z0-9_-]*(?:api[-_]?key|secret|password|token)[a-z0-9_-]*["']?\s*[:=]\s*[^\s#"']{8,}\s*(?:#.*)?$/i,
+	/-----BEGIN (?:[A-Z0-9]+ )*PRIVATE KEY-----/,
+	/ghp_[A-Za-z0-9]{20,}/,
+	/github_pat_[A-Za-z0-9_]{20,}/,
+	/sk-[A-Za-z0-9_-]{20,}/,
+];
+
+function splitNull(value: string): string[] {
+	return value.split("\0").filter(Boolean);
+}
+
+export function pathsFromNameStatus(value: string): string[] {
+	const fields = splitNull(value);
+	const paths: string[] = [];
+	for (let index = 0; index < fields.length;) {
+		const status = fields[index++];
+		const firstPath = fields[index++];
+		if (firstPath) paths.push(firstPath);
+		if (status?.startsWith("R") || status?.startsWith("C")) {
+			const secondPath = fields[index++];
+			if (secondPath) paths.push(secondPath);
+		}
+	}
+	return [...new Set(paths)].sort();
+}
+
+export function suspiciousTextLines(text: string): string[] {
+	return text.split("\n")
+		.filter((line) => SECRET_PATTERNS.some((pattern) => pattern.test(line) || pattern.test(`+${line}`)))
+		.slice(0, 5);
+}
+
+export function suspiciousPatchLines(patch: string): string[] {
+	return suspiciousTextLines(
+		patch.split("\n").filter((line) => line.startsWith("+") && !line.startsWith("+++")).join("\n"),
+	);
+}
 
 export interface GitState {
 	repository: string;
@@ -11,7 +48,6 @@ export interface GitState {
 	baseOid: string;
 	existingCommits: string;
 	existingPatch: string;
-	existingPaths: string[];
 	dirtyPaths: string[];
 	stagedPaths: string[];
 	status: string;
@@ -111,13 +147,6 @@ export async function inspectGitState(pi: ExtensionAPI, cwd: string): Promise<Gi
 	if (Buffer.byteLength(existingPatch) > MAX_PATCH_BYTES) {
 		throw new Error(`The committed patch exceeds ${MAX_PATCH_BYTES / 1024}KB. Review and publish it manually.`);
 	}
-	const existingPaths = pathsFromNameStatus((await git(pi, repository, [
-		"diff",
-		"--name-status",
-		"-z",
-		`${baseOid}..HEAD`,
-		"--",
-	])).stdout);
 	const paths = await dirtyPaths(pi, repository);
 	if (paths.length === 0 && !existingCommits) {
 		throw new Error("There are no commits or uncommitted changes to prepare.");
@@ -143,7 +172,6 @@ export async function inspectGitState(pi: ExtensionAPI, cwd: string): Promise<Gi
 		baseOid,
 		existingCommits,
 		existingPatch,
-		existingPaths,
 		dirtyPaths: paths,
 		stagedPaths: pathsFromNameStatus(staged.stdout),
 		status: status.stdout.trim(),

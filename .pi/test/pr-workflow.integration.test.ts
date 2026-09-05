@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test } from "bun:test";
-import { chmod, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { chmod, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
@@ -51,7 +51,6 @@ function createHarness(
 			const overridden = await execute?.(command, args);
 			if (overridden) return overridden;
 			if (command === "gh") return { stdout: "", stderr: "not authenticated", code: 1, killed: false };
-			if (command === "just") return { stdout: "validation passed", stderr: "", code: 0, killed: false };
 			return run(command, args, repository);
 		},
 		events: { emit() {} },
@@ -102,11 +101,11 @@ const DOCUMENTATION_PLAN: PrPlan = {
 };
 
 describe("standalone /pr workflow", () => {
-	test("creates a semantic branch and local validated commits without a remote", async () => {
+	test("creates a semantic branch and runs the pre-commit hook", async () => {
 		const repository = await createRepository();
 		await writeFile(join(repository, "README.md"), "before\n\nafter\n");
 		const hook = join(repository, ".git/hooks/pre-commit");
-		await writeFile(hook, "#!/bin/sh\nexit 1\n");
+		await writeFile(hook, "#!/bin/sh\nprintf 'run\\n' >> \"$(git rev-parse --git-dir)/hook-runs\"\n");
 		await chmod(hook, 0o755);
 		const harness = createHarness(repository, DOCUMENTATION_PLAN);
 
@@ -114,9 +113,10 @@ describe("standalone /pr workflow", () => {
 
 		expect((await run("git", ["branch", "--show-current"], repository)).stdout.trim()).toBe("docs/standalone-pr-workflow");
 		expect((await run("git", ["log", "-1", "--pretty=%s"], repository)).stdout.trim()).toBe("Document the PR workflow");
+		expect(await readFile(join(repository, ".git/hook-runs"), "utf8")).toBe("run\n");
 		expect((await run("git", ["status", "--porcelain"], repository)).stdout.trim()).toBe("");
 		expect(await readFile(join(repository, "README.md"), "utf8")).toContain("after");
-		expect(harness.notices.some(({ message, level }) => level === "warning" && message.includes("Created and validated local commits"))).toBe(true);
+		expect(harness.notices.some(({ message, level }) => level === "warning" && message.includes("Created local commits"))).toBe(true);
 	});
 
 	test("blocks credentials echoed into generated PR metadata", async () => {
@@ -246,36 +246,18 @@ describe("standalone /pr workflow", () => {
 		expect(harness.confirmations[0]).toContain("Document master-based workflow");
 	});
 
-	test("validates committed changes without omitted working-tree files", async () => {
+	test("stops when the pre-commit hook rejects a generated commit", async () => {
 		const repository = await createRepository();
-		await mkdir(join(repository, "crates/core/src"), { recursive: true });
-		await writeFile(join(repository, "crates/core/src/lib.rs"), "pub fn existing() {}\n");
-		await run("git", ["add", "."], repository);
-		await run("git", ["commit", "-qm", "Add core fixture"], repository);
-		await writeFile(join(repository, "crates/core/src/lib.rs"), "mod generated;\npub use generated::value;\n");
-		await writeFile(join(repository, "crates/core/src/generated.rs"), "pub fn value() {}\n");
-		const plan: PrPlan = {
-			...DOCUMENTATION_PLAN,
-			branch: "feat/isolated-validation",
-			commits: [{ message: "Expose generated value", paths: ["crates/core/src/lib.rs"] }],
-		};
-		const harness = createHarness(repository, plan, async (command, args) => {
-			if (command !== "just" || !args.some((arg) => arg.endsWith("/crates/core/justfile"))) return undefined;
-			const justfile = args[args.indexOf("--justfile") + 1];
-			const snapshotRoot = justfile?.replace(/\/crates\/core\/justfile$/, "") ?? repository;
-			const dependencyExists = await Bun.file(join(snapshotRoot, "crates/core/src/generated.rs")).exists();
-			return {
-				stdout: "",
-				stderr: dependencyExists ? "" : "generated module is missing",
-				code: dependencyExists ? 0 : 1,
-				killed: false,
-			};
-		});
+		await writeFile(join(repository, "README.md"), "after\n");
+		const hook = join(repository, ".git/hooks/pre-commit");
+		await writeFile(hook, "#!/bin/sh\nexit 1\n");
+		await chmod(hook, 0o755);
+		const harness = createHarness(repository, DOCUMENTATION_PLAN);
 
-		await harness.commandHandler("publish only the core API change", harness.context);
+		await harness.commandHandler("document the workflow", harness.context);
 
-		expect(harness.notices.some(({ message }) => message.includes("publishing was stopped"))).toBe(true);
-		expect((await run("git", ["status", "--porcelain", "--", "crates/core/src/generated.rs"], repository)).stdout).not.toBe("");
+		expect((await run("git", ["log", "-1", "--pretty=%s"], repository)).stdout.trim()).toBe("Initial commit");
+		expect(harness.notices.some(({ message }) => message.includes("git commit"))).toBe(true);
 	});
 
 	test("blocks secrets in outgoing commit metadata before planning", async () => {

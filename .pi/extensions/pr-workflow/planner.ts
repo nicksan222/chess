@@ -67,7 +67,7 @@ function planningPrompt(input: PlanningInput): string {
 		"Existing commits are already part of the pull request: describe them in the title and body, but do not recreate them. If there are no dirty task changes, return an empty commits array.",
 		"Use imperative commit subjects matching recent repository style.",
 		"Use a semantic branch name: feat/, fix/, refactor/, docs/, test/, ci/, build/, perf/, or chore/ followed by concise kebab-case.",
-		"The PR body must contain '## Summary' and '## Validation' sections. Do not claim checks have passed yet; list the validation that will be run.",
+		"The PR body must contain '## Summary' and '## Validation' sections. Under Validation, record that the repository pre-commit hook runs for every generated commit.",
 		"Never select secrets, credentials, temporary logs, build output, or unrelated generated files.",
 		"",
 		`Goal: ${input.goal || "Infer the goal from the conversation."}`,
