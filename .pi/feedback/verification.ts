@@ -45,11 +45,10 @@ const RUST_PACKAGES = new Map([
 const PYTHON_PACKAGES = ["hardware/shared", "hardware/cad", "hardware/pcb"] as const;
 const PI_HARNESS_PATHS = [".pi", ".github", ".devcontainer"] as const;
 const WORKSPACE_ROOT = "<workspace>";
-const YOCTO_METADATA_EXTENSIONS = [".bb", ".bbappend", ".conf", ".inc", ".yaml", ".yml"] as const;
+const YOCTO_METADATA_EXTENSIONS = [".bb", ".bbappend", ".conf", ".inc", ".lock", ".toml", ".yaml", ".yml"] as const;
 const MAX_RESULT_LINES = 160;
 const MAX_RESULT_BYTES = 16 * 1024;
 const CHECK_TIMEOUT_MS = 2 * 60 * 1000;
-const YOCTO_CHECK_TIMEOUT_MS = 15 * 60 * 1000;
 
 export async function getDirtyPaths(pi: ExtensionAPI, cwd: string): Promise<string[]> {
 	const tracked = await pi.exec("git", ["-C", cwd, "diff", "--name-status", "-z", "HEAD", "--"]);
@@ -136,10 +135,9 @@ function isYoctoMetadata(path: string): boolean {
 
 function yoctoMetadataCheck(cwd: string): CheckSpec {
 	return {
-		id: "apps/firmware:image-check",
+		id: "apps/firmware:yocto-check",
 		command: "just",
-		args: ["--justfile", join(cwd, "apps/firmware/justfile"), "image-check"],
-		timeoutMs: YOCTO_CHECK_TIMEOUT_MS,
+		args: ["--justfile", join(cwd, "apps/firmware/justfile"), "yocto-check"],
 	};
 }
 

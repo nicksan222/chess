@@ -51,6 +51,10 @@ _cross-toolchain:
 validate:
     cd "{{ root }}" && python3 apps/firmware/yocto/validate_crates.py
 
+# Check the isolated, offline Yocto Cargo package without requiring Docker.
+yocto-check: validate
+    cd "{{ root }}" && cargo check --locked --manifest-path apps/firmware/yocto/Cargo.toml
+
 # Parse BitBake and dry-run the complete image task graph without executing it.
 image-check: validate _docker
     mkdir -p "{{ cache }}"

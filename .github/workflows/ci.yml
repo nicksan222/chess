@@ -88,7 +88,7 @@ jobs:
       - uses: extractions/setup-just@v4
         with:
           just-version: 1.40.0
-      - run: just --justfile apps/firmware/justfile validate
+      - run: just --justfile apps/firmware/justfile yocto-check
 
   crates:
     name: Discover crates

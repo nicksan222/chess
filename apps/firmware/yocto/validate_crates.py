@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify that Yocto can fetch every crates.io package in Cargo.lock."""
+"""Verify that Yocto can fetch every crate in its isolated Cargo.lock."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ import tomllib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
-LOCKFILE = ROOT / "Cargo.lock"
+LOCKFILE = ROOT / "apps/firmware/yocto/Cargo.lock"
 RECIPE = (
     ROOT / "apps/firmware/yocto/meta-firmware/recipes-firmware/firmware/firmware.bb"
 )

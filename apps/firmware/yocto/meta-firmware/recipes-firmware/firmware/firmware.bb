@@ -4,8 +4,8 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=f82d4c65d86894b2184ce118b8779401"
 
 inherit cargo externalsrc systemd
 
-# cargo.bbclass builds offline, so every crates.io package needed by firmware
-# must be available through BitBake's crate fetcher.
+# cargo.bbclass builds the isolated Yocto manifest offline, so each package in
+# its small lockfile must be available through BitBake's crate fetcher.
 SRC_URI += " \
     crate://crates.io/spin/0.12.3 \
 "
@@ -14,7 +14,7 @@ FIRMWARE_SOURCE_DIR ??= "${TOPDIR}/../.."
 EXTERNALSRC = "${FIRMWARE_SOURCE_DIR}"
 EXTERNALSRC_BUILD = "${WORKDIR}/build"
 SOURCE_BASEDIR = "${EXTERNALSRC}/apps/firmware"
-CARGO_MANIFEST_PATH = "${SOURCE_BASEDIR}/Cargo.toml"
+CARGO_MANIFEST_PATH = "${SOURCE_BASEDIR}/yocto/Cargo.toml"
 
 FIRMWARE_FILES_DIR := "${THISDIR}/files"
 

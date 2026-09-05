@@ -1,0 +1,18 @@
+# Keep Yocto's offline Cargo build independent of unrelated workspace crates.
+[package]
+name = "firmware"
+edition = "2024"
+license = "MIT"
+rust-version = "1.85"
+version = "0.0.0"
+
+[[bin]]
+name = "firmware"
+path = "../src/main.rs"
+
+[dependencies]
+logger = { path = "../../../crates/logger", features = ["std"] }
+
+# This manifest deliberately starts a small, nested workspace so Cargo resolves
+# only the firmware dependency graph when BitBake invokes it with --frozen.
+[workspace]
