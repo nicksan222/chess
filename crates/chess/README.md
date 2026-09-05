@@ -5,8 +5,8 @@ legal move generation, complete rule state, draw adjudication, and a
 SHA-256-linked authoritative game history. It does not depend on a UI, a
 logging backend, hardware, transport, or an async runtime.
 
-[**DESIGN.md**](DESIGN.md) is the visual package map: who talks to the crate
-root, which type a caller holds, and which values may leave the process.
+[**DESIGN.md**](DESIGN.md) is how an application manages a game: two sides
+(`White` / `Black`), `play`, `status()`, and `HistoryStep`.
 
 ## Authoritative history
 

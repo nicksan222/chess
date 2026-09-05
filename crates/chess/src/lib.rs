@@ -32,7 +32,8 @@
 //! interfaces, and logging backends remain outside this crate. Lifecycle
 //! diagnostics are emitted only when an application has registered a logger.
 //!
-//! The in-tree `DESIGN.md` is the visual consumption map for this package.
+//! The in-tree `DESIGN.md` is how an application manages a `Game` and its two
+//! sides.
 
 #![no_std]
 #![forbid(unsafe_code)]
