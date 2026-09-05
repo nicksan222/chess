@@ -1,6 +1,18 @@
 use core::marker::PhantomData;
 
-use super::GPIO;
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[allow(clippy::upper_case_acronyms)]
+pub struct GPIO(u8);
+
+impl GPIO {
+    pub(super) const fn new(bcm_number: u8) -> Self {
+        Self(bcm_number)
+    }
+
+    pub const fn bcm_number(self) -> u8 {
+        self.0
+    }
+}
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Level {
@@ -32,6 +44,41 @@ pub trait WriteLevel {
     type Error;
 
     fn write_level(&mut self, gpio: GPIO, level: Level) -> Result<(), Self::Error>;
+}
+
+/// Direct high/low GPIO pins used by the control-panel buttons.
+pub struct GPIOPins {
+    pub up_button: Pin<5, Input>,
+    pub down_button: Pin<6, Input>,
+    pub left_button: Pin<12, Input>,
+    pub right_button: Pin<13, Input>,
+    pub ok_button: Pin<16, Input>,
+    pub reset_button: Pin<17, Input>,
+    pub pass_button: Pin<19, Input>,
+    pub function_one_button: Pin<20, Input>,
+    pub function_two_button: Pin<21, Input>,
+    pub function_three_button: Pin<22, Input>,
+    pub function_four_button: Pin<23, Input>,
+    pub function_five_button: Pin<24, Input>,
+}
+
+impl GPIOPins {
+    pub(super) const fn get() -> Self {
+        Self {
+            up_button: Pin::new(GPIO::new(5)),
+            down_button: Pin::new(GPIO::new(6)),
+            left_button: Pin::new(GPIO::new(12)),
+            right_button: Pin::new(GPIO::new(13)),
+            ok_button: Pin::new(GPIO::new(16)),
+            reset_button: Pin::new(GPIO::new(17)),
+            pass_button: Pin::new(GPIO::new(19)),
+            function_one_button: Pin::new(GPIO::new(20)),
+            function_two_button: Pin::new(GPIO::new(21)),
+            function_three_button: Pin::new(GPIO::new(22)),
+            function_four_button: Pin::new(GPIO::new(23)),
+            function_five_button: Pin::new(GPIO::new(24)),
+        }
+    }
 }
 
 pub struct Pin<const BCM: u8, Capability> {
