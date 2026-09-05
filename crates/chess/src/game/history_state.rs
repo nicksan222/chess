@@ -50,7 +50,7 @@ impl Game {
     /// reported as a warning on the `chess::game` log target. Returns
     /// `None` without touching history when the newest event is final,
     /// since sealed timelines accept no further events.
-    pub(in crate::game) fn record_invalid(&mut self, invalid: InvalidState) -> Option<HistoryStep> {
+    pub(crate) fn record_invalid(&mut self, invalid: InvalidState) -> Option<HistoryStep> {
         if self.latest_event_kind() == Some(HistoryEventKind::Final) {
             return None;
         }
@@ -69,7 +69,7 @@ impl Game {
     /// [`Game::accept`](crate::Game::accept) for the validation applied to
     /// peer-supplied final events. Sealing is logged on the `chess::game`
     /// target.
-    pub(in crate::game) fn append_final(&mut self, final_state: FinalState) -> HistoryStep {
+    pub(crate) fn append_final(&mut self, final_state: FinalState) -> HistoryStep {
         self.push_event(HistoryEvent::Final(final_state))
             .expect("a final event may seal active history")
     }
@@ -125,7 +125,7 @@ impl Game {
     /// a final tip yields [`MoveError::GameOver`](crate::MoveError::GameOver).
     /// Active history returns `None`, meaning [`Game::play`] may attempt
     /// the move against the board cache.
-    pub(in crate::game) fn blocking_move_error(&self) -> Option<MoveError> {
+    pub(crate) fn blocking_move_error(&self) -> Option<MoveError> {
         match self.history.latest().map(HistoryStep::event) {
             Some(HistoryEvent::Invalid(_)) => Some(MoveError::PendingInvalid),
             Some(HistoryEvent::Final(final_state)) => Some(MoveError::GameOver { final_state }),
