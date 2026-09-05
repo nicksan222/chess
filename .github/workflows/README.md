@@ -2,11 +2,15 @@
 
 This directory owns GitHub Actions workflow definitions:
 
-- `ci.yml` runs required pull request and main-branch checks, validates the
-  Bun-managed Pi harness, cross-compiles and links the complete firmware crate
-  graph for AArch64, and gates release tags;
-- `firmware.yml` is the reusable full image build invoked manually, weekly, or
-  by successful `main` and release-tag CI runs; and
+- `ci.yml` runs Hardware, Quality, and Pi harness on `main` and `v*` tags, and
+  calls `firmware.yml` with publish enabled only for release tags;
+- `pr.yml` runs those same checks on pull requests, plus Firmware checks
+  (Yocto metadata and the AArch64 binary) and the `Required checks`
+  branch-protection gate;
+- `hardware.yml`, `quality.yml`, and `firmware-check.yml` are reusable domain
+  workflows that group those jobs in the Actions graph;
+- `firmware.yml` is the full image build, started after successful `main` CI,
+  weekly, manually, or by a gated release-tag CI run; and
 - `dependabot-automerge.yml` queues trusted Dependabot updates for squash merge
   after branch protection reports every required check green.
 

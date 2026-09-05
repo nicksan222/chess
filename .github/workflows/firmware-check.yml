@@ -1,0 +1,45 @@
+name: Firmware checks
+
+on:
+  workflow_call:
+    inputs:
+      image:
+        description: Prebuilt development container image
+        type: string
+        required: true
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  firmware-metadata:
+    name: Metadata
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: extractions/setup-just@v4
+        with:
+          just-version: 1.40.0
+      - run: just --justfile apps/firmware/justfile yocto-check
+
+  firmware-binary:
+    name: AArch64 binary
+    needs: firmware-metadata
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/rust-in-devcontainer
+        with:
+          image: ${{ inputs.image }}
+          command: just firmware-binary
+          cache-key: ${{ runner.os }}-firmware-aarch64-${{ hashFiles('**/Cargo.lock') }}
+          cache-restore-keys: |
+            ${{ runner.os }}-firmware-aarch64-
+            ${{ runner.os }}-cargo-
+      - uses: actions/upload-artifact@v7
+        with:
+          name: firmware-aarch64-${{ github.sha }}
+          path: target/aarch64-unknown-linux-gnu/release/firmware
+          if-no-files-found: error
+          retention-days: 7

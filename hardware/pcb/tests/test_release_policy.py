@@ -179,8 +179,15 @@ class ReleasePolicyTest(unittest.TestCase):
         self.assertIn("fabrication: release-test", justfile)
         self.assertIn("python3 -m unittest discover", justfile)
         self.assertIn("--severity-exclusions", justfile)
-        workflow = (PCB.parents[1] / ".github/workflows/ci.yml").read_text()
-        self.assertIn("just --justfile hardware/pcb/justfile review", workflow)
+        workflows = PCB.parents[1] / ".github/workflows"
+        hardware = (workflows / "hardware.yml").read_text()
+        self.assertIn("just --justfile hardware/pcb/justfile review", hardware)
+        for orchestrator in ("ci.yml", "pr.yml"):
+            with self.subTest(orchestrator=orchestrator):
+                self.assertIn(
+                    "uses: ./.github/workflows/hardware.yml",
+                    (workflows / orchestrator).read_text(),
+                )
 
 
 if __name__ == "__main__":
