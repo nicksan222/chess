@@ -5,7 +5,7 @@ use tokio::{runtime::Handle, task::JoinHandle, time::Instant};
 use crate::events::{Button, Event, EventEmitter, EventSubscription, ReceiveError};
 
 use super::{ButtonAction, debounce::Debouncer, debounce::POLL_INTERVAL};
-use crate::pins::{GPIO, ReadLevel};
+use crate::hardware::pins::{GPIO, ReadLevel};
 
 /// A running button poller and its domain-level event subscription.
 #[derive(Debug)]

@@ -1,7 +1,7 @@
 use std::{collections::VecDeque, time::Duration};
 
 use firmware::events::EventEmitter;
-use firmware::pins::{
+use firmware::hardware::pins::{
     BoardPins, ButtonAction, ButtonPin, GPIO, InputOutput, Level, Output, Pin, ReadLevel, Readable,
     Writable, WriteLevel,
 };

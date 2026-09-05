@@ -3,7 +3,7 @@ use core::time::Duration;
 use tokio::time::Instant;
 
 use super::ButtonAction;
-use crate::pins::Level;
+use crate::hardware::pins::Level;
 
 #[cfg(test)]
 mod tests;
