@@ -17,7 +17,7 @@ impl Game {
     /// occurred three times, and [`DrawClaim::FiftyMoveRule`] once the
     /// halfmove clock reaches 100 plies. These are claims only; automatic
     /// draws are derived separately by [`Game::status`](crate::Game::status).
-    pub(in crate::game) fn current_draw_claims(&self) -> DrawClaims {
+    pub(crate) fn current_draw_claims(&self) -> DrawClaims {
         let mut claims = DrawClaims::NONE;
         if self.history().len().value() >= 8 && self.position_repetitions() >= THREEFOLD_REPETITIONS
         {
@@ -39,7 +39,7 @@ impl Game {
     ///
     /// Returns [`MoveError`] when the announced move is illegal on the
     /// current board.
-    pub(in crate::game) fn draw_claims_after_move(
+    pub(crate) fn draw_claims_after_move(
         &self,
         chess_move: ChessMove,
     ) -> Result<DrawClaims, MoveError> {
@@ -64,7 +64,7 @@ impl Game {
     /// sixteen history steps guard the scan), then the seventy-five-move
     /// rule. Unlike claimable draws, the result needs no player claim and is
     /// surfaced through [`Game::status`](crate::Game::status).
-    pub(in crate::game) fn automatic_draw(&self) -> Option<FinalState> {
+    pub(crate) fn automatic_draw(&self) -> Option<FinalState> {
         if material::is_insufficient(self.board()) {
             return Some(FinalState::Draw {
                 reason: DrawReason::InsufficientMaterial,
