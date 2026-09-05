@@ -172,8 +172,16 @@ piece from the current board every ply.
 
 ## Squares are the hardware map
 
-Index `0 = a1` through `63 = h8`. File-major, then rank-major.
-`Square::E2` and `"e2".parse()` are the same value.
+Index `0 = a1` through `63 = h8`. Rank-major: files run fastest.
+
+```text
+index = rank × 8 + file
+        rank 0 = 1 … rank 7 = 8
+        file 0 = a … file 7 = h
+```
+
+`Square::E2` and `"e2".parse()` are the same value. `Square::all()` walks
+this index order.
 
 ```text
 8  a8  b8  c8  d8  e8  f8  g8  h8     56 57 58 59 60 61 62 63
@@ -390,13 +398,20 @@ peer.
 
 ## Setup and the physical board
 
+`Game` has no API for “the sensors look wrong.” Invalid events on a live match
+are produced only by `play`, `claim_draw` / `claim_draw_after`, and `accept`.
+`history()` is read-only. Firmware owns occupancy that is not yet a chess
+operation.
+
 ```mermaid
-flowchart LR
-    SENSORS["64 Hall sensors"] -->|"index 0..63"| SQ["Square"]
+flowchart TB
+    SENSORS["64 Hall sensors"] -->|"index = SquareIndex"| SQ["Square"]
     SQ --> PHYS["physical occupancy"]
-    CACHE["game.board()"]
-    PHYS -->|"same as legal move"| PLAY["game.play"]
-    PHYS -->|"not a chess move"| INV["invalid event"]
+    PHYS --> CMP{"compare to game.board()"}
+    CMP -->|"completed displacement is a ChessMove"| PLAY["game.play / piece.move_to"]
+    PLAY -->|"legal"| MOVE["HistoryEvent::Move"]
+    PLAY -->|"illegal"| INV["HistoryEvent::Invalid Move"]
+    CMP -->|"lifted, hovering, extra trip, debounce"| ADAPTER["adapter-local state"]
     SETUP["Board::from_pieces / force_move"] -->|"then"| FROM["Game::from_board"]
 ```
 
@@ -412,7 +427,7 @@ let game = Game::from_board(board);
 ```
 
 `Board::force_move` relocates without rules, clocks, castling, en passant, or
-history. Compare sensors to `game.board()`, then `play` or record invalid.
+history. Use it to assemble a snapshot, then wrap with `Game::from_board`.
 It is not a back door into a live `Game`. There is no FEN parser here.
 
 ## Logging
@@ -426,13 +441,29 @@ flowchart LR
     L --> SYS["systemd / stderr / test sink"]
 ```
 
+Hosted backends live behind the logger crate's `std` feature. The chess crate
+does not enable it:
+
+```toml
+logger = { path = "../logger", features = ["std"] }
+```
+
+```rust
+use logger::{LevelFilter, implementations::SystemdLogger, register};
+
+static LOGGER: SystemdLogger = SystemdLogger::new(LevelFilter::Info);
+register(&LOGGER)?;
+# Ok::<(), logger::RegistrationError>(())
+```
+
+Without `std`, implement `Logger` yourself and register that. `NopLogger` is
+always available. No registration → complete silence.
+
 | Event | Level |
 |---|---|
 | created | debug |
 | move, resolution, final | info |
 | invalid | warn |
-
-No registration → complete silence. Do not parse log text.
 
 ## What stays outside
 
@@ -455,23 +486,111 @@ No registration → complete silence. Do not parse log text.
 
 ## Hash encodings
 
-Public contract. Private functions. Breaking a tag breaks every stored and
-in-flight step.
+Public contract. Private functions. Integers below are the on-wire tags.
+Domains include a trailing `NUL`. Do not hash `Debug` output.
 
 ```text
-SHA-256
-  domain  chess.game-history.sha256.v1 \0
-  previous hash
-  ply as big-endian u64
-  event tags + payload
+event hash = SHA-256
+┌──────────────────────────────────────────────┐
+│ b"chess.game-history.sha256.v1\0"   29 bytes │
+│ previous hash                       32 bytes │
+│ ply as big-endian u64                8 bytes │
+│ event payload                         varies │
+└──────────────────────────────────────────────┘
 
-SHA-256
-  domain  chess.board-anchor.sha256.v1 \0
-  64 squares, side, castling, en passant, clocks
+board anchor = SHA-256
+┌──────────────────────────────────────────────┐
+│ b"chess.board-anchor.sha256.v1\0"   29 bytes │
+│ 64 occupancy bytes, a1 → h8          64 bytes │
+│ side to move                          1 byte │
+│ WK WQ BK BQ, each 0 or 1              4 bytes │
+│ en passant: index, or 0xFF            1 byte │
+│ halfmove clock, big-endian u32        4 bytes │
+│ fullmove number, big-endian u32       4 bytes │
+└──────────────────────────────────────────────┘
 ```
 
-Do not hash `Debug` output. Equal move lists from different initial boards
-must not synchronize: the chain is anchored to the starting position.
+Occupancy byte: `0` empty, otherwise `color × 6 + kind + 1`.
+
+| | White `0` | Black `1` |
+|---|---|---|
+| Pawn `0` | `1` | `7` |
+| Knight `1` | `2` | `8` |
+| Bishop `2` | `3` | `9` |
+| Rook `3` | `4` | `10` |
+| Queen `4` | `5` | `11` |
+| King `5` | `6` | `12` |
+
+Move promotion byte: none `0`, Knight `1`, Bishop `2`, Rook `3`, Queen `4`.
+
+| Event | First byte | Then |
+|---|---|---|
+| `Move` | `0` | `from`, `to`, promotion |
+| `Invalid` | `1` | invalid tag |
+| `Final` | `2` | final tag |
+
+| Invalid | Tag | Then |
+|---|---|---|
+| `Move` | `0` | move-error tag |
+| `Synchronization` | `1` | sync-error tag |
+| `DrawClaim` | `2` | claim tag |
+| `PendingInvalid` | `3` | — |
+
+| Final | Tag | Then |
+|---|---|---|
+| `Checkmate` | `0` | winner color |
+| `Stalemate` | `1` | — |
+| `Draw` | `2` | draw-reason tag |
+| `DrawAfter` | `3` | claim tag, then move `from`/`to`/promotion |
+
+| Draw claim | | Draw reason | |
+|---|---|---|---|
+| Threefold | `0` | Claimed | `0` + claim |
+| Fifty-move | `1` | Insufficient material | `1` |
+| | | Fivefold | `2` |
+| | | Seventy-five-move | `3` |
+
+| `MoveError` | Tag | Then |
+|---|---|---|
+| `GameOver` | `0` | final payload |
+| `PendingInvalid` | `1` | — |
+| `NoPiece` | `2` | square index |
+| `WrongSide` | `3` | expected color, actual color |
+| `IllegalDestination` | `4` | from index, to index |
+| `UnexpectedPromotion` | `5` | — |
+| `InvalidPromotion` | `6` | — |
+| `NonCanonicalPromotion` | `7` | — |
+| `StalePiece` | `8` | — |
+
+| `GameSyncError` | Tag | Then |
+|---|---|---|
+| `History` | `0` | history-error tag |
+| `Move` | `1` | move-error payload |
+
+| `HistoryError` | Tag | Then |
+|---|---|---|
+| `Ply` | `0` | expected u64 BE, actual u64 BE |
+| `PreviousHash` | `1` | ply u64 BE, expected 32, actual 32 |
+| `Hash` | `2` | ply u64 BE, expected 32, actual 32 |
+| `InvalidTransition` | `3` | optional current kind, incoming kind |
+| `NothingToResolve` | `4` | optional current kind |
+| `Tip` | `5` | expected 32, actual 32 |
+
+Optional event kind: `0` = none; `1` then kind. Kind: `Move 0`, `Invalid 1`,
+`Final 2`.
+
+Locked vector, unanchored history (`GameHistory::new()`, previous =
+`HistoryHash::GENESIS`):
+
+```text
+Move e2e4 at ply 1
+→ 59c8f0c8e610d5d3f71e08c7d6f8749bb8759167e8208c8c144f36650a44d5e6
+```
+
+`Game::new()` is not this vector: it anchors to `Board::INITIAL`, so the first
+previous hash is the board-anchor digest, not genesis. Equal move lists from
+different initial boards must not synchronize. Breaking a tag breaks every
+stored and in-flight `HistoryStep`.
 
 ## Source layout
 
