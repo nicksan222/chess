@@ -2,6 +2,7 @@ use std::{env, thread};
 
 use logger::{LevelFilter, implementations::SystemdLogger, info, register};
 
+pub mod events;
 pub mod pins;
 
 static LOGGER: SystemdLogger = SystemdLogger::new(LevelFilter::Info);
