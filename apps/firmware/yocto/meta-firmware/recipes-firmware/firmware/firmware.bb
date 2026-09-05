@@ -16,6 +16,15 @@ EXTERNALSRC_BUILD = "${WORKDIR}/build"
 SOURCE_BASEDIR = "${EXTERNALSRC}/apps/firmware"
 CARGO_MANIFEST_PATH = "${SOURCE_BASEDIR}/Cargo.toml"
 
+# base_do_unpack resets SOURCE_BASEDIR to EXTERNALSRC when a recipe combines an
+# external tree with fetched crates. Restore the narrow source directory before
+# reproducible.py scans it; scanning the whole checkout races rm_work through
+# the CI-mounted .cache/yocto tree.
+python firmware_limit_source_date_epoch_scan() {
+    d.setVar("SOURCE_BASEDIR", d.getVar("EXTERNALSRC") + "/apps/firmware")
+}
+do_unpack[postfuncs] =+ "firmware_limit_source_date_epoch_scan"
+
 FIRMWARE_FILES_DIR := "${THISDIR}/files"
 
 SYSTEMD_SERVICE:${PN} = "firmware.service"

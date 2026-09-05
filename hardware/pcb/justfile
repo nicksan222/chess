@@ -15,6 +15,11 @@ doctor:
     @command -v kicad-cli >/dev/null || { echo 'error: KiCad 9 kicad-cli is required' >&2; exit 1; }
     @python3 -c 'import pcbnew' 2>/dev/null || { echo 'error: KiCad 9 Python pcbnew is required' >&2; exit 1; }
 
+# Verify the optional simulator only on paths that execute electrical tests.
+[private]
+spice-doctor:
+    @command -v ngspice >/dev/null || { echo 'error: ngspice is required for electrical simulation' >&2; exit 1; }
+
 # Lint and format-check PCB Python.
 quality:
     cd "{{ root }}" && {{ ruff }} check hardware/pcb
@@ -42,7 +47,7 @@ drc: generate
     kicad-cli pcb export pos --format csv --units mm --side both --exclude-dnp -o "{{ out }}/positions.csv" "{{ board }}"
 
 # Run generation, pin parity, ERC, DRC, and Python tests.
-test: pins-check erc drc
+test: pins-check erc drc spice-doctor
     cd "{{ root }}" && PYTHONPATH=hardware:hardware/pcb python3 -m unittest discover -s hardware/pcb/tests -p 'test_*.py'
 
 # Generate review SVGs and board renders.

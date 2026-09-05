@@ -8,7 +8,7 @@ from collections import Counter
 from enum import StrEnum
 from pathlib import Path
 
-PCB_ROOT = Path(__file__).resolve().parents[1]
+PCB_ROOT = Path(__file__).resolve().parents[2]
 if str(PCB_ROOT) not in sys.path:
     sys.path.insert(0, str(PCB_ROOT))
 

@@ -10,7 +10,7 @@ from pathlib import Path
 
 from shared.components import BARREL_JACK, FUSE_2A, OLED_MODULE, POWER_SUPPLY
 
-PCB = Path(__file__).resolve().parents[1]
+PCB = Path(__file__).resolve().parents[2]
 GENERATED = PCB / "generated"
 
 
