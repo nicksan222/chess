@@ -7,3 +7,4 @@ version.workspace = true
 
 [dependencies]
 logger = { path = "../../crates/logger", features = ["std"] }
+menu = { path = "../../crates/menu" }

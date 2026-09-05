@@ -114,6 +114,7 @@ name = "firmware"
 version = "0.0.0"
 dependencies = [
  "logger",
+ "menu",
 ]
 
 [[package]]
