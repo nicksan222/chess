@@ -1,5 +1,11 @@
 use core::marker::PhantomData;
 
+use crate::events::Button;
+
+mod button;
+
+pub use button::{ButtonAction, ButtonPin, ButtonSubscription, StartSubscriptionError};
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 #[allow(clippy::upper_case_acronyms)]
 pub struct GPIO(u8);
@@ -20,14 +26,12 @@ pub enum Level {
     High,
 }
 
-pub struct Input;
 pub struct Output;
 pub struct InputOutput;
 
 pub trait Readable {}
 pub trait Writable {}
 
-impl Readable for Input {}
 impl Readable for InputOutput {}
 impl Writable for Output {}
 impl Writable for InputOutput {}
@@ -48,35 +52,35 @@ pub trait WriteLevel {
 
 /// Direct high/low GPIO pins used by the control-panel buttons.
 pub struct GPIOPins {
-    pub up_button: Pin<5, Input>,
-    pub down_button: Pin<6, Input>,
-    pub left_button: Pin<12, Input>,
-    pub right_button: Pin<13, Input>,
-    pub ok_button: Pin<16, Input>,
-    pub reset_button: Pin<17, Input>,
-    pub pass_button: Pin<19, Input>,
-    pub function_one_button: Pin<20, Input>,
-    pub function_two_button: Pin<21, Input>,
-    pub function_three_button: Pin<22, Input>,
-    pub function_four_button: Pin<23, Input>,
-    pub function_five_button: Pin<24, Input>,
+    pub up_button: ButtonPin<5>,
+    pub down_button: ButtonPin<6>,
+    pub left_button: ButtonPin<12>,
+    pub right_button: ButtonPin<13>,
+    pub ok_button: ButtonPin<16>,
+    pub reset_button: ButtonPin<17>,
+    pub pass_button: ButtonPin<19>,
+    pub function_one_button: ButtonPin<20>,
+    pub function_two_button: ButtonPin<21>,
+    pub function_three_button: ButtonPin<22>,
+    pub function_four_button: ButtonPin<23>,
+    pub function_five_button: ButtonPin<24>,
 }
 
 impl GPIOPins {
     pub(super) const fn get() -> Self {
         Self {
-            up_button: Pin::new(GPIO::new(5)),
-            down_button: Pin::new(GPIO::new(6)),
-            left_button: Pin::new(GPIO::new(12)),
-            right_button: Pin::new(GPIO::new(13)),
-            ok_button: Pin::new(GPIO::new(16)),
-            reset_button: Pin::new(GPIO::new(17)),
-            pass_button: Pin::new(GPIO::new(19)),
-            function_one_button: Pin::new(GPIO::new(20)),
-            function_two_button: Pin::new(GPIO::new(21)),
-            function_three_button: Pin::new(GPIO::new(22)),
-            function_four_button: Pin::new(GPIO::new(23)),
-            function_five_button: Pin::new(GPIO::new(24)),
+            up_button: ButtonPin::new(Button::Previous),
+            down_button: ButtonPin::new(Button::Next),
+            left_button: ButtonPin::new(Button::Back),
+            right_button: ButtonPin::new(Button::Forward),
+            ok_button: ButtonPin::new(Button::Confirm),
+            reset_button: ButtonPin::new(Button::Reset),
+            pass_button: ButtonPin::new(Button::Pass),
+            function_one_button: ButtonPin::new(Button::FunctionOne),
+            function_two_button: ButtonPin::new(Button::FunctionTwo),
+            function_three_button: ButtonPin::new(Button::FunctionThree),
+            function_four_button: ButtonPin::new(Button::FunctionFour),
+            function_five_button: ButtonPin::new(Button::FunctionFive),
         }
     }
 }
@@ -87,10 +91,9 @@ pub struct Pin<const BCM: u8, Capability> {
 }
 
 impl<const BCM: u8, Capability> Pin<BCM, Capability> {
-    pub(super) const fn new(gpio: GPIO) -> Self {
-        assert!(gpio.bcm_number() == BCM, "GPIO and BCM number differ");
+    pub(super) const fn new() -> Self {
         Self {
-            gpio,
+            gpio: GPIO::new(BCM),
             capability: PhantomData,
         }
     }

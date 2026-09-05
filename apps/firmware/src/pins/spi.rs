@@ -1,4 +1,4 @@
-use super::{GPIO, Output, Pin};
+use super::{Output, Pin};
 
 /// Pins for the SPI LED chain.
 pub struct SPIPins {
@@ -9,8 +9,8 @@ pub struct SPIPins {
 impl SPIPins {
     pub(super) const fn get() -> Self {
         Self {
-            data: Pin::new(GPIO::new(10)),
-            clock: Pin::new(GPIO::new(11)),
+            data: Pin::new(),
+            clock: Pin::new(),
         }
     }
 }

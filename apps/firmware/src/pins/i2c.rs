@@ -1,4 +1,4 @@
-use super::{GPIO, InputOutput, Pin};
+use super::{InputOutput, Pin};
 
 /// Pins for the board's shared I2C bus.
 pub struct I2CPins {
@@ -9,8 +9,8 @@ pub struct I2CPins {
 impl I2CPins {
     pub(super) const fn get() -> Self {
         Self {
-            data: Pin::new(GPIO::new(2)),
-            clock: Pin::new(GPIO::new(3)),
+            data: Pin::new(),
+            clock: Pin::new(),
         }
     }
 }

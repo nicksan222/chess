@@ -1,25 +1,25 @@
-use std::{env, thread};
+use std::{env, io};
 
+use firmware::runtime::Firmware;
 use logger::{LevelFilter, implementations::SystemdLogger, info, register};
-
-pub mod events;
-pub mod pins;
 
 static LOGGER: SystemdLogger = SystemdLogger::new(LevelFilter::Info);
 
-fn main() {
+fn main() -> io::Result<()> {
     if env::args().nth(1).as_deref() == Some("--version") {
         println!("firmware {}", env!("CARGO_PKG_VERSION"));
-        return;
+        return Ok(());
     }
 
-    register(&LOGGER).expect("the firmware registers its logger only once");
+    register(&LOGGER).map_err(|_| io::Error::other("firmware logger already registered"))?;
     info!("starting firmware {}", env!("CARGO_PKG_VERSION"));
 
-    // Hardware and provisioning workers will be added behind this supervised
-    // process. SIGTERM retains its default behavior, allowing systemd to stop
-    // the firmware without application-specific signal handling.
-    loop {
-        thread::park();
-    }
+    tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()?
+        .block_on(async {
+            let mut firmware = Firmware::start()?;
+            // Physical adapters will attach to firmware.events().
+            firmware.wait().await
+        })
 }
