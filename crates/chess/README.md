@@ -45,6 +45,28 @@ Position identity includes placement, side to move, castling rights, and an
 en-passant target only when a legal en-passant capture is actually available.
 Halfmove and fullmove counters do not affect repetition identity.
 
+## Interaction
+
+The existing piece API remains unchanged: callers can use `Game::piece_at`,
+`Piece::legal_destinations`, `Piece::legal_moves`, and `Piece::move_to`
+directly. The player layer adds one stable shape for local, computer, and online
+play:
+
+```rust
+use chess::{Difficulty, GameSession, Player};
+
+let game = GameSession::new(
+    Player::human(),
+    Player::computer(Difficulty::Medium),
+);
+```
+
+Players receive only a restricted read-only position view; `GameSession` alone
+applies their moves through the existing authoritative `Game::play` path. Human
+and online polls never wait for external input. Computer polling performs its
+configured search synchronously, so latency-sensitive applications should call
+it from an appropriate worker context.
+
 ## Optional logging
 
 The engine checks the logger crate's singleton at each lifecycle event. With no
