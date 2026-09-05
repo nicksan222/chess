@@ -34,17 +34,6 @@ impl RaspberryPiPin for Gpio3 {
     const HEADER_PIN: u8 = 5;
 }
 
-/// BCM GPIO 4, on physical header pin 7.
-///
-/// The current PCB net is `SENSE_IRQ`. Firmware decides what that net means.
-#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
-pub struct Gpio4;
-
-impl RaspberryPiPin for Gpio4 {
-    const BCM_NUMBER: u8 = 4;
-    const HEADER_PIN: u8 = 7;
-}
-
 /// BCM GPIO 5, on physical header pin 29.
 ///
 /// The current PCB net is `BTN_UP`. Firmware decides what that net means.
