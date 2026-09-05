@@ -24,6 +24,25 @@ describe("PR plan validation", () => {
 		).toEqual([".pi/extensions/commit-loop/index.ts"]);
 	});
 
+	test("expands an untracked directory selected from compact Git status", () => {
+		const directoryPlan = plan({
+			commits: [{ message: "Add history modules", paths: ["crates/chess/src/history/"] }],
+		});
+		expect(
+			validatePrPlan(directoryPlan, [
+				"crates/chess/src/history/event.rs",
+				"crates/chess/src/history/mod.rs",
+			]),
+		).toEqual([
+			"crates/chess/src/history/event.rs",
+			"crates/chess/src/history/mod.rs",
+		]);
+		expect(directoryPlan.commits[0]?.paths).toEqual([
+			"crates/chess/src/history/event.rs",
+			"crates/chess/src/history/mod.rs",
+		]);
+	});
+
 	test("rejects duplicate paths across sequential commits", () => {
 		expect(() =>
 			validatePrPlan(
@@ -89,5 +108,8 @@ describe("secret scanning", () => {
 		expect(suspiciousPatchLines(
 			"+credential=github_pat_11AA22BB33CC44DD55EE66FF77GG88HH",
 		)).toEqual(["+credential=github_pat_11AA22BB33CC44DD55EE66FF77GG88HH"]);
+		expect(suspiciousPatchLines(
+			"+        apiKey: auth.apiKey,\n+        token = process.env.ACCESS_TOKEN",
+		)).toEqual([]);
 	});
 });

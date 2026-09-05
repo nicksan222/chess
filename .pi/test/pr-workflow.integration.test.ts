@@ -43,6 +43,20 @@ function createHarness(
 	const planningPrompts: string[] = [];
 	const notices: Array<{ message: string; level: string }> = [];
 	const confirmations: string[] = [];
+	const widgets: Array<string[] | undefined> = [];
+	const planningResponse = () => ({
+		stopReason: "toolUse",
+		content: [{
+			type: "toolCall",
+			id: "plan-1",
+			name: "submit_pr_plan",
+			arguments: plan,
+		}],
+	});
+	const recordPlanningRequest = (request: any) => {
+		planningCalls += 1;
+		planningPrompts.push(request.messages[0].content[0].text);
+	};
 	const pi = {
 		registerCommand(name: string, registration: { handler: (args: string, ctx: any) => Promise<void> }) {
 			if (name === "pr") commandHandler = registration.handler;
@@ -65,18 +79,21 @@ function createHarness(
 		model: { provider: "faux", id: "planner" },
 		modelRegistry: {
 			hasConfiguredAuth: () => true,
+			getApiKeyAndHeaders: async () => ({ ok: true }),
+			getProvider: () => ({
+				stream: (_model: unknown, request: any) => {
+					recordPlanningRequest(request);
+					return {
+						async *[Symbol.asyncIterator]() {
+							yield { type: "thinking_delta", delta: "Reviewing changed paths…" };
+						},
+						result: async () => planningResponse(),
+					};
+				},
+			}),
 			complete: async (_model: unknown, request: any) => {
-				planningCalls += 1;
-				planningPrompts.push(request.messages[0].content[0].text);
-				return {
-					stopReason: "toolUse",
-					content: [{
-						type: "toolCall",
-						id: "plan-1",
-						name: "submit_pr_plan",
-						arguments: plan,
-					}],
-				};
+				recordPlanningRequest(request);
+				return planningResponse();
 			},
 		},
 		sessionManager: { getBranch: () => [] },
@@ -88,9 +105,10 @@ function createHarness(
 			},
 			notify: (message: string, level: string) => notices.push({ message, level }),
 			setStatus() {},
+			setWidget: (_key: string, content: string[] | undefined) => widgets.push(content),
 		},
 	};
-	return { commandHandler, confirmations, context, notices, planningCalls: () => planningCalls, planningPrompts };
+	return { commandHandler, confirmations, context, notices, planningCalls: () => planningCalls, planningPrompts, widgets };
 }
 
 const DOCUMENTATION_PLAN: PrPlan = {
@@ -117,6 +135,22 @@ describe("standalone /pr workflow", () => {
 		expect((await run("git", ["status", "--porcelain"], repository)).stdout.trim()).toBe("");
 		expect(await readFile(join(repository, "README.md"), "utf8")).toContain("after");
 		expect(harness.notices.some(({ message, level }) => level === "warning" && message.includes("Created local commits"))).toBe(true);
+		expect(harness.widgets.some((widget) => widget?.includes("Reviewing changed paths…"))).toBe(true);
+		expect(harness.widgets.at(-1)).toBeUndefined();
+	});
+
+	test("plans dirty patches larger than the former 256KB limit", async () => {
+		const repository = await createRepository();
+		await writeFile(join(repository, "README.md"), "expanded documentation\n".repeat(14_000));
+		const harness = createHarness(repository, DOCUMENTATION_PLAN);
+
+		await harness.commandHandler("document the large change", harness.context);
+
+		expect(harness.planningCalls()).toBe(1);
+		expect(Buffer.byteLength(harness.planningPrompts[0] ?? "")).toBeGreaterThan(256 * 1024);
+		expect((await run("git", ["log", "-1", "--pretty=%s"], repository)).stdout.trim())
+			.toBe("Document the PR workflow");
+		expect(harness.notices.some(({ message }) => message.includes("complete patch exceeds"))).toBe(false);
 	});
 
 	test("blocks credentials echoed into generated PR metadata", async () => {
