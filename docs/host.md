@@ -15,13 +15,13 @@ It reaches the hardware through Linux character devices:
 
 | Device | Carries |
 |---|---|
-| `/dev/i2c-1` | four MCP23017 expanders at 0x20-0x23, the OLED at 0x3C |
+| `/dev/i2c-1` | eight TCA9554 expanders at 0x20-0x27, the OLED at 0x3C |
 | `/dev/spidev0.0` | the SK9822 LED chain, through the level buffer |
-| `/dev/gpiochip0` | the sensor interrupt and twelve panel buttons |
+| `/dev/gpiochip0` | twelve panel buttons (unchanged GPIO wiring) |
 
 Suggested crates: `linux-embedded-hal` over `i2cdev`, `spidev` and `gpiocdev`;
-`port-expander` for the MCP23017s; `ssd1306` with `embedded-graphics` for the
-display. Note that `rppal`, the obvious first choice for Pi peripherals in Rust,
+Use a TCA9554-compatible register implementation and an SH1106-compatible
+display implementation; neither hardware worker exists yet. Note that `rppal`, the obvious first choice for Pi peripherals in Rust,
 was retired by its author in July 2025, so the maintained character-device crates
 are the better foundation for new work.
 
@@ -30,7 +30,7 @@ only the Raspberry Pi GPIOs connected by the native pcbnew board. The generated
 types describe host pin identity but deliberately assign no application meaning;
 firmware consumers decide which concrete GPIO implementation and semantic role
 each marker receives. Regenerate the board with
-`just --justfile hardware/pcb/justfile generate`. The package's test recipe,
+`just --justfile hardware/pcb/justfile pins` (writes both board and pins). The package's test recipe,
 pre-commit, and PCB CI verify pin parity after board generation.
 
 The LED frame needs no library. An SK9822 frame is a start frame of zero bytes,
@@ -39,16 +39,50 @@ SPI at about 2 MHz, which is already over a thousand frames per second.
 
 ## Reading the board
 
-The expanders raise an interrupt on change, so the Pi does not poll. Their INTA
-pins are open-drain and wired together onto GPIO4, meaning any of the four can
-pull the line low and the host reads all of them to find out which did.
+The D-PROTOTYPE board **polls** eight TCA9554DWRs. Their INT outputs are
+explicitly no-connect, and Pi header pin 7 (GPIO4) is unused. There is no shared
+sensor IRQ, IRQ pull-up, or IRQ test point.
 
-Contact bounce is filtered in software, because the board carries no RC networks
-on its 64 sense lines. On an interrupt: mask further interrupts, wait about 25 ms,
-read the port registers — which also clears the expanders' interrupt latch — diff
-against the last known state, then unmask. The host requires a square to read the
-same way for several consecutive samples before believing it, so a chattering
-contact never settles.
+At startup, and after any detected expander power loss, write Configuration
+register **0x03 = 0xFF** (all eight pins inputs) and Polarity Inversion register
+**0x02 = 0x00**. Read Input Port register **0x00** using a command write followed
+by a repeated-start byte read. There is one 8-bit port, not two; Output Port
+register 0x01 must not be used to acquire sensors. Do not apply a different
+expander family's register map or enable outputs against the open-drain sensors.
+
+Scan addresses 0x20–0x27 in order; map P0–P7 with the bank contract in
+`hardware/shared/hall_banks.py` (four files by two ranks; left half P0–P3,
+right half P4–P7). LOW means occupied. Eight sequential reads are **not an atomic
+64-square capture**. Begin at 100 kHz I²C, aiming for a complete scan every
+25 ms; this is a starting software target, not measured scheduling performance.
+A command/read uses about 36 bus clocks, so eight banks take about 2.88 ms at
+100 kHz, before Linux and OLED traffic. Serialize access with the OLED and retain
+per-bank timestamps. Failed reads mean unknown/stale data, never an empty square;
+report faults and reconcile the full board after recovery. A stuck-low target
+can block the entire shared bus.
+
+The DRV5032FC samples internally at 20 Hz typical (27–75 ms period). Faster
+polling cannot recover unobserved magnetic transitions. Require stable readings
+across successive complete scans before reporting a move, with the final
+filter/latency chosen by prototype testing. This is magnetic/noise filtering,
+not mechanical-contact debounce. Button debounce remains a separate GPIO concern.
+
+Each TCA9554 input has a **100 kΩ typical** internal pull-up to 3.3 V; this is
+not a precision or guaranteed maximum resistance. No external Hall pull-ups or
+RC filters are fitted. As an illustrative lumped estimate, 100 kΩ and 50 pF give
+5 µs RC and about 6 µs to 0.7 VCC. Actual trace/input capacitance, leakage,
+weak-pull-up variation, slow edges, and LED-coupled noise need measurement at the
+furthest channels; a typical estimate is not a worst-case guarantee. Keep the
+DRV5032FC 3.3 V open-drain output and local 100 nF bypassing.
+
+SDA/SCL pull-ups R1/R2 remain 4.7 kΩ to 3.3 V. Include the Pi's approximately
+1.8 kΩ pull-ups and any display-module pulls when measuring the parallel load
+(4.7 kΩ || 1.8 kΩ is about 1.30 kΩ). Verify sink VOL and rise time against the
+complete nine-target bus capacitance, particularly before attempting 400 kHz.
+The retained stackup and local Hall routes do not prove signal integrity.
+
+These are the contract for future hardware workers, not an implemented driver
+or evidence of physical operation.
 
 ## Joining a WiFi network
 

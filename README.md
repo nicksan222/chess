@@ -40,7 +40,7 @@ the stack.
 
 | | |
 |---|---|
-| **Sense** | 64 omnipolar Hall sensors, one per square |
+| **Sense** | 64 DRV5032FC Hall sensors, eight compact polled TCA9554 banks |
 | **Glow** | 64 individually addressable SK9822 RGB LEDs |
 | **Think** | Raspberry Pi Zero 2 W targeting Rust on a Yocto Linux image |
 | **Interact** | 12 tactile buttons and a 1.3-inch OLED |
@@ -83,7 +83,7 @@ check every exact part in the [generated BOM](hardware/pcb/generated/bom.md).
 ```mermaid
 flowchart LR
     P["Magnetic pieces"] --> H["64 × Hall sensors"]
-    H --> E["4 × I²C expanders"]
+    H --> E["8 × TCA9554 banks (2×4)"]
     E --> PI["Raspberry Pi Zero 2 W"]
     PI --> R["Rust chess + board logic"]
     PI --> L["64 × RGB LEDs"]
@@ -140,7 +140,7 @@ See [`docs/development.md`](docs/development.md) for the full workflow.
 
 > [!IMPORTANT]
 > **The current design is ready for review, not yet physically proven.** The
-> mechanical design and `C-PROTOTYPE` PCB generate successfully, and automated
+> mechanical design and `D-PROTOTYPE` PCB generate successfully, and automated
 > ERC, DRC, connectivity, schematic-parity, and firmware checks pass. No
 > complete board has been built yet. Prototype one sensor/LED square before
 > ordering the full PCB.

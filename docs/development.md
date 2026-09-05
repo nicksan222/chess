@@ -34,7 +34,10 @@ connection, then writes the BOM under `hardware/pcb/generated/`. CAD and PCB
 both consume `hardware/shared`, preventing the mechanical and electrical layouts
 from independently copying dimensions or mappings.
 
-Generated artifacts remain under each domain's `generated/` directory. The CAD
+Generated hardware artifacts remain under each domain's `generated/` directory.
+When host connectivity changes, `just --justfile hardware/pcb/justfile pins`
+regenerates the board and writes `apps/firmware/src/generated_pins.rs`; the
+separate `pins-check` recipe rejects stale output without rewriting it. The CAD
 recipe creates an ignored fallback toolchain under `.cache/blender` outside the
 container; Yocto owns its caches under `.cache/yocto`.
 

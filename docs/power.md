@@ -35,7 +35,7 @@ host caps it. Capping brightness is therefore part of the protocol rather than
 something the application has to remember.
 
 Pour generous 5 V and ground copper and place the bulk capacitor centrally in the
-array, so the rail is injected across all four quadrants instead of being fed
+array, so the rail is injected across the entire playing area instead of being fed
 through the chain. On a single board that costs nothing; the wiring harness of
 revision A is what made power injection a problem worth documenting.
 
