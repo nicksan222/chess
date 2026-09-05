@@ -18,7 +18,7 @@ const BOARD_DOMAIN: &[u8] = b"chess.board-anchor.sha256.v1\0";
 /// [`GameHistory::verify`](crate::GameHistory::verify) replays the hash
 /// chain starting from it, so divergent initial boards fail as a
 /// previous-hash mismatch on the first [`Ply`](crate::Ply).
-pub(in crate::game::history) fn calculate_board_anchor(board: &Board) -> HistoryHash {
+pub(in crate::history) fn calculate_board_anchor(board: &Board) -> HistoryHash {
     let mut digest = Sha256::new();
     digest.update(BOARD_DOMAIN);
     for square in crate::Square::all() {

@@ -2,7 +2,7 @@
 
 use core::fmt;
 
-use super::{HistoryError, MoveError};
+use crate::{HistoryError, MoveError};
 
 /// An incoming move that failed synchronization or chess validation.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

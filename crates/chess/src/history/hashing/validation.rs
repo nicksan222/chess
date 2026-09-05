@@ -20,7 +20,7 @@ use super::{
 /// the step does not commit to the expected predecessor, and
 /// [`HistoryError::Hash`](crate::HistoryError) for a wrong cumulative
 /// hash.
-pub(in crate::game::history) fn validate_step(
+pub(in crate::history) fn validate_step(
     step: HistoryStep,
     expected_ply: Ply,
     expected_previous: HistoryHash,

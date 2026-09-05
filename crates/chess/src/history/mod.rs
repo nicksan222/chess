@@ -6,12 +6,14 @@ mod hashing;
 mod iter;
 mod sequence;
 mod step;
+mod sync_error;
 
 pub use error::HistoryError;
 pub use event::{FinalState, HistoryEvent, HistoryEventKind, InvalidState};
 pub use iter::GameHistoryIter;
 pub use sequence::{HistoryCount, InvalidPly, Ply};
 pub use step::{HistoryHash, HistoryStep};
+pub use sync_error::GameSyncError;
 
 use chess_core::collections::LinkedList;
 

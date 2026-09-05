@@ -20,7 +20,7 @@ const HASH_DOMAIN: &[u8] = b"chess.game-history.sha256.v1\0";
 /// the anchor and every preceding event, letting
 /// [`GameHistory::verify`](crate::GameHistory::verify) detect skipped
 /// plies, forked tips, and mutated events.
-pub(in crate::game::history) fn calculate_hash(
+pub(in crate::history) fn calculate_hash(
     previous: HistoryHash,
     ply: Ply,
     event: HistoryEvent,
