@@ -6,7 +6,7 @@ import sys
 import unittest
 from pathlib import Path
 
-PCB_ROOT = Path(__file__).resolve().parents[1]
+PCB_ROOT = Path(__file__).resolve().parents[2]
 HARDWARE_ROOT = PCB_ROOT.parent
 for path in (PCB_ROOT, HARDWARE_ROOT):
     if str(path) not in sys.path:

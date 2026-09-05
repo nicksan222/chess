@@ -34,6 +34,7 @@ RUN apt-get update \
         libxkbcommon0 \
         libxrender1 \
         make \
+        ngspice \
         software-properties-common \
         pkg-config \
         python3 \

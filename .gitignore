@@ -16,3 +16,6 @@ __pycache__/
 *.py[cod]
 .cache/
 /dist/firmware/
+
+# Generated next to their Python SPICE test cases.
+/hardware/pcb/tests/spice/*.cir
