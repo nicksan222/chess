@@ -41,7 +41,8 @@ container; Yocto owns its caches under `.cache/yocto`.
 ## CI
 
 Pull request CI invokes package-local recipes for code quality, every Rust
-package, CAD, PCB, and firmware. In addition to host tests and Yocto metadata
+package, CAD, PCB, and firmware, and runs the Bun-managed `.pi` typecheck and
+test suite with its frozen lockfile. In addition to host tests and Yocto metadata
 validation, `Firmware binary (AArch64)` performs a locked optimized build and
 links the real firmware executable for the Pi architecture. Cargo follows the
 firmware package's complete dependency graph automatically, including local

@@ -68,6 +68,17 @@ jobs:
             docker push "${LATEST}"
           fi
 
+  pi-harness:
+    name: Pi harness
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.0
+      - run: bun install --cwd .pi --frozen-lockfile
+      - run: bun run --cwd .pi check
+
   firmware-metadata:
     name: Firmware metadata
     if: github.event_name == 'pull_request'
@@ -192,7 +203,7 @@ jobs:
   required-checks:
     name: Required checks
     if: always() && github.event_name == 'pull_request'
-    needs: [cad, pcb, code-quality, crate-test, firmware-metadata, firmware-binary]
+    needs: [cad, pcb, code-quality, crate-test, pi-harness, firmware-metadata, firmware-binary]
     runs-on: ubuntu-latest
     steps:
       - name: Verify required jobs succeeded
@@ -205,7 +216,7 @@ jobs:
   firmware:
     name: Firmware
     if: github.event_name == 'push'
-    needs: [cad, pcb, code-quality, crate-test]
+    needs: [cad, pcb, code-quality, crate-test, pi-harness]
     permissions:
       contents: write
     uses: ./.github/workflows/firmware.yml
