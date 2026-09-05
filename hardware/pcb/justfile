@@ -1,101 +1,26 @@
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
 root := justfile_directory() + "/../.."
-out := root + "/hardware/pcb/generated"
-board := out + "/chess-board.kicad_pcb"
-schematic := out + "/chess-board.kicad_sch"
-ruff := env_var_or_default("RUFF", "ruff")
 
+# Board-as-code generation and checks. Python owns the pipeline, not shell DAGs.
 default:
     @just --list
 
-# Verify the native KiCad toolchain.
-[private]
-doctor:
-    @command -v kicad-cli >/dev/null || { echo 'error: KiCad 9 kicad-cli is required' >&2; exit 1; }
-    @python3 -c 'import pcbnew' 2>/dev/null || { echo 'error: KiCad 9 Python pcbnew is required' >&2; exit 1; }
+generate:
+    cd "{{ root }}" && PYTHONPATH=hardware python3 -m pcb generate
 
-# Verify the optional simulator only on paths that execute electrical tests.
-[private]
-spice-doctor:
-    @command -v ngspice >/dev/null || { echo 'error: ngspice is required for electrical simulation' >&2; exit 1; }
+check:
+    cd "{{ root }}" && PYTHONPATH=hardware python3 -m pcb check
 
-# Lint and format-check PCB Python.
-quality:
-    cd "{{ root }}" && {{ ruff }} check hardware/pcb
-    cd "{{ root }}" && {{ ruff }} format --check hardware/pcb
+review:
+    cd "{{ root }}" && PYTHONPATH=hardware python3 -m pcb review
 
-# Generate the approved BOM and native KiCad project.
-generate: doctor
-    cd "{{ root }}" && PYTHONPATH=hardware:hardware/pcb python3 -m tools.write_bom
-    cd "{{ root }}" && PYTHONPATH=hardware:hardware/pcb python3 -m tools.write_schematic
-    cd "{{ root }}" && PYTHONPATH=hardware:hardware/pcb python3 -m tools.generate
-    cd "{{ root }}" && PYTHONPATH=hardware:hardware/pcb python3 -m tools.configure_project
+release:
+    cd "{{ root }}" && PYTHONPATH=hardware python3 -m pcb release
 
-# Write firmware GPIO markers from the regenerated native board.
-pins: generate
-    cd "{{ root }}" && PYTHONPATH=hardware:hardware/pcb python3 -m tools.generate_firmware_pins
+# Root/CI entry point.
+quality: check
 
-# Verify generated firmware pins against the board without silently updating them.
-pins-check: generate
-    cd "{{ root }}" && PYTHONPATH=hardware:hardware/pcb python3 -m tools.generate_firmware_pins --check
-
-# Run native KiCad ERC.
-erc: generate
-    kicad-cli sch erc --severity-all --format json -o "{{ out }}/erc.json" "{{ schematic }}"
-
-# Run DRC, schematic parity, and position export.
-drc: generate
-    kicad-cli pcb drc --schematic-parity --severity-all --severity-exclusions -o "{{ out }}/drc.rpt" "{{ board }}"
-    kicad-cli pcb drc --schematic-parity --format json --severity-all --severity-exclusions -o "{{ out }}/drc.json" "{{ board }}"
-    kicad-cli pcb export pos --format csv --units mm --side both --exclude-dnp -o "{{ out }}/positions.csv" "{{ board }}"
-
-# Run generation, pin parity, ERC, DRC, and Python tests.
-test: pins-check erc drc spice-doctor
-    cd "{{ root }}" && PYTHONPATH=hardware:hardware/pcb python3 -m unittest discover -s hardware/pcb/tests -p 'test_*.py'
-
-# Generate review SVGs and board renders.
-previews: test
-    #!/usr/bin/env bash
-    set -euo pipefail
-    rm -rf "{{ out }}/schematic"
-    mkdir -p "{{ out }}/schematic"
-    kicad-cli sch export svg --exclude-drawing-sheet --no-background-color -o "{{ out }}/schematic" "{{ schematic }}"
-    options=(--mode-single --page-size-mode 2 --fit-page-to-board --exclude-drawing-sheet --subtract-soldermask)
-    kicad-cli pcb export svg "${options[@]}" -l F.Cu,F.Mask,F.Silkscreen,Edge.Cuts -o "{{ out }}/board-top.svg" "{{ board }}"
-    kicad-cli pcb export svg "${options[@]}" --mirror -l B.Cu,B.Mask,B.Silkscreen,Edge.Cuts -o "{{ out }}/board-bottom.svg" "{{ board }}"
-    cd "{{ root }}"
-    PYTHONPATH=hardware:hardware/pcb python3 -m tools.polish_previews
-    kicad-cli pcb render --quality high --width 1800 --height 1200 --background opaque --floor --perspective --rotate 325,0,35 --zoom 0.75 -o "{{ out }}/board-3d.png" "{{ board }}"
-    kicad-cli pcb render --quality high --width 1400 --height 1400 --background opaque --side top --zoom 0.82 -o "{{ out }}/board-top.png" "{{ board }}"
-    kicad-cli pcb render --quality high --width 1400 --height 1400 --background opaque --side bottom --zoom 0.82 -o "{{ out }}/board-bottom.png" "{{ board }}"
-
-# Run review gates and previews without fabrication output.
-review: quality previews
-
-# Enforce release-only manufacturing tests.
-[private]
-release-test: test
-    cd "{{ root }}" && PCB_RELEASE=1 PYTHONPATH=hardware:hardware/pcb python3 -m unittest discover -s hardware/pcb/tests -p 'test_*.py'
-
-# Export Gerber and Excellon fabrication files after release gates.
-fabrication: release-test
-    #!/usr/bin/env bash
-    set -euo pipefail
-    rm -rf "{{ out }}/gerber"
-    mkdir -p "{{ out }}/gerber"
-    layers=F.Cu,In1.Cu,In2.Cu,In3.Cu,In4.Cu,In5.Cu,In6.Cu,B.Cu,F.Paste,B.Paste,F.Silkscreen,B.Silkscreen,F.Mask,B.Mask,Edge.Cuts
-    kicad-cli pcb export gerbers -l "$layers" -o "{{ out }}/gerber/" "{{ board }}"
-    kicad-cli pcb export drill --excellon-separate-th --excellon-oval-format route --generate-report --report-path "{{ out }}/gerber/drill-report.rpt" -o "{{ out }}/gerber/" "{{ board }}"
-
-# Run every release gate, generate previews, and export fabrication files.
-release: quality previews fabrication
-
-# Run checks without previews or fabrication output.
-check-fast: quality test
-
-# Remove transient KiCad and Python output.
 clean:
     find "{{ root }}/hardware/pcb" -type d -name __pycache__ -prune -exec rm -rf {} +
-    rm -f "{{ out }}"/*.kicad_prl "{{ out }}"/~*.lck
-    rm -rf "{{ out }}/gerber"
+    rm -f "{{ root }}/hardware/pcb/generated/"*.kicad_prl "{{ root }}/hardware/pcb/generated/"~*.lck

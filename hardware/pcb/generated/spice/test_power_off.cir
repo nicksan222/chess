@@ -1,0 +1,20 @@
+Generated chess-board open power switch
+VINPUT dc_in 0 5.0
+RFUSE dc_in dc_fused 0.12
+RSWITCH dc_fused 5v 1T
+RBLEED 5v 0 10k
+.tran 1u 10u
+.control
+run
+meas tran result_5v FIND v(5v) AT=5u
+if result_5v < 0
+echo "ASSERTION FAILED: result_5v below 0"
+quit 1
+end
+if result_5v > 0.01
+echo "ASSERTION FAILED: result_5v above 0.01"
+quit 1
+end
+quit 0
+.endc
+.end

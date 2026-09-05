@@ -1,7 +1,7 @@
 {
     "$schema": "https://schemas.kicad.org/erc.v1.json",
     "coordinate_units": "mm",
-    "date": "2026-09-05T18:13:00+0000",
+    "date": "2026-09-05T21:20:37+0000",
     "included_severities": [
         "error",
         "warning",
@@ -12,6 +12,56 @@
         {
             "path": "/",
             "uuid_path": "/4f2a1dae-a80e-5de8-9cc0-3c9201cadfb0",
+            "violations": []
+        },
+        {
+            "path": "/power/",
+            "uuid_path": "/4f2a1dae-a80e-5de8-9cc0-3c9201cadfb0/13a1290d-d8d2-56d2-a25f-1344a1c9af3a",
+            "violations": []
+        },
+        {
+            "path": "/controls/",
+            "uuid_path": "/4f2a1dae-a80e-5de8-9cc0-3c9201cadfb0/dcc76c17-c86d-5e6f-8025-09cf1c0a7495",
+            "violations": []
+        },
+        {
+            "path": "/bank-A1-D2/",
+            "uuid_path": "/4f2a1dae-a80e-5de8-9cc0-3c9201cadfb0/4fb8c661-4dbb-569c-a126-d409cd636881",
+            "violations": []
+        },
+        {
+            "path": "/bank-E1-H2/",
+            "uuid_path": "/4f2a1dae-a80e-5de8-9cc0-3c9201cadfb0/680012cd-275e-5b8a-b6af-089d6fc831de",
+            "violations": []
+        },
+        {
+            "path": "/bank-A3-D4/",
+            "uuid_path": "/4f2a1dae-a80e-5de8-9cc0-3c9201cadfb0/10e7a036-71a4-5948-824b-795365cb9521",
+            "violations": []
+        },
+        {
+            "path": "/bank-E3-H4/",
+            "uuid_path": "/4f2a1dae-a80e-5de8-9cc0-3c9201cadfb0/ce6a4e35-77cf-5680-af06-804008e1c202",
+            "violations": []
+        },
+        {
+            "path": "/bank-A5-D6/",
+            "uuid_path": "/4f2a1dae-a80e-5de8-9cc0-3c9201cadfb0/3e8b050d-e446-54f4-bf9a-c9e0bf4fe627",
+            "violations": []
+        },
+        {
+            "path": "/bank-E5-H6/",
+            "uuid_path": "/4f2a1dae-a80e-5de8-9cc0-3c9201cadfb0/fa1bcde9-a1df-57d1-aad7-0e4fee93ae85",
+            "violations": []
+        },
+        {
+            "path": "/bank-A7-D8/",
+            "uuid_path": "/4f2a1dae-a80e-5de8-9cc0-3c9201cadfb0/c673b958-5014-595e-b9fe-cbc56a164359",
+            "violations": []
+        },
+        {
+            "path": "/bank-E7-H8/",
+            "uuid_path": "/4f2a1dae-a80e-5de8-9cc0-3c9201cadfb0/bfbf04f9-f0b9-555d-a6c4-795b313babea",
             "violations": []
         }
     ],

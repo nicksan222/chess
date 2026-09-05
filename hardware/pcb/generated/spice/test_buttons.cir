@@ -1,0 +1,140 @@
+Generated chess-board complete button input bank
+VDD 3v3 0 3.3
+RPULL1 btn_down 3v3 50000.0
+RSW2 btn_down 0 50.0
+RPULL2 btn_f1 3v3 50000.0
+RSW8 btn_f1 0 50.0
+RPULL3 btn_f2 3v3 50000.0
+RSW9 btn_f2 0 50.0
+RPULL4 btn_f3 3v3 50000.0
+RSW10 btn_f3 0 50.0
+RPULL5 btn_f4 3v3 50000.0
+RSW11 btn_f4 0 50.0
+RPULL6 btn_f5 3v3 50000.0
+RSW12 btn_f5 0 50.0
+RPULL7 btn_left 3v3 50000.0
+RSW3 btn_left 0 50.0
+RPULL8 btn_ok 3v3 50000.0
+RSW5 btn_ok 0 50.0
+RPULL9 btn_pass 3v3 50000.0
+RSW7 btn_pass 0 50.0
+RPULL10 btn_reset 3v3 50000.0
+RSW6 btn_reset 0 50.0
+RPULL11 btn_right 3v3 50000.0
+RSW4 btn_right 0 50.0
+RPULL12 btn_up 3v3 50000.0
+RSW1 btn_up 0 50.0
+.tran 1u 10u
+.control
+run
+meas tran result_btn_down FIND v(btn_down) AT=5u
+meas tran result_btn_f1 FIND v(btn_f1) AT=5u
+meas tran result_btn_f2 FIND v(btn_f2) AT=5u
+meas tran result_btn_f3 FIND v(btn_f3) AT=5u
+meas tran result_btn_f4 FIND v(btn_f4) AT=5u
+meas tran result_btn_f5 FIND v(btn_f5) AT=5u
+meas tran result_btn_left FIND v(btn_left) AT=5u
+meas tran result_btn_ok FIND v(btn_ok) AT=5u
+meas tran result_btn_pass FIND v(btn_pass) AT=5u
+meas tran result_btn_reset FIND v(btn_reset) AT=5u
+meas tran result_btn_right FIND v(btn_right) AT=5u
+meas tran result_btn_up FIND v(btn_up) AT=5u
+if result_btn_up < 0
+echo "ASSERTION FAILED: result_btn_up below 0"
+quit 1
+end
+if result_btn_up > 0.1
+echo "ASSERTION FAILED: result_btn_up above 0.1"
+quit 1
+end
+if result_btn_down < 0
+echo "ASSERTION FAILED: result_btn_down below 0"
+quit 1
+end
+if result_btn_down > 0.1
+echo "ASSERTION FAILED: result_btn_down above 0.1"
+quit 1
+end
+if result_btn_left < 0
+echo "ASSERTION FAILED: result_btn_left below 0"
+quit 1
+end
+if result_btn_left > 0.1
+echo "ASSERTION FAILED: result_btn_left above 0.1"
+quit 1
+end
+if result_btn_right < 0
+echo "ASSERTION FAILED: result_btn_right below 0"
+quit 1
+end
+if result_btn_right > 0.1
+echo "ASSERTION FAILED: result_btn_right above 0.1"
+quit 1
+end
+if result_btn_ok < 0
+echo "ASSERTION FAILED: result_btn_ok below 0"
+quit 1
+end
+if result_btn_ok > 0.1
+echo "ASSERTION FAILED: result_btn_ok above 0.1"
+quit 1
+end
+if result_btn_reset < 0
+echo "ASSERTION FAILED: result_btn_reset below 0"
+quit 1
+end
+if result_btn_reset > 0.1
+echo "ASSERTION FAILED: result_btn_reset above 0.1"
+quit 1
+end
+if result_btn_pass < 0
+echo "ASSERTION FAILED: result_btn_pass below 0"
+quit 1
+end
+if result_btn_pass > 0.1
+echo "ASSERTION FAILED: result_btn_pass above 0.1"
+quit 1
+end
+if result_btn_f1 < 0
+echo "ASSERTION FAILED: result_btn_f1 below 0"
+quit 1
+end
+if result_btn_f1 > 0.1
+echo "ASSERTION FAILED: result_btn_f1 above 0.1"
+quit 1
+end
+if result_btn_f2 < 0
+echo "ASSERTION FAILED: result_btn_f2 below 0"
+quit 1
+end
+if result_btn_f2 > 0.1
+echo "ASSERTION FAILED: result_btn_f2 above 0.1"
+quit 1
+end
+if result_btn_f3 < 0
+echo "ASSERTION FAILED: result_btn_f3 below 0"
+quit 1
+end
+if result_btn_f3 > 0.1
+echo "ASSERTION FAILED: result_btn_f3 above 0.1"
+quit 1
+end
+if result_btn_f4 < 0
+echo "ASSERTION FAILED: result_btn_f4 below 0"
+quit 1
+end
+if result_btn_f4 > 0.1
+echo "ASSERTION FAILED: result_btn_f4 above 0.1"
+quit 1
+end
+if result_btn_f5 < 0
+echo "ASSERTION FAILED: result_btn_f5 below 0"
+quit 1
+end
+if result_btn_f5 > 0.1
+echo "ASSERTION FAILED: result_btn_f5 above 0.1"
+quit 1
+end
+quit 0
+.endc
+.end

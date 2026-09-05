@@ -1,38 +1,14 @@
 {
   "include": [
+    "*.py",
+    "definition",
     "../shared/components.py",
-    "../shared/electronics",
-    "domain/component.py",
-    "domain/connectivity.py",
-    "domain/connection_contract.py",
-    "domain/design.py",
-    "domain/footprint.py",
-    "domain/sources.py",
-    "domain/validation.py",
-    "board/placement.py",
-    "board/square.py",
-    "kicad/board.py",
-    "kicad/grid_router.py",
-    "kicad/routing_grid.py",
-    "components/*.py",
-    "board/wiring/context.py",
-    "board/wiring/signal_tree.py",
-    "board/wiring/controls.py",
-    "board/wiring/buttons.py",
-    "board/wiring/led.py",
-    "board/wiring/power.py",
-    "board/wiring/sensors.py",
-    "board/wiring/router.py",
-    "board/wiring/common.py",
-    "board/wiring/silkscreen.py",
-    "tests/typing_contracts.py"
+    "../shared/electronics"
   ],
-  "exclude": ["components/footprints"],
-  "extraPaths": [".", ".."],
+  "extraPaths": [
+    ".."
+  ],
   "stubPath": "typings",
   "pythonVersion": "3.12",
-  "typeCheckingMode": "strict",
-  "reportMissingTypeArgument": "error",
-  "reportUnknownParameterType": "error",
-  "reportMissingParameterType": "error"
+  "typeCheckingMode": "strict"
 }

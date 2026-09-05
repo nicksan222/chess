@@ -10,27 +10,32 @@ from __future__ import annotations
 import re
 from fractions import Fraction
 
-from components.ahct125 import Ahct125Pin
-from components.barrel_jack import DC_INPUT_JACK, BarrelJackPin
-from components.capacitor import CapacitorPin
-from components.electrical import (
+import pcbnew
+
+from pcb.definition.native import connections, parts
+from pcb.definition.parts.catalog import DC_INPUT_JACK, INPUT_FUSE, MAIN_POWER_SWITCH
+from shared import wiring
+from shared.electronics import (
+    Ahct125Pin,
+    BarrelJackPin,
+    CapacitorPin,
+    FusePin,
+    HallSensorPin,
+    PowerSwitchPin,
+    RaspberryPiHeaderPin,
+    Sk9822Pin,
+    TactileSwitchPin,
+    Tca9554Pin,
+    TestPointPin,
+)
+from spice.circuit import SpiceCircuit
+from spice.electrical import (
     AHCT125,
     BOARD_POWER,
     HALL_SENSOR,
     LOGIC_3V3,
     PI_GPIO_PULLUP_OHMS,
 )
-from components.fuse import INPUT_FUSE, FusePin
-from components.hall_sensor import HallSensorPin
-from components.power_switch import MAIN_POWER_SWITCH, PowerSwitchPin
-from components.raspberry_pi_header import RaspberryPiHeaderPin
-from components.sk9822 import Sk9822Pin
-from components.tactile_switch import TactileSwitchPin
-from components.tca9554 import Tca9554Pin
-from components.test_point import TestPointPin
-from domain.design import BoardDesign
-from shared import wiring
-from spice.circuit import SpiceCircuit
 from spice.movement import MovementCase
 
 
@@ -46,19 +51,19 @@ def _expect(name: str, occupied: bool) -> str:
 class BoardHarness:
     """Build circuits whose topology comes from the real chess board."""
 
-    def __init__(self, design: BoardDesign, led_brightness_max: Fraction) -> None:
+    def __init__(self, design: pcbnew.BOARD, led_brightness_max: Fraction) -> None:
         self.design = design
+        self.components = {f.GetReference(): f for f in parts(design)}
+        self.connections = connections(design)
         self.led_brightness_max = led_brightness_max
         self.net_by_endpoint = {
-            (str(reference), str(pin)): str(connection.name)
-            for connection in design.connections.connections
-            for reference, pin in connection.endpoints
+            (str(reference), str(pin)): str(name)
+            for name, endpoints in self.connections.items()
+            for reference, pin in endpoints
         }
         self.endpoints_by_net = {
-            str(connection.name): {
-                (str(reference), str(pin)) for reference, pin in connection.endpoints
-            }
-            for connection in design.connections.connections
+            str(name): {(str(reference), str(pin)) for reference, pin in endpoints}
+            for name, endpoints in self.connections.items()
         }
         self.square_nets = self._validated_square_nets()
 
@@ -75,10 +80,10 @@ class BoardHarness:
 
     def _validated_square_nets(self) -> dict[str, str]:
         found = {}
-        for reference, component in self.design.components.items():
-            if component.spec.part_key != "HALL_SENSOR":
+        for reference, component in self.components.items():
+            if component.GetFieldText("PartKey") != "HALL_SENSOR":
                 continue
-            square = component.spec.extras.get("Square")
+            square = component.GetFieldText("Square")
             if not isinstance(square, str):
                 raise ValueError(f"{reference} has no square identity")
             file_index, rank_index = wiring.parse_square(square)
@@ -87,9 +92,9 @@ class BoardHarness:
             bank_label = wiring.HALL_BANKS[expander_index].label
             expander_reference = next(
                 candidate_reference
-                for candidate_reference, candidate in self.design.components.items()
-                if candidate.spec.part_key == "TCA9554"
-                and candidate.spec.extras.get("Bank") == bank_label
+                for candidate_reference, candidate in self.components.items()
+                if candidate.GetFieldText("PartKey") == "TCA9554"
+                and candidate.GetFieldText("Bank") == bank_label
             )
             self._required_net(reference, HallSensorPin.SUPPLY, "+3V3")
             self._required_net(reference, HallSensorPin.GROUND, "GND")
@@ -171,15 +176,15 @@ class BoardHarness:
 
     def _component_count(self, part_key: str) -> int:
         return sum(
-            component.spec.part_key == part_key
-            for component in self.design.components.values()
+            component.GetFieldText("PartKey") == part_key
+            for component in self.components.values()
         )
 
     def _component_value(self, part_key: str) -> str:
         values = [
-            component.spec.value
-            for component in self.design.components.values()
-            if component.spec.part_key == part_key
+            component.GetFieldText("NominalValue")
+            for component in self.components.values()
+            if component.GetFieldText("PartKey") == part_key
         ]
         if len(values) != 1:
             raise ValueError(f"SPICE generation requires one {part_key}")
@@ -354,8 +359,8 @@ class BoardHarness:
         bus_nets = (wiring.SDA_NET, wiring.SCL_NET)
         expander_references = tuple(
             reference
-            for reference, component in self.design.components.items()
-            if component.spec.part_key == "TCA9554"
+            for reference, component in self.components.items()
+            if component.GetFieldText("PartKey") == "TCA9554"
         )
         bus_endpoints = {
             wiring.SDA_NET: {
@@ -405,27 +410,27 @@ class BoardHarness:
         for index, name in enumerate(bus_nets, start=1):
             resistor = next(
                 component
-                for component in self.design.components.values()
-                if component.spec.part_key == "RES_4K7"
+                for component in self.components.values()
+                if component.GetFieldText("PartKey") == "RES_4K7"
                 and name
                 in {
-                    self.net_by_endpoint.get((component.reference, "1")),
-                    self.net_by_endpoint.get((component.reference, "2")),
+                    self.net_by_endpoint.get((component.GetReference(), "1")),
+                    self.net_by_endpoint.get((component.GetReference(), "2")),
                 }
             )
             attached_nets = {
-                self.net_by_endpoint.get((resistor.reference, "1")),
-                self.net_by_endpoint.get((resistor.reference, "2")),
+                self.net_by_endpoint.get((resistor.GetReference(), "1")),
+                self.net_by_endpoint.get((resistor.GetReference(), "2")),
             }
             if attached_nets != {name, "+3V3"}:
                 raise ValueError(
-                    f"{resistor.reference} must connect {name} to +3V3; "
+                    f"{resistor.GetReference()} must connect {name} to +3V3; "
                     f"found {sorted(str(net) for net in attached_nets)}"
                 )
             node = _node(name)
             lines.extend(
                 (
-                    f"RPULL{index} {node} {supply_node} {resistor.spec.value}",
+                    f"RPULL{index} {node} {supply_node} {resistor.GetFieldText('NominalValue')}",
                     f"SDRIVE{index} {node} 0 drive 0 INPUTSW",
                 )
             )
@@ -443,23 +448,18 @@ class BoardHarness:
 
     def _buttons(self) -> str:
         button_nets = sorted(
-            str(connection.name)
-            for connection in self.design.connections.connections
-            if connection.name and str(connection.name).startswith("BTN_")
+            str(name)
+            for name, endpoints in self.connections.items()
+            if name and str(name).startswith("BTN_")
         )
         lines = ["Generated chess-board complete button input bank"]
         lines.extend(_expect(_node(name), True) for name in button_nets)
         supply_node = _node("+3V3")
         lines.append(f"VDD {supply_node} 0 {LOGIC_3V3.supply_volts}")
-        connections = {
-            str(connection.name): connection
-            for connection in self.design.connections.connections
-            if connection.name
-        }
         for index, name in enumerate(button_nets, start=1):
             switches = [
                 str(reference)
-                for reference, pin in connections[name].endpoints
+                for reference, pin in self.connections[name]
                 if str(reference).startswith("SW")
                 and str(pin) == TactileSwitchPin.SIGNAL
             ]
@@ -506,23 +506,26 @@ class BoardHarness:
             "Buffer decoupling capacitor",
             "Local LED decoupling capacitor",
         }
-        for component in self.design.components.values():
-            if component.spec.description not in five_volt_capacitor_roles:
+        for component in self.components.values():
+            if component.GetFieldText("Purpose") not in five_volt_capacitor_roles:
                 continue
             self._required_net(
-                component.reference,
+                component.GetReference(),
                 CapacitorPin.SUPPLY_OR_ELECTRODE_A,
                 "+5V",
             )
             self._required_net(
-                component.reference,
+                component.GetReference(),
                 CapacitorPin.RETURN_OR_ELECTRODE_B,
                 "GND",
             )
             value = (
-                component.spec.value.split()[0].replace("uF", "u").replace("nF", "n")
+                component.GetFieldText("NominalValue")
+                .split()[0]
+                .replace("uF", "u")
+                .replace("nF", "n")
             )
-            capacitors.append((component.reference, value))
+            capacitors.append((component.GetReference(), value))
         lines = [
             "Generated chess-board fitted-capacitor startup",
             (
@@ -575,12 +578,12 @@ class BoardHarness:
     def power_current(self, *, full_white: bool = False) -> float:
         leds = [
             component
-            for component in self.design.components.values()
-            if component.spec.part_key == "SK9822"
+            for component in self.components.values()
+            if component.GetFieldText("PartKey") == "SK9822"
         ]
         for led in leds:
-            self._required_net(led.reference, Sk9822Pin.FIVE_VOLTS, "+5V")
-            self._required_net(led.reference, Sk9822Pin.GROUND, "GND")
+            self._required_net(led.GetReference(), Sk9822Pin.FIVE_VOLTS, "+5V")
+            self._required_net(led.GetReference(), Sk9822Pin.GROUND, "GND")
         led_count = len(leds)
         brightness = Fraction(1) if full_white else self.led_brightness_max
         return BOARD_POWER.host_and_logic_amps + (
@@ -636,12 +639,13 @@ class BoardHarness:
                 )
             elif row.startswith(".meas ") and " PARAM=" in row:
                 prefix, expression = row.removeprefix(".meas tran ").split(" PARAM=")
-                circuit.control(f"let {prefix}={expression.strip(chr(39))}")
-                circuit.control(f"print {prefix}")
+                circuit.controls.extend(
+                    (f"let {prefix}={expression.strip(chr(39))}", f"print {prefix}")
+                )
             elif row.startswith(".meas "):
-                circuit.control(row.removeprefix("."))
+                circuit.controls.append(row.removeprefix("."))
             else:
-                circuit.raw(row)
+                circuit.rows.append(row)
         return circuit
 
     def movement(self, case: MovementCase) -> SpiceCircuit:

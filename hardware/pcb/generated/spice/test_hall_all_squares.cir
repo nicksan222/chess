@@ -1,0 +1,654 @@
+Generated chess-board exhaustive Hall sensor matrix
+.model HALLSW SW(Ron=50.0 Roff=1T Vt=1.65 Vh=0.1)
+.subckt SQUARE_SENSOR OUT VDD MAG GND
+SOUTPUT OUT GND MAG GND HALLSW
+RPULL OUT VDD 100000.0
+.ends SQUARE_SENSOR
+VDD vdd 0 3.3
+VMAG mag 0 3.3
+Xa1 sq_a1 vdd mag 0 SQUARE_SENSOR
+Xa2 sq_a2 vdd mag 0 SQUARE_SENSOR
+Xa3 sq_a3 vdd mag 0 SQUARE_SENSOR
+Xa4 sq_a4 vdd mag 0 SQUARE_SENSOR
+Xa5 sq_a5 vdd mag 0 SQUARE_SENSOR
+Xa6 sq_a6 vdd mag 0 SQUARE_SENSOR
+Xa7 sq_a7 vdd mag 0 SQUARE_SENSOR
+Xa8 sq_a8 vdd mag 0 SQUARE_SENSOR
+Xb1 sq_b1 vdd mag 0 SQUARE_SENSOR
+Xb2 sq_b2 vdd mag 0 SQUARE_SENSOR
+Xb3 sq_b3 vdd mag 0 SQUARE_SENSOR
+Xb4 sq_b4 vdd mag 0 SQUARE_SENSOR
+Xb5 sq_b5 vdd mag 0 SQUARE_SENSOR
+Xb6 sq_b6 vdd mag 0 SQUARE_SENSOR
+Xb7 sq_b7 vdd mag 0 SQUARE_SENSOR
+Xb8 sq_b8 vdd mag 0 SQUARE_SENSOR
+Xc1 sq_c1 vdd mag 0 SQUARE_SENSOR
+Xc2 sq_c2 vdd mag 0 SQUARE_SENSOR
+Xc3 sq_c3 vdd mag 0 SQUARE_SENSOR
+Xc4 sq_c4 vdd mag 0 SQUARE_SENSOR
+Xc5 sq_c5 vdd mag 0 SQUARE_SENSOR
+Xc6 sq_c6 vdd mag 0 SQUARE_SENSOR
+Xc7 sq_c7 vdd mag 0 SQUARE_SENSOR
+Xc8 sq_c8 vdd mag 0 SQUARE_SENSOR
+Xd1 sq_d1 vdd mag 0 SQUARE_SENSOR
+Xd2 sq_d2 vdd mag 0 SQUARE_SENSOR
+Xd3 sq_d3 vdd mag 0 SQUARE_SENSOR
+Xd4 sq_d4 vdd mag 0 SQUARE_SENSOR
+Xd5 sq_d5 vdd mag 0 SQUARE_SENSOR
+Xd6 sq_d6 vdd mag 0 SQUARE_SENSOR
+Xd7 sq_d7 vdd mag 0 SQUARE_SENSOR
+Xd8 sq_d8 vdd mag 0 SQUARE_SENSOR
+Xe1 sq_e1 vdd mag 0 SQUARE_SENSOR
+Xe2 sq_e2 vdd mag 0 SQUARE_SENSOR
+Xe3 sq_e3 vdd mag 0 SQUARE_SENSOR
+Xe4 sq_e4 vdd mag 0 SQUARE_SENSOR
+Xe5 sq_e5 vdd mag 0 SQUARE_SENSOR
+Xe6 sq_e6 vdd mag 0 SQUARE_SENSOR
+Xe7 sq_e7 vdd mag 0 SQUARE_SENSOR
+Xe8 sq_e8 vdd mag 0 SQUARE_SENSOR
+Xf1 sq_f1 vdd mag 0 SQUARE_SENSOR
+Xf2 sq_f2 vdd mag 0 SQUARE_SENSOR
+Xf3 sq_f3 vdd mag 0 SQUARE_SENSOR
+Xf4 sq_f4 vdd mag 0 SQUARE_SENSOR
+Xf5 sq_f5 vdd mag 0 SQUARE_SENSOR
+Xf6 sq_f6 vdd mag 0 SQUARE_SENSOR
+Xf7 sq_f7 vdd mag 0 SQUARE_SENSOR
+Xf8 sq_f8 vdd mag 0 SQUARE_SENSOR
+Xg1 sq_g1 vdd mag 0 SQUARE_SENSOR
+Xg2 sq_g2 vdd mag 0 SQUARE_SENSOR
+Xg3 sq_g3 vdd mag 0 SQUARE_SENSOR
+Xg4 sq_g4 vdd mag 0 SQUARE_SENSOR
+Xg5 sq_g5 vdd mag 0 SQUARE_SENSOR
+Xg6 sq_g6 vdd mag 0 SQUARE_SENSOR
+Xg7 sq_g7 vdd mag 0 SQUARE_SENSOR
+Xg8 sq_g8 vdd mag 0 SQUARE_SENSOR
+Xh1 sq_h1 vdd mag 0 SQUARE_SENSOR
+Xh2 sq_h2 vdd mag 0 SQUARE_SENSOR
+Xh3 sq_h3 vdd mag 0 SQUARE_SENSOR
+Xh4 sq_h4 vdd mag 0 SQUARE_SENSOR
+Xh5 sq_h5 vdd mag 0 SQUARE_SENSOR
+Xh6 sq_h6 vdd mag 0 SQUARE_SENSOR
+Xh7 sq_h7 vdd mag 0 SQUARE_SENSOR
+Xh8 sq_h8 vdd mag 0 SQUARE_SENSOR
+.tran 1u 10u
+.control
+run
+meas tran result_a1 FIND v(sq_a1) AT=5u
+meas tran result_a2 FIND v(sq_a2) AT=5u
+meas tran result_a3 FIND v(sq_a3) AT=5u
+meas tran result_a4 FIND v(sq_a4) AT=5u
+meas tran result_a5 FIND v(sq_a5) AT=5u
+meas tran result_a6 FIND v(sq_a6) AT=5u
+meas tran result_a7 FIND v(sq_a7) AT=5u
+meas tran result_a8 FIND v(sq_a8) AT=5u
+meas tran result_b1 FIND v(sq_b1) AT=5u
+meas tran result_b2 FIND v(sq_b2) AT=5u
+meas tran result_b3 FIND v(sq_b3) AT=5u
+meas tran result_b4 FIND v(sq_b4) AT=5u
+meas tran result_b5 FIND v(sq_b5) AT=5u
+meas tran result_b6 FIND v(sq_b6) AT=5u
+meas tran result_b7 FIND v(sq_b7) AT=5u
+meas tran result_b8 FIND v(sq_b8) AT=5u
+meas tran result_c1 FIND v(sq_c1) AT=5u
+meas tran result_c2 FIND v(sq_c2) AT=5u
+meas tran result_c3 FIND v(sq_c3) AT=5u
+meas tran result_c4 FIND v(sq_c4) AT=5u
+meas tran result_c5 FIND v(sq_c5) AT=5u
+meas tran result_c6 FIND v(sq_c6) AT=5u
+meas tran result_c7 FIND v(sq_c7) AT=5u
+meas tran result_c8 FIND v(sq_c8) AT=5u
+meas tran result_d1 FIND v(sq_d1) AT=5u
+meas tran result_d2 FIND v(sq_d2) AT=5u
+meas tran result_d3 FIND v(sq_d3) AT=5u
+meas tran result_d4 FIND v(sq_d4) AT=5u
+meas tran result_d5 FIND v(sq_d5) AT=5u
+meas tran result_d6 FIND v(sq_d6) AT=5u
+meas tran result_d7 FIND v(sq_d7) AT=5u
+meas tran result_d8 FIND v(sq_d8) AT=5u
+meas tran result_e1 FIND v(sq_e1) AT=5u
+meas tran result_e2 FIND v(sq_e2) AT=5u
+meas tran result_e3 FIND v(sq_e3) AT=5u
+meas tran result_e4 FIND v(sq_e4) AT=5u
+meas tran result_e5 FIND v(sq_e5) AT=5u
+meas tran result_e6 FIND v(sq_e6) AT=5u
+meas tran result_e7 FIND v(sq_e7) AT=5u
+meas tran result_e8 FIND v(sq_e8) AT=5u
+meas tran result_f1 FIND v(sq_f1) AT=5u
+meas tran result_f2 FIND v(sq_f2) AT=5u
+meas tran result_f3 FIND v(sq_f3) AT=5u
+meas tran result_f4 FIND v(sq_f4) AT=5u
+meas tran result_f5 FIND v(sq_f5) AT=5u
+meas tran result_f6 FIND v(sq_f6) AT=5u
+meas tran result_f7 FIND v(sq_f7) AT=5u
+meas tran result_f8 FIND v(sq_f8) AT=5u
+meas tran result_g1 FIND v(sq_g1) AT=5u
+meas tran result_g2 FIND v(sq_g2) AT=5u
+meas tran result_g3 FIND v(sq_g3) AT=5u
+meas tran result_g4 FIND v(sq_g4) AT=5u
+meas tran result_g5 FIND v(sq_g5) AT=5u
+meas tran result_g6 FIND v(sq_g6) AT=5u
+meas tran result_g7 FIND v(sq_g7) AT=5u
+meas tran result_g8 FIND v(sq_g8) AT=5u
+meas tran result_h1 FIND v(sq_h1) AT=5u
+meas tran result_h2 FIND v(sq_h2) AT=5u
+meas tran result_h3 FIND v(sq_h3) AT=5u
+meas tran result_h4 FIND v(sq_h4) AT=5u
+meas tran result_h5 FIND v(sq_h5) AT=5u
+meas tran result_h6 FIND v(sq_h6) AT=5u
+meas tran result_h7 FIND v(sq_h7) AT=5u
+meas tran result_h8 FIND v(sq_h8) AT=5u
+if result_a1 < 0
+echo "ASSERTION FAILED: result_a1 below 0"
+quit 1
+end
+if result_a1 > 0.1
+echo "ASSERTION FAILED: result_a1 above 0.1"
+quit 1
+end
+if result_a2 < 0
+echo "ASSERTION FAILED: result_a2 below 0"
+quit 1
+end
+if result_a2 > 0.1
+echo "ASSERTION FAILED: result_a2 above 0.1"
+quit 1
+end
+if result_a3 < 0
+echo "ASSERTION FAILED: result_a3 below 0"
+quit 1
+end
+if result_a3 > 0.1
+echo "ASSERTION FAILED: result_a3 above 0.1"
+quit 1
+end
+if result_a4 < 0
+echo "ASSERTION FAILED: result_a4 below 0"
+quit 1
+end
+if result_a4 > 0.1
+echo "ASSERTION FAILED: result_a4 above 0.1"
+quit 1
+end
+if result_a5 < 0
+echo "ASSERTION FAILED: result_a5 below 0"
+quit 1
+end
+if result_a5 > 0.1
+echo "ASSERTION FAILED: result_a5 above 0.1"
+quit 1
+end
+if result_a6 < 0
+echo "ASSERTION FAILED: result_a6 below 0"
+quit 1
+end
+if result_a6 > 0.1
+echo "ASSERTION FAILED: result_a6 above 0.1"
+quit 1
+end
+if result_a7 < 0
+echo "ASSERTION FAILED: result_a7 below 0"
+quit 1
+end
+if result_a7 > 0.1
+echo "ASSERTION FAILED: result_a7 above 0.1"
+quit 1
+end
+if result_a8 < 0
+echo "ASSERTION FAILED: result_a8 below 0"
+quit 1
+end
+if result_a8 > 0.1
+echo "ASSERTION FAILED: result_a8 above 0.1"
+quit 1
+end
+if result_b1 < 0
+echo "ASSERTION FAILED: result_b1 below 0"
+quit 1
+end
+if result_b1 > 0.1
+echo "ASSERTION FAILED: result_b1 above 0.1"
+quit 1
+end
+if result_b2 < 0
+echo "ASSERTION FAILED: result_b2 below 0"
+quit 1
+end
+if result_b2 > 0.1
+echo "ASSERTION FAILED: result_b2 above 0.1"
+quit 1
+end
+if result_b3 < 0
+echo "ASSERTION FAILED: result_b3 below 0"
+quit 1
+end
+if result_b3 > 0.1
+echo "ASSERTION FAILED: result_b3 above 0.1"
+quit 1
+end
+if result_b4 < 0
+echo "ASSERTION FAILED: result_b4 below 0"
+quit 1
+end
+if result_b4 > 0.1
+echo "ASSERTION FAILED: result_b4 above 0.1"
+quit 1
+end
+if result_b5 < 0
+echo "ASSERTION FAILED: result_b5 below 0"
+quit 1
+end
+if result_b5 > 0.1
+echo "ASSERTION FAILED: result_b5 above 0.1"
+quit 1
+end
+if result_b6 < 0
+echo "ASSERTION FAILED: result_b6 below 0"
+quit 1
+end
+if result_b6 > 0.1
+echo "ASSERTION FAILED: result_b6 above 0.1"
+quit 1
+end
+if result_b7 < 0
+echo "ASSERTION FAILED: result_b7 below 0"
+quit 1
+end
+if result_b7 > 0.1
+echo "ASSERTION FAILED: result_b7 above 0.1"
+quit 1
+end
+if result_b8 < 0
+echo "ASSERTION FAILED: result_b8 below 0"
+quit 1
+end
+if result_b8 > 0.1
+echo "ASSERTION FAILED: result_b8 above 0.1"
+quit 1
+end
+if result_c1 < 0
+echo "ASSERTION FAILED: result_c1 below 0"
+quit 1
+end
+if result_c1 > 0.1
+echo "ASSERTION FAILED: result_c1 above 0.1"
+quit 1
+end
+if result_c2 < 0
+echo "ASSERTION FAILED: result_c2 below 0"
+quit 1
+end
+if result_c2 > 0.1
+echo "ASSERTION FAILED: result_c2 above 0.1"
+quit 1
+end
+if result_c3 < 0
+echo "ASSERTION FAILED: result_c3 below 0"
+quit 1
+end
+if result_c3 > 0.1
+echo "ASSERTION FAILED: result_c3 above 0.1"
+quit 1
+end
+if result_c4 < 0
+echo "ASSERTION FAILED: result_c4 below 0"
+quit 1
+end
+if result_c4 > 0.1
+echo "ASSERTION FAILED: result_c4 above 0.1"
+quit 1
+end
+if result_c5 < 0
+echo "ASSERTION FAILED: result_c5 below 0"
+quit 1
+end
+if result_c5 > 0.1
+echo "ASSERTION FAILED: result_c5 above 0.1"
+quit 1
+end
+if result_c6 < 0
+echo "ASSERTION FAILED: result_c6 below 0"
+quit 1
+end
+if result_c6 > 0.1
+echo "ASSERTION FAILED: result_c6 above 0.1"
+quit 1
+end
+if result_c7 < 0
+echo "ASSERTION FAILED: result_c7 below 0"
+quit 1
+end
+if result_c7 > 0.1
+echo "ASSERTION FAILED: result_c7 above 0.1"
+quit 1
+end
+if result_c8 < 0
+echo "ASSERTION FAILED: result_c8 below 0"
+quit 1
+end
+if result_c8 > 0.1
+echo "ASSERTION FAILED: result_c8 above 0.1"
+quit 1
+end
+if result_d1 < 0
+echo "ASSERTION FAILED: result_d1 below 0"
+quit 1
+end
+if result_d1 > 0.1
+echo "ASSERTION FAILED: result_d1 above 0.1"
+quit 1
+end
+if result_d2 < 0
+echo "ASSERTION FAILED: result_d2 below 0"
+quit 1
+end
+if result_d2 > 0.1
+echo "ASSERTION FAILED: result_d2 above 0.1"
+quit 1
+end
+if result_d3 < 0
+echo "ASSERTION FAILED: result_d3 below 0"
+quit 1
+end
+if result_d3 > 0.1
+echo "ASSERTION FAILED: result_d3 above 0.1"
+quit 1
+end
+if result_d4 < 0
+echo "ASSERTION FAILED: result_d4 below 0"
+quit 1
+end
+if result_d4 > 0.1
+echo "ASSERTION FAILED: result_d4 above 0.1"
+quit 1
+end
+if result_d5 < 0
+echo "ASSERTION FAILED: result_d5 below 0"
+quit 1
+end
+if result_d5 > 0.1
+echo "ASSERTION FAILED: result_d5 above 0.1"
+quit 1
+end
+if result_d6 < 0
+echo "ASSERTION FAILED: result_d6 below 0"
+quit 1
+end
+if result_d6 > 0.1
+echo "ASSERTION FAILED: result_d6 above 0.1"
+quit 1
+end
+if result_d7 < 0
+echo "ASSERTION FAILED: result_d7 below 0"
+quit 1
+end
+if result_d7 > 0.1
+echo "ASSERTION FAILED: result_d7 above 0.1"
+quit 1
+end
+if result_d8 < 0
+echo "ASSERTION FAILED: result_d8 below 0"
+quit 1
+end
+if result_d8 > 0.1
+echo "ASSERTION FAILED: result_d8 above 0.1"
+quit 1
+end
+if result_e1 < 0
+echo "ASSERTION FAILED: result_e1 below 0"
+quit 1
+end
+if result_e1 > 0.1
+echo "ASSERTION FAILED: result_e1 above 0.1"
+quit 1
+end
+if result_e2 < 0
+echo "ASSERTION FAILED: result_e2 below 0"
+quit 1
+end
+if result_e2 > 0.1
+echo "ASSERTION FAILED: result_e2 above 0.1"
+quit 1
+end
+if result_e3 < 0
+echo "ASSERTION FAILED: result_e3 below 0"
+quit 1
+end
+if result_e3 > 0.1
+echo "ASSERTION FAILED: result_e3 above 0.1"
+quit 1
+end
+if result_e4 < 0
+echo "ASSERTION FAILED: result_e4 below 0"
+quit 1
+end
+if result_e4 > 0.1
+echo "ASSERTION FAILED: result_e4 above 0.1"
+quit 1
+end
+if result_e5 < 0
+echo "ASSERTION FAILED: result_e5 below 0"
+quit 1
+end
+if result_e5 > 0.1
+echo "ASSERTION FAILED: result_e5 above 0.1"
+quit 1
+end
+if result_e6 < 0
+echo "ASSERTION FAILED: result_e6 below 0"
+quit 1
+end
+if result_e6 > 0.1
+echo "ASSERTION FAILED: result_e6 above 0.1"
+quit 1
+end
+if result_e7 < 0
+echo "ASSERTION FAILED: result_e7 below 0"
+quit 1
+end
+if result_e7 > 0.1
+echo "ASSERTION FAILED: result_e7 above 0.1"
+quit 1
+end
+if result_e8 < 0
+echo "ASSERTION FAILED: result_e8 below 0"
+quit 1
+end
+if result_e8 > 0.1
+echo "ASSERTION FAILED: result_e8 above 0.1"
+quit 1
+end
+if result_f1 < 0
+echo "ASSERTION FAILED: result_f1 below 0"
+quit 1
+end
+if result_f1 > 0.1
+echo "ASSERTION FAILED: result_f1 above 0.1"
+quit 1
+end
+if result_f2 < 0
+echo "ASSERTION FAILED: result_f2 below 0"
+quit 1
+end
+if result_f2 > 0.1
+echo "ASSERTION FAILED: result_f2 above 0.1"
+quit 1
+end
+if result_f3 < 0
+echo "ASSERTION FAILED: result_f3 below 0"
+quit 1
+end
+if result_f3 > 0.1
+echo "ASSERTION FAILED: result_f3 above 0.1"
+quit 1
+end
+if result_f4 < 0
+echo "ASSERTION FAILED: result_f4 below 0"
+quit 1
+end
+if result_f4 > 0.1
+echo "ASSERTION FAILED: result_f4 above 0.1"
+quit 1
+end
+if result_f5 < 0
+echo "ASSERTION FAILED: result_f5 below 0"
+quit 1
+end
+if result_f5 > 0.1
+echo "ASSERTION FAILED: result_f5 above 0.1"
+quit 1
+end
+if result_f6 < 0
+echo "ASSERTION FAILED: result_f6 below 0"
+quit 1
+end
+if result_f6 > 0.1
+echo "ASSERTION FAILED: result_f6 above 0.1"
+quit 1
+end
+if result_f7 < 0
+echo "ASSERTION FAILED: result_f7 below 0"
+quit 1
+end
+if result_f7 > 0.1
+echo "ASSERTION FAILED: result_f7 above 0.1"
+quit 1
+end
+if result_f8 < 0
+echo "ASSERTION FAILED: result_f8 below 0"
+quit 1
+end
+if result_f8 > 0.1
+echo "ASSERTION FAILED: result_f8 above 0.1"
+quit 1
+end
+if result_g1 < 0
+echo "ASSERTION FAILED: result_g1 below 0"
+quit 1
+end
+if result_g1 > 0.1
+echo "ASSERTION FAILED: result_g1 above 0.1"
+quit 1
+end
+if result_g2 < 0
+echo "ASSERTION FAILED: result_g2 below 0"
+quit 1
+end
+if result_g2 > 0.1
+echo "ASSERTION FAILED: result_g2 above 0.1"
+quit 1
+end
+if result_g3 < 0
+echo "ASSERTION FAILED: result_g3 below 0"
+quit 1
+end
+if result_g3 > 0.1
+echo "ASSERTION FAILED: result_g3 above 0.1"
+quit 1
+end
+if result_g4 < 0
+echo "ASSERTION FAILED: result_g4 below 0"
+quit 1
+end
+if result_g4 > 0.1
+echo "ASSERTION FAILED: result_g4 above 0.1"
+quit 1
+end
+if result_g5 < 0
+echo "ASSERTION FAILED: result_g5 below 0"
+quit 1
+end
+if result_g5 > 0.1
+echo "ASSERTION FAILED: result_g5 above 0.1"
+quit 1
+end
+if result_g6 < 0
+echo "ASSERTION FAILED: result_g6 below 0"
+quit 1
+end
+if result_g6 > 0.1
+echo "ASSERTION FAILED: result_g6 above 0.1"
+quit 1
+end
+if result_g7 < 0
+echo "ASSERTION FAILED: result_g7 below 0"
+quit 1
+end
+if result_g7 > 0.1
+echo "ASSERTION FAILED: result_g7 above 0.1"
+quit 1
+end
+if result_g8 < 0
+echo "ASSERTION FAILED: result_g8 below 0"
+quit 1
+end
+if result_g8 > 0.1
+echo "ASSERTION FAILED: result_g8 above 0.1"
+quit 1
+end
+if result_h1 < 0
+echo "ASSERTION FAILED: result_h1 below 0"
+quit 1
+end
+if result_h1 > 0.1
+echo "ASSERTION FAILED: result_h1 above 0.1"
+quit 1
+end
+if result_h2 < 0
+echo "ASSERTION FAILED: result_h2 below 0"
+quit 1
+end
+if result_h2 > 0.1
+echo "ASSERTION FAILED: result_h2 above 0.1"
+quit 1
+end
+if result_h3 < 0
+echo "ASSERTION FAILED: result_h3 below 0"
+quit 1
+end
+if result_h3 > 0.1
+echo "ASSERTION FAILED: result_h3 above 0.1"
+quit 1
+end
+if result_h4 < 0
+echo "ASSERTION FAILED: result_h4 below 0"
+quit 1
+end
+if result_h4 > 0.1
+echo "ASSERTION FAILED: result_h4 above 0.1"
+quit 1
+end
+if result_h5 < 0
+echo "ASSERTION FAILED: result_h5 below 0"
+quit 1
+end
+if result_h5 > 0.1
+echo "ASSERTION FAILED: result_h5 above 0.1"
+quit 1
+end
+if result_h6 < 0
+echo "ASSERTION FAILED: result_h6 below 0"
+quit 1
+end
+if result_h6 > 0.1
+echo "ASSERTION FAILED: result_h6 above 0.1"
+quit 1
+end
+if result_h7 < 0
+echo "ASSERTION FAILED: result_h7 below 0"
+quit 1
+end
+if result_h7 > 0.1
+echo "ASSERTION FAILED: result_h7 above 0.1"
+quit 1
+end
+if result_h8 < 0
+echo "ASSERTION FAILED: result_h8 below 0"
+quit 1
+end
+if result_h8 > 0.1
+echo "ASSERTION FAILED: result_h8 above 0.1"
+quit 1
+end
+quit 0
+.endc
+.end

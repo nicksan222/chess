@@ -1,0 +1,93 @@
+Generated chess-board castle sensor sequence
+.model HALLSW SW(Ron=50.0 Roff=1T Vt=1.65 Vh=0.1)
+.subckt SQUARE_SENSOR OUT VDD MAG GND
+SOUTPUT OUT GND MAG GND HALLSW
+RPULL OUT VDD 100000.0
+.ends SQUARE_SENSOR
+VDD vdd 0 3.3
+VMAG_sq_e1 mag_sq_e1 0 PWL(0.0m 3.3 0.999m 3.3 1m 0)
+Xsq_e1 sq_e1 vdd mag_sq_e1 0 SQUARE_SENSOR
+VMAG_sq_f1 mag_sq_f1 0 PWL(0.0m 0 3.999m 0 4m 3.3)
+Xsq_f1 sq_f1 vdd mag_sq_f1 0 SQUARE_SENSOR
+VMAG_sq_g1 mag_sq_g1 0 PWL(0.0m 0 1.999m 0 2m 3.3)
+Xsq_g1 sq_g1 vdd mag_sq_g1 0 SQUARE_SENSOR
+VMAG_sq_h1 mag_sq_h1 0 PWL(0.0m 3.3 2.999m 3.3 3m 0)
+Xsq_h1 sq_h1 vdd mag_sq_h1 0 SQUARE_SENSOR
+.tran 10u 5.25m
+.control
+run
+meas tran result_king_initial FIND v(sq_e1) AT=0.25m
+meas tran result_rook_initial FIND v(sq_h1) AT=0.25m
+meas tran result_king_destination_initial FIND v(sq_g1) AT=0.25m
+meas tran result_rook_destination_initial FIND v(sq_f1) AT=0.25m
+meas tran result_king_lifted FIND v(sq_e1) AT=1.25m
+meas tran result_king_placed FIND v(sq_g1) AT=2.25m
+meas tran result_rook_lifted FIND v(sq_h1) AT=3.25m
+meas tran result_rook_placed FIND v(sq_f1) AT=4.25m
+if result_king_initial < 0
+echo "ASSERTION FAILED: result_king_initial below 0"
+quit 1
+end
+if result_king_initial > 0.1
+echo "ASSERTION FAILED: result_king_initial above 0.1"
+quit 1
+end
+if result_rook_initial < 0
+echo "ASSERTION FAILED: result_rook_initial below 0"
+quit 1
+end
+if result_rook_initial > 0.1
+echo "ASSERTION FAILED: result_rook_initial above 0.1"
+quit 1
+end
+if result_king_destination_initial < 3.2
+echo "ASSERTION FAILED: result_king_destination_initial below 3.2"
+quit 1
+end
+if result_king_destination_initial > 3.4
+echo "ASSERTION FAILED: result_king_destination_initial above 3.4"
+quit 1
+end
+if result_rook_destination_initial < 3.2
+echo "ASSERTION FAILED: result_rook_destination_initial below 3.2"
+quit 1
+end
+if result_rook_destination_initial > 3.4
+echo "ASSERTION FAILED: result_rook_destination_initial above 3.4"
+quit 1
+end
+if result_king_lifted < 3.2
+echo "ASSERTION FAILED: result_king_lifted below 3.2"
+quit 1
+end
+if result_king_lifted > 3.4
+echo "ASSERTION FAILED: result_king_lifted above 3.4"
+quit 1
+end
+if result_king_placed < 0
+echo "ASSERTION FAILED: result_king_placed below 0"
+quit 1
+end
+if result_king_placed > 0.1
+echo "ASSERTION FAILED: result_king_placed above 0.1"
+quit 1
+end
+if result_rook_lifted < 3.2
+echo "ASSERTION FAILED: result_rook_lifted below 3.2"
+quit 1
+end
+if result_rook_lifted > 3.4
+echo "ASSERTION FAILED: result_rook_lifted above 3.4"
+quit 1
+end
+if result_rook_placed < 0
+echo "ASSERTION FAILED: result_rook_placed below 0"
+quit 1
+end
+if result_rook_placed > 0.1
+echo "ASSERTION FAILED: result_rook_placed above 0.1"
+quit 1
+end
+quit 0
+.endc
+.end

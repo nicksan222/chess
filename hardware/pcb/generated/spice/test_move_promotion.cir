@@ -1,0 +1,53 @@
+Generated chess-board promotion sensor sequence
+.model HALLSW SW(Ron=50.0 Roff=1T Vt=1.65 Vh=0.1)
+.subckt SQUARE_SENSOR OUT VDD MAG GND
+SOUTPUT OUT GND MAG GND HALLSW
+RPULL OUT VDD 100000.0
+.ends SQUARE_SENSOR
+VDD vdd 0 3.3
+VMAG_sq_a7 mag_sq_a7 0 PWL(0.0m 3.3 0.999m 3.3 1m 0)
+Xsq_a7 sq_a7 vdd mag_sq_a7 0 SQUARE_SENSOR
+VMAG_sq_a8 mag_sq_a8 0 PWL(0.0m 0 1.999m 0 2m 3.3)
+Xsq_a8 sq_a8 vdd mag_sq_a8 0 SQUARE_SENSOR
+.tran 10u 3.25m
+.control
+run
+meas tran result_pawn_initial FIND v(sq_a7) AT=0.25m
+meas tran result_promotion_square_initial FIND v(sq_a8) AT=0.25m
+meas tran result_pawn_lifted FIND v(sq_a7) AT=1.25m
+meas tran result_promoted_piece_placed FIND v(sq_a8) AT=2.25m
+if result_pawn_initial < 0
+echo "ASSERTION FAILED: result_pawn_initial below 0"
+quit 1
+end
+if result_pawn_initial > 0.1
+echo "ASSERTION FAILED: result_pawn_initial above 0.1"
+quit 1
+end
+if result_promotion_square_initial < 3.2
+echo "ASSERTION FAILED: result_promotion_square_initial below 3.2"
+quit 1
+end
+if result_promotion_square_initial > 3.4
+echo "ASSERTION FAILED: result_promotion_square_initial above 3.4"
+quit 1
+end
+if result_pawn_lifted < 3.2
+echo "ASSERTION FAILED: result_pawn_lifted below 3.2"
+quit 1
+end
+if result_pawn_lifted > 3.4
+echo "ASSERTION FAILED: result_pawn_lifted above 3.4"
+quit 1
+end
+if result_promoted_piece_placed < 0
+echo "ASSERTION FAILED: result_promoted_piece_placed below 0"
+quit 1
+end
+if result_promoted_piece_placed > 0.1
+echo "ASSERTION FAILED: result_promoted_piece_placed above 0.1"
+quit 1
+end
+quit 0
+.endc
+.end

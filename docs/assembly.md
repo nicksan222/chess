@@ -5,7 +5,7 @@
 Build one DRV5032FC sensor, its 100 nF bypass capacitor, one SK9822, and one
 TCA9554DWR at the final CAD stack height. Verify reliable operate and release with
 both magnet poles, exercise a full eight-sensor bank while updating LEDs,
-and record the result in `hardware/pcb/board/prototype/`.
+and record the result in `hardware/pcb/definition/evidence/`.
 
 Run `just --justfile hardware/pcb/justfile release` in the reproducible KiCad container. Fabrication output is
 withheld unless tests, ERC, DRC, schematic parity, routing, and prototype evidence

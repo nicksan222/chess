@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import Generic, NamedTuple, Protocol, Self, TypeVar
+from typing import Generic, NamedTuple, Protocol, TypeVar
 
 from shared.components import ComponentSpec
 
@@ -25,23 +25,10 @@ class Endpoint(NamedTuple, Generic[EndpointPinType_co]):  # noqa: UP046
 
 
 class BoundPin(Protocol):
-    """Connection-safe view shared by pins from different enum families."""
+    """A component pin bound to a concrete reference."""
 
     @property
     def endpoint(self) -> Endpoint[str]: ...
-
-    def net_name(self, connections: NetLookup) -> str: ...
-
-    def peers(self, connections: NetLookup) -> tuple[Endpoint[str], ...]: ...
-
-    def is_attached_to(self, other: BoundPin, connections: NetLookup) -> bool: ...
-
-    def connect(
-        self,
-        *others: BoundPin,
-        using: ConnectionSink,
-        name: str | None = None,
-    ) -> None: ...
 
 
 class EndpointResolver(Protocol):
@@ -57,25 +44,6 @@ class EndpointResolver(Protocol):
     def bind_pin(self, number: str) -> BoundPin: ...
 
 
-class NetLookup(Protocol):
-    """Read-only circuit interface understood by components and pins."""
-
-    def net_name(self, endpoint: tuple[str, str]) -> str: ...
-
-    def peers(self, endpoint: tuple[str, str]) -> tuple[Endpoint[str], ...]: ...
-
-
-class ConnectionSink(Protocol):
-    """Mutable circuit-construction interface used by :meth:`ComponentPin.connect`."""
-
-    def connect(
-        self,
-        *pins: BoundPin,
-        name: str | None = None,
-        no_connect: bool = False,
-    ) -> Self: ...
-
-
 @dataclass(frozen=True)
 class ComponentPin(Generic[PinType]):  # noqa: UP046
     """One semantic pin bound to a concrete component instance."""
@@ -86,27 +54,6 @@ class ComponentPin(Generic[PinType]):  # noqa: UP046
     @property
     def endpoint(self) -> Endpoint[PinType]:
         return Endpoint(self.component.reference, self.definition)
-
-    @property
-    def number(self) -> str:
-        return self.definition.value
-
-    def net_name(self, connections: NetLookup) -> str:
-        return connections.net_name(self.endpoint)
-
-    def peers(self, connections: NetLookup) -> tuple[Endpoint[str], ...]:
-        return connections.peers(self.endpoint)
-
-    def is_attached_to(self, other: BoundPin, connections: NetLookup) -> bool:
-        return other.endpoint in self.peers(connections)
-
-    def connect(
-        self,
-        *others: BoundPin,
-        using: ConnectionSink,
-        name: str | None = None,
-    ) -> None:
-        using.connect(self, *others, name=name)
 
 
 class ComponentReference(StrEnum):
@@ -173,8 +120,3 @@ class ElectronicComponent(Generic[PinType]):  # noqa: UP046
 
     def resolve_endpoint(self, number: str) -> Endpoint[PinType]:
         return self.endpoint(self.get_pin_by_number(number))
-
-    def attachments(self, connections: NetLookup) -> dict[PinType, str]:
-        return {
-            pin: connections.net_name(self.endpoint(pin)) for pin in self.get_pins()
-        }

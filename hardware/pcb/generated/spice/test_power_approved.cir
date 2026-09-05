@@ -1,0 +1,31 @@
+Generated chess-board approved power load
+VINPUT dc_in 0 5.0
+RFUSE dc_in dc_fused 0.06
+RSWITCH dc_fused 5v 0.06
+ILOAD 5v 0 0.8216129032258064
+.tran 1u 10u
+.control
+run
+meas tran result_5v FIND v(5v) AT=5u
+meas tran input_current FIND i(VINPUT) AT=5u
+let result_current=-input_current
+print result_current
+if result_current < 0.811613
+echo "ASSERTION FAILED: result_current below 0.811613"
+quit 1
+end
+if result_current > 0.831613
+echo "ASSERTION FAILED: result_current above 0.831613"
+quit 1
+end
+if result_5v < 4.75
+echo "ASSERTION FAILED: result_5v below 4.75"
+quit 1
+end
+if result_5v > 5.1
+echo "ASSERTION FAILED: result_5v above 5.1"
+quit 1
+end
+quit 0
+.endc
+.end

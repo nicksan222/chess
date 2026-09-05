@@ -33,10 +33,6 @@ class WiringTest(unittest.TestCase):
                 sum(int(high) << bit for bit, high in enumerate(bank.straps)),
                 bank.index,
             )
-            self.assertEqual(
-                [pin for pin, _name in wiring.expander_squares(bank.index)],
-                list(range(8)),
-            )
 
     def test_square_mappings_are_bijective(self):
         positions = [

@@ -1,0 +1,87 @@
+Generated chess-board fitted-capacitor startup
+VINPUT dc_in 0 PULSE(0 5.0 0 1u 1u 10 20)
+RFUSE dc_in dc_fused 0.06
+RSWITCH dc_fused 5v 0.06
+BLOAD 5v 0 I=0.45*tanh(V(5v)/0.2)
+CC1 5v 0 1000u
+CC10 5v 0 100n
+CC11 5v 0 100n
+CC12 5v 0 100n
+CC13 5v 0 100n
+CC14 5v 0 100n
+CC15 5v 0 100n
+CC16 5v 0 100n
+CC17 5v 0 100n
+CC18 5v 0 100n
+CC19 5v 0 100n
+CC2 5v 0 10u
+CC20 5v 0 100n
+CC21 5v 0 100n
+CC22 5v 0 100n
+CC23 5v 0 100n
+CC24 5v 0 100n
+CC25 5v 0 100n
+CC26 5v 0 100n
+CC27 5v 0 100n
+CC28 5v 0 100n
+CC29 5v 0 100n
+CC30 5v 0 100n
+CC31 5v 0 100n
+CC32 5v 0 100n
+CC33 5v 0 100n
+CC34 5v 0 100n
+CC35 5v 0 100n
+CC36 5v 0 100n
+CC37 5v 0 100n
+CC38 5v 0 100n
+CC39 5v 0 100n
+CC40 5v 0 100n
+CC41 5v 0 100n
+CC42 5v 0 100n
+CC43 5v 0 100n
+CC44 5v 0 100n
+CC45 5v 0 100n
+CC46 5v 0 100n
+CC47 5v 0 100n
+CC48 5v 0 100n
+CC49 5v 0 100n
+CC50 5v 0 100n
+CC51 5v 0 100n
+CC52 5v 0 100n
+CC53 5v 0 100n
+CC54 5v 0 100n
+CC55 5v 0 100n
+CC56 5v 0 100n
+CC57 5v 0 100n
+CC58 5v 0 100n
+CC59 5v 0 100n
+CC60 5v 0 100n
+CC61 5v 0 100n
+CC62 5v 0 100n
+CC63 5v 0 100n
+CC64 5v 0 100n
+CC65 5v 0 100n
+CC66 5v 0 100n
+CC67 5v 0 100n
+CC68 5v 0 100n
+CC69 5v 0 100n
+CC7 5v 0 100n
+CC70 5v 0 100n
+CC71 5v 0 100n
+CC8 5v 0 100n
+CC9 5v 0 100n
+.tran 5u 2m
+.control
+run
+meas tran result_5v_at_1ms FIND v(5v) AT=1m
+if result_5v_at_1ms < 4.75
+echo "ASSERTION FAILED: result_5v_at_1ms below 4.75"
+quit 1
+end
+if result_5v_at_1ms > 5.1
+echo "ASSERTION FAILED: result_5v_at_1ms above 5.1"
+quit 1
+end
+quit 0
+.endc
+.end

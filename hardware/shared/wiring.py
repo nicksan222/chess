@@ -9,8 +9,6 @@ from __future__ import annotations
 from .dimensions import GRID_COUNT, HALL_BANKS
 from .hall_banks import FILES, square
 
-GRID = 2.54
-
 # --- I2C bus ----------------------------------------------------------------
 # Eight compact Hall banks share the bus with the display. Acquisition is polled.
 EXPANDER_COUNT = len(HALL_BANKS)
@@ -24,8 +22,6 @@ SPI_DATA_NET = "SPI_DATA_3V3"
 SPI_CLOCK_NET = "SPI_CLK_3V3"
 LED_DATA_NET = "LED_DATA_5V"
 LED_CLOCK_NET = "LED_CLK_5V"
-LED_DATA_END_NET = "LED_DATA_LAST"
-LED_CLOCK_END_NET = "LED_CLK_LAST"
 
 # --- Control panel ----------------------------------------------------------
 # Twelve identical buttons straight onto Broadcom lines. Nothing here goes
@@ -78,26 +74,12 @@ def button_net(name: str) -> str:
     return f"BTN_{name}"
 
 
-def expander_address(index: int) -> int:
-    return HALL_BANKS[index].address
-
-
-def expander_straps(index: int) -> tuple[bool, bool, bool]:
-    return HALL_BANKS[index].straps
-
-
 def expander_of(file_index: int, rank: int) -> tuple[int, int]:
     """Bank and P0–P7 channel owning this square."""
     for bank in HALL_BANKS:
         if (file_index, rank) in bank.members:
             return bank.index, bank.members.index((file_index, rank))
     raise ValueError(f"invalid square coordinates {(file_index, rank)}")
-
-
-def expander_squares(index: int) -> list[tuple[int, str]]:
-    return [
-        (pin, square(*member)) for pin, member in enumerate(HALL_BANKS[index].members)
-    ]
 
 
 def led_chain_order() -> list[tuple[str, int, int]]:

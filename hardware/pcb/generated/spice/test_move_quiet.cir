@@ -1,0 +1,53 @@
+Generated chess-board quiet sensor sequence
+.model HALLSW SW(Ron=50.0 Roff=1T Vt=1.65 Vh=0.1)
+.subckt SQUARE_SENSOR OUT VDD MAG GND
+SOUTPUT OUT GND MAG GND HALLSW
+RPULL OUT VDD 100000.0
+.ends SQUARE_SENSOR
+VDD vdd 0 3.3
+VMAG_sq_a2 mag_sq_a2 0 PWL(0.0m 3.3 0.999m 3.3 1m 0)
+Xsq_a2 sq_a2 vdd mag_sq_a2 0 SQUARE_SENSOR
+VMAG_sq_a4 mag_sq_a4 0 PWL(0.0m 0 1.999m 0 2m 3.3)
+Xsq_a4 sq_a4 vdd mag_sq_a4 0 SQUARE_SENSOR
+.tran 10u 3.25m
+.control
+run
+meas tran result_origin_before_lift FIND v(sq_a2) AT=0.25m
+meas tran result_target_before_move FIND v(sq_a4) AT=0.25m
+meas tran result_origin_after_lift FIND v(sq_a2) AT=1.25m
+meas tran result_target_after_place FIND v(sq_a4) AT=2.25m
+if result_origin_before_lift < 0
+echo "ASSERTION FAILED: result_origin_before_lift below 0"
+quit 1
+end
+if result_origin_before_lift > 0.1
+echo "ASSERTION FAILED: result_origin_before_lift above 0.1"
+quit 1
+end
+if result_target_before_move < 3.2
+echo "ASSERTION FAILED: result_target_before_move below 3.2"
+quit 1
+end
+if result_target_before_move > 3.4
+echo "ASSERTION FAILED: result_target_before_move above 3.4"
+quit 1
+end
+if result_origin_after_lift < 3.2
+echo "ASSERTION FAILED: result_origin_after_lift below 3.2"
+quit 1
+end
+if result_origin_after_lift > 3.4
+echo "ASSERTION FAILED: result_origin_after_lift above 3.4"
+quit 1
+end
+if result_target_after_place < 0
+echo "ASSERTION FAILED: result_target_after_place below 0"
+quit 1
+end
+if result_target_after_place > 0.1
+echo "ASSERTION FAILED: result_target_after_place above 0.1"
+quit 1
+end
+quit 0
+.endc
+.end

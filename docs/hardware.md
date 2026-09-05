@@ -11,8 +11,8 @@ Pi Zero 2 W. There is no microcontroller and no separate schematic source tree.
   component identities and physical package metadata.
 - [`hardware/shared/dimensions.py`](../hardware/shared/dimensions.py) owns the
   board envelope and feature positions shared with CAD.
-- [`hardware/pcb/board/data/netlist.json`](../hardware/pcb/board/data/netlist.json) is the
-  reviewed component and connectivity contract.
+- [`hardware/pcb/definition/board.py`](../hardware/pcb/definition/board.py) composes
+  the reviewed typed component assemblies and connectivity.
 - [`hardware/pcb/generated/bom.md`](../hardware/pcb/generated/bom.md) is the
   generated assembly manifest.
 
@@ -29,7 +29,7 @@ uses the shared I²C bus.
 
 `hardware/shared/hall_banks.py` defines bank membership, input order, address
 straps, and labels once. Shared dimensions derive placement from bank geometry
-and package/LED clearance; PCB generation checks the reviewed JSON netlist
+and package/LED clearance; PCB generation composes and validates the typed electrical graph
 against that mapping. CAD depicts the same eight package obstructions.
 
 Banks use 0x20–0x27; the OLED remains 0x3C. Acquisition is polled, with each INT

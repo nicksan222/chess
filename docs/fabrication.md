@@ -1,6 +1,6 @@
 # PCB fabrication
 
-The PCB is a native KiCad 9 project at `hardware/pcb/chess-board.kicad_pro`.
+The PCB is a native KiCad 9 project at `hardware/pcb/generated/chess-board.kicad_pro`.
 Python composes the board through KiCad's `pcbnew` API, using shared dimensions,
 wiring, reviewed connectivity, package geometry, and placement.
 

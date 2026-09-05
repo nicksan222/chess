@@ -25,7 +25,7 @@ precommit: _automation-format
     just firmware-binary
     just --justfile hardware/shared/justfile check
     just --justfile hardware/cad/justfile check-fast
-    just --justfile hardware/pcb/justfile check-fast
+    just --justfile hardware/pcb/justfile review
 
 # Formatting, linting, checking, and documentation.
 quality: _automation-format
@@ -52,7 +52,7 @@ test:
     for package in {{ rust_packages }}; do just --justfile "$package/justfile" test; done
     just --justfile hardware/shared/justfile test
     just --justfile hardware/cad/justfile test
-    just --justfile hardware/pcb/justfile test
+    just --justfile hardware/pcb/justfile review
 
 # Regenerate CAD and PCB review output.
 generate:

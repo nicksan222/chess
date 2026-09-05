@@ -1,10 +1,10 @@
 # SPICE tests
 
-Each `test_*.py` is a complete, readable electrical scenario. It:
+Tests are grouped into power, signal and movement scenarios. Each scenario:
 
 1. asks `BoardHarness` for circuit topology derived from the validated PCB;
 2. declares actions and named voltage/current checks in Python;
-3. writes a same-named `test_*.cir` beside itself;
+3. renders a uniquely named `.cir` into the review output set (or a temporary directory for standalone tests);
 4. runs that circuit with ngspice.
 
 The generated circuit contains its own `.control` assertion harness. A failed
@@ -28,6 +28,6 @@ case = (
 Support modules are deliberately local to this test group:
 
 - `movement.py` — chronological movement/check DSL;
-- `circuit.py` — one-method-per-SPICE-row builder and ngspice runner;
+- `circuit.py` — minimal SPICE rendering and ngspice runner;
 - `board_harness.py` — conversion from real board components/nets to circuits;
-- `support.py` — common board loading and colocated `.cir` output.
+- `support.py` — common board loading and optional staged `.cir` output.

@@ -1,0 +1,50 @@
+Generated chess-board open-drain bus inputs
+.model INPUTSW SW(Ron=50.0 Roff=1T Vt=1.65 Vh=0.1)
+VDD 3v3 0 3.3
+VDRIVE drive 0 PULSE(0 3.3 1m 1u 1u 10 20)
+RPULL1 i2c_sda 3v3 4.7k
+SDRIVE1 i2c_sda 0 drive 0 INPUTSW
+RPULL2 i2c_scl 3v3 4.7k
+SDRIVE2 i2c_scl 0 drive 0 INPUTSW
+.tran 10u 3m
+.control
+run
+meas tran result_i2c_sda_released FIND v(i2c_sda) AT=0.5m
+meas tran result_i2c_sda_low FIND v(i2c_sda) AT=1.5m
+meas tran result_i2c_scl_released FIND v(i2c_scl) AT=0.5m
+meas tran result_i2c_scl_low FIND v(i2c_scl) AT=1.5m
+if result_i2c_sda_released < 3.2
+echo "ASSERTION FAILED: result_i2c_sda_released below 3.2"
+quit 1
+end
+if result_i2c_sda_released > 3.4
+echo "ASSERTION FAILED: result_i2c_sda_released above 3.4"
+quit 1
+end
+if result_i2c_sda_low < 0
+echo "ASSERTION FAILED: result_i2c_sda_low below 0"
+quit 1
+end
+if result_i2c_sda_low > 0.1
+echo "ASSERTION FAILED: result_i2c_sda_low above 0.1"
+quit 1
+end
+if result_i2c_scl_released < 3.2
+echo "ASSERTION FAILED: result_i2c_scl_released below 3.2"
+quit 1
+end
+if result_i2c_scl_released > 3.4
+echo "ASSERTION FAILED: result_i2c_scl_released above 3.4"
+quit 1
+end
+if result_i2c_scl_low < 0
+echo "ASSERTION FAILED: result_i2c_scl_low below 0"
+quit 1
+end
+if result_i2c_scl_low > 0.1
+echo "ASSERTION FAILED: result_i2c_scl_low above 0.1"
+quit 1
+end
+quit 0
+.endc
+.end

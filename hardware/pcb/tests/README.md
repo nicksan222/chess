@@ -1,10 +1,21 @@
-# PCB tests
+# Focused PCB checks
 
-Tests are grouped by the capability they protect:
+- `board/test_dimensions.py`: board envelope/orientation, every square and bank,
+  component alignment, courtyards, pads, and plated slots.
+- `board/test_native.py`: native identities survive unrelated insertion and reordering.
+- `pipeline/test_build.py`: atomic publication, source-change detection, native report
+  failures, and mandatory physical-evidence gating.
+- `spice/`: electrical and movement scenarios derived from actual native pad nets.
 
-- `model/` validates components, connectivity, design composition, rules, and repeated squares without requiring KiCad.
-- `layout/` validates footprints, placement, and the native KiCad adapter.
-- `release/` validates architecture boundaries, generated artifacts, firmware pin parity, and manufacturing policy.
-- `spice/` defines readable electrical scenarios in Python, writes a same-named `.cir` beside each case, and lets ngspice execute the registered checks.
+Accessor, serialization, architecture-policing and frozen-snapshot suites were
+intentionally removed. The production pipeline still enforces native ERC/DRC and
+schematic parity; `build.physical_evidence()` independently gates fabrication.
 
-Run all groups with `just --justfile hardware/pcb/justfile test`.
+Run without publishing:
+
+```sh
+PYTHONPATH=hardware python3 -m unittest discover -s hardware/pcb/tests -p 'test_*.py'
+```
+
+`just --justfile hardware/pcb/justfile review` regenerates, checks and publishes the
+complete native review set, including SPICE circuits. KiCad and ngspice are required.

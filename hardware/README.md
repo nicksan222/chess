@@ -10,5 +10,5 @@ mechanical design:
 - **`cad/`** — printable enclosure and tile plate generated with Blender.
 
 There is intentionally no separate electronics/schematic domain. The PCB is the
-electrical design, and `pcb/board/data/netlist.json` is its explicit connectivity
-contract. Run `just --justfile hardware/pcb/justfile release` to validate and generate manufacturing artifacts.
+electrical design, and `pcb/definition/board.py` composes its explicit connectivity
+contract from typed assemblies. The expanded netlist is generated output. Run `just --justfile hardware/pcb/justfile release` to validate and generate manufacturing artifacts.

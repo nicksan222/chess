@@ -6,11 +6,9 @@ from .base import (
     BoundPin,
     ComponentPin,
     ComponentReference,
-    ConnectionSink,
     ElectronicComponent,
     Endpoint,
     EndpointResolver,
-    NetLookup,
 )
 from .connectors import OledHeaderComponent, OledHeaderPin
 from .hall_sensor import HallSensorComponent, HallSensorPin
@@ -52,7 +50,6 @@ __all__ = (
     "CapacitorPin",
     "ComponentPin",
     "ComponentReference",
-    "ConnectionSink",
     "ElectronicComponent",
     "Endpoint",
     "EndpointResolver",
@@ -62,7 +59,6 @@ __all__ = (
     "HallSensorPin",
     "HeaderLegend",
     "HeaderLegendEntry",
-    "NetLookup",
     "OledHeaderComponent",
     "OledHeaderPin",
     "PowerSwitchComponent",

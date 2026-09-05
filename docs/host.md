@@ -25,13 +25,10 @@ display implementation; neither hardware worker exists yet. Note that `rppal`, t
 was retired by its author in July 2025, so the maintained character-device crates
 are the better foundation for new work.
 
-`apps/firmware/src/generated_pins.rs` contains distinct Rust marker types for
-only the Raspberry Pi GPIOs connected by the native pcbnew board. The generated
-types describe host pin identity but deliberately assign no application meaning;
-firmware consumers decide which concrete GPIO implementation and semantic role
-each marker receives. Regenerate the board with
-`just --justfile hardware/pcb/justfile pins` (writes both board and pins). The package's test recipe,
-pre-commit, and PCB CI verify pin parity after board generation.
+`apps/firmware/src/pins.rs` contains hand-maintained Rust marker types for the
+connected Raspberry Pi GPIOs. They describe host identity, not application meaning.
+PCB-to-Rust generation was deliberately removed; coordinate changes to these
+markers with `hardware/shared/wiring.py` and the native PCB host connections.
 
 The LED frame needs no library. An SK9822 frame is a start frame of zero bytes,
 four bytes per LED — brightness, then blue, green, red — and an end frame. Start

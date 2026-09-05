@@ -1,0 +1,73 @@
+Generated chess-board en-passant sensor sequence
+.model HALLSW SW(Ron=50.0 Roff=1T Vt=1.65 Vh=0.1)
+.subckt SQUARE_SENSOR OUT VDD MAG GND
+SOUTPUT OUT GND MAG GND HALLSW
+RPULL OUT VDD 100000.0
+.ends SQUARE_SENSOR
+VDD vdd 0 3.3
+VMAG_sq_d5 mag_sq_d5 0 PWL(0.0m 3.3 1.999m 3.3 2m 0)
+Xsq_d5 sq_d5 vdd mag_sq_d5 0 SQUARE_SENSOR
+VMAG_sq_d6 mag_sq_d6 0 PWL(0.0m 0 2.999m 0 3m 3.3)
+Xsq_d6 sq_d6 vdd mag_sq_d6 0 SQUARE_SENSOR
+VMAG_sq_e5 mag_sq_e5 0 PWL(0.0m 3.3 0.999m 3.3 1m 0)
+Xsq_e5 sq_e5 vdd mag_sq_e5 0 SQUARE_SENSOR
+.tran 10u 4.25m
+.control
+run
+meas tran result_attacker_initial FIND v(sq_e5) AT=0.25m
+meas tran result_victim_initial FIND v(sq_d5) AT=0.25m
+meas tran result_destination_initial FIND v(sq_d6) AT=0.25m
+meas tran result_attacker_lifted FIND v(sq_e5) AT=1.25m
+meas tran result_victim_removed FIND v(sq_d5) AT=2.25m
+meas tran result_destination_filled FIND v(sq_d6) AT=3.25m
+if result_attacker_initial < 0
+echo "ASSERTION FAILED: result_attacker_initial below 0"
+quit 1
+end
+if result_attacker_initial > 0.1
+echo "ASSERTION FAILED: result_attacker_initial above 0.1"
+quit 1
+end
+if result_victim_initial < 0
+echo "ASSERTION FAILED: result_victim_initial below 0"
+quit 1
+end
+if result_victim_initial > 0.1
+echo "ASSERTION FAILED: result_victim_initial above 0.1"
+quit 1
+end
+if result_destination_initial < 3.2
+echo "ASSERTION FAILED: result_destination_initial below 3.2"
+quit 1
+end
+if result_destination_initial > 3.4
+echo "ASSERTION FAILED: result_destination_initial above 3.4"
+quit 1
+end
+if result_attacker_lifted < 3.2
+echo "ASSERTION FAILED: result_attacker_lifted below 3.2"
+quit 1
+end
+if result_attacker_lifted > 3.4
+echo "ASSERTION FAILED: result_attacker_lifted above 3.4"
+quit 1
+end
+if result_victim_removed < 3.2
+echo "ASSERTION FAILED: result_victim_removed below 3.2"
+quit 1
+end
+if result_victim_removed > 3.4
+echo "ASSERTION FAILED: result_victim_removed above 3.4"
+quit 1
+end
+if result_destination_filled < 0
+echo "ASSERTION FAILED: result_destination_filled below 0"
+quit 1
+end
+if result_destination_filled > 0.1
+echo "ASSERTION FAILED: result_destination_filled above 0.1"
+quit 1
+end
+quit 0
+.endc
+.end
