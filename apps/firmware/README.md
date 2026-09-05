@@ -18,6 +18,5 @@ Hardware workers are not implemented yet. The board contract uses polled
 TCA9554 input-port reads at eight addresses, not a GPIO sensor interrupt; see
 [host acquisition](../../docs/host.md#reading-the-board). Reusable, function-named
 GPIO identities and type-safe descriptors live in `src/pins/`; unused GPIO4 is
-deliberately absent. The private files under `pins/` separate the board map,
-capabilities, backend contract, and generic pin type; `pins/mod.rs` is the public
-facade.
+deliberately absent. `pins/mod.rs` defines the board map, while `pins/gpio.rs`
+contains the generic pin and its separate read/write traits.
