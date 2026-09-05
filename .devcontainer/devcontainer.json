@@ -20,7 +20,7 @@
   "updateRemoteUserUID": true,
   "mounts": [
     "source=chess-pi-agent,target=/home/vscode/.pi/agent,type=volume",
-    "source=chess-pi-worktrees,target=/home/vscode/.worktrees,type=volume"
+    "source=chess-pi-worktrees,target=/home/vscode/.local/share/pi-worktrees,type=volume"
   ],
   "remoteEnv": {
     "AI_GATEWAY_API_KEY": "${localEnv:AI_GATEWAY_API_KEY}",

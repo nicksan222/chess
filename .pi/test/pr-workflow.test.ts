@@ -8,7 +8,7 @@ function plan(overrides: Partial<PrPlan> = {}): PrPlan {
 		title: "Add a modular Pi feedback loop",
 		body: "## Summary\n\nAdd feedback hooks.\n\n## Validation\n\n- Bun checks",
 		commits: [
-			{ message: "Add Pi validation hooks", paths: [".pi/extensions/verify-changes/index.ts"] },
+			{ message: "Simplify Pi commit hooks", paths: [".pi/extensions/commit-loop/index.ts"] },
 		],
 		...overrides,
 	};
@@ -18,10 +18,10 @@ describe("PR plan validation", () => {
 	test("allows the plan to omit unrelated dirty files", () => {
 		expect(
 			validatePrPlan(plan(), [
-				".pi/extensions/verify-changes/index.ts",
+				".pi/extensions/commit-loop/index.ts",
 				"crates/chess/src/lib.rs",
 			]),
-		).toEqual([".pi/extensions/verify-changes/index.ts"]);
+		).toEqual([".pi/extensions/commit-loop/index.ts"]);
 	});
 
 	test("rejects duplicate paths across sequential commits", () => {
@@ -40,13 +40,13 @@ describe("PR plan validation", () => {
 
 	test("rejects non-semantic branch names", () => {
 		expect(() =>
-			validatePrPlan(plan({ branch: "my changes" }), [".pi/extensions/verify-changes/index.ts"]),
+			validatePrPlan(plan({ branch: "my changes" }), [".pi/extensions/commit-loop/index.ts"]),
 		).toThrow("invalid semantic branch name");
 	});
 
 	test("rejects incomplete PR body structure", () => {
 		expect(() =>
-			validatePrPlan(plan({ body: "Just some prose" }), [".pi/extensions/verify-changes/index.ts"]),
+			validatePrPlan(plan({ body: "Just some prose" }), [".pi/extensions/commit-loop/index.ts"]),
 		).toThrow("## Summary and ## Validation");
 	});
 });

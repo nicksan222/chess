@@ -15,5 +15,5 @@
     "target": "ESNext",
     "types": ["bun", "node"]
   },
-  "include": ["extensions/**/*.ts", "feedback/**/*.ts", "test/**/*.ts"]
+  "include": ["extensions/**/*.ts", "test/**/*.ts"]
 }

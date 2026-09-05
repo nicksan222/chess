@@ -2,13 +2,12 @@ import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { ExtensionAPI, ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
-import { pathsFromNameStatus } from "../../feedback/git-paths.js";
-import { suspiciousPatchLines, suspiciousTextLines } from "../../feedback/secrets.js";
-import { createValidationWorktree } from "../../feedback/snapshot.js";
-import { formatValidationResult, preparePiDependencies, runVerification } from "../../feedback/verification.js";
 import {
 	git,
 	inspectGitState,
+	pathsFromNameStatus,
+	suspiciousPatchLines,
+	suspiciousTextLines,
 	validateBranchName,
 	type GitState,
 } from "./git.js";
@@ -94,7 +93,7 @@ async function createCommits(
 			if (suspicious.length > 0) {
 				throw new Error(`Potential secret material found in staged additions; inspect before retrying:\n${suspicious.join("\n")}`);
 			}
-			await git(pi, state.repository, ["commit", "--no-verify", "-m", commit.message]);
+			await git(pi, state.repository, ["commit", "-m", commit.message]);
 		}
 	} finally {
 		if (savedIndexDirectory) {
@@ -198,26 +197,11 @@ async function runPr(pi: ExtensionAPI, args: string, ctx: ExtensionCommandContex
 
 	await createBranch(pi, state, branch);
 	await createCommits(pi, ctx, state, plan);
-	ctx.ui.setStatus("pr-workflow", "running full validation");
-	const validationPaths = [...new Set([...state.existingPaths, ...selectedPaths])].sort();
-	const snapshot = await createValidationWorktree(pi, state.repository, "HEAD");
-	let validation;
-	try {
-		await preparePiDependencies(pi, snapshot.worktree, validationPaths, ctx.signal);
-		validation = await runVerification(pi, snapshot.worktree, validationPaths, "full", ctx.signal);
-	} finally {
-		await snapshot.cleanup();
-	}
-	pi.events.emit("feedback:validation-result", validation);
-	if (!validation.passed) {
-		throw new Error(`Commits were created, but publishing was stopped because validation failed.\n${formatValidationResult(validation)}`);
-	}
-
 	ctx.ui.setStatus("pr-workflow", "reviewing commit range");
 	const commitLog = await reviewCommits(pi, state, selectedPaths);
 	if (!state.canPublish) {
 		ctx.ui.notify(
-			`Created and validated local commits:\n${commitLog}\n${state.publishProblem}\nNext: git push --set-upstream origin ${branch}`,
+			`Created local commits:\n${commitLog}\n${state.publishProblem}\nNext: git push --set-upstream origin ${branch}`,
 			"warning",
 		);
 		return;
@@ -231,7 +215,7 @@ async function runPr(pi: ExtensionAPI, args: string, ctx: ExtensionCommandContex
 
 export default function prWorkflow(pi: ExtensionAPI) {
 	pi.registerCommand("pr", {
-		description: "Plan, commit, validate, push, and create a pull request: /pr [goal]",
+		description: "Plan, commit, push, and create a pull request: /pr [goal]",
 		handler: async (args, ctx) => {
 			try {
 				await runPr(pi, args, ctx);

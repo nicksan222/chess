@@ -11,16 +11,19 @@ async function text(path: string): Promise<string> {
 
 describe("Pi harness configuration", () => {
 	test("keeps project JSON parseable", async () => {
-		for (const path of [".devcontainer/devcontainer.json", ".pi/package.json", ".pi/tsconfig.json"]) {
+		for (const path of [".devcontainer/devcontainer.json", ".pi/package.json", ".pi/settings.json", ".pi/tsconfig.json"]) {
 			const document = await text(path);
 			expect(() => JSON.parse(document)).not.toThrow();
 		}
 	});
 
-	test("persists Pi state and automatic worktrees", async () => {
+	test("uses the packaged worktree manager and persists its storage", async () => {
 		const config = JSON.parse(await text(".devcontainer/devcontainer.json"));
+		const settings = JSON.parse(await text(".pi/settings.json"));
+		expect(settings.packages).toContain("npm:pi-worktrees");
+		expect(settings.packages).not.toContain("npm:@narumitw/pi-worktree");
 		expect(config.mounts).toContain("source=chess-pi-agent,target=/home/vscode/.pi/agent,type=volume");
-		expect(config.mounts).toContain("source=chess-pi-worktrees,target=/home/vscode/.worktrees,type=volume");
+		expect(config.mounts).toContain("source=chess-pi-worktrees,target=/home/vscode/.local/share/pi-worktrees,type=volume");
 		expect(config.features["ghcr.io/devcontainers/features/docker-in-docker:4"]).toEqual({});
 	});
 
@@ -57,7 +60,7 @@ describe("Pi harness configuration", () => {
 
 	test("checks the locked Pi project when the devcontainer is created", async () => {
 		const script = await text(".devcontainer/post-create.sh");
-		expect(script).toContain('"${HOME}/.pi/agent" "${HOME}/.worktrees"');
+		expect(script).toContain('"${HOME}/.pi/agent" "${HOME}/.local/share/pi-worktrees"');
 		expect(script).toContain("bun install --cwd .pi --frozen-lockfile");
 		expect(script).toContain("bun run --cwd .pi check");
 	});
