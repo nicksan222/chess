@@ -7,7 +7,7 @@ mod pins;
 
 use std::io::ErrorKind;
 
-use events::{Event, GPIOLevelEvent, I2CEvent, I2COperation, SPIEvent};
+use events::{Event, EventEmitter, GPIOLevelEvent, I2CEvent, I2COperation, ReceiveError, SPIEvent};
 use pins::{BoardPins, Level};
 
 #[test]
@@ -61,9 +61,12 @@ fn spi_events_capture_output_only_led_writes() {
 }
 
 #[test]
-fn bounded_channel_delivers_mixed_interface_events_in_order() {
+fn every_subscription_receives_events_from_every_emitter_in_order() {
     let pins = BoardPins::get();
-    let (sender, mut receiver) = events::channel(3);
+    let emitter = EventEmitter::new(3);
+    let other_emitter = emitter.clone();
+    let mut first = emitter.subscribe();
+    let mut second = emitter.subscribe();
     let gpio = Event::from(GPIOLevelEvent::new(
         pins.gpio.reset_button.gpio(),
         Level::Low,
@@ -75,60 +78,70 @@ fn bounded_channel_delivers_mixed_interface_events_in_order() {
     ));
     let spi = Event::from(SPIEvent::new(vec![0; 4], Err(ErrorKind::BrokenPipe)));
 
-    sender.try_send(gpio.clone()).unwrap();
-    sender.try_send(i2c.clone()).unwrap();
-    sender.try_send(spi.clone()).unwrap();
+    emitter.emit(gpio.clone()).unwrap();
+    other_emitter.emit(i2c.clone()).unwrap();
+    emitter.emit(spi.clone()).unwrap();
 
-    assert_eq!(receiver.try_recv(), Ok(gpio));
-    assert_eq!(receiver.try_recv(), Ok(i2c));
-    assert_eq!(receiver.try_recv(), Ok(spi));
-}
-
-#[test]
-fn bounded_channel_reports_backpressure() {
-    let pins = BoardPins::get();
-    let (sender, _receiver) = events::channel(1);
-
-    sender
-        .try_send(Event::from(GPIOLevelEvent::new(
-            pins.gpio.reset_button.gpio(),
-            Level::Low,
-        )))
-        .unwrap();
-
-    assert!(
-        sender
-            .try_send(Event::from(GPIOLevelEvent::new(
-                pins.gpio.reset_button.gpio(),
-                Level::High,
-            )))
-            .is_err()
-    );
+    for subscription in [&mut first, &mut second] {
+        assert_eq!(subscription.try_recv(), Ok(Some(gpio.clone())));
+        assert_eq!(subscription.try_recv(), Ok(Some(i2c.clone())));
+        assert_eq!(subscription.try_recv(), Ok(Some(spi.clone())));
+        assert_eq!(subscription.try_recv(), Ok(None));
+    }
 }
 
 #[test]
 fn emitter_accepts_typed_events_without_manual_erasure() {
     let pins = BoardPins::get();
-    let (emitter, mut receiver) = events::channel(1);
+    let emitter = EventEmitter::new(1);
+    let mut subscription = emitter.subscribe();
     let event = GPIOLevelEvent::new(pins.gpio.ok_button.gpio(), Level::Low);
 
-    emitter.try_emit(event).unwrap();
+    emitter.emit(event).unwrap();
 
-    assert_eq!(receiver.try_recv(), Ok(Event::GPIOLevel(event)));
+    assert_eq!(subscription.try_recv(), Ok(Some(Event::GPIOLevel(event))));
+}
+
+#[test]
+fn subscriptions_report_lag_without_exposing_channel_errors() {
+    let pins = BoardPins::get();
+    let emitter = EventEmitter::new(1);
+    let mut subscription = emitter.subscribe();
+
+    emitter
+        .emit(GPIOLevelEvent::new(
+            pins.gpio.reset_button.gpio(),
+            Level::Low,
+        ))
+        .unwrap();
+    emitter
+        .emit(GPIOLevelEvent::new(
+            pins.gpio.reset_button.gpio(),
+            Level::High,
+        ))
+        .unwrap();
+
+    assert_eq!(
+        subscription.try_recv(),
+        Err(ReceiveError::Lagged { skipped: 1 })
+    );
+    assert!(matches!(
+        subscription.try_recv(),
+        Ok(Some(Event::GPIOLevel(_)))
+    ));
 }
 
 #[test]
 fn failed_emission_returns_ownership_of_the_event() {
     let pins = BoardPins::get();
-    let (emitter, receiver) = events::channel(1);
+    let emitter = EventEmitter::new(1);
     let event = Event::from(GPIOLevelEvent::new(
         pins.gpio.reset_button.gpio(),
         Level::High,
     ));
-    drop(receiver);
 
-    let returned = emitter.try_emit(event.clone()).unwrap_err().into_inner();
+    let returned = emitter.emit(event.clone()).unwrap_err().into_event();
 
     assert_eq!(returned, event);
-    assert!(emitter.is_closed());
+    assert_eq!(emitter.subscriber_count(), 0);
 }
