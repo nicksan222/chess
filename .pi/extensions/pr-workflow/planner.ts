@@ -1,6 +1,7 @@
 import {
 	StringEnum,
 	Type,
+	type AssistantMessage,
 	type Static,
 	type Tool,
 	uuidv7,
@@ -100,32 +101,60 @@ function planningPrompt(input: PlanningInput): string {
 	].join("\n");
 }
 
-export async function createPrPlan(ctx: ExtensionCommandContext, input: PlanningInput): Promise<PrPlan> {
+export async function createPrPlan(
+	ctx: ExtensionCommandContext,
+	input: PlanningInput,
+	onThinking?: (thinking: string) => void,
+): Promise<PrPlan> {
 	const model = ctx.model;
 	if (!model) throw new Error("No active model is available for PR planning.");
 	if (!ctx.modelRegistry.hasConfiguredAuth(model)) {
 		throw new Error(`No authentication is configured for ${model.provider}/${model.id}.`);
 	}
 
-	const response = await ctx.modelRegistry.complete(
-		model,
-		{
-			systemPrompt: "You are a precise release engineer. Return plans only through the supplied tool.",
-			messages: [
-				{
-					role: "user",
-					content: [{ type: "text", text: planningPrompt(input) }],
-					timestamp: Date.now(),
-				},
-			],
-			tools: [PLANNING_TOOL],
-		},
-		{
-			cacheRetention: "none",
-			sessionId: uuidv7(),
-			signal: ctx.signal,
-		},
-	);
+	const context = {
+		systemPrompt: "You are a precise release engineer. Return plans only through the supplied tool.",
+		messages: [
+			{
+				role: "user" as const,
+				content: [{ type: "text" as const, text: planningPrompt(input) }],
+				timestamp: Date.now(),
+			},
+		],
+		tools: [PLANNING_TOOL],
+	};
+	const options = {
+		cacheRetention: "none" as const,
+		sessionId: uuidv7(),
+		signal: ctx.signal,
+	};
+	let response: AssistantMessage;
+	if (onThinking) {
+		const auth = await ctx.modelRegistry.getApiKeyAndHeaders(model);
+		if (!auth.ok) throw new Error(auth.error);
+		const provider = ctx.modelRegistry.getProvider(model.provider);
+		if (!provider) throw new Error(`Provider is not available: ${model.provider}`);
+		const requestModel = auth.baseUrl ? { ...model, baseUrl: auth.baseUrl } : model;
+		const stream = provider.stream(requestModel, context, {
+			...options,
+			apiKey: auth.apiKey,
+			headers: auth.headers,
+			env: auth.env,
+		});
+		let thinking = "";
+		for await (const event of stream) {
+			if (event.type === "thinking_delta") {
+				thinking += event.delta;
+				onThinking(thinking);
+			} else if (event.type === "thinking_end") {
+				thinking = event.content;
+				onThinking(thinking);
+			}
+		}
+		response = await stream.result();
+	} else {
+		response = await ctx.modelRegistry.complete(model, context, options);
+	}
 	if (response.stopReason === "error" || response.stopReason === "aborted") {
 		throw new Error(response.errorMessage || `PR planning ${response.stopReason}.`);
 	}
@@ -142,11 +171,21 @@ export function validatePrPlan(plan: PrPlan, dirtyPaths: readonly string[], allo
 	const allowed = new Set(dirtyPaths);
 	const selected = new Set<string>();
 	for (const commit of plan.commits) {
-		for (const path of commit.paths) {
-			if (!allowed.has(path)) throw new Error(`PR plan selected a path that is not dirty: ${path}`);
-			if (selected.has(path)) throw new Error(`PR plan selected the same path more than once: ${path}`);
-			selected.add(path);
+		const expandedPaths: string[] = [];
+		for (const selector of commit.paths) {
+			const matches = allowed.has(selector)
+				? [selector]
+				: selector.endsWith("/")
+					? dirtyPaths.filter((path) => path.startsWith(selector))
+					: [];
+			if (matches.length === 0) throw new Error(`PR plan selected a path that is not dirty: ${selector}`);
+			for (const path of matches) {
+				if (selected.has(path)) throw new Error(`PR plan selected the same path more than once: ${path}`);
+				selected.add(path);
+				expandedPaths.push(path);
+			}
 		}
+		commit.paths = expandedPaths;
 	}
 	if (selected.size === 0 && !allowEmpty) throw new Error("PR plan did not select any task changes.");
 	if (!/^(feat|fix|refactor|docs|test|ci|build|perf|chore)\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(plan.branch)) {

@@ -1,6 +1,7 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
-const MAX_PATCH_BYTES = 256 * 1024;
+const MAX_PATCH_BYTES = 1024 * 1024;
+const MAX_PATCH_SIZE = "1MB";
 const SECRET_PATTERNS = [
 	/[a-z0-9_-]*(?:api[-_]?key|secret|password|token)[a-z0-9_-]*["']?\s*[:=]\s*["'][^"']{8,}/i,
 	/^\+\s*(?:-\s+)?(?:export\s+)?["']?[a-z0-9_-]*(?:api[-_]?key|secret|password|token)[a-z0-9_-]*["']?\s*[:=]\s*[^\s#"']{8,}\s*(?:#.*)?$/i,
@@ -29,9 +30,17 @@ export function pathsFromNameStatus(value: string): string[] {
 	return [...new Set(paths)].sort();
 }
 
+function isCredentialReferenceAssignment(line: string): boolean {
+	return /(?:api[-_]?key|secret|password|token)[a-z0-9_-]*["']?\s*[:=]\s*[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*,?\s*$/i
+		.test(line);
+}
+
 export function suspiciousTextLines(text: string): string[] {
 	return text.split("\n")
-		.filter((line) => SECRET_PATTERNS.some((pattern) => pattern.test(line) || pattern.test(`+${line}`)))
+		.filter((line) =>
+			!isCredentialReferenceAssignment(line)
+			&& SECRET_PATTERNS.some((pattern) => pattern.test(line) || pattern.test(`+${line}`))
+		)
 		.slice(0, 5);
 }
 
@@ -89,7 +98,7 @@ async function completePatch(pi: ExtensionAPI, cwd: string, paths: readonly stri
 		patch += `\n${result.stdout}`;
 	}
 	if (Buffer.byteLength(patch) > MAX_PATCH_BYTES) {
-		throw new Error(`The complete patch exceeds ${MAX_PATCH_BYTES / 1024}KB. Commit or scope part of the task before running /pr.`);
+		throw new Error(`The complete patch exceeds ${MAX_PATCH_SIZE}. Commit or scope part of the task before running /pr.`);
 	}
 	return patch;
 }
@@ -145,14 +154,14 @@ export async function inspectGitState(pi: ExtensionAPI, cwd: string): Promise<Gi
 		"--",
 	])).stdout;
 	if (Buffer.byteLength(existingPatch) > MAX_PATCH_BYTES) {
-		throw new Error(`The committed patch exceeds ${MAX_PATCH_BYTES / 1024}KB. Review and publish it manually.`);
+		throw new Error(`The committed patch exceeds ${MAX_PATCH_SIZE}. Review and publish it manually.`);
 	}
 	const paths = await dirtyPaths(pi, repository);
 	if (paths.length === 0 && !existingCommits) {
 		throw new Error("There are no commits or uncommitted changes to prepare.");
 	}
 
-	const status = await git(pi, repository, ["status", "--short", "--branch"]);
+	const status = await git(pi, repository, ["status", "--short", "--branch", "--untracked-files=all"]);
 	const staged = await git(pi, repository, ["diff", "--cached", "--name-status", "-z", "--"]);
 	const recent = await git(pi, repository, ["log", "-8", "--pretty=format:%s"]);
 	const origin = await git(pi, repository, ["remote", "get-url", "origin"], true);

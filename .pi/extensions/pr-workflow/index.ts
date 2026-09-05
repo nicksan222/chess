@@ -151,6 +151,18 @@ async function publish(
 	return result.stdout.trim();
 }
 
+function plannerThinkingWidget(modelId: string, thinking: string): string[] {
+	const lines = thinking
+		.split("\n")
+		.map((line) => line.trim())
+		.filter(Boolean)
+		.slice(-8);
+	return [
+		`Planner reasoning (${modelId})`,
+		...(lines.length > 0 ? lines : ["Waiting for the first reasoning update…"]),
+	];
+}
+
 async function runPr(pi: ExtensionAPI, args: string, ctx: ExtensionCommandContext): Promise<void> {
 	if (!ctx.hasUI) throw new Error("/pr requires TUI or RPC mode for publish confirmation.");
 	await ctx.waitForIdle();
@@ -165,17 +177,25 @@ async function runPr(pi: ExtensionAPI, args: string, ctx: ExtensionCommandContex
 	}
 
 	ctx.ui.setStatus("pr-workflow", "planning commits");
-	const plan = await createPrPlan(ctx, {
-		goal: args.trim(),
-		currentBranch: state.currentBranch,
-		baseBranch: state.baseBranch,
-		status: state.status,
-		existingCommits: state.existingCommits,
-		existingPatch: state.existingPatch,
-		recentCommits: state.recentCommits,
-		conversation: conversationText(ctx),
-		patch: state.patch,
-	});
+	const thinkingWidget = "pr-workflow-thinking";
+	const modelId = ctx.model?.id ?? "planner";
+	ctx.ui.setWidget(thinkingWidget, plannerThinkingWidget(modelId, ""));
+	let plan: PrPlan;
+	try {
+		plan = await createPrPlan(ctx, {
+			goal: args.trim(),
+			currentBranch: state.currentBranch,
+			baseBranch: state.baseBranch,
+			status: state.status,
+			existingCommits: state.existingCommits,
+			existingPatch: state.existingPatch,
+			recentCommits: state.recentCommits,
+			conversation: conversationText(ctx),
+			patch: state.patch,
+		}, (thinking) => ctx.ui.setWidget(thinkingWidget, plannerThinkingWidget(modelId, thinking)));
+	} finally {
+		ctx.ui.setWidget(thinkingWidget, undefined);
+	}
 	const suspiciousPlanMetadata = suspiciousTextLines([
 		plan.branch,
 		plan.title,
