@@ -10,6 +10,12 @@ pub struct SquareRay {
 }
 
 impl SquareRay {
+    /// Creates a ray resuming at `next` and advancing in `direction`.
+    ///
+    /// `next` is the first square to yield (already the neighbor of the
+    /// ray origin, see [`Square::ray`]); `None` produces an empty ray.
+    /// Each [`Iterator::next`] call then steps one square further until
+    /// the board edge.
     pub(super) const fn new(next: Option<Square>, direction: BoardDirection) -> Self {
         Self { next, direction }
     }
@@ -39,6 +45,10 @@ pub struct AllSquares {
 }
 
 impl AllSquares {
+    /// Creates an iterator over squares `a1` through `h8` in index order.
+    ///
+    /// Backs [`Square::all`]. The range is fixed at all 64 squares, so
+    /// the iterator is [`ExactSizeIterator`] with length 64 when fresh.
     pub(super) const fn new() -> Self {
         Self { front: 0, back: 64 }
     }

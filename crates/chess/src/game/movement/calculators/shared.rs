@@ -27,6 +27,11 @@ pub(super) const KING_OFFSETS: [SquareOffset; 8] = [
     SquareOffset::new(FileOffset::TOWARD_H, RankOffset::TOWARD_RANK_1),
 ];
 
+/// Collects step-offset destinations that stay on board and avoid friends.
+///
+/// Used for leapers (king, knight): enemy-occupied squares are included as
+/// captures, while king safety and king captures are filtered later by
+/// [`Board::legal_destinations`](crate::Board::legal_destinations).
 pub(super) fn offset_destinations(
     board: &Board,
     piece: Piece,
@@ -43,6 +48,10 @@ pub(super) fn offset_destinations(
         .collect()
 }
 
+/// Collects on-board step-offset squares regardless of occupancy.
+///
+/// Unlike [`offset_destinations`], friendly pieces do not block: the result
+/// is an attack map for [`is_attacked`](super::is_attacked) and check tests.
 pub(super) fn offset_attacks(piece: Piece, offsets: &[SquareOffset]) -> SquareSet {
     offsets
         .iter()
@@ -50,6 +59,11 @@ pub(super) fn offset_attacks(piece: Piece, offsets: &[SquareOffset]) -> SquareSe
         .collect()
 }
 
+/// Slides rays until blocked, including the first enemy-occupied square.
+///
+/// Powers bishop, rook, and queen candidates. These are pseudo-legal: king
+/// safety and king captures are handled by
+/// [`Board::legal_destinations`](crate::Board::legal_destinations).
 pub(super) fn ray_destinations(
     board: &Board,
     piece: Piece,
@@ -74,6 +88,11 @@ pub(super) fn ray_destinations(
     destinations
 }
 
+/// Slides attack rays through every square until the first occupied one.
+///
+/// Both colors count as attacked, so the map suits check and castling-path
+/// tests rather than move candidates. See
+/// [`is_attacked`](super::is_attacked).
 pub(super) fn ray_attacks(board: &Board, piece: Piece, directions: &[BoardDirection]) -> SquareSet {
     let mut attacks = SquareSet::EMPTY;
     for direction in directions {

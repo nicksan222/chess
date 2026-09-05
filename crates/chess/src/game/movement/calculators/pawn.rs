@@ -4,6 +4,12 @@ use crate::{
     Board, Color, FileOffset, Piece, PieceKind, Rank, RankOffset, SquareOffset, SquareSet,
 };
 
+/// Pawn pushes, captures, and en-passant candidates for the side to move.
+///
+/// Single pushes require an empty square; double pushes additionally require
+/// the start rank and two empty squares. Diagonal targets need an enemy piece
+/// or a legal en-passant target. King safety is filtered later by
+/// [`Board::legal_destinations`](crate::Board::legal_destinations).
 pub(super) fn destinations(board: &Board, piece: Piece) -> SquareSet {
     let (forward, start_rank) = movement(piece.color());
     let mut destinations = SquareSet::EMPTY;
@@ -42,6 +48,10 @@ pub(super) fn destinations(board: &Board, piece: Piece) -> SquareSet {
     destinations
 }
 
+/// Diagonal pawn attack squares, regardless of occupancy.
+///
+/// Used for check detection rather than move candidates, so empty squares
+/// and own-occupied squares are still reported as attacked.
 pub(super) fn attacks(piece: Piece) -> SquareSet {
     let (forward, _) = movement(piece.color());
     [FileOffset::TOWARD_A, FileOffset::TOWARD_H]

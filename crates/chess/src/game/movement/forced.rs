@@ -13,12 +13,20 @@ pub struct ForcedMove {
 
 impl ForcedMove {
     /// Returns the relocated, self-locating piece.
+    ///
+    /// The returned [`Piece`] carries its destination square, unlike the
+    /// pre-move value passed to [`Board::force_move`]. No legality, king
+    /// safety, or transition metadata was applied.
     #[must_use]
     pub const fn moved(self) -> Piece {
         self.moved
     }
 
     /// Returns the piece displaced from the destination, if any.
+    ///
+    /// `None` means the destination was empty. A displaced piece is simply
+    /// removed; unlike a canonical capture it updates no clocks, rights, or
+    /// [`crate::GameHistory`].
     #[must_use]
     pub const fn captured(self) -> Option<Piece> {
         self.captured
@@ -33,6 +41,9 @@ pub struct ForceMoveError {
 
 impl ForceMoveError {
     /// Returns the empty origin square.
+    ///
+    /// The square held no [`Piece`] when [`Board::force_move`] was called, so
+    /// no relocation or capture occurred.
     #[must_use]
     pub const fn origin(self) -> Square {
         self.origin
@@ -59,6 +70,10 @@ impl Board {
     /// It does not change the side to move, clocks, castling rights, en-passant
     /// state, or hash-linked game history. Normal play must use legal game
     /// movement instead.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ForceMoveError`] identifying the empty `origin` square.
     pub fn force_move(
         &mut self,
         origin: Square,
@@ -76,6 +91,12 @@ impl Square {
     /// Forces the piece on this square to `destination` in `board`.
     ///
     /// See [`Board::force_move`] for the deliberately limited semantics.
+    /// This bypasses legality and king safety and records no history; it is
+    /// for setup and reconciliation, not canonical [`crate::Game`] play.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ForceMoveError`] when this square holds no piece.
     pub fn force_move_to(
         self,
         destination: Square,

@@ -9,6 +9,23 @@ impl Board {
     ///
     /// If multiple pieces occupy the same square, the last one replaces the
     /// previous occupant.
+    ///
+    /// The board starts from [`Board::empty`], so side to move is White,
+    /// castling rights are empty, and both clocks start at their initial
+    /// values. Each [`Piece`] carries its own [`Square`](crate::Square),
+    /// which selects the destination slot.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use chess::{Board, Color, Piece, PieceKind, Square};
+    ///
+    /// let board = Board::from_pieces([
+    ///     Piece::new(Color::White, PieceKind::King, Square::E1),
+    ///     Piece::new(Color::Black, PieceKind::King, Square::E8),
+    /// ]);
+    /// assert_eq!(board.occupied().len().value(), 2);
+    /// ```
     pub fn from_pieces(pieces: impl IntoIterator<Item = Piece>) -> Self {
         pieces.into_iter().collect()
     }
@@ -36,6 +53,10 @@ impl<'a> Extend<&'a Piece> for Board {
     }
 }
 
+/// Builds the standard initial piece placement in board-index order.
+///
+/// Returns a 64-slot array with White back rank and pawns on ranks 1–2
+/// and Black pawns and back rank on ranks 7–8. Used by [`Board::INITIAL`].
 pub(super) const fn initial_pieces() -> [Option<Piece>; Square::COUNT] {
     let mut pieces = [None; Square::COUNT];
     let back_rank = [

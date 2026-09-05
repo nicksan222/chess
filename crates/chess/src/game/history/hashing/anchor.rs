@@ -8,6 +8,16 @@ use super::super::HistoryHash;
 
 const BOARD_DOMAIN: &[u8] = b"chess.board-anchor.sha256.v1\0";
 
+/// Computes the board commitment that anchors a game timeline.
+///
+/// The anchor canonically hashes every square's piece, the side to move,
+/// castling rights, the en passant target, and both move clocks under a
+/// board-anchor domain. A [`GameHistory`](crate::GameHistory) built with
+/// [`GameHistory::for_board`](crate::GameHistory::for_board) stores this
+/// value as both anchor and initial tip, and
+/// [`GameHistory::verify`](crate::GameHistory::verify) replays the hash
+/// chain starting from it, so divergent initial boards fail as a
+/// previous-hash mismatch on the first [`Ply`](crate::Ply).
 pub(in crate::game::history) fn calculate_board_anchor(board: &Board) -> HistoryHash {
     let mut digest = Sha256::new();
     digest.update(BOARD_DOMAIN);

@@ -5,6 +5,21 @@ use super::{
     calculate_hash,
 };
 
+/// Checks one step against its expected ply, tip, and cumulative hash.
+///
+/// Validation is order-sensitive: ply sequencing first, then the
+/// anchor-to-tip previous-hash link, then the recomputed commitment. This
+/// is the per-link check replayed by
+/// [`GameHistory::verify`](crate::GameHistory::verify) and the gate for
+/// [`GameHistory::try_append`](crate::GameHistory::try_append).
+///
+/// # Errors
+///
+/// Returns [`HistoryError::Ply`](crate::HistoryError) for a skipped or
+/// repeated ply, [`HistoryError::PreviousHash`](crate::HistoryError) when
+/// the step does not commit to the expected predecessor, and
+/// [`HistoryError::Hash`](crate::HistoryError) for a wrong cumulative
+/// hash.
 pub(in crate::game::history) fn validate_step(
     step: HistoryStep,
     expected_ply: Ply,

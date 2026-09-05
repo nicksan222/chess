@@ -6,6 +6,23 @@ use super::GameStatus;
 
 impl Game {
     /// Returns the status represented by authoritative history and the board cache.
+    ///
+    /// Derivation reads the history tip first: a terminal event maps through
+    /// [`FinalState`](crate::FinalState), an invalid event reports
+    /// [`GameStatus::Invalid`](crate::GameStatus::Invalid). Otherwise the
+    /// board cache decides checkmate and stalemate (no legal moves, split by
+    /// [`Board::is_in_check`](crate::Board::is_in_check)), then automatic
+    /// draws, then claimable draws. A fresh game reports
+    /// [`GameStatus::InProgress`](crate::GameStatus::InProgress).
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use chess::{Game, GameStatus};
+    ///
+    /// let game = Game::new();
+    /// assert_eq!(game.status(), GameStatus::InProgress);
+    /// ```
     #[must_use]
     pub fn status(&self) -> GameStatus {
         match self.history().latest().map(|step| step.event()) {
@@ -26,18 +43,33 @@ impl Game {
     }
 
     /// Returns whether the side to move is checkmated.
+    ///
+    /// Convenience over [`Game::status`]: `true` exactly when the history tip
+    /// or board derivation reports
+    /// [`GameStatus::Checkmate`](crate::GameStatus::Checkmate) (in check with
+    /// no legal moves).
     #[must_use]
     pub fn is_checkmate(&self) -> bool {
         matches!(self.status(), GameStatus::Checkmate { .. })
     }
 
     /// Returns whether the position is stalemate.
+    ///
+    /// Convenience over [`Game::status`]: `true` exactly when the side to
+    /// move has no legal moves while not in check. Stalemate is terminal and
+    /// counts as a draw via [`Game::is_draw`].
     #[must_use]
     pub fn is_stalemate(&self) -> bool {
         matches!(self.status(), GameStatus::Stalemate)
     }
 
     /// Returns whether the game has ended in any kind of draw.
+    ///
+    /// Convenience over [`Game::status`]: `true` for
+    /// [`GameStatus::Stalemate`](crate::GameStatus::Stalemate) and
+    /// [`GameStatus::Draw`](crate::GameStatus::Draw), including claimed,
+    /// automatic, and announced-move draws. Claim availability alone does not
+    /// count.
     #[must_use]
     pub fn is_draw(&self) -> bool {
         matches!(
@@ -46,6 +78,13 @@ impl Game {
         )
     }
 
+    /// Derives checkmate, stalemate, or an automatic draw from the board.
+    ///
+    /// Ignores the history tip: when the side to move has no legal moves the
+    /// result splits on [`Board::is_in_check`](crate::Board::is_in_check),
+    /// otherwise automatic-draw rules (insufficient material, fivefold
+    /// repetition, seventy-five-move rule) apply. Claims never surface here;
+    /// see [`Game::draw_claims`](crate::Game::draw_claims).
     pub(in crate::game) fn calculated_final_state(&self) -> Option<FinalState> {
         if self.board().legal_moves().next().is_none() {
             return Some(if self.is_in_check() {
@@ -59,6 +98,12 @@ impl Game {
         self.automatic_draw()
     }
 
+    /// Returns whether `final_state` could legally seal history right now.
+    ///
+    /// Calculated mates, stalemates, and automatic draws must match the board
+    /// derivation; claimed draws consult current claims, and announced-move
+    /// draws revalidate the move on a scratch board. Guards sync and replay
+    /// paths against sealing an unavailable result.
     pub(in crate::game) fn final_state_is_available(&self, final_state: FinalState) -> bool {
         if self.calculated_final_state() == Some(final_state) {
             return true;
@@ -75,6 +120,12 @@ impl Game {
     }
 
     /// Returns the newest unresolved invalid state.
+    ///
+    /// Reads only the history tip: `Some` exactly when the latest event is
+    /// [`HistoryEvent::Invalid`](crate::HistoryEvent), in which case
+    /// [`Game::status`] reports
+    /// [`GameStatus::Invalid`](crate::GameStatus::Invalid) and play stays
+    /// blocked until newest-first resolution.
     #[must_use]
     pub fn latest_invalid(&self) -> Option<InvalidState> {
         match self.history().latest().map(|step| step.event()) {

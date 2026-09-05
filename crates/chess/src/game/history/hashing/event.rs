@@ -12,6 +12,14 @@ use super::{
 
 const HASH_DOMAIN: &[u8] = b"chess.game-history.sha256.v1\0";
 
+/// Computes the cumulative hash for one timeline step.
+///
+/// The hash covers a history domain, the previous tip, the gapless
+/// [`Ply`](crate::Ply), and the canonical [`HistoryEvent`](crate::HistoryEvent)
+/// encoding. Each [`HistoryStep`](crate::HistoryStep) therefore commits to
+/// the anchor and every preceding event, letting
+/// [`GameHistory::verify`](crate::GameHistory::verify) detect skipped
+/// plies, forked tips, and mutated events.
 pub(in crate::game::history) fn calculate_hash(
     previous: HistoryHash,
     ply: Ply,
@@ -50,6 +58,11 @@ fn update_move(digest: &mut Sha256, chess_move: ChessMove) {
     ]);
 }
 
+/// Mixes an invalid state into the cumulative timeline hash.
+///
+/// The encoding covers move, synchronization, draw-claim, and pending
+/// failures, so stacked invalid states resolved newest-first each carry a
+/// distinct commitment to the tip that preceded them.
 pub(super) fn update_invalid(digest: &mut Sha256, invalid: InvalidState) {
     match invalid {
         InvalidState::Move(error) => {
@@ -65,6 +78,12 @@ pub(super) fn update_invalid(digest: &mut Sha256, invalid: InvalidState) {
     }
 }
 
+/// Mixes a terminal result into the cumulative timeline hash.
+///
+/// The encoding covers checkmate, stalemate, draw, and announced-draw
+/// outcomes. Since a [`FinalState`](crate::FinalState) seals the
+/// [`GameHistory`](crate::GameHistory) tip permanently, its exact terms
+/// stay committed to the anchor-to-tip chain.
 pub(super) fn update_final_state(digest: &mut Sha256, final_state: FinalState) {
     match final_state {
         FinalState::Checkmate { winner } => digest.update([0, color_code(winner)]),

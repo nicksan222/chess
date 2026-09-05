@@ -45,6 +45,10 @@ impl From<FinalState> for GameStatus {
 
 impl GameStatus {
     /// Returns whether this status ends the game.
+    ///
+    /// `true` for checkmate, stalemate, and any [`DrawReason`] draw. History
+    /// is then sealed by a [`FinalState`](crate::FinalState) and no further
+    /// moves or draw claims are accepted.
     #[must_use]
     pub const fn is_terminal(self) -> bool {
         matches!(

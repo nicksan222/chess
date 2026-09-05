@@ -11,6 +11,12 @@ pub struct Squares {
 }
 
 impl Squares {
+    /// Creates an iterator over the squares encoded in `bits`.
+    ///
+    /// Each set bit at position `i` yields the square with index `i`.
+    /// Backs [`SquareSet::iter`](crate::SquareSet) and the
+    /// `IntoIterator` impls; iteration order is ascending index order
+    /// for [`Iterator::next`] and descending for `next_back`.
     pub(super) const fn new(bits: u64) -> Self {
         Self { bits }
     }

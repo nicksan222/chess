@@ -29,18 +29,30 @@ pub struct DrawClaims {
 
 impl DrawClaims {
     /// No draw is available to claim.
+    ///
+    /// Returned by [`crate::Game::draw_claims`] when the history tip is
+    /// terminal or invalid, or when neither repetition nor fifty-move
+    /// thresholds are met.
     pub const NONE: Self = Self {
         threefold_repetition: false,
         fifty_move_rule: false,
     };
 
     /// Returns whether no draw is available to claim.
+    ///
+    /// `true` means [`crate::Game::status`](crate::Game::status) stays
+    /// [`InProgress`](crate::GameStatus::InProgress) rather than reporting
+    /// [`DrawClaimAvailable`](crate::GameStatus::DrawClaimAvailable).
     #[must_use]
     pub const fn is_empty(self) -> bool {
         !self.threefold_repetition && !self.fifty_move_rule
     }
 
     /// Returns whether `claim` is available.
+    ///
+    /// Checks the corresponding bit set by
+    /// [`crate::Game::draw_claims`](crate::Game::draw_claims) or
+    /// [`crate::Game::draw_claims_after`](crate::Game::draw_claims_after).
     #[must_use]
     pub const fn contains(self, claim: DrawClaim) -> bool {
         match claim {
@@ -50,6 +62,9 @@ impl DrawClaims {
     }
 
     /// Returns this set with `claim` available.
+    ///
+    /// Internal adjudication builds claim sets monotonically: each satisfied
+    /// threshold is added with this method before sealing the result.
     #[must_use]
     pub const fn with(mut self, claim: DrawClaim) -> Self {
         match claim {

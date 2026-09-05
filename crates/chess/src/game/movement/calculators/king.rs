@@ -4,11 +4,21 @@ use crate::{Board, Color, Piece, PieceKind, Square, SquareSet};
 
 use super::{is_attacked, shared};
 
+/// King steps plus validated castling destinations.
+///
+/// Castling requires the king on its home square, intact rights, a matching
+/// rook, empty transit squares, and no attack on the king or transit squares.
+/// Final king safety is still filtered by
+/// [`Board::legal_destinations`](crate::Board::legal_destinations).
 pub(super) fn destinations(board: &Board, king: Piece) -> SquareSet {
     shared::offset_destinations(board, king, &shared::KING_OFFSETS)
         | castling_destinations(board, king)
 }
 
+/// King attack squares, regardless of occupancy or check.
+///
+/// Used by check detection; moving into attack is rejected later during
+/// legality filtering.
 pub(super) fn attacks(king: Piece) -> SquareSet {
     shared::offset_attacks(king, &shared::KING_OFFSETS)
 }

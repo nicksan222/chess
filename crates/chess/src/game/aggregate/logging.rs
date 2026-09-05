@@ -9,6 +9,11 @@ use super::Game;
 const TARGET: &str = "chess::game";
 
 impl Game {
+    /// Reports game creation for optional lifecycle diagnostics.
+    ///
+    /// Emits a `debug`-level record on the `chess::game` target naming the
+    /// side to move. Logging requires a `logger` subscriber; without one
+    /// this is a no-op and never affects the board cache or history.
     pub(super) fn log_created(&self) {
         debug!(
             target: TARGET,
@@ -17,6 +22,13 @@ impl Game {
         );
     }
 
+    /// Reports an appended history step for optional diagnostics.
+    ///
+    /// Move and final events log at `info` level and invalid events at
+    /// `warn` level on the `chess::game` target, each with its ply. Called
+    /// for every local push and every accepted peer step, so the log
+    /// mirrors the authoritative [`GameHistory`](crate::GameHistory). A
+    /// no-op without a `logger` subscriber.
     pub(super) fn log_history_step(&self, step: HistoryStep) {
         match step.event() {
             HistoryEvent::Move(chess_move) => info!(
@@ -37,6 +49,12 @@ impl Game {
         }
     }
 
+    /// Reports newest-first resolution of an invalid state.
+    ///
+    /// Emits an `info`-level record on the `chess::game` target with the
+    /// resolved ply and event. Called by [`Game::resolve_latest_invalid`]
+    /// after the tip is popped; a no-op without a `logger` subscriber and
+    /// never a substitute for inspecting the history itself.
     pub(super) fn log_invalid_resolved(&self, step: HistoryStep) {
         info!(
             target: TARGET,

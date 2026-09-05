@@ -17,6 +17,13 @@ struct PositionKey {
     en_passant_target: Option<Square>,
 }
 
+/// Counts occurrences of the current exact position from history.
+///
+/// Replays accepted [`HistoryEvent::Move`]s from `initial_board` and compares
+/// each prefix (plus the initial position) against `current_board` using an
+/// exact key: piece placement, side to move, castling rights, and effective
+/// en-passant target. Non-move events are skipped. Threefold enables a
+/// [`crate::DrawClaim`]; fivefold ends the game automatically.
 pub(super) fn count(initial_board: Board, history: &GameHistory, current_board: &Board) -> u8 {
     let target = PositionKey::new(current_board);
     let mut board = initial_board;

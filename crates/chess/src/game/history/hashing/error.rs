@@ -6,6 +6,11 @@ use crate::{GameSyncError, HistoryEventKind, MoveError};
 
 use super::{super::HistoryError, event::update_final_state, status::color_code};
 
+/// Mixes a movefailure into the cumulative timeline hash.
+///
+/// The encoding covers every [`MoveError`](crate::MoveError) variant, so
+/// distinct invalid-move details produce distinct [`crate::HistoryStep`]
+/// commitments anchored to the previous tip.
 pub(super) fn update_move_error(digest: &mut Sha256, error: MoveError) {
     match error {
         MoveError::GameOver { final_state } => {
@@ -27,6 +32,11 @@ pub(super) fn update_move_error(digest: &mut Sha256, error: MoveError) {
     }
 }
 
+/// Mixes a synchronization failure into the cumulative timeline hash.
+///
+/// The encoding covers nested history and move failures, so a retained
+/// [`InvalidState::Synchronization`](crate::InvalidState) step commits to
+/// the exact mismatch that blocked peer synchronization.
 pub(super) fn update_sync_error(digest: &mut Sha256, error: GameSyncError) {
     match error {
         GameSyncError::History(error) => {

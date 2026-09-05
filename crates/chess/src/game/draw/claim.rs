@@ -41,6 +41,11 @@ impl core::error::Error for DrawClaimError {
 
 impl Game {
     /// Returns the draws the side to move may claim in the current position.
+    ///
+    /// Derived from the history tip: only a move event or an empty history
+    /// admits claims, while invalid or terminal events yield
+    /// [`DrawClaims::NONE`]. A non-empty set surfaces as
+    /// [`GameStatus::DrawClaimAvailable`](crate::GameStatus).
     #[must_use]
     pub fn draw_claims(&self) -> DrawClaims {
         match self.history().latest().map(|step| step.event()) {
@@ -54,6 +59,27 @@ impl Game {
     /// An unavailable claim is retained as [`InvalidState::DrawClaim`] and
     /// blocks further play until it is resolved. A successful claim appends a
     /// [`FinalState::Draw`] and can never be undone.
+    ///
+    /// Unlike automatic draws, this requires the side to move to act; check
+    /// availability first with [`Game::draw_claims`]. See also
+    /// [`Game::status`](crate::Game::status).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`DrawClaimError::Unavailable`] (after recording the invalid
+    /// claim) when `claim` is not currently available.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use chess::{DrawClaim, Game};
+    ///
+    /// let mut game = Game::new();
+    /// assert!(game.draw_claims().is_empty());
+    /// assert!(game.claim_draw(DrawClaim::FiftyMoveRule).is_err());
+    /// game.resolve_latest_invalid()?;
+    /// # Ok::<(), Box<dyn core::error::Error>>(())
+    /// ```
     pub fn claim_draw(&mut self, claim: DrawClaim) -> Result<(), DrawClaimError> {
         if !self.draw_claims().contains(claim) {
             self.record_invalid(InvalidState::DrawClaim { claim });
@@ -69,6 +95,16 @@ impl Game {
     ///
     /// The announced move is retained as evidence for the claim but is not
     /// applied to the board.
+    ///
+    /// The move is validated on a scratch board; success appends
+    /// [`FinalState::DrawAfter`](crate::FinalState) and seals history, while
+    /// a bad move or unavailable claim records
+    /// [`InvalidState::DrawClaim`] and blocks play until resolved.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`DrawClaimError::Move`] when the announced move is illegal,
+    /// and [`DrawClaimError::Unavailable`] when it would not enable `claim`.
     pub fn claim_draw_after(
         &mut self,
         chess_move: ChessMove,
@@ -93,6 +129,15 @@ impl Game {
     ///
     /// The move is validated and evaluated as the player's announced move, but
     /// neither the board nor authoritative history is changed.
+    ///
+    /// Blocked games (terminal or invalid history tip) reject the query
+    /// before move validation. A successful result lists only the claims the
+    /// announced move would enable.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`MoveError`] when play is blocked or the announced move is
+    /// illegal on the current board.
     pub fn draw_claims_after(&self, chess_move: ChessMove) -> Result<DrawClaims, MoveError> {
         if let Some(error) = self.blocking_move_error() {
             return Err(error);

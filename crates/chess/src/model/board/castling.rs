@@ -33,38 +33,59 @@ impl CastlingRights {
     }
 
     /// Returns whether `color` may castle on the king's side.
+    ///
+    /// Reads the retained kingside bit for `color`. A `true` value means
+    /// the right is still recorded, not that castling is currently legal.
     #[must_use]
     pub const fn kingside(self, color: Color) -> bool {
         self.0 & Self::mask(color, true) != 0
     }
 
     /// Returns whether `color` may castle on the queen's side.
+    ///
+    /// Reads the retained queenside bit for `color`. A `true` value means
+    /// the right is still recorded, not that castling is currently legal.
     #[must_use]
     pub const fn queenside(self, color: Color) -> bool {
         self.0 & Self::mask(color, false) != 0
     }
 
     /// Grants the king-side right for `color`.
+    ///
+    /// Sets the kingside bit and leaves the other three rights
+    /// unchanged. Granting a right unconditionally is idempotent.
     pub fn grant_kingside(&mut self, color: Color) {
         self.set(Self::mask(color, true), true);
     }
 
     /// Revokes the king-side right for `color`.
+    ///
+    /// Clears the kingside bit and leaves the other three rights
+    /// unchanged. Revoking an already absent right is idempotent.
     pub fn revoke_kingside(&mut self, color: Color) {
         self.set(Self::mask(color, true), false);
     }
 
     /// Grants the queen-side right for `color`.
+    ///
+    /// Sets the queenside bit and leaves the other three rights
+    /// unchanged. Granting a right unconditionally is idempotent.
     pub fn grant_queenside(&mut self, color: Color) {
         self.set(Self::mask(color, false), true);
     }
 
     /// Revokes the queen-side right for `color`.
+    ///
+    /// Clears the queenside bit and leaves the other three rights
+    /// unchanged. Revoking an already absent right is idempotent.
     pub fn revoke_queenside(&mut self, color: Color) {
         self.set(Self::mask(color, false), false);
     }
 
     /// Removes both castling rights for `color`.
+    ///
+    /// Clears the kingside and queenside bits for `color` while keeping
+    /// the opponent's rights unchanged.
     pub fn clear(&mut self, color: Color) {
         self.revoke_kingside(color);
         self.revoke_queenside(color);

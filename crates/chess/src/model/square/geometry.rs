@@ -20,6 +20,10 @@ impl BoardEdge {
     pub const ALL: [Self; 4] = [Self::FileA, Self::FileH, Self::Rank1, Self::Rank8];
 
     /// Returns whether this edge contains `square`.
+    ///
+    /// Checks the square's [`File`] or [`Rank`] against the edge: file
+    /// edges match one file across all ranks, rank edges match one rank
+    /// across all files. Corners are contained in two edges.
     #[must_use]
     pub const fn contains(self, square: Square) -> bool {
         matches!(
@@ -56,6 +60,11 @@ pub enum BoardDirection {
 }
 
 impl BoardDirection {
+    /// Returns the single-step displacement for this direction.
+    ///
+    /// Maps each [`BoardDirection`] to its file-and-rank [`SquareOffset`].
+    /// [`Square::step`] and [`Square::ray`] apply this offset; diagonal
+    /// variants combine both components.
     pub(super) const fn offset(self) -> SquareOffset {
         match self {
             Self::TowardRank8 => SquareOffset::new(FileOffset::ZERO, RankOffset::TOWARD_RANK_8),

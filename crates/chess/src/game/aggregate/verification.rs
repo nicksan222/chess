@@ -60,6 +60,30 @@ impl Game {
     /// Invalid and final events do not mutate piece placement and are skipped.
     /// This method is useful when loading persistence or diagnosing a cache
     /// mismatch without trusting the board currently held by the game.
+    ///
+    /// Replay starts from the anchored initial board and applies every
+    /// retained [`HistoryEvent::Move`](crate::HistoryEvent) in order, so
+    /// the result must equal the [`Game::board`] cache whenever history and
+    /// cache agree. [`Game::verify`] uses this comparison to detect
+    /// divergence between the authoritative [`GameHistory`](crate::GameHistory)
+    /// and its cache.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`GameVerificationError::Replay`](crate::GameVerificationError::Replay)
+    /// naming the ply and [`MoveError`](crate::MoveError) when a retained
+    /// move is no longer legal from the replayed position.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use chess::{ChessMove, Game, Square};
+    ///
+    /// let mut game = Game::new();
+    /// game.play(ChessMove::new(Square::E2, Square::E4))?;
+    /// assert_eq!(game.rebuild_board()?, *game.board());
+    /// # Ok::<(), Box<dyn core::error::Error>>(())
+    /// ```
     pub fn rebuild_board(&self) -> Result<Board, GameVerificationError> {
         let mut board = self.initial_board;
         for step in self.history.iter() {
@@ -80,6 +104,36 @@ impl Game {
     ///
     /// Successful verification establishes that the board is only a cache of
     /// the authoritative linked history and has not diverged from it.
+    ///
+    /// Checks run in layers: the [`GameHistory`](crate::GameHistory) hash
+    /// chain and tip, then [`Game::rebuild_board`] equality with the cached
+    /// [`Game::board`](crate::Game::board), and finally semantic
+    /// availability of a retained final event for the replayed position.
+    /// Verification is read-only; it neither mutates history nor repairs
+    /// the cache.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`GameVerificationError::History`](crate::GameVerificationError::History)
+    /// for a broken sequence or hash link,
+    /// [`GameVerificationError::BoardCache`](crate::GameVerificationError::BoardCache)
+    /// when replayed moves do not reproduce the cache,
+    /// [`GameVerificationError::Replay`](crate::GameVerificationError::Replay)
+    /// when a retained move fails replay, and
+    /// [`GameVerificationError::FinalState`](crate::GameVerificationError::FinalState)
+    /// when the retained terminal result is not valid for the position.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use chess::{ChessMove, Game, Square};
+    ///
+    /// let mut game = Game::new();
+    /// game.play(ChessMove::new(Square::E2, Square::E4))?;
+    /// game.play(ChessMove::new(Square::E7, Square::E5))?;
+    /// game.verify()?;
+    /// # Ok::<(), Box<dyn core::error::Error>>(())
+    /// ```
     pub fn verify(&self) -> Result<(), GameVerificationError> {
         self.history
             .verify()

@@ -10,6 +10,13 @@ const THREEFOLD_REPETITIONS: u8 = 3;
 const FIVEFOLD_REPETITIONS: u8 = 5;
 
 impl Game {
+    /// Collects claimable draws for the current board and history tip.
+    ///
+    /// Reports [`DrawClaim::ThreefoldRepetition`] once the current exact
+    /// position (pieces, side to move, rights, effective en passant) has
+    /// occurred three times, and [`DrawClaim::FiftyMoveRule`] once the
+    /// halfmove clock reaches 100 plies. These are claims only; automatic
+    /// draws are derived separately by [`Game::status`](crate::Game::status).
     pub(in crate::game) fn current_draw_claims(&self) -> DrawClaims {
         let mut claims = DrawClaims::NONE;
         if self.history().len().value() >= 8 && self.position_repetitions() >= THREEFOLD_REPETITIONS
@@ -22,6 +29,16 @@ impl Game {
         claims
     }
 
+    /// Evaluates claimable draws as if `chess_move` were the announced move.
+    ///
+    /// Validates the move on a scratch board without touching this game, then
+    /// counts the resulting position plus the fifty-move clock. Powers
+    /// [`Game::draw_claims_after`] and [`Game::claim_draw_after`].
+    ///
+    /// # Errors
+    ///
+    /// Returns [`MoveError`] when the announced move is illegal on the
+    /// current board.
     pub(in crate::game) fn draw_claims_after_move(
         &self,
         chess_move: ChessMove,
@@ -41,6 +58,12 @@ impl Game {
         Ok(claims)
     }
 
+    /// Derives an automatic draw from material and history-independent rules.
+    ///
+    /// Checks insufficient material first, then fivefold repetition (minimum
+    /// sixteen history steps guard the scan), then the seventy-five-move
+    /// rule. Unlike claimable draws, the result needs no player claim and is
+    /// surfaced through [`Game::status`](crate::Game::status).
     pub(in crate::game) fn automatic_draw(&self) -> Option<FinalState> {
         if material::is_insufficient(self.board()) {
             return Some(FinalState::Draw {

@@ -18,6 +18,15 @@ impl Game {
     /// [`InvalidState::PendingInvalid`] and returns [`MoveError::PendingInvalid`].
     /// Resolve those events newest-first before attempting valid play again.
     ///
+    /// # Errors
+    ///
+    /// Returns [`MoveError::PendingInvalid`] when an invalid event blocks
+    /// history, [`MoveError::GameOver`] when a final event sealed it, or
+    /// the rejection (such as [`MoveError::WrongSide`](crate::MoveError::WrongSide))
+    /// when the board cache refuses the move. Every rejection is retained
+    /// as an [`HistoryEvent::Invalid`](crate::HistoryEvent::Invalid) event
+    /// unless history is already sealed.
+    ///
     /// # Example
     ///
     /// ```
@@ -55,6 +64,23 @@ impl Game {
         Ok(step)
     }
 
+    /// Applies a piece-anchored move request against the board cache.
+    ///
+    /// The `piece` snapshot must still match the board cache; a stale
+    /// snapshot records [`InvalidState::Move`](crate::InvalidState::Move)
+    /// with [`MoveError::StalePiece`](crate::MoveError::StalePiece) without
+    /// touching the board. Promotion requests are canonicalized into a
+    /// [`ChessMove`] first, then delegated to [`Game::play`], so blocking
+    /// invalid tips, terminal sealing, history retention, and automatic
+    /// finalization all behave exactly as local play.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`MoveError::StalePiece`](crate::MoveError::StalePiece) when
+    /// the piece snapshot no longer matches the cache,
+    /// [`MoveError::InvalidPromotion`](crate::MoveError::InvalidPromotion)
+    /// for an unavailable promotion kind, or whatever [`Game::play`]
+    /// reports for the resulting move.
     pub(crate) fn move_piece(
         &mut self,
         piece: Piece,

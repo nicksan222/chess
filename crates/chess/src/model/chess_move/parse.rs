@@ -43,6 +43,29 @@ impl core::error::Error for ParseMoveError {
     }
 }
 
+/// Parses coordinate notation (`e2e4`, `e7e8q`) into a [`crate::ChessMove`].
+///
+/// Accepts exactly four characters plus an optional promotion letter
+/// (`n`, `b`, `r`, `q`, case-insensitive). Origin and destination are
+/// parsed as [`crate::Square`] values; only promotion targets accepted by
+/// [`crate::ChessMove::promotion`] succeed.
+///
+/// # Errors
+///
+/// Returns [`ParseMoveError::Length`] for wrong-length input,
+/// [`ParseMoveError::Origin`] or [`ParseMoveError::Destination`] for a
+/// malformed square, and [`ParseMoveError::Promotion`] for a bad or
+/// disallowed promotion letter.
+///
+/// # Example
+///
+/// ```
+/// use chess::ChessMove;
+///
+/// let mv: ChessMove = "e2e4".parse()?;
+/// assert_eq!(mv.to_string(), "e2e4");
+/// # Ok::<(), chess::ParseMoveError>(())
+/// ```
 impl FromStr for ChessMove {
     type Err = ParseMoveError;
 

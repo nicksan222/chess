@@ -27,6 +27,27 @@ impl fmt::Display for ParseSquareError {
 
 impl_error!(ParseSquareError);
 
+/// Parses algebraic coordinates (`e4`) into a [`Square`].
+///
+/// Accepts exactly two ASCII characters: a file `a`–`h`
+/// (case-insensitive) followed by a rank `1`–`8`. All other shapes and
+/// characters are rejected without consulting the board.
+///
+/// # Errors
+///
+/// Returns [`ParseSquareError::Length`] when the input is not two bytes,
+/// [`ParseSquareError::File`] for a bad file character, and
+/// [`ParseSquareError::Rank`] for a bad rank character.
+///
+/// # Example
+///
+/// ```
+/// use chess::Square;
+///
+/// let square: Square = "e4".parse()?;
+/// assert_eq!(square, Square::E4);
+/// # Ok::<(), chess::ParseSquareError>(())
+/// ```
 impl FromStr for Square {
     type Err = ParseSquareError;
 

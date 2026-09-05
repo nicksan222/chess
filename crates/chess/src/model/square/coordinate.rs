@@ -38,11 +38,25 @@ impl File {
     ];
 
     /// Returns the lowercase algebraic file character.
+    ///
+    /// Maps `a`–`h` to `'a'`–`'h'`. Used by [`Square`](crate::Square)
+    /// formatting and coordinate parsing.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use chess::File;
+    ///
+    /// assert_eq!(File::E.character(), 'e');
+    /// ```
     #[must_use]
     pub const fn character(self) -> char {
         (b'a' + self as u8) as char
     }
 
+    /// Returns the zero-based file number (`a` = 0 through `h` = 7).
+    ///
+    /// Backs square index arithmetic (`index % 8` and `index / 8`).
     pub(crate) const fn index(self) -> u8 {
         self as u8
     }
@@ -98,6 +112,10 @@ impl Rank {
         Self::Eight,
     ];
 
+    /// Returns the zero-based rank number (`1` = 0 through `8` = 7).
+    ///
+    /// Backs square index arithmetic (`index / 8`). Display and
+    /// algebraic output add one to obtain the human `1`–`8` label.
     pub(crate) const fn index(self) -> u8 {
         self as u8
     }

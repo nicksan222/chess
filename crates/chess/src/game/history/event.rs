@@ -69,6 +69,12 @@ pub enum HistoryEvent {
 
 impl HistoryEvent {
     /// Returns this event's category.
+    ///
+    /// The [`HistoryEventKind`] drives the hash-chain transition rules in
+    /// [`GameHistory`](crate::GameHistory): moves keep the timeline active,
+    /// invalid states stack until resolved newest-first, and final states
+    /// seal the tip permanently. The kind is also committed to the step's
+    /// cumulative [`HistoryHash`](crate::HistoryHash).
     #[must_use]
     pub const fn kind(self) -> HistoryEventKind {
         match self {

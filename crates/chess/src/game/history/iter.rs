@@ -10,6 +10,13 @@ use super::HistoryStep;
 pub struct GameHistoryIter<'a>(LinkedListIter<'a, HistoryStep>);
 
 impl<'a> GameHistoryIter<'a> {
+    /// Creates an iterator over the retained timeline in ply order.
+    ///
+    /// The iterator borrows the [`GameHistory`](crate::GameHistory) steps
+    /// chronologically from [`Ply::FIRST`](crate::Ply) up to the tip. It
+    /// performs no hash-chain validation; use
+    /// [`GameHistory::verify`](crate::GameHistory::verify) to recheck the
+    /// anchor-to-tip links.
     pub(super) const fn new(iter: LinkedListIter<'a, HistoryStep>) -> Self {
         Self(iter)
     }

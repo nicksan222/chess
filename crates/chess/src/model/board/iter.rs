@@ -15,6 +15,13 @@ pub struct BoardPieces<'a> {
 }
 
 impl<'a> BoardPieces<'a> {
+    /// Creates an iterator over the pieces in `board`.
+    ///
+    /// `remaining` must equal the number of occupied squares; it backs
+    /// the [`ExactSizeIterator`] length. Yields [`Piece`] values in
+    /// board-index order (`a1` through `h8`) and borrows the board for
+    /// `'a`. Prefer [`Board::pieces`] or `&board.into_iter()`, which
+    /// compute the count automatically.
     pub(super) fn new(board: &'a Board, remaining: usize) -> Self {
         Self {
             board,

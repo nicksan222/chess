@@ -6,6 +6,15 @@ use crate::{
 };
 
 impl Board {
+    /// Applies `piece` to `destination` without legality checks.
+    ///
+    /// Handles the canonical transition: normal and en-passant captures,
+    /// pawn promotion (defaulting to queen when it reaches the back rank),
+    /// castling rook relocation with rights updates, rook-origin and capture
+    /// rights revocation, halfmove/fullmove clocks, en-passant target, and
+    /// side-to-move flip. Callers must validate via
+    /// [`Board::legal_destinations`](crate::Board::legal_destinations) first;
+    /// [`Board::make_move`](crate::Board::make_move) is the checked entry.
     pub(super) fn apply_unchecked(
         &mut self,
         piece: Piece,
@@ -105,6 +114,11 @@ fn finish_move(board: &mut Board, moved: Piece, captured: Option<Piece>, double_
     board.set_side_to_move(moved.color().opposite());
 }
 
+/// Returns whether `square` is the promotion back rank for `color`.
+///
+/// White promotes on rank eight and Black on rank one. Used to expand
+/// promotion [`crate::ChessMove`]s and to default unchecked pawn pushes to
+/// queen.
 pub(super) fn is_back_rank(square: Square, color: Color) -> bool {
     square.rank()
         == match color {
