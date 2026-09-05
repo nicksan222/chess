@@ -5,9 +5,8 @@ legal move generation, complete rule state, draw adjudication, and a
 SHA-256-linked authoritative game history. It does not depend on a UI, a
 logging backend, hardware, transport, or an async runtime.
 
-[**DESIGN.md**](DESIGN.md) is the package contract: the crate-root vocabulary,
-the `Game` aggregate, and how firmware, persistence, transport, and tests are
-supposed to consume it.
+[**DESIGN.md**](DESIGN.md) is the visual package map: who talks to the crate
+root, which type a caller holds, and which values may leave the process.
 
 ## Authoritative history
 

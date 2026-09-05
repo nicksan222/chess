@@ -32,7 +32,7 @@
 //! interfaces, and logging backends remain outside this crate. Lifecycle
 //! diagnostics are emitted only when an application has registered a logger.
 //!
-//! The in-tree `DESIGN.md` is the consumption contract for this package.
+//! The in-tree `DESIGN.md` is the visual consumption map for this package.
 
 #![no_std]
 #![forbid(unsafe_code)]
