@@ -1,6 +1,6 @@
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
-rust_packages := "apps/firmware apps/simulator crates/chess crates/core crates/logger crates/menu crates/persistence"
+rust_packages := "apps/firmware crates/chess crates/core crates/logger crates/menu crates/persistence"
 python_packages := "hardware/shared hardware/cad hardware/pcb"
 
 # Show repository capabilities.

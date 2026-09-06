@@ -4,7 +4,7 @@
 //! their platform and permanently [`register`] one shared instance. [`get`]
 //! returns `None` until registration. Messages are allocation-free
 //! [`core::fmt::Arguments`], making the same interface suitable for a Raspberry
-//! Pi, simulator, or test double.
+//! Pi, development tool, or test double.
 //! The optional `std` feature supplies ready-made stderr and systemd backends
 //! under [`implementations`].
 //!

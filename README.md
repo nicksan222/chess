@@ -78,7 +78,7 @@ check every exact part in the [generated BOM](hardware/pcb/generated/bom.md).
 
 | Hardware you can reason about | Software with clean seams | A workflow built for changes |
 |---|---|---|
-| No second processor and no opaque wire protocol. The Pi talks to I²C expanders, SPI LEDs, GPIO buttons, and the display directly. | The chess engine, menu model, persistence, simulator, and Pi application live in separate Rust crates. | One devcontainer pins Rust, Ruff, KiCad, Blender, and Just. CI checks code, connectivity, layout, CAD, and the AArch64 firmware graph. |
+| No second processor and no opaque wire protocol. The Pi talks to I²C expanders, SPI LEDs, GPIO buttons, and the display directly. | The chess engine, menu model, persistence, and Pi application live in separate Rust crates. | One devcontainer pins Rust, Ruff, KiCad, Blender, and Just. CI checks code, connectivity, layout, CAD, and the AArch64 firmware graph. |
 
 ```mermaid
 flowchart LR
@@ -98,7 +98,6 @@ Read the [architecture notes](docs/architecture.md) for the boundaries and the
 | Path | What is inside |
 |---|---|
 | [`apps/firmware`](apps/firmware) | The Raspberry Pi process, system integration, and Yocto image |
-| [`apps/simulator`](apps/simulator) | A scaffold for host-side virtual board tooling |
 | [`crates`](crates/README.md) | Chess rules, menu state, persistence, logging, and shared Rust code |
 | [`hardware/shared`](hardware/shared) | The source of truth for dimensions, parts, wiring, and mappings |
 | [`hardware/pcb`](hardware/pcb) | PCB definition, routing, validation, KiCad project, and BOM |

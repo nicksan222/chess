@@ -2,7 +2,7 @@
 
 This `no_std` crate is the project's headless persistence contract. It performs
 no I/O, selects no database, and requires no allocator. Firmware, backend,
-simulator, and tests provide their own `KeyValueStore` implementations and
+development tools and tests provide their own `KeyValueStore` implementations and
 inject them into the code that needs persistence.
 
 The deliberately small byte-oriented backend API can be adapted to embedded

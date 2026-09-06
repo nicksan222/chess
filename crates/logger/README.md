@@ -1,7 +1,7 @@
 # Logger crate
 
 This `no_std` crate is the project's headless logging contract. It performs no
-I/O and selects no platform backend. Firmware, the simulator, and tests
+I/O and selects no platform backend. Firmware and tests
 implement `Logger` and register one process-wide instance during startup.
 
 Records contain a severity, routing target, source module/file/line, and
@@ -53,7 +53,7 @@ Enable the `std` feature for two implementations kept in this crate:
 - `implementations::SystemdLogger` writes syslog-priority-prefixed records to
   stderr, where the Yocto firmware's systemd service captures them in journald;
 - `implementations::StderrLogger` writes human-readable records for terminals,
-  desktop applications, and the simulator.
+  desktop applications and development tools.
 
 They are separate concrete types in separate source files, so their `Logger`
 implementations do not overlap or collide. Both default to `LevelFilter::Info`
