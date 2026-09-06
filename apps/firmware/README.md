@@ -30,10 +30,24 @@ cargo test -p firmware --test e2e
 The E2E cases live in `tests/e2e/`. Each harness owns isolated state and can be
 restarted in the same process.
 
-Button pins in `src/hardware/pins/gpio/button/` own polling, active-low translation, and
-mechanical debounce. Call `start_subscription` with a GPIO reader, then await
-`on_message` for domain-level pressed/released actions. Callers do not inspect
-GPIO levels or raw hardware events.
+Button pins in `src/hardware/pins/gpio/button/` own polling, active-low
+translation, and mechanical debounce. Call `start_subscription` with a GPIO
+reader, then await `on_message` for domain-level pressed/released actions.
+Callers do not inspect GPIO levels or raw hardware events.
+
+`src/hardware/display/` constructs the externally maintained `ssd1306` crate's
+buffered driver for the installed 128×64 OLED at address `0x3C`. It is
+intentionally not attached to the runtime yet. Integration tests under
+`tests/display/` capture the exact data packets emitted through I2C, decode the
+transmitted frame, and compare it pixel-for-pixel with the externally maintained
+`embedded-graphics-simulator`. Every display test writes a PNG result beside
+the tests in `tests/display/screenshots/`.
+
+The simulator verifies frame contents, not controller command semantics. Wokwi
+can emulate an SSD1306 receiving real I2C traffic, but running this Raspberry Pi
+firmware driver there requires a separate supported-microcontroller harness and
+Wokwi CI credentials. No such harness is checked in because it would not execute
+the production Pi I2C adapter.
 
 The remaining hardware workers are not implemented yet. The board contract uses
 polled TCA9554 input-port reads at eight addresses, not a GPIO sensor interrupt;

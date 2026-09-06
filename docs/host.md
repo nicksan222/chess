@@ -19,13 +19,14 @@ It reaches the hardware through Linux character devices:
 | `/dev/spidev0.0` | the SK9822 LED chain, through the level buffer |
 | `/dev/gpiochip0` | twelve panel buttons (unchanged GPIO wiring) |
 
-Suggested crates: `linux-embedded-hal` over `i2cdev`, `spidev` and `gpiocdev`;
-Use a TCA9554-compatible register implementation and an SH1106-compatible
-display implementation; neither hardware worker exists yet. Note that `rppal`, the obvious first choice for Pi peripherals in Rust,
-was retired by its author in July 2025, so the maintained character-device crates
-are the better foundation for new work.
+Suggested crates: `linux-embedded-hal` over `i2cdev`, `spidev` and `gpiocdev`.
+The standalone SSD1306 driver exists, but it is not connected to a physical I2C
+adapter or the runtime yet; the TCA9554 acquisition worker is also pending. Note
+that `rppal`, the obvious first choice for Pi peripherals in Rust, was retired by
+its author in July 2025, so the maintained character-device crates are the better
+foundation for new work.
 
-`apps/firmware/src/pins.rs` contains hand-maintained, function-named `Gpio`
+`apps/firmware/src/hardware/pins/` contains hand-maintained, function-named `GPIO`
 descriptors for every connected Raspberry Pi line. They record host identity,
 allowed direction and active-low behavior so drivers do not duplicate board
 knowledge. PCB-to-Rust generation was deliberately removed; coordinate changes

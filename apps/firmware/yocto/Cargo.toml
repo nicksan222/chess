@@ -6,12 +6,22 @@ license = "MIT"
 rust-version = "1.85"
 version = "0.0.0"
 
+[lib]
+name = "firmware"
+path = "../src/lib.rs"
+
 [[bin]]
 name = "firmware"
 path = "../src/main.rs"
 
 [dependencies]
+display-interface = "0.5.0"
+embedded-graphics = "0.8.2"
+embedded-hal = "1.0.0"
 logger = { path = "../../../crates/logger", features = ["std"] }
+menu = { path = "../../../crates/menu" }
+ssd1306 = "0.10.0"
+tokio = { version = "1.53.1", features = ["rt", "sync", "time"] }
 
 # This manifest deliberately starts a small, nested workspace so Cargo resolves
 # only the firmware dependency graph when BitBake invokes it with --frozen.

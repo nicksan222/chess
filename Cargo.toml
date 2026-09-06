@@ -1,7 +1,6 @@
 [workspace]
 members = [
     "apps/firmware",
-    "apps/simulator",
     "crates/chess",
     "crates/core",
     "crates/menu",
