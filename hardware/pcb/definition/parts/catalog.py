@@ -162,7 +162,7 @@ HALLSENSOR_FOOTPRINT = footprint(
 
 OLEDHEADER_FOOTPRINT = pin_header(
     "1x4 2.54 mm THT",
-    "Four-pin SH1106 I2C OLED module connector",
+    "Four-pin SSD1306 I2C OLED module connector",
     columns=4,
     rows=1,
     pin_numbers=tuple(OledHeaderPin),

@@ -5,6 +5,7 @@ import unittest
 from shared.components import (
     APPROVED_COMPONENTS,
     COMPONENTS,
+    OLED_MODULE,
     POWER_SUPPLY,
     SK9822,
     ComponentImplementation,
@@ -27,6 +28,11 @@ class ComponentsTest(unittest.TestCase):
                 self.assertTrue(spec.manufacturer)
                 self.assertTrue(spec.mpn)
                 self.assertTrue(spec.package)
+
+    def test_selected_display_is_the_ssd1306_module(self) -> None:
+        self.assertEqual(OLED_MODULE.manufacturer, "AZ-Delivery")
+        self.assertEqual(OLED_MODULE.mpn, "A 1-9")
+        self.assertEqual(OLED_MODULE.require_body_mm(), (27.0, 27.0, 4.1))
 
     def test_invalid_component_envelopes_fail_at_definition_time(self) -> None:
         with self.assertRaisesRegex(ValueError, "body dimensions must be positive"):

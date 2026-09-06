@@ -181,4 +181,4 @@ def _add_panel(
         collection,
     )
     module.data.materials.append(palette["display"])
-    module["purpose"] = "AZ-Delivery SH1106 OLED on a four-wire jumper"
+    module["purpose"] = "AZ-Delivery SSD1306 OLED on a four-wire jumper"

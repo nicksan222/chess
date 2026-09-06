@@ -60,7 +60,7 @@ alternate analyzer executable when needed.
 **Deliberate scope reductions:** redundant architecture/accessor/snapshot tests were
 removed in favor of readable dimensions and SPICE tests. PCB-to-Rust generation and
 its parity plumbing were removed at user request. Firmware pin declarations in
-`apps/firmware/src/pins.rs` are hand-maintained; there is no `pins` command.
+`apps/firmware/src/hardware/pins/` are hand-maintained; there is no `pins` command.
 
 Run retained tests without publishing: `PYTHONPATH=hardware python3 -m unittest
 discover -s hardware/pcb/tests -p 'test_*.py'`. SPICE covers all squares/buttons,

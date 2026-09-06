@@ -282,19 +282,25 @@ class ControlPanelTest(unittest.TestCase):
             self.assertLessEqual(y + radius, strip_near)
             self.assertLess(abs(x) + radius, cad.PLAYING_SPAN_MM / 2.0)
         display_y = cad.PANEL_OLED_CENTER_MM[1]
-        half_depth = cad.PANEL_OLED_MODULE_MM[1] / 2.0
+        half_depth = cad.PANEL_OLED_RECESS_MM[1] / 2.0
         self.assertGreaterEqual(display_y - half_depth, strip_far)
         self.assertLessEqual(display_y + half_depth, strip_near)
 
-    def test_the_display_window_is_smaller_than_its_module(self) -> None:
-        for window, module in zip(
-            cad.PANEL_OLED_WINDOW_MM, cad.PANEL_OLED_MODULE_MM[:2]
+    def test_the_display_window_and_recess_fit_the_module(self) -> None:
+        for window, module, recess in zip(
+            cad.PANEL_OLED_WINDOW_MM,
+            cad.PANEL_OLED_MODULE_MM[:2],
+            cad.PANEL_OLED_RECESS_MM,
         ):
             self.assertLess(window, module)
+            self.assertEqual(
+                recess - module,
+                2.0 * cad.PANEL_OLED_RECESS_CLEARANCE_XY_MM,
+            )
 
     def test_the_panel_and_the_display_do_not_overlap(self) -> None:
         display_x = cad.PANEL_OLED_CENTER_MM[0]
-        display_edge = display_x + cad.PANEL_OLED_MODULE_MM[0] / 2.0
+        display_edge = display_x + cad.PANEL_OLED_RECESS_MM[0] / 2.0
         nearest_button = min(x for x, _y in cad.PANEL_BUTTON_POSITIONS_MM)
         button_edge = nearest_button - cad.PANEL_BUTTON_HOLE_DIAMETER_MM / 2.0
         self.assertLess(display_edge, button_edge)

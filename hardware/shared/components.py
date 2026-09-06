@@ -214,14 +214,15 @@ PI_ZERO_2_W = part(
     "SC0510",
     (65.0, 30.0, 5.2),
 )
+# AZ-Delivery's stable SKU for the single-module product-page variant is A 1-9.
 OLED_MODULE = part(
     "OLED_MODULE",
-    "1.3 inch 128x64 SH1106 four-pin I2C OLED module",
-    "36x34 mm module",
+    "0.96 inch 128x64 SSD1306 four-pin I2C OLED module",
+    "27x27 mm module",
     "AZ-Delivery",
-    "A 1-6",
-    (36.0, 34.0, 3.0),
-    "https://www.az-delivery.de/products/1-3zoll-i2c-oled-display",
+    "A 1-9",
+    (27.0, 27.0, 4.1),
+    "https://www.az-delivery.de/products/0-96zolldisplay",
 )
 POWER_SUPPLY = part(
     "POWER_SUPPLY",

@@ -24,7 +24,7 @@ drift from the board actually sent to fabrication.
 
 Eight TI TCA9554DWR expanders read all 64 DRV5032FC active-low omnipolar Hall
 sensors. Each owns a compact 2-rank × 4-file bank and all eight P0–P7 inputs. Sixty-four SK9822 LEDs form a serpentine SPI chain beginning at
-A1. Twelve panel buttons connect to dedicated Pi GPIO lines, and an SH1106 OLED
+A1. Twelve panel buttons connect to dedicated Pi GPIO lines, and an SSD1306 OLED
 uses the shared I²C bus.
 
 `hardware/shared/hall_banks.py` defines bank membership, input order, address

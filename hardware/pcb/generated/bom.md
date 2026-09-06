@@ -16,7 +16,7 @@ updating the shared catalog and passing footprint/package validation.
 | 64 | `DRV5032FCDBZR` | Texas Instruments | 20 Hz omnipolar active-low Hall-effect sensor | SOT-23-3 | HS1, HS2, HS3, HS4, HS5, HS6, HS7, HS8, HS9, HS10, HS11, HS12, HS13, HS14, HS15, HS16, HS17, HS18, HS19, HS20, HS21, HS22, HS23, HS24, HS25, HS26, HS27, HS28, HS29, HS30, HS31, HS32, HS33, HS34, HS35, HS36, HS37, HS38, HS39, HS40, HS41, HS42, HS43, HS44, HS45, HS46, HS47, HS48, HS49, HS50, HS51, HS52, HS53, HS54, HS55, HS56, HS57, HS58, HS59, HS60, HS61, HS62, HS63, HS64 |
 | 1 | `SDSQQNR-032G-GN6IA` | SanDisk | 32 GB high-endurance microSD card | microSD | — |
 | 1 | `PPPC041LFBN-RC` | Sullins Connector Solutions | 1x4 OLED socket | 1x4 2.54 mm THT | J2 |
-| 1 | `A 1-6` | AZ-Delivery | 1.3 inch 128x64 SH1106 four-pin I2C OLED module | 36x34 mm module | — |
+| 1 | `A 1-9` | AZ-Delivery | 0.96 inch 128x64 SSD1306 four-pin I2C OLED module | 27x27 mm module | — |
 | 1 | `SC0510` | Raspberry Pi | Raspberry Pi Zero 2 W host | 65x30 mm module | — |
 | 1 | `PPPC202LFBN-RC` | Sullins Connector Solutions | Raspberry Pi Zero 2 W 2x20 socket | 2x20 2.54 mm THT | J1 |
 | 1 | `GST12A05-P1J` | MEAN WELL | 5 V 2 A regulated desktop supply with 5.5x2.1 mm plug | external PSU | — |

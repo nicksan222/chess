@@ -197,10 +197,17 @@ PANEL_BUTTON_POSITIONS_MM = tuple(
     for column in range(PANEL_BUTTON_COLUMNS)
 )
 
-# AZ-Delivery A 1-6 SH1106 1.3 in module. The window exposes the active area;
-# the recess holds the carrier board, connected to J2 by four short wires.
+# AZ-Delivery 0.96 in SSD1306 module. The window exposes its approximately
+# 23.7 x 12.9 mm viewing area; the recess holds the 27 x 27 mm carrier board,
+# connected to J2 by four short wires.
 PANEL_OLED_MODULE_MM = OLED_MODULE.require_body_mm()
-PANEL_OLED_WINDOW_MM = (32.0, 18.0)
+PANEL_OLED_WINDOW_MM = (23.7, 12.9)
+# Per-side XY clearance for printed-part tolerance and hand assembly.
+PANEL_OLED_RECESS_CLEARANCE_XY_MM = 0.5
+PANEL_OLED_RECESS_MM = tuple(
+    dimension + 2.0 * PANEL_OLED_RECESS_CLEARANCE_XY_MM
+    for dimension in PANEL_OLED_MODULE_MM[:2]
+)
 PANEL_OLED_RECESS_DEPTH_MM = 2.0
 PANEL_OLED_CENTER_MM = (-110.0, PANEL_ORIGIN_Y_MM)
 PANEL_BUTTON_BODY_MM = (*BUTTON.require_body_mm()[:2], 5.0)
@@ -510,8 +517,8 @@ def validate() -> None:
             "display",
             PANEL_OLED_CENTER_MM[0],
             PANEL_OLED_CENTER_MM[1],
-            PANEL_OLED_MODULE_MM[0] / 2.0,
-            PANEL_OLED_MODULE_MM[1] / 2.0,
+            PANEL_OLED_RECESS_MM[0] / 2.0,
+            PANEL_OLED_RECESS_MM[1] / 2.0,
         ),
     )
     for name, x, y, half_x, half_y in panel_features:
@@ -523,6 +530,13 @@ def validate() -> None:
         raise ValueError("Control panel must place every button")
     if len(set(PANEL_BUTTON_POSITIONS_MM)) != PANEL_BUTTON_COUNT:
         raise ValueError("Button positions must be unique")
+    if PANEL_OLED_RECESS_CLEARANCE_XY_MM <= 0.0:
+        raise ValueError("Display recess must include positive XY assembly clearance")
+    if any(
+        recess <= module
+        for recess, module in zip(PANEL_OLED_RECESS_MM, PANEL_OLED_MODULE_MM[:2])
+    ):
+        raise ValueError("Display recess must be larger than the module")
     if any(
         window >= module
         for window, module in zip(PANEL_OLED_WINDOW_MM, PANEL_OLED_MODULE_MM[:2])

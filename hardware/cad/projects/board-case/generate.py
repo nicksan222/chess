@@ -159,8 +159,8 @@ def _cut_panel_apertures(
             modeling.rounded_box(
                 "Cutter_Display_Recess",
                 (
-                    shared.PANEL_OLED_MODULE_MM[0],
-                    shared.PANEL_OLED_MODULE_MM[1],
+                    shared.PANEL_OLED_RECESS_MM[0],
+                    shared.PANEL_OLED_RECESS_MM[1],
                     recess_depth + shared.BOOLEAN_RECESS_OVERLAP_MM,
                 ),
                 (
