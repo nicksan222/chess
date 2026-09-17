@@ -83,7 +83,13 @@ def source_hashes() -> dict[str, str]:
         and p.suffix in {".py", ".pyi", ".json"}
         and not {"generated", "__pycache__"}.intersection(p.parts)
     ]
-    files.extend((PCB_ROOT / "justfile", REPOSITORY_ROOT / "pyproject.toml", PCB_ROOT.parent / "build_support.py"))
+    files.extend(
+        (
+            PCB_ROOT / "justfile",
+            REPOSITORY_ROOT / "pyproject.toml",
+            PCB_ROOT.parent / "build_support.py",
+        )
+    )
     return {str(p.relative_to(REPOSITORY_ROOT)): digest(p) for p in sorted(files)}
 
 

@@ -38,6 +38,28 @@ class BuildTest(unittest.TestCase):
     def test_pcb_build_keeps_staged_output_import_compatibility(self):
         self.assertIs(build.staged_output, staged_output)
 
+    def test_source_hashes_cover_publication_helper_contents(self):
+        helper = build.PCB_ROOT.parent / "build_support.py"
+        key = str(helper.relative_to(build.REPOSITORY_ROOT))
+        before = build.source_hashes()
+        original_read = type(helper).read_bytes
+
+        def changed_contents(path: Path) -> bytes:
+            contents = original_read(path)
+            return (
+                contents + b"\n# simulated source change\n"
+                if path == helper
+                else contents
+            )
+
+        with patch.object(
+            type(helper), "read_bytes", autospec=True, side_effect=changed_contents
+        ):
+            after = build.source_hashes()
+
+        self.assertIn(key, before)
+        self.assertNotEqual(before[key], after[key])
+
     def test_release_cannot_export_or_publish_when_evidence_gate_fails(self):
         with tempfile.TemporaryDirectory() as directory:
             out = Path(directory) / "generated"
