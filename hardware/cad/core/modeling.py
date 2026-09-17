@@ -1,6 +1,5 @@
 """Reusable Blender mesh, collection, boolean, and library helpers."""
 
-from math import cos, pi, sin
 from pathlib import Path
 
 import bpy
@@ -94,18 +93,7 @@ def cut_batch(
     crossing grooves or a screw shaft and its head recess, belong in separate
     batches.
     """
-    if not cutters:
-        return
-    bpy.ops.object.select_all(action="DESELECT")
-    for cutter in cutters:
-        cutter.select_set(True)
-    bpy.context.view_layer.objects.active = cutters[0]
-    if len(cutters) > 1:
-        bpy.ops.object.join()
-    combined = bpy.context.object
-    combined.name = name
-    boolean_apply(body, combined, "DIFFERENCE")
-    bpy.data.objects.remove(combined, do_unlink=True)
+    _boolean_batch(body, cutters, name, "DIFFERENCE")
 
 
 def union_batch(
@@ -115,17 +103,26 @@ def union_batch(
 
     The same disjointness rule as `cut_batch` applies.
     """
-    if not additions:
+    _boolean_batch(body, additions, name, "UNION")
+
+
+def _boolean_batch(
+    body: bpy.types.Object,
+    operands: list[bpy.types.Object],
+    name: str,
+    operation: str,
+) -> None:
+    if not operands:
         return
     bpy.ops.object.select_all(action="DESELECT")
-    for addition in additions:
-        addition.select_set(True)
-    bpy.context.view_layer.objects.active = additions[0]
-    if len(additions) > 1:
+    for operand in operands:
+        operand.select_set(True)
+    bpy.context.view_layer.objects.active = operands[0]
+    if len(operands) > 1:
         bpy.ops.object.join()
     combined = bpy.context.object
     combined.name = name
-    boolean_apply(body, combined, "UNION")
+    boolean_apply(body, combined, operation)
     bpy.data.objects.remove(combined, do_unlink=True)
 
 
@@ -149,61 +146,24 @@ def cylinder(
     return obj
 
 
-def annular_cutter(
+def cylinder_between(
     name: str,
-    outer_diameter: float,
-    inner_diameter: float,
+    diameter: float,
+    position: tuple[float, float],
     bottom: float,
     top: float,
     collection: bpy.types.Collection,
-    segments: int = 96,
+    vertices: int = 64,
 ) -> bpy.types.Object:
-    outer_radius = outer_diameter / 2.0
-    inner_radius = inner_diameter / 2.0
-    vertices = []
-    for radius, z in (
-        (outer_radius, bottom),
-        (outer_radius, top),
-        (inner_radius, bottom),
-        (inner_radius, top),
-    ):
-        for index in range(segments):
-            angle = 2.0 * pi * index / segments
-            vertices.append((radius * cos(angle), radius * sin(angle), z))
-
-    faces = []
-    for index in range(segments):
-        next_index = (index + 1) % segments
-        faces.extend(
-            (
-                (index, next_index, segments + next_index, segments + index),
-                (
-                    2 * segments + index,
-                    3 * segments + index,
-                    3 * segments + next_index,
-                    2 * segments + next_index,
-                ),
-                (
-                    segments + index,
-                    segments + next_index,
-                    3 * segments + next_index,
-                    3 * segments + index,
-                ),
-                (
-                    index,
-                    2 * segments + index,
-                    2 * segments + next_index,
-                    next_index,
-                ),
-            )
-        )
-
-    mesh = bpy.data.meshes.new(f"{name}_Mesh")
-    mesh.from_pydata(vertices, [], faces)
-    mesh.update()
-    cutter = bpy.data.objects.new(name, mesh)
-    collection.objects.link(cutter)
-    return cutter
+    """A vertical cylinder defined by its physical bottom and top faces."""
+    return cylinder(
+        name,
+        diameter,
+        top - bottom,
+        (*position, (bottom + top) / 2.0),
+        collection,
+        vertices,
+    )
 
 
 def boolean_apply(

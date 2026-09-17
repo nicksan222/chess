@@ -177,18 +177,18 @@ def _cut_dark_squares(
 
 def _cut_screws(plate: bpy.types.Object, construction: bpy.types.Collection) -> None:
     """Through-holes with a recessed head, so nothing stands above the surface."""
-    through = shared.TILE_PLATE_THICKNESS_MM + 2.0 * shared.BOOLEAN_THROUGH_OVERLAP_MM
     head_depth = shared.TILE_PLATE_SCREW_HEAD_DEPTH_MM
     # The shaft and its head recess are concentric, so they go in separate
     # batches; within a batch the eight screws are far apart.
     modeling.cut_batch(
         plate,
         [
-            modeling.cylinder(
+            modeling.cylinder_between(
                 f"Cutter_Plate_Screw_{index}",
                 shared.TILE_PLATE_SCREW_CLEARANCE_DIAMETER_MM,
-                through,
-                (x, y, UNDERSIDE_Z_MM + shared.TILE_PLATE_THICKNESS_MM / 2.0),
+                (x, y),
+                UNDERSIDE_Z_MM - shared.BOOLEAN_THROUGH_OVERLAP_MM,
+                TOP_Z_MM + shared.BOOLEAN_THROUGH_OVERLAP_MM,
                 construction,
                 vertices=24,
             )
@@ -199,17 +199,12 @@ def _cut_screws(plate: bpy.types.Object, construction: bpy.types.Collection) -> 
     modeling.cut_batch(
         plate,
         [
-            modeling.cylinder(
+            modeling.cylinder_between(
                 f"Cutter_Plate_Screw_Head_{index}",
                 shared.TILE_PLATE_SCREW_HEAD_DIAMETER_MM,
-                head_depth + shared.BOOLEAN_RECESS_OVERLAP_MM,
-                (
-                    x,
-                    y,
-                    TOP_Z_MM
-                    - head_depth / 2.0
-                    + shared.BOOLEAN_RECESS_OVERLAP_MM / 2.0,
-                ),
+                (x, y),
+                TOP_Z_MM - head_depth,
+                TOP_Z_MM + shared.BOOLEAN_RECESS_OVERLAP_MM,
                 construction,
                 vertices=24,
             )
