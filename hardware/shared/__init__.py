@@ -1,5 +1,5 @@
 """Shared, tool-independent hardware definitions."""
 
-from .components import COMPONENTS, ComponentImplementation, ComponentSpec
+from .components import COMPONENTS, ComponentSpec
 
-__all__ = ("COMPONENTS", "ComponentImplementation", "ComponentSpec")
+__all__ = ("COMPONENTS", "ComponentSpec")
