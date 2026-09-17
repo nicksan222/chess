@@ -556,10 +556,6 @@ PCB_PARTS = {part.spec.key: part for part in _PCB_PART_ENTRIES}
 if len(PCB_PARTS) != len(_PCB_PART_ENTRIES):
     raise ValueError("PCB part keys must be unique")
 
-# Temporary compatibility views; the registry above is the only maintained source.
-MODELS = {key: part.model for key, part in PCB_PARTS.items()}
-TEMPLATES = {key: part.template for key, part in PCB_PARTS.items()}
-
 
 SMD_MPNS = {
     part.spec.mpn

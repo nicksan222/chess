@@ -8,9 +8,8 @@ import pcbnew
 
 from pcb.definition.assemblies.square import Square
 from pcb.definition.native import connect, no_connect, place
-from pcb.definition.parts.catalog import TCA9554_BYPASS_OFFSET_MM
+from pcb.definition.parts import catalog as parts
 from shared import dimensions, wiring
-from shared.electronics import CapacitorComponent as Capacitor
 from shared.electronics import CapacitorPin, HallSensorPin, Tca9554Pin
 from shared.electronics import Tca9554Component as Tca9554
 from shared.hall_banks import square
@@ -40,24 +39,22 @@ def add_sensor_banks(
         assembly = f"sensing/{bank.label}"
         expander = place(
             board,
-            Tca9554(ref),
-            part_key="TCA9554",
+            parts.TCA9554_PART,
+            ref,
             at=(x, y),
             assembly=assembly,
-            library="TCA9554",
-            value="TCA9554DWR",
-            description="8-bit I2C GPIO expander with input pull-ups",
             extras={"Bank": bank.label, "Address": f"0x{bank.address:02X}"},
         )
         bypass = place(
             board,
-            Capacitor(cap_ref),
-            part_key="CAP_100N",
-            at=(x + TCA9554_BYPASS_OFFSET_MM[0], y + TCA9554_BYPASS_OFFSET_MM[1]),
+            parts.CAP_100N_PART,
+            cap_ref,
+            at=(
+                x + parts.TCA9554_BYPASS_OFFSET_MM[0],
+                y + parts.TCA9554_BYPASS_OFFSET_MM[1],
+            ),
             assembly=assembly,
-            library="C",
-            value="100nF",
-            description="Expander decoupling capacitor",
+            purpose="Expander decoupling capacitor",
             extras={"For": ref},
         )
         connect(

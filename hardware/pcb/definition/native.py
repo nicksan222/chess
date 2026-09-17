@@ -10,10 +10,9 @@ import pcbnew
 
 from pcb.definition import rules
 from pcb.definition.output.symbols import ROOT_UUID, uid
-from pcb.definition.parts.catalog import MODELS, TEMPLATES
+from pcb.definition.parts.catalog import PcbPart
 from pcb.definition.rules import Net
 from shared import dimensions, wiring
-from shared.components import COMPONENTS
 from shared.electronics import BoundPin, EndpointResolver
 
 ORIGIN_X_MM = 200.0
@@ -262,24 +261,22 @@ def parts(board: pcbnew.BOARD) -> list[pcbnew.FOOTPRINT]:
 
 def place[Part: EndpointResolver](
     board: pcbnew.BOARD,
-    model: Part,
+    part: PcbPart[Part],
+    reference: str,
     *,
-    part_key: str,
     at: tuple[float, float],
     assembly: str,
-    library: str,
-    value: str,
-    description: str,
     rotation: float = 0.0,
+    purpose: str | None = None,
+    nominal_value: str | None = None,
     extras: dict[str, str] | None = None,
 ) -> Part:
     """Install an approved native template; return only its shared logical ports."""
-    if board.FindFootprintByReference(model.reference) is not None:
-        raise ValueError(f"duplicate reference: {model.reference}")
-    if not isinstance(model, type(MODELS[part_key](model.reference))):
-        raise ValueError(f"{model.reference}: incompatible approved product")
-    spec = COMPONENTS[part_key]
-    template = TEMPLATES[part_key]
+    if board.FindFootprintByReference(reference) is not None:
+        raise ValueError(f"duplicate reference: {reference}")
+    model = part.new_model(reference)
+    spec = part.spec
+    template = part.template
     module = template.Duplicate()
     # KiCad's copy constructor normalizes non-square circular PTH land sizes.
     # Restore the approved native dimensions before placing the duplicate.
@@ -290,11 +287,11 @@ def place[Part: EndpointResolver](
     module.SetValue(spec.mpn)
     module.SetLibDescription(f"{spec.manufacturer} {spec.mpn}: {spec.description}")
     for key, text in {
-        "PartKey": part_key,
+        "PartKey": spec.key,
         "Assembly": assembly,
-        "Library": library,
-        "NominalValue": value,
-        "Purpose": description,
+        "Library": part.library,
+        "NominalValue": nominal_value or part.nominal_value,
+        "Purpose": purpose or part.default_purpose,
         **(extras or {}),
     }.items():
         module.SetField(key, text)

@@ -5,95 +5,72 @@ from __future__ import annotations
 import pcbnew
 
 from pcb.definition.native import connect, place
+from pcb.definition.parts import catalog as parts
 from shared import dimensions
 from shared import electronics as p
-from shared.electronics import BarrelJackComponent as BarrelJack
-from shared.electronics import CapacitorComponent as Capacitor
 from shared.electronics import EndpointResolver
-from shared.electronics import FuseComponent as Fuse
-from shared.electronics import PowerSwitchComponent as PowerSwitch
-from shared.electronics import TestPointComponent as TestPoint
-from shared.electronics import TvsDiodeComponent as TvsDiode
 
 
 def add_strip[Part: EndpointResolver](
     board: pcbnew.BOARD,
-    model: Part,
+    part: parts.PcbPart[Part],
+    reference: str,
     *,
-    part_key: str,
     assembly: str,
-    library: str,
-    value: str,
-    description: str,
+    purpose: str | None = None,
+    nominal_value: str | None = None,
 ) -> Part:
-    x, y, rotation = dimensions.PCB_STRIP_PLACEMENTS_MM[model.reference]
+    x, y, rotation = dimensions.PCB_STRIP_PLACEMENTS_MM[reference]
     return place(
         board,
-        model,
-        part_key=part_key,
+        part,
+        reference,
         at=(x, y),
         rotation=rotation,
         assembly=assembly,
-        library=library,
-        value=value,
-        description=description,
+        purpose=purpose,
+        nominal_value=nominal_value,
     )
 
 
 def add_power(board: pcbnew.BOARD) -> None:
     jack = add_strip(
         board,
-        BarrelJack("J3"),
-        part_key="BARREL_JACK",
+        parts.BARREL_JACK_PART,
+        "J3",
         assembly="power",
-        library="BARREL_JACK",
-        value="DC 5.5x2.1",
-        description="5 V DC input jack, centre positive",
     )
     fuse = add_strip(
         board,
-        Fuse("F1"),
-        part_key="FUSE_2A",
+        parts.FUSE_2A_PART,
+        "F1",
         assembly="power",
-        library="FUSE",
-        value="2 A time-delay",
-        description="Input over-current protection matched to the 2.5 A jack",
     )
     switch = add_strip(
         board,
-        PowerSwitch("SW13"),
-        part_key="POWER_SWITCH",
+        parts.POWER_SWITCH_PART,
+        "SW13",
         assembly="power",
-        library="SWITCH",
-        value="POWER",
-        description="Latching power switch",
     )
     tvs = add_strip(
         board,
-        TvsDiode("D1"),
-        part_key="TVS_6V8",
+        parts.TVS_6V8_PART,
+        "D1",
         assembly="power",
-        library="TVS",
-        value="SMBJ6.0A",
-        description="Input transient suppressor on the 5 V rail",
     )
     bulk = add_strip(
         board,
-        Capacitor("C1"),
-        part_key="CAP_1000U",
+        parts.CAP_1000U_PART,
+        "C1",
         assembly="power",
-        library="C",
-        value="1000uF 10V",
-        description="LED rail bulk capacitor",
+        purpose="LED rail bulk capacitor",
     )
     bypass = add_strip(
         board,
-        Capacitor("C2"),
-        part_key="CAP_10U",
+        parts.CAP_10U_PART,
+        "C2",
         assembly="power",
-        library="C",
-        value="10uF 10V",
-        description="Rail decoupling capacitor",
+        purpose="Rail decoupling capacitor",
     )
     connect(
         board,
@@ -131,11 +108,10 @@ def add_power(board: pcbnew.BOARD) -> None:
     ):
         probe = add_strip(
             board,
-            TestPoint(reference),
-            part_key="TEST_POINT",
+            parts.TEST_POINT_PART,
+            reference,
             assembly="power",
-            library="TESTPOINT",
-            value=net,
-            description=description,
+            nominal_value=net,
+            purpose=description,
         )
         connect(board, net, probe.pin(p.TestPointPin.PROBE))

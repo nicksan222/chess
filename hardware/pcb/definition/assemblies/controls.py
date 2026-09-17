@@ -6,73 +6,52 @@ import pcbnew
 
 from pcb.definition.assemblies.power import add_strip
 from pcb.definition.native import connect, no_connect, place
+from pcb.definition.parts import catalog as parts
 from shared import dimensions, wiring
 from shared import electronics as p
-from shared.electronics import Ahct125Component as Ahct125
-from shared.electronics import CapacitorComponent as Capacitor
-from shared.electronics import OledHeaderComponent as OledHeader
-from shared.electronics import RaspberryPiHeaderComponent as RaspberryPiHeader
-from shared.electronics import ResistorComponent as Resistor
-from shared.electronics import TactileSwitchComponent as TactileSwitch
-from shared.electronics import TestPointComponent as TestPoint
 
 
 def add_controls(board: pcbnew.BOARD) -> None:
     host = place(
         board,
-        RaspberryPiHeader("J1"),
-        part_key="PI_ZERO_HEADER",
+        parts.PI_ZERO_HEADER_PART,
+        "J1",
         at=dimensions.PI_BAY_CENTER_MM,
         rotation=dimensions.PI_HEADER_ROTATION_DEG,
         assembly="controls",
-        library="PI_HEADER",
-        value="2x20 header",
-        description="Raspberry Pi Zero 2 W GPIO socket",
     )
     display = add_strip(
         board,
-        OledHeader("J2"),
-        part_key="OLED_HEADER",
+        parts.OLED_HEADER_PART,
+        "J2",
         assembly="controls",
-        library="OLED_HEADER",
-        value="1x4 header",
-        description="SSD1306 OLED module connector",
     )
     buffer = add_strip(
         board,
-        Ahct125("U5"),
-        part_key="AHCT125",
+        parts.AHCT125_PART,
+        "U5",
         assembly="controls",
-        library="AHCT125",
-        value="SN74AHCT125DR",
-        description="Quad 5 V buffer accepts 3.3 V SPI clock and data",
     )
     bypass = add_strip(
         board,
-        Capacitor("C7"),
-        part_key="CAP_100N",
+        parts.CAP_100N_PART,
+        "C7",
         assembly="controls",
-        library="C",
-        value="100nF",
-        description="Buffer decoupling capacitor",
+        purpose="Buffer decoupling capacitor",
     )
     sda_pullup = add_strip(
         board,
-        Resistor("R1"),
-        part_key="RES_4K7",
+        parts.RES_4K7_PART,
+        "R1",
         assembly="controls",
-        library="R",
-        value="4.7k",
-        description="I2C pull-up",
+        purpose="I2C pull-up",
     )
     scl_pullup = add_strip(
         board,
-        Resistor("R2"),
-        part_key="RES_4K7",
+        parts.RES_4K7_PART,
+        "R2",
         assembly="controls",
-        library="R",
-        value="4.7k",
-        description="I2C pull-up",
+        purpose="I2C pull-up",
     )
     connect(
         board,
@@ -181,13 +160,10 @@ def add_controls(board: pcbnew.BOARD) -> None:
     for index, name in enumerate(buttons, 1):
         switch = place(
             board,
-            TactileSwitch(f"SW{index}"),
-            part_key="BUTTON",
+            parts.BUTTON_PART,
+            f"SW{index}",
             at=positions[name],
             assembly="controls",
-            library="BUTTON",
-            value="TACT 6mm",
-            description="Momentary panel button, 9.5 mm actuator",
             extras={"Function": name},
         )
         pin = p.RaspberryPiHeaderPin[f"BUTTON_{name}_GPIO{wiring.BUTTON_GPIO[name]}"]
@@ -206,11 +182,10 @@ def add_controls(board: pcbnew.BOARD) -> None:
     ):
         probe = add_strip(
             board,
-            TestPoint(reference),
-            part_key="TEST_POINT",
+            parts.TEST_POINT_PART,
+            reference,
             assembly="controls",
-            library="TESTPOINT",
-            value=net,
-            description=description,
+            nominal_value=net,
+            purpose=description,
         )
         connect(board, net, probe.pin(p.TestPointPin.PROBE))

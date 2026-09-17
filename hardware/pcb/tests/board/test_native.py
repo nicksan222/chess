@@ -5,7 +5,7 @@ import unittest
 from pcb.definition import native
 from pcb.definition.parts import catalog
 from shared.components import COMPONENTS
-from shared.electronics import HallSensorComponent
+from shared.electronics import HallSensorComponent, HallSensorPin
 
 
 class NativeIdentityTest(unittest.TestCase):
@@ -35,13 +35,11 @@ class NativeIdentityTest(unittest.TestCase):
             for reference in references:
                 native.place(
                     board,
-                    HallSensorComponent(reference),
-                    part_key="HALL_SENSOR",
+                    catalog.HALL_SENSOR_PART,
+                    reference,
                     at=(0.0, 0.0),
                     assembly="test",
-                    library="HALL",
-                    value="DRV5032FC",
-                    description="Identity test",
+                    purpose="Identity test",
                 )
             mapping = native.stable_uuid_map(board)
             return {
@@ -57,3 +55,27 @@ class NativeIdentityTest(unittest.TestCase):
         baseline = identities(("HS1", "HS2"))
         inserted = identities(("HS3", "HS2", "HS1"))
         self.assertEqual(baseline, {ref: inserted[ref] for ref in baseline})
+
+    def test_duplicate_references_and_pin_ownership_are_rejected(self):
+        board = native.new_board()
+        sensor = native.place(
+            board,
+            catalog.HALL_SENSOR_PART,
+            "HS1",
+            at=(0.0, 0.0),
+            assembly="test",
+        )
+        with self.assertRaisesRegex(ValueError, "duplicate reference"):
+            native.place(
+                board,
+                catalog.HALL_SENSOR_PART,
+                "HS1",
+                at=(1.0, 0.0),
+                assembly="test",
+            )
+        supply = sensor.pin(HallSensorPin.SUPPLY)
+        with self.assertRaisesRegex(ValueError, "repeated pin"):
+            native.connect(board, "+3V3", supply, supply)
+        native.connect(board, "+3V3", supply)
+        with self.assertRaisesRegex(ValueError, "already connected"):
+            native.connect(board, "+5V", supply)
