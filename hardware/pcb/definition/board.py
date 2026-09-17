@@ -13,7 +13,7 @@ from pcb.definition.native import (
     parts,
     point,
 )
-from pcb.definition.parts.catalog import MODELS
+from pcb.definition.parts.catalog import PCB_PARTS
 from shared import dimensions, wiring
 from shared.components import COMPONENTS
 from shared.electronics.hall_sensor import HallSensorPin
@@ -58,7 +58,7 @@ def validate(board: pcbnew.BOARD) -> None:
         ref = footprint.GetReference()
         key = footprint.GetFieldText("PartKey")
         spec = COMPONENTS[key]
-        model = MODELS[key](ref)
+        model = PCB_PARTS[key].new_model(ref)
         if (
             footprint.GetValue() != spec.mpn
             or footprint.GetFieldText("Package") != spec.package

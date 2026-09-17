@@ -10,8 +10,6 @@ from shared.electronics import HallSensorComponent
 
 class NativeIdentityTest(unittest.TestCase):
     def test_registry_owns_every_native_product_once(self):
-        self.assertEqual(set(catalog.PCB_PARTS), set(catalog.MODELS))
-        self.assertEqual(set(catalog.PCB_PARTS), set(catalog.TEMPLATES))
         for key, part in catalog.PCB_PARTS.items():
             with self.subTest(part=key):
                 self.assertIs(part.spec, COMPONENTS[key])

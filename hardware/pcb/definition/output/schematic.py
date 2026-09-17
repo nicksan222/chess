@@ -17,7 +17,7 @@ from pcb.definition.output.symbols import (
     render_symbol_library,
     uid,
 )
-from pcb.definition.parts.catalog import MODELS
+from pcb.definition.parts.catalog import PCB_PARTS
 from shared import dimensions
 from shared.components import COMPONENTS
 from shared.hall_banks import square
@@ -197,7 +197,9 @@ def pin_roles(
     are checked, including open-drain Hall outputs and input-only expander ports.
     """
     roles: dict[str, tuple[str, str]] = {}
-    model = MODELS[component.GetFieldText("PartKey")](component.GetReference())
+    model = PCB_PARTS[component.GetFieldText("PartKey")].new_model(
+        component.GetReference()
+    )
     for pad in component.Pads():
         logical, physical = logical_pin(pad), pad.GetNumber()
         endpoint = model.resolve_endpoint(logical)

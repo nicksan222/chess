@@ -194,8 +194,8 @@ class DimensionsTest(unittest.TestCase):
                                 pcbnew.ToMM(copper - hole) / 2,
                                 rules.PCBWAY_MIN_ANNULAR_RING_MM,
                             )
-        for template in parts.TEMPLATES.values():
-            for a, b in combinations(template.Pads(), 2):
+        for part in parts.PCB_PARTS.values():
+            for a, b in combinations(part.template.Pads(), 2):
                 dx = (
                     abs(a.GetPosition().x - b.GetPosition().x)
                     - (a.GetSize().x + b.GetSize().x) / 2
