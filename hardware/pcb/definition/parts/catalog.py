@@ -1,6 +1,7 @@
 """Approved native footprint templates and component-specific routing data."""
 
 from collections.abc import Callable
+from dataclasses import dataclass
 
 import pcbnew
 
@@ -16,9 +17,22 @@ from pcb.definition.parts.land_patterns import (
 )
 from shared.components import (
     AHCT125,
-    COMPONENTS,
+    BARREL_JACK,
+    BUTTON,
+    CAP_10U,
+    CAP_100N,
+    CAP_1000U,
+    FUSE_2A,
     HALL_SENSOR,
+    OLED_HEADER,
+    PI_ZERO_HEADER,
+    POWER_SWITCH,
+    RES_4K7,
+    SK9822,
     TCA9554,
+    TEST_POINT,
+    TVS_6V8,
+    ComponentSpec,
 )
 from shared.electronics import ComponentReference, EndpointResolver
 from shared.electronics.ahct125 import Ahct125Component as Ahct125
@@ -138,7 +152,7 @@ CAPACITOR_HALL_BYPASS_OFFSET_MM = (0.0, -3.0)
 
 FUSE_FOOTPRINT = two_terminal_smd(
     "2410 fuse",
-    "5 A time-delay surface-mount fuse",
+    "2 A time-delay surface-mount fuse",
     6.6,
     (2.7, 3.2),
     (6.1, 2.7),
@@ -362,49 +376,195 @@ DC_INPUT_JACK = BarrelJack(ComponentReference.DC_INPUT_JACK)
 INPUT_FUSE = Fuse(ComponentReference.INPUT_FUSE)
 MAIN_POWER_SWITCH = PowerSwitch(ComponentReference.MAIN_POWER_SWITCH)
 
-MODELS: dict[str, Callable[[str], EndpointResolver]] = {
-    "AHCT125": Ahct125,
-    "BARREL_JACK": BarrelJack,
-    "BUTTON": TactileSwitch,
-    "CAP_100N": Capacitor,
-    "CAP_10U": Capacitor,
-    "CAP_1000U": Capacitor,
-    "FUSE_2A": Fuse,
-    "HALL_SENSOR": HallSensor,
-    "TCA9554": Tca9554,
-    "OLED_HEADER": OledHeader,
-    "PI_ZERO_HEADER": RaspberryPiHeader,
-    "POWER_SWITCH": PowerSwitch,
-    "RES_4K7": Resistor,
-    "SK9822": Sk9822,
-    "TEST_POINT": TestPoint,
-    "TVS_6V8": TvsDiode,
-}
 
-TEMPLATES = {
-    "AHCT125": AHCT125_FOOTPRINT,
-    "BARREL_JACK": BARRELJACK_FOOTPRINT,
-    "BUTTON": TACTILESWITCH_FOOTPRINT,
-    "CAP_100N": CAPACITOR_0603_FOOTPRINT,
-    "CAP_10U": CAPACITOR_0805_FOOTPRINT,
-    "CAP_1000U": CAPACITOR_ELECTROLYTIC_10MM,
-    "FUSE_2A": FUSE_FOOTPRINT,
-    "HALL_SENSOR": HALLSENSOR_FOOTPRINT,
-    "TCA9554": TCA9554_FOOTPRINT,
-    "OLED_HEADER": OLEDHEADER_FOOTPRINT,
-    "PI_ZERO_HEADER": RASPBERRYPIHEADER_FOOTPRINT,
-    "POWER_SWITCH": POWERSWITCH_FOOTPRINT,
-    "RES_4K7": RESISTOR_FOOTPRINT,
-    "SK9822": SK9822_FOOTPRINT,
-    "TEST_POINT": TESTPOINT_FOOTPRINT,
-    "TVS_6V8": TVSDIODE_FOOTPRINT,
-}
+@dataclass(frozen=True)
+class PcbPart[Part: EndpointResolver]:
+    """One approved product's logical model, land pattern, and display defaults."""
+
+    spec: ComponentSpec
+    model: Callable[[str], Part]
+    template: pcbnew.FOOTPRINT
+    library: str
+    nominal_value: str
+    default_purpose: str
+
+    def __post_init__(self) -> None:
+        if not all((self.library, self.nominal_value, self.default_purpose)):
+            raise ValueError(f"{self.spec.key}: PCB display defaults must not be empty")
+        if self.template.GetFieldText("Package") != self.spec.package:
+            raise ValueError(
+                f"{self.spec.key}: footprint package does not match product"
+            )
+        if not self.model("REGISTRY_CHECK").supports_part_key(self.spec.key):
+            raise ValueError(
+                f"{self.spec.key}: electronic model does not support product"
+            )
+
+    def new_model(self, reference: str) -> Part:
+        """Construct the typed logical model selected by this registry entry."""
+        return self.model(reference)
+
+
+AHCT125_PART = PcbPart(
+    AHCT125,
+    Ahct125,
+    AHCT125_FOOTPRINT,
+    "AHCT125",
+    "SN74AHCT125DR",
+    "Quad 5 V buffer accepts 3.3 V SPI clock and data",
+)
+BARREL_JACK_PART = PcbPart(
+    BARREL_JACK,
+    BarrelJack,
+    BARRELJACK_FOOTPRINT,
+    "BARREL_JACK",
+    "DC 5.5x2.0",
+    "5 V DC input jack, centre positive",
+)
+BUTTON_PART = PcbPart(
+    BUTTON,
+    TactileSwitch,
+    TACTILESWITCH_FOOTPRINT,
+    "BUTTON",
+    "TACT 6mm",
+    "Momentary panel button, 9.5 mm actuator",
+)
+CAP_100N_PART = PcbPart(
+    CAP_100N,
+    Capacitor,
+    CAPACITOR_0603_FOOTPRINT,
+    "C",
+    "100nF",
+    CAP_100N.description,
+)
+CAP_10U_PART = PcbPart(
+    CAP_10U,
+    Capacitor,
+    CAPACITOR_0805_FOOTPRINT,
+    "C",
+    "10uF 10V",
+    CAP_10U.description,
+)
+CAP_1000U_PART = PcbPart(
+    CAP_1000U,
+    Capacitor,
+    CAPACITOR_ELECTROLYTIC_10MM,
+    "C",
+    "1000uF 10V",
+    CAP_1000U.description,
+)
+FUSE_2A_PART = PcbPart(
+    FUSE_2A,
+    Fuse,
+    FUSE_FOOTPRINT,
+    "FUSE",
+    "2 A time-delay",
+    "Input over-current protection matched to the 2.5 A jack",
+)
+HALL_SENSOR_PART = PcbPart(
+    HALL_SENSOR,
+    HallSensor,
+    HALLSENSOR_FOOTPRINT,
+    "HALL",
+    "DRV5032FC",
+    "Omnipolar active-low Hall-effect square sensor",
+)
+TCA9554_PART = PcbPart(
+    TCA9554,
+    Tca9554,
+    TCA9554_FOOTPRINT,
+    "TCA9554",
+    "TCA9554DWR",
+    "8-bit I2C GPIO expander with input pull-ups",
+)
+OLED_HEADER_PART = PcbPart(
+    OLED_HEADER,
+    OledHeader,
+    OLEDHEADER_FOOTPRINT,
+    "OLED_HEADER",
+    "1x4 header",
+    "SSD1306 OLED module connector",
+)
+PI_ZERO_HEADER_PART = PcbPart(
+    PI_ZERO_HEADER,
+    RaspberryPiHeader,
+    RASPBERRYPIHEADER_FOOTPRINT,
+    "PI_HEADER",
+    "2x20 header",
+    "Raspberry Pi Zero 2 W GPIO socket",
+)
+POWER_SWITCH_PART = PcbPart(
+    POWER_SWITCH,
+    PowerSwitch,
+    POWERSWITCH_FOOTPRINT,
+    "SWITCH",
+    "POWER",
+    "Latching power switch",
+)
+RES_4K7_PART = PcbPart(
+    RES_4K7,
+    Resistor,
+    RESISTOR_FOOTPRINT,
+    "R",
+    "4.7k",
+    RES_4K7.description,
+)
+SK9822_PART = PcbPart(
+    SK9822,
+    Sk9822,
+    SK9822_FOOTPRINT,
+    "SK9822",
+    "SK9822",
+    SK9822.description,
+)
+TEST_POINT_PART = PcbPart(
+    TEST_POINT,
+    TestPoint,
+    TESTPOINT_FOOTPRINT,
+    "TESTPOINT",
+    "TEST",
+    TEST_POINT.description,
+)
+TVS_6V8_PART = PcbPart(
+    TVS_6V8,
+    TvsDiode,
+    TVSDIODE_FOOTPRINT,
+    "TVS",
+    "SMBJ6.0A",
+    "Input transient suppressor on the 5 V rail",
+)
+
+_PCB_PART_ENTRIES = (
+    AHCT125_PART,
+    BARREL_JACK_PART,
+    BUTTON_PART,
+    CAP_100N_PART,
+    CAP_10U_PART,
+    CAP_1000U_PART,
+    FUSE_2A_PART,
+    HALL_SENSOR_PART,
+    TCA9554_PART,
+    OLED_HEADER_PART,
+    PI_ZERO_HEADER_PART,
+    POWER_SWITCH_PART,
+    RES_4K7_PART,
+    SK9822_PART,
+    TEST_POINT_PART,
+    TVS_6V8_PART,
+)
+PCB_PARTS = {part.spec.key: part for part in _PCB_PART_ENTRIES}
+if len(PCB_PARTS) != len(_PCB_PART_ENTRIES):
+    raise ValueError("PCB part keys must be unique")
+
+# Temporary compatibility views; the registry above is the only maintained source.
+MODELS = {key: part.model for key, part in PCB_PARTS.items()}
+TEMPLATES = {key: part.template for key, part in PCB_PARTS.items()}
 
 
 SMD_MPNS = {
-    COMPONENTS[key].mpn
-    for key, template in TEMPLATES.items()
-    if any(p.GetAttribute() == pcbnew.PAD_ATTRIB_SMD for p in template.Pads())
+    part.spec.mpn
+    for part in PCB_PARTS.values()
+    if any(p.GetAttribute() == pcbnew.PAD_ATTRIB_SMD for p in part.template.Pads())
 }
 
 
