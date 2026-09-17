@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from enum import StrEnum
 from itertools import pairwise
 from pathlib import Path
 
@@ -204,7 +203,7 @@ def pin_roles(
         logical, physical = logical_pin(pad), pad.GetNumber()
         endpoint = model.resolve_endpoint(logical)
         pin = endpoint.pin
-        name = pin.name if isinstance(pin, StrEnum) else str(pin)
+        name = pin.name
         key = component.GetFieldText("PartKey")
         kind = "passive"
         if key == "SK9822":
