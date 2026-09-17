@@ -50,24 +50,7 @@ generate: setup
     blender="${BLENDER_BIN:-}"
     if [[ -z "$blender" && -x /opt/blender/blender ]]; then blender=/opt/blender/blender; fi
     if [[ -z "$blender" ]]; then blender="{{ cached_blender }}"; fi
-    mkdir -p hardware/cad/generated
-    find hardware/cad/generated -maxdepth 1 -type f ! -name README.md -delete
-    lines="$(while IFS= read -r -d '' generator; do
-        order_file="$(dirname -- "$generator")/generation-order"
-        order=100
-        if [[ -f "$order_file" ]]; then IFS= read -r order < "$order_file" || true; fi
-        [[ "$order" =~ ^[0-9]+$ ]] || { printf 'Invalid generation order in %s: %s\n' "$order_file" "$order" >&2; exit 1; }
-        printf '%09d\t%s\n' "$order" "$generator"
-    done < <(find hardware/cad/projects -type f -name generate.py -print0))"
-    [[ -n "$lines" ]] || { echo 'error: no CAD project generators found' >&2; exit 1; }
-    while IFS= read -r generator; do
-        printf '\n==> Generate %s\n' "$(dirname -- "$generator")"
-        command=("$blender" --background --factory-startup --gpu-backend opengl --python-exit-code 1)
-        if [[ -z "${DISPLAY:-}" ]] && command -v xvfb-run >/dev/null; then
-            command=(xvfb-run --auto-servernum "${command[@]}")
-        fi
-        "${command[@]}" --python "$generator"
-    done < <(printf '%s\n' "$lines" | LC_ALL=C sort | cut -f2-)
+    PYTHONPATH=hardware python3 -m cad.build "$blender"
 
 # Run checks without invoking Blender.
 check-fast: quality test

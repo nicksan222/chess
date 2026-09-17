@@ -32,7 +32,9 @@ tests/
 references/   inspiration and measurement references, not source
 ```
 
-Never edit anything in `generated/`; rerun the build instead.
+Never edit anything in `generated/`; rerun the build instead. Generation uses a
+sibling staging directory and publishes the complete artifact set only after all
+projects succeed, so a failed model or render leaves the previous set untouched.
 
 ## Adding a project
 
@@ -41,8 +43,8 @@ The runner discovers it. A project may include a `generation-order` file
 containing a non-negative integer when it depends on another project's output;
 projects without one default to 100. Lower numbers run first.
 
-A generator writes `GENERATED / f"{NAME}.blend"` plus one PNG per view, named
-`<project>.png` or `<project>-<view>.png`.
+A generator receives one output directory and writes `<NAME>.blend` plus one PNG
+per view, named `<project>.png` or `<project>-<view>.png`.
 
 ## Shared modules
 

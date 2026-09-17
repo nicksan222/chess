@@ -6,6 +6,8 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+from build_support import staged_output
+
 from pcb import build
 
 
@@ -32,6 +34,9 @@ class BuildTest(unittest.TestCase):
             with build.staged_output(out) as stage:
                 (stage / "new").write_text("complete")
             self.assertEqual([p.name for p in out.iterdir()], ["new"])
+
+    def test_pcb_build_keeps_staged_output_import_compatibility(self):
+        self.assertIs(build.staged_output, staged_output)
 
     def test_release_cannot_export_or_publish_when_evidence_gate_fails(self):
         with tempfile.TemporaryDirectory() as directory:
