@@ -19,25 +19,21 @@ PROJECT_DIR = Path(__file__).parent
 CAD_ROOT = PROJECT_DIR.parents[1]
 sys.path.insert(0, str(CAD_ROOT))
 GENERATED = CAD_ROOT / "generated"
-GENERATED.mkdir(parents=True, exist_ok=True)
 
 from blocks import pcb_proxy
 from core import dimensions as shared
-from core import modeling
+from core import modeling, project
 
 NAME = "board-assembly"
-OUTPUT_PATH = GENERATED / f"{NAME}.blend"
-CASE_PATH = GENERATED / "board-case.blend"
-PLATE_PATH = GENERATED / "tile-plate.blend"
 
 CASE_PART = "Printable_Board_Case"
 PLATE_PART = "Printable_Tile_Plate"
 EXPLODED_LIFT_MM = 70.0
 
 
-def load_plate(collection: bpy.types.Collection) -> bpy.types.Object:
+def load_plate(plate_path: Path, collection: bpy.types.Collection) -> bpy.types.Object:
     """Import the plate exactly as its own generator produced it."""
-    parts = modeling.load_objects(PLATE_PATH, (PLATE_PART,))
+    parts = modeling.load_objects(plate_path, (PLATE_PART,))
     plate = parts[PLATE_PART]
     if abs(plate.dimensions.x - shared.TILE_PLATE_SPAN_MM) > 0.01:
         raise RuntimeError(
@@ -50,6 +46,7 @@ def load_plate(collection: bpy.types.Collection) -> bpy.types.Object:
 def render_views(
     plate: bpy.types.Object,
     electronics: bpy.types.Collection,
+    output_directory: Path,
 ) -> None:
     scene = bpy.context.scene
     camera = bpy.data.objects["Camera_Render"]
@@ -65,7 +62,7 @@ def render_views(
     camera.location = (340.0, -430.0, 330.0)
     camera.data.lens = 56
     modeling.point_at(camera, focus)
-    scene.render.filepath = str(GENERATED / f"{NAME}-finished.png")
+    scene.render.filepath = str(output_directory / f"{NAME}-finished.png")
     bpy.ops.render.render(write_still=True)
 
     # Open: the plate lifted clear, showing the board and the Pi beneath it.
@@ -74,40 +71,43 @@ def render_views(
     camera.location = (330.0, -450.0, 340.0)
     camera.data.lens = 52
     modeling.point_at(camera, focus + Vector((0.0, 0.0, 18.0)))
-    scene.render.filepath = str(GENERATED / f"{NAME}-open.png")
+    scene.render.filepath = str(output_directory / f"{NAME}-open.png")
     bpy.ops.render.render(write_still=True)
 
     plate.location = seated
 
 
-def build() -> None:
-    for source_path in (CASE_PATH, PLATE_PATH):
+def build(output_directory: Path = GENERATED) -> None:
+    case_path = output_directory / "board-case.blend"
+    plate_path = output_directory / "tile-plate.blend"
+    for source_path in (case_path, plate_path):
         if not source_path.is_file():
             raise RuntimeError(f"Generate element project first: {source_path}")
 
-    bpy.ops.wm.open_mainfile(filepath=str(CASE_PATH))
+    bpy.ops.wm.open_mainfile(filepath=str(case_path))
     bpy.context.preferences.filepaths.save_version = 0
     scene = bpy.context.scene
     scene.name = "Single Board Assembly"
     scene["project_role"] = "Composite presentation only"
-    scene["case_source"] = str(CASE_PATH.relative_to(CAD_ROOT))
-    scene["plate_source"] = str(PLATE_PATH.relative_to(CAD_ROOT))
+    scene["case_source"] = str(Path("generated") / case_path.name)
+    scene["plate_source"] = str(Path("generated") / plate_path.name)
     scene["printable_geometry_redefined"] = False
     scene["printed_part_count"] = 2
     scene["square_count"] = shared.GRID_COUNT * shared.GRID_COUNT
 
     if CASE_PART not in bpy.data.objects:
-        raise RuntimeError(f"{CASE_PATH} is missing {CASE_PART}")
+        raise RuntimeError(f"{case_path} is missing {CASE_PART}")
 
     plate_collection = modeling.new_collection("PLATE_REFERENCE")
     electronics = modeling.new_collection("ELECTRONICS_REFERENCE")
-    plate = load_plate(plate_collection)
+    plate = load_plate(plate_path, plate_collection)
     pcb_proxy.add_board(electronics)
 
-    bpy.ops.wm.save_as_mainfile(filepath=str(OUTPUT_PATH))
-    render_views(plate, electronics)
-    print(f"Saved {OUTPUT_PATH}")
+    output_path = output_directory / f"{NAME}.blend"
+    bpy.ops.wm.save_as_mainfile(filepath=str(output_path))
+    render_views(plate, electronics, output_directory)
+    print(f"Saved {output_path}")
 
 
 if __name__ == "__main__":
-    build()
+    build(project.output_directory(GENERATED))

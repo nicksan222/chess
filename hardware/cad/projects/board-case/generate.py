@@ -19,18 +19,16 @@ PROJECT_DIR = Path(__file__).parent
 CAD_ROOT = PROJECT_DIR.parents[1]
 sys.path.insert(0, str(CAD_ROOT))
 GENERATED = CAD_ROOT / "generated"
-GENERATED.mkdir(parents=True, exist_ok=True)
 
 from core import dimensions as shared
 from core import (
     materials,
     modeling,
     presentation,
-    validation,
+    project,
 )
 
 NAME = "board-case"
-OUTPUT_PATH = GENERATED / f"{NAME}.blend"
 PART_NAME = "Printable_Board_Case"
 
 FLOOR_VENT_COUNT = 5
@@ -305,19 +303,10 @@ def _cut_plate_screws(
     modeling.cut_batch(case, pilots, "Cutter_All_Plate_Screw_Pilots")
 
 
-def render_view() -> None:
-    bpy.context.scene.render.filepath = str(GENERATED / f"{NAME}.png")
-    bpy.ops.render.render(write_still=True)
-
-
-def build() -> None:
-    modeling.clear_scene()
-    scene = presentation.configure_scene(
+def build(output_directory: Path = GENERATED) -> None:
+    scene, printable, construction, studio = project.setup_printable(
         "Printable Board Case",
         shared.BLENDER_SCALE_LENGTH,
-        (1200, 900),
-        (0.02, 0.025, 0.035, 1.0),
-        0.28,
     )
     scene["design_status"] = "Printable prototype"
     scene["project_role"] = "Case for one PCB, the Pi and the control panel"
@@ -329,9 +318,6 @@ def build() -> None:
     scene["host"] = "Raspberry Pi Zero 2 W, hung under the board"
     scene["reference_build_volume_mm"] = "420 x 420 x 420 print service"
 
-    printable = modeling.new_collection("PRINTABLE_PART")
-    construction = modeling.new_collection("CONSTRUCTION")
-    studio = modeling.new_collection("PRESENTATION")
     case_material = materials.solid(
         "Graphite printable case", (0.035, 0.045, 0.05, 1.0), 0.32
     )
@@ -350,12 +336,15 @@ def build() -> None:
         presentation.BOARD_STUDIO_LIGHTS,
     )
 
-    validation.validate_fdm_part(case, shared.REFERENCE_SERVICE_BUILD_VOLUME_MM)
-    scene["case_volume_mm3"] = case["mesh_volume_mm3"]
-    bpy.ops.wm.save_as_mainfile(filepath=str(OUTPUT_PATH))
-    render_view()
-    print(f"Saved {OUTPUT_PATH}")
+    output_path = project.save_printable(
+        case,
+        shared.REFERENCE_SERVICE_BUILD_VOLUME_MM,
+        output_directory,
+        NAME,
+        "case_volume_mm3",
+    )
+    print(f"Saved {output_path}")
 
 
 if __name__ == "__main__":
-    build()
+    build(project.output_directory(GENERATED))

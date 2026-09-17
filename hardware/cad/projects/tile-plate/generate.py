@@ -18,18 +18,16 @@ PROJECT_DIR = Path(__file__).parent
 CAD_ROOT = PROJECT_DIR.parents[1]
 sys.path.insert(0, str(CAD_ROOT))
 GENERATED = CAD_ROOT / "generated"
-GENERATED.mkdir(parents=True, exist_ok=True)
 
 from core import dimensions as shared
 from core import (
     materials,
     modeling,
     presentation,
-    validation,
+    project,
 )
 
 NAME = "tile-plate"
-OUTPUT_PATH = GENERATED / f"{NAME}.blend"
 PART_NAME = "Printable_Tile_Plate"
 
 TOP_Z_MM = shared.CASE_HEIGHT_MM
@@ -234,19 +232,10 @@ def _cut_orientation_notch(
     modeling.cut_batch(plate, [notch], "Cutter_Orientation_Notch_Combined")
 
 
-def render_view() -> None:
-    bpy.context.scene.render.filepath = str(GENERATED / f"{NAME}.png")
-    bpy.ops.render.render(write_still=True)
-
-
-def build() -> None:
-    modeling.clear_scene()
-    scene = presentation.configure_scene(
+def build(output_directory: Path = GENERATED) -> None:
+    scene, printable, construction, studio = project.setup_printable(
         "Printable Tile Plate",
         shared.BLENDER_SCALE_LENGTH,
-        (1200, 900),
-        (0.02, 0.025, 0.035, 1.0),
-        0.28,
     )
     scene["design_status"] = "Printable prototype"
     scene["project_role"] = "Single overlay replacing 128 tile prints"
@@ -257,9 +246,6 @@ def build() -> None:
     scene["diffuser_skin_mm"] = shared.TILE_PLATE_DIFFUSER_SKIN_MM
     scene["reference_build_volume_mm"] = "420 x 420 x 420 print service"
 
-    printable = modeling.new_collection("PRINTABLE_PART")
-    construction = modeling.new_collection("CONSTRUCTION")
-    studio = modeling.new_collection("PRESENTATION")
     plate_material = materials.solid(
         "Ivory printable plate", (0.62, 0.58, 0.50, 1.0), 0.44
     )
@@ -278,12 +264,15 @@ def build() -> None:
         presentation.BOARD_STUDIO_LIGHTS,
     )
 
-    validation.validate_fdm_part(plate, shared.REFERENCE_SERVICE_BUILD_VOLUME_MM)
-    scene["plate_volume_mm3"] = plate["mesh_volume_mm3"]
-    bpy.ops.wm.save_as_mainfile(filepath=str(OUTPUT_PATH))
-    render_view()
-    print(f"Saved {OUTPUT_PATH}")
+    output_path = project.save_printable(
+        plate,
+        shared.REFERENCE_SERVICE_BUILD_VOLUME_MM,
+        output_directory,
+        NAME,
+        "plate_volume_mm3",
+    )
+    print(f"Saved {output_path}")
 
 
 if __name__ == "__main__":
-    build()
+    build(project.output_directory(GENERATED))
