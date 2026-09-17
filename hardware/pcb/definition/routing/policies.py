@@ -56,6 +56,17 @@ BUTTON_NETS = frozenset(map(wiring.button_net, wiring.BUTTON_NAMES))
 OPTIONAL_ESCAPE_VIA_NETS = CONTROL_SIGNAL_NETS
 
 
+@dataclass(frozen=True)
+class RoutingContext:
+    """Native lookup caches and fixed keepouts for one routing pass."""
+
+    board: pcbnew.BOARD
+    nets_by_name: Mapping[str, pcbnew.NETINFO_ITEM]
+    pads_by_endpoint: Mapping[EndpointKey, pcbnew.PAD]
+    endpoints_by_net: Mapping[str, tuple[EndpointKey, ...]]
+    host_header_via_keepouts: frozenset[tuple[int, int]]
+
+
 def footprint(board: pcbnew.BOARD, reference: str) -> pcbnew.FOOTPRINT:
     """Resolve exactly one native footprint by its semantic reference."""
     matches = [
@@ -94,7 +105,7 @@ def _host_header_via_keepouts(board: pcbnew.BOARD) -> frozenset[tuple[int, int]]
 
 
 def find_route(
-    board: pcbnew.BOARD,
+    ctx: RoutingContext,
     net: pcbnew.NETINFO_ITEM,
     start: pcbnew.VECTOR2I,
     end: pcbnew.VECTOR2I,
@@ -102,11 +113,11 @@ def find_route(
 ) -> grid_router.Route:
     """Route with chess-board-specific keep-outs applied to the base router."""
     return grid_router.find_route(
-        board,
+        ctx.board,
         net,
         start,
         end,
-        additional_via_keepouts=_host_header_via_keepouts(board),
+        additional_via_keepouts=ctx.host_header_via_keepouts,
         **options,
     )
 
@@ -184,16 +195,6 @@ def prune_unused_signal_vias(board: pcbnew.BOARD) -> None:
             board.Remove(via)
 
 
-@dataclass(frozen=True)
-class RoutingContext:
-    """Lookup caches over native objects for the lifetime of a routing pass."""
-
-    board: pcbnew.BOARD
-    nets_by_name: Mapping[str, pcbnew.NETINFO_ITEM]
-    pads_by_endpoint: Mapping[EndpointKey, pcbnew.PAD]
-    endpoints_by_net: Mapping[str, tuple[EndpointKey, ...]]
-
-
 def escape_endpoint(
     ctx: RoutingContext, name: str, endpoint: EndpointKey, *, add_via: bool = False
 ) -> pcbnew.VECTOR2I:
@@ -213,7 +214,7 @@ def route_between(
     **options: Unpack[grid_router.RoutingOptions],
 ) -> None:
     """Search and apply a route with the common chess-board keepouts."""
-    route = find_route(ctx.board, net, start, end, **options)
+    route = find_route(ctx, net, start, end, **options)
     grid_router.apply_route(ctx.board, net, start, end, route)
 
 
@@ -345,7 +346,7 @@ def route_buttons(ctx: RoutingContext) -> None:
         )
         try:
             route = find_route(
-                board,
+                ctx,
                 net,
                 pads[pi].GetPosition(),
                 primary.GetPosition(),
@@ -380,7 +381,7 @@ def route_buttons(ctx: RoutingContext) -> None:
             for layer in candidates:
                 try:
                     route = find_route(
-                        board,
+                        ctx,
                         net,
                         launch,
                         primary.GetPosition(),
@@ -618,6 +619,7 @@ def route(board: pcbnew.BOARD) -> None:
         {n.GetNetname(): n for n in board.GetNetsByName().values()},
         native.endpoint_pads(board),
         nodes,
+        _host_header_via_keepouts(board),
     )
     fanout_power(ctx)
     route_led_chain(ctx)
