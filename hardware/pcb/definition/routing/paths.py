@@ -10,7 +10,7 @@ from typing import TypedDict
 
 import pcbnew
 
-from pcb.definition import rules
+from pcb.definition import native, rules
 
 GRID_MM = 0.25
 
@@ -372,13 +372,7 @@ def apply_route(
     def trace(a: pcbnew.VECTOR2I, b: pcbnew.VECTOR2I, layer_index: int) -> None:
         if a == b:
             return
-        item = pcbnew.PCB_TRACK(board)
-        item.SetStart(a)
-        item.SetEnd(b)
-        item.SetWidth(pcbnew.FromMM(TRACK_MM))
-        item.SetLayer(route.layers[layer_index])
-        item.SetNet(net)
-        board.Add(item)
+        native.add_trace(board, net, a, b, route.layers[layer_index], TRACK_MM)
 
     trace(start, first, points[0][2])
     for left, right in pairwise(points):
@@ -387,10 +381,5 @@ def apply_route(
         if left[2] == right[2]:
             trace(at, destination, left[2])
         else:
-            via = pcbnew.PCB_VIA(board)
-            via.SetPosition(at)
-            via.SetWidth(pcbnew.FromMM(rules.VIA_PAD_MM))
-            via.SetDrill(pcbnew.FromMM(rules.VIA_DRILL_MM))
-            via.SetNet(net)
-            board.Add(via)
+            native.add_via(board, net, at)
     trace(last, end, points[-1][2])
