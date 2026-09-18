@@ -15,7 +15,7 @@ VIEW_PROJECTS = ("board-assembly",)
 
 class GeneratorStructureTest(unittest.TestCase):
     def test_projects_declare_dependency_order(self) -> None:
-        ranked = []
+        ranked: list[tuple[int, str]] = []
         for generate in PROJECTS.glob("*/generate.py"):
             order_file = generate.parent / "generation-order"
             order = 100
@@ -129,7 +129,9 @@ class GeneratedLayoutTest(unittest.TestCase):
 
     def test_the_main_directory_holds_no_artefacts(self) -> None:
         loose = {path.name for path in CAD_ROOT.iterdir() if path.is_file()}
-        self.assertEqual(loose, {"README.md", "build.py", "justfile"})
+        self.assertEqual(
+            loose, {"README.md", "build.py", "justfile", "pyrightconfig.json"}
+        )
         self.assertTrue(GENERATED.is_dir())
 
     def test_the_domain_keeps_the_shared_directory_shape(self) -> None:

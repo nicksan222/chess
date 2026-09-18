@@ -4,14 +4,16 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import json
 import os
 import subprocess
 import tempfile
 from collections import Counter
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, cast
+from typing import Protocol, cast
+
+from shared.json_values import parse_json
 
 GENERATED = Path("hardware/pcb/generated")
 MARKER = "<!-- pcb-review-report -->"
@@ -78,17 +80,23 @@ class BoardSnapshot:
     board_sha256: str
 
 
-def _json_object(value: object, label: str) -> dict[str, Any]:
+def _json_object(value: object, label: str) -> dict[str, object]:
     if not isinstance(value, dict):
         raise ValueError(f"{label} must be a JSON object")
     mapping = cast(dict[object, object], value)
     if not all(isinstance(key, str) for key in mapping):
         raise ValueError(f"{label} must be a JSON object")
-    return cast(dict[str, Any], mapping)
+    return cast(dict[str, object], mapping)
 
 
-def _load_json(path: Path) -> dict[str, Any]:
-    return _json_object(json.loads(path.read_text()), str(path))
+def _json_list(value: object, label: str) -> list[object]:
+    if not isinstance(value, list):
+        raise ValueError(f"{label} must be a JSON array")
+    return cast(list[object], value)
+
+
+def _load_json(path: Path) -> dict[str, object]:
+    return _json_object(parse_json(path.read_text()), str(path))
 
 
 def _git_file(ref: str, path: Path) -> bytes | None:
@@ -100,19 +108,19 @@ def _git_file(ref: str, path: Path) -> bytes | None:
     return result.stdout if result.returncode == 0 else None
 
 
-def _base_json(ref: str, name: str) -> dict[str, Any] | None:
+def _base_json(ref: str, name: str) -> dict[str, object] | None:
     contents = _git_file(ref, GENERATED / name)
     if contents is None:
         return None
-    return _json_object(json.loads(contents), f"{ref}:{name}")
+    return _json_object(parse_json(contents), f"{ref}:{name}")
 
 
-def _project(netlist: dict[str, Any]) -> dict[str, Any]:
+def _project(netlist: Mapping[str, object]) -> dict[str, object]:
     projects = _json_object(netlist.get("projects"), "netlist projects")
     return _json_object(projects.get("board"), "netlist board")
 
 
-def _mapping(value: object, label: str) -> dict[str, Any]:
+def _mapping(value: object, label: str) -> dict[str, object]:
     return _json_object(value, label)
 
 
@@ -125,11 +133,20 @@ def _endpoint(value: object) -> str:
     return f"{parts[0]}.{parts[1]}"
 
 
-def _millimetres(pcbnew: Any, value: int) -> float:
-    return round(float(pcbnew.ToMM(value)), 3)
+class PcbnewApi(Protocol):
+    def ToMM(self, value: int) -> float: ...
 
 
-def _point(pcbnew: Any, value: Any) -> CopperPoint:
+class NativePoint(Protocol):
+    x: int
+    y: int
+
+
+def _millimetres(pcbnew: PcbnewApi, value: int) -> float:
+    return round(pcbnew.ToMM(value), 3)
+
+
+def _point(pcbnew: PcbnewApi, value: NativePoint) -> CopperPoint:
     return CopperPoint(
         x_mm=_millimetres(pcbnew, value.x),
         y_mm=_millimetres(pcbnew, value.y),
@@ -277,7 +294,7 @@ def _component_label(reference: str, component: object) -> str:
 
 
 def _component_changes(
-    base: dict[str, Any], current: dict[str, Any]
+    base: Mapping[str, object], current: Mapping[str, object]
 ) -> tuple[str, list[str]]:
     before = _mapping(base.get("components", {}), "base components")
     after = _mapping(current.get("components", {}), "current components")
@@ -305,7 +322,7 @@ def _component_changes(
 
 
 def _net_changes(
-    base: dict[str, Any], current: dict[str, Any]
+    base: Mapping[str, object], current: Mapping[str, object]
 ) -> tuple[str, list[str]]:
     before = _mapping(base.get("nets", {}), "base nets")
     after = _mapping(current.get("nets", {}), "current nets")
@@ -316,14 +333,18 @@ def _net_changes(
     )
     details: list[str] = []
     for name in added:
-        pins = ", ".join(_endpoint(item) for item in after[name])
+        endpoints = _json_list(after[name], f"net {name}")
+        pins = ", ".join(_endpoint(item) for item in endpoints)
         details.append(f"Added net `{name}`: {pins}")
     for name in removed:
-        pins = ", ".join(_endpoint(item) for item in before[name])
+        endpoints = _json_list(before[name], f"base net {name}")
+        pins = ", ".join(_endpoint(item) for item in endpoints)
         details.append(f"Removed net `{name}`: {pins}")
     for name in rewired:
-        old_pins = {_endpoint(item) for item in before[name]}
-        new_pins = {_endpoint(item) for item in after[name]}
+        old_endpoints = _json_list(before[name], f"base net {name}")
+        new_endpoints = _json_list(after[name], f"current net {name}")
+        old_pins = {_endpoint(item) for item in old_endpoints}
+        new_pins = {_endpoint(item) for item in new_endpoints}
         additions = ", ".join(f"+{pin}" for pin in sorted(new_pins - old_pins))
         removals = ", ".join(f"−{pin}" for pin in sorted(old_pins - new_pins))
         changes = ", ".join(filter(None, (additions, removals)))
@@ -336,7 +357,7 @@ def _net_changes(
 
 
 def _placement_changes(
-    base_layout: dict[str, Any], current_layout: dict[str, Any]
+    base_layout: Mapping[str, object], current_layout: Mapping[str, object]
 ) -> tuple[str, list[str]]:
     before = _mapping(base_layout.get("placements", {}), "base placements")
     after = _mapping(current_layout.get("placements", {}), "current placements")
@@ -368,7 +389,7 @@ def _flatten(value: object, prefix: str = "") -> dict[str, object]:
 
 
 def _rule_changes(
-    base_layout: dict[str, Any], current_layout: dict[str, Any]
+    base_layout: Mapping[str, object], current_layout: Mapping[str, object]
 ) -> tuple[str, list[str]]:
     before = _flatten(base_layout.get("rules", {}))
     after = _flatten(current_layout.get("rules", {}))
@@ -445,12 +466,20 @@ def _copper_changes(
 
 def _violations(current: Path) -> str:
     erc = _load_json(current / "erc.json")
-    sheets = erc.get("sheets", [])
-    erc_count = sum(len(sheet.get("violations", [])) for sheet in sheets)
+    sheets = _json_list(erc.get("sheets", []), "ERC sheets")
+    erc_count = sum(
+        len(
+            _json_list(
+                _json_object(sheet, "ERC sheet").get("violations", []),
+                "ERC violations",
+            )
+        )
+        for sheet in sheets
+    )
     drc = _load_json(current / "drc.json")
-    drc_count = len(drc.get("violations", []))
-    unconnected = len(drc.get("unconnected_items", []))
-    parity = len(drc.get("schematic_parity", []))
+    drc_count = len(_json_list(drc.get("violations", []), "DRC violations"))
+    unconnected = len(_json_list(drc.get("unconnected_items", []), "unconnected items"))
+    parity = len(_json_list(drc.get("schematic_parity", []), "schematic parity"))
     return (
         f"ERC {erc_count}, DRC {drc_count}, unconnected {unconnected}, "
         f"schematic parity {parity}"
@@ -484,7 +513,7 @@ def build_report(
     copper_summary, copper_details = _copper_changes(base_board, current_board)
 
     manifest = _load_json(current / "manifest.json")
-    checks = manifest.get("checks", [])
+    checks = _json_list(manifest.get("checks", []), "manifest checks")
     revision = current_netlist.get("revision", "unknown revision")
     semantic_changes = any(
         (
@@ -558,15 +587,20 @@ def main() -> None:
     parser.add_argument("--run-url", default=None)
     parser.add_argument("--output", type=Path, default=Path("pcb-pr-report.md"))
     args = parser.parse_args()
-    repository = args.repository or _repository_from_origin()
+    base_ref = cast(str, args.base_ref)
+    head_ref = cast(str | None, args.head_ref)
+    current = cast(Path, args.current)
+    repository = cast(str | None, args.repository) or _repository_from_origin()
+    run_url = cast(str | None, args.run_url)
+    output = cast(Path, args.output)
     report = build_report(
-        base_ref=args.base_ref,
-        head_ref=args.head_ref or _git_text("rev-parse", "HEAD"),
-        current=args.current,
+        base_ref=base_ref,
+        head_ref=head_ref or _git_text("rev-parse", "HEAD"),
+        current=current,
         repository=repository,
-        run_url=args.run_url or _run_url(repository),
+        run_url=run_url or _run_url(repository),
     )
-    args.output.write_text(report)
+    output.write_text(report)
 
 
 if __name__ == "__main__":

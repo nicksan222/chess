@@ -58,8 +58,10 @@ explicit `connect()` or `no_connect()` call.
 
 ## Commands
 
-Python 3.12+, KiCad 9, ngspice, Ruff 0.16.5 and Pyright 1.1.411 are installed in the
-development container. From the repository root:
+Python 3.12+, KiCad 9, ngspice, Ruff 0.16.5 and Basedpyright 1.40.0 are installed
+in the development container. Strict analysis covers source and tests, rejects
+explicit or inferred dynamic types, and uses curated KiCad SWIG signatures. From
+the repository root:
 
 ```sh
 just --justfile hardware/pcb/justfile generate # Native project, schematic, BOM, DSN
@@ -69,8 +71,8 @@ just --justfile hardware/pcb/justfile pr-report main # Review + semantic Markdow
 just --justfile hardware/pcb/justfile release  # Review + measured evidence + fabrication
 ```
 
-Direct entry: `PYTHONPATH=hardware python3 -m pcb review`. Set `PYRIGHT` to an
-alternate analyzer executable when needed.
+Direct entry: `PYTHONPATH=hardware python3 -m pcb review`. Set `BASEDPYRIGHT` to
+an alternate analyzer executable when needed.
 
 **Deliberate scope reductions:** redundant architecture/accessor/snapshot tests were
 removed in favor of readable dimensions and SPICE tests. PCB-to-Rust generation and

@@ -34,14 +34,16 @@ class BoardSquare:
 
     @property
     def led_position_mm(self) -> Point:
-        return tuple(
-            a + b for a, b in zip(self.centre_mm, self.led_offset_mm, strict=True)
+        return (
+            self.centre_mm[0] + self.led_offset_mm[0],
+            self.centre_mm[1] + self.led_offset_mm[1],
         )
 
     @property
     def hall_position_mm(self) -> Point:
-        return tuple(
-            a + b for a, b in zip(self.centre_mm, self.hall_offset_mm, strict=True)
+        return (
+            self.centre_mm[0] + self.hall_offset_mm[0],
+            self.centre_mm[1] + self.hall_offset_mm[1],
         )
 
     @property

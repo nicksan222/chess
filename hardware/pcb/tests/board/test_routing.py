@@ -2,11 +2,22 @@
 
 import unittest
 from itertools import pairwise
+from typing import TypedDict, Unpack, cast
 
 import pcbnew
 
 from pcb.definition import rules
 from pcb.definition.routing import paths
+
+
+class RouteOptions(TypedDict, total=False):
+    margin_mm: float
+    preferred_layer_index: int | None
+    required_end_layer_index: int | None
+    allow_vias: bool
+    diagonals: bool
+    additional_via_keepouts: frozenset[tuple[int, int]]
+    routing_bounds_mm: tuple[float, float, float, float] | None
 
 
 class RoutingTest(unittest.TestCase):
@@ -36,7 +47,7 @@ class RoutingTest(unittest.TestCase):
         self,
         start: tuple[float, float] = (10, 10),
         end: tuple[float, float] = (12, 10),
-        **options,
+        **options: Unpack[RouteOptions],
     ) -> paths.Route:
         return paths.find_route(
             self.board,
@@ -94,7 +105,8 @@ class RoutingTest(unittest.TestCase):
                 self.subTest(option=option),
                 self.assertRaisesRegex(ValueError, "layer index"),
             ):
-                self.route(**{option: len(self.layers)})
+                invalid = cast(RouteOptions, {option: len(self.layers)})
+                self.route(**invalid)
 
         route = self.route(
             preferred_layer_index=0,

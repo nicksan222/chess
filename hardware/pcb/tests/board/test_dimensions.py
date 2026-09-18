@@ -11,7 +11,7 @@ from pcb.definition.parts import catalog as parts
 from shared import dimensions
 
 
-def bounds(footprint):
+def bounds(footprint: pcbnew.FOOTPRINT) -> tuple[int, int, int, int]:
     points = [
         p
         for shape in footprint.GraphicalItems()
@@ -35,7 +35,11 @@ class DimensionsTest(unittest.TestCase):
 
     def test_outline_mounting_holes_and_coordinate_orientation(self):
         edges = [
-            s for s in self.board.GetDrawings() if s.GetLayer() == pcbnew.Edge_Cuts
+            shape
+            for item in self.board.GetDrawings()
+            if isinstance(item, pcbnew.PCB_SHAPE)
+            and item.GetLayer() == pcbnew.Edge_Cuts
+            for shape in (item,)
         ]
         xs = [s.GetStart().x for s in edges]
         ys = [s.GetStart().y for s in edges]

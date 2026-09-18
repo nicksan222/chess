@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from types import ModuleType
+from typing import Protocol
 
 import pcbnew
 
@@ -27,8 +27,22 @@ SQUARE_GRID_DOT_SEGMENT_MM = 0.02
 SQUARE_GRID_HOLE_CLEARANCE_MM = 4.0
 
 
+class GridDimensions(Protocol):
+    @property
+    def PLAYING_SPAN_MM(self) -> float: ...
+
+    @property
+    def SQUARE_SIZE_MM(self) -> float: ...
+
+    @property
+    def GRID_COUNT(self) -> int: ...
+
+    @property
+    def PCB_SUPPORT_POSITIONS_MM(self) -> tuple[tuple[float, float], ...]: ...
+
+
 def square_grid_dot_positions(
-    shared: ModuleType,
+    shared: GridDimensions,
 ) -> tuple[tuple[float, float], ...]:
     """Return a dotted grid while leaving mounting-hole keepouts clear."""
     half_span = shared.PLAYING_SPAN_MM / 2.0

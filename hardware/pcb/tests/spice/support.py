@@ -2,25 +2,44 @@
 
 from __future__ import annotations
 
-import json
 import os
+from dataclasses import dataclass
 from fractions import Fraction
 from pathlib import Path
+from typing import cast
 
 import pcb.definition.board as definition
+from shared.json_values import parse_json
 from spice.board_harness import BoardHarness
 from spice.circuit import SpiceCircuit, SpiceRunner
 
 PCB_ROOT = Path(__file__).resolve().parents[2]
 
 
+@dataclass(frozen=True, slots=True)
+class ManufacturingSettings:
+    led_global_brightness_max: Fraction
+
+    @classmethod
+    def load(cls, path: Path) -> ManufacturingSettings:
+        document = parse_json(path.read_text())
+        if not isinstance(document, dict):
+            raise ValueError("manufacturing settings must be an object")
+        root = cast(dict[object, object], document)
+        power = root.get("power")
+        if not isinstance(power, dict):
+            raise ValueError("manufacturing power settings must be an object")
+        power_fields = cast(dict[object, object], power)
+        brightness = power_fields.get("led_global_brightness_max")
+        if not isinstance(brightness, str):
+            raise ValueError("LED brightness limit must be a fraction")
+        return cls(led_global_brightness_max=Fraction(brightness))
+
+
 def board_circuits() -> BoardHarness:
     """Build the circuit DSL against the current validated board definition."""
-    manufacturing = json.loads((PCB_ROOT / "definition/manufacturing.json").read_text())
-    numerator, denominator = manufacturing["power"]["led_global_brightness_max"].split(
-        "/"
-    )
-    return BoardHarness(definition.load(), Fraction(int(numerator), int(denominator)))
+    settings = ManufacturingSettings.load(PCB_ROOT / "definition/manufacturing.json")
+    return BoardHarness(definition.load(), settings.led_global_brightness_max)
 
 
 def run_circuit(test_file: str, circuit: SpiceCircuit) -> None:

@@ -1,9 +1,49 @@
 """Reusable Blender mesh, collection, boolean, and library helpers."""
 
+from collections.abc import Sequence
+from contextlib import AbstractContextManager
 from pathlib import Path
+from typing import Protocol, TypeVar, cast
 
 import bpy
 from mathutils import Vector
+
+ObjectData = TypeVar("ObjectData")
+
+
+class _LibrarySource(Protocol):
+    objects: Sequence[str]
+
+
+class _LibraryTarget(Protocol):
+    objects: list[str | bpy.types.Object | None]
+
+
+def active_object(operation: str) -> bpy.types.Object:
+    """Return the operator result while narrowing Blender's optional context."""
+    obj = bpy.context.object
+    if obj is None:
+        raise RuntimeError(f"Blender did not create an object during {operation}")
+    return obj
+
+
+def require_object(name: str) -> bpy.types.Object:
+    """Look up a named object with a useful error instead of an untyped failure."""
+    obj = bpy.data.objects.get(name)
+    if obj is None:
+        raise RuntimeError(f"Scene is missing required object: {name}")
+    return obj
+
+
+# Blender 4.5 embeds Python 3.11, so this cannot use PEP 695 type parameters.
+def require_object_data(  # noqa: UP047
+    obj: bpy.types.Object, data_type: type[ObjectData]
+) -> ObjectData:
+    """Narrow Object.data to the kind required by the caller."""
+    data = obj.data
+    if not isinstance(data, data_type):
+        raise TypeError(f"{obj.name} does not contain {data_type.__name__} data")
+    return data
 
 
 def clear_scene() -> None:
@@ -42,7 +82,7 @@ def rounded_box(
             f"{2.0 * radius} mm, but the box is {min(dimensions)} mm at its thinnest"
         )
     bpy.ops.mesh.primitive_cube_add(location=location)
-    obj = bpy.context.object
+    obj = active_object(f"creating box {name}")
     obj.name = name
     obj.dimensions = dimensions
     bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
@@ -120,7 +160,7 @@ def _boolean_batch(
     bpy.context.view_layer.objects.active = operands[0]
     if len(operands) > 1:
         bpy.ops.object.join()
-    combined = bpy.context.object
+    combined = active_object(f"joining boolean operand {name}")
     combined.name = name
     boolean_apply(body, combined, operation)
     bpy.data.objects.remove(combined, do_unlink=True)
@@ -140,7 +180,7 @@ def cylinder(
         depth=height,
         location=location,
     )
-    obj = bpy.context.object
+    obj = active_object(f"creating cylinder {name}")
     obj.name = name
     move_to_collection(obj, collection)
     return obj
@@ -182,7 +222,11 @@ def boolean_apply(
 
 
 def point_at(obj: bpy.types.Object, target: Vector) -> None:
-    obj.rotation_euler = (target - obj.location).to_track_quat("-Z", "Y").to_euler()
+    obj.rotation_euler = (
+        (target - obj.location)
+        .to_track_quat("-Z", "Y")
+        .to_euler("XYZ", obj.rotation_euler)
+    )
 
 
 def load_objects(
@@ -190,9 +234,20 @@ def load_objects(
     object_names: tuple[str, ...],
 ) -> dict[str, bpy.types.Object]:
     """Load exact named source objects from a generated Blender library."""
-    with bpy.data.libraries.load(str(blend_path), link=False) as (data_from, data_to):
+    load_context = cast(
+        AbstractContextManager[tuple[_LibrarySource, _LibraryTarget]],
+        bpy.data.libraries.load(str(blend_path), link=False),
+    )
+    with load_context as (data_from, data_to):
         missing = set(object_names) - set(data_from.objects)
         if missing:
             raise RuntimeError(f"{blend_path} is missing objects: {sorted(missing)}")
-        data_to.objects = list(object_names)
-    return dict(zip(object_names, data_to.objects))
+        requested: list[str | bpy.types.Object | None] = list(object_names)
+        data_to.objects = requested
+
+    loaded: dict[str, bpy.types.Object] = {}
+    for name, obj in zip(object_names, data_to.objects):
+        if not isinstance(obj, bpy.types.Object):
+            raise RuntimeError(f"{blend_path} returned no object for {name}")
+        loaded[name] = obj
+    return loaded

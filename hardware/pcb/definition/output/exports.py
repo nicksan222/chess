@@ -8,6 +8,7 @@ import json
 import re
 from collections import defaultdict
 from pathlib import Path
+from typing import cast
 
 import pcbnew
 
@@ -15,6 +16,7 @@ import pcb.definition.board as board_definition
 from pcb.definition import rules
 from pcb.definition.native import parts
 from shared.components import COMPONENTS
+from shared.json_values import parse_json
 
 EXTRA_ASSEMBLY_PARTS = ("PI_ZERO_2_W", "OLED_MODULE", "POWER_SUPPLY", "MICRO_SD")
 
@@ -96,12 +98,25 @@ STRICT_RULES = (
 )
 
 
+def _json_object(value: object, label: str) -> dict[str, object]:
+    if not isinstance(value, dict):
+        raise ValueError(f"{label} must be a JSON object")
+    mapping = cast(dict[object, object], value)
+    if not all(isinstance(key, str) for key in mapping):
+        raise ValueError(f"{label} must have string keys")
+    return cast(dict[str, object], mapping)
+
+
 def render_project() -> str:
-    project = json.loads(
-        (Path(__file__).parents[2] / "definition/project-template.json").read_text()
+    project = _json_object(
+        parse_json(
+            (Path(__file__).parents[2] / "definition/project-template.json").read_text()
+        ),
+        "project template",
     )
-    settings = project["board"]["design_settings"]
-    defaults = settings["defaults"]
+    board = _json_object(project.get("board"), "project board")
+    settings = _json_object(board.get("design_settings"), "design settings")
+    defaults = _json_object(settings.get("defaults"), "design defaults")
     defaults.update(
         {
             "board_outline_line_width": rules.OUTLINE_LINE_MM,
@@ -113,8 +128,9 @@ def render_project() -> str:
             "silk_text_thickness": rules.SILK_LINE_MM,
         }
     )
-    defaults["zones"]["min_clearance"] = rules.POUR_CLEARANCE_MM
-    constraints = settings["rules"]
+    zones = _json_object(defaults.get("zones"), "zone defaults")
+    zones["min_clearance"] = rules.POUR_CLEARANCE_MM
+    constraints = _json_object(settings.get("rules"), "design rules")
     constraints.update(
         {
             "min_clearance": rules.CLEARANCE_MM,
@@ -133,8 +149,9 @@ def render_project() -> str:
         }
     )
     settings["drc_exclusions"] = []
+    severities = _json_object(settings.get("rule_severities"), "rule severities")
     for name in STRICT_RULES:
-        settings["rule_severities"][name] = "error"
+        severities[name] = "error"
     return json.dumps(project, indent=2, sort_keys=True) + "\n"
 
 

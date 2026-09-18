@@ -8,6 +8,7 @@ import shutil
 import subprocess
 from collections.abc import Callable, Mapping
 from pathlib import Path
+from typing import cast
 
 from build_support import staged_output
 
@@ -92,7 +93,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("blender", type=Path)
     args = parser.parse_args()
-    generate(args.blender)
+    generate(cast(Path, args.blender))
 
 
 if __name__ == "__main__":

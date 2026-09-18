@@ -74,7 +74,11 @@ class HallBank:
     @property
     def straps(self) -> tuple[bool, bool, bool]:
         """A0, A1, A2; true is VCC and false is GND."""
-        return tuple(bool(self.index & (1 << bit)) for bit in range(3))
+        return (
+            bool(self.index & 0b001),
+            bool(self.index & 0b010),
+            bool(self.index & 0b100),
+        )
 
     def centre(self, pitch: float, span: float) -> tuple[float, float]:
         return (

@@ -10,6 +10,7 @@ than a positioning mistake in this file.
 """
 
 import sys
+from dataclasses import dataclass
 from pathlib import Path
 
 import bpy
@@ -31,6 +32,28 @@ PLATE_PART = "Printable_Tile_Plate"
 EXPLODED_LIFT_MM = 70.0
 
 
+@dataclass(frozen=True, slots=True)
+class AssemblyMetadata:
+    project_role: str
+    case_source: str
+    plate_source: str
+    printable_geometry_redefined: bool
+    printed_part_count: int
+    square_count: int
+
+    def apply_to(self, scene: bpy.types.Scene) -> None:
+        project.set_scene_property(scene, "project_role", self.project_role)
+        project.set_scene_property(scene, "case_source", self.case_source)
+        project.set_scene_property(scene, "plate_source", self.plate_source)
+        project.set_scene_property(
+            scene,
+            "printable_geometry_redefined",
+            self.printable_geometry_redefined,
+        )
+        project.set_scene_property(scene, "printed_part_count", self.printed_part_count)
+        project.set_scene_property(scene, "square_count", self.square_count)
+
+
 def load_plate(plate_path: Path, collection: bpy.types.Collection) -> bpy.types.Object:
     """Import the plate exactly as its own generator produced it."""
     parts = modeling.load_objects(plate_path, (PLATE_PART,))
@@ -49,7 +72,8 @@ def render_views(
     output_directory: Path,
 ) -> None:
     scene = bpy.context.scene
-    camera = bpy.data.objects["Camera_Render"]
+    camera = modeling.require_object("Camera_Render")
+    camera_data = modeling.require_object_data(camera, bpy.types.Camera)
     focus = Vector((0.0, shared.CASE_CENTER_OFFSET_Y_MM, 8.0))
     # The imported origin is already the assembled position, so it is the datum
     # the open view lifts away from rather than something to be overwritten.
@@ -60,7 +84,7 @@ def render_views(
     electronics.hide_render = True
     plate.location = seated
     camera.location = (340.0, -430.0, 330.0)
-    camera.data.lens = 56
+    camera_data.lens = 56
     modeling.point_at(camera, focus)
     scene.render.filepath = str(output_directory / f"{NAME}-finished.png")
     bpy.ops.render.render(write_still=True)
@@ -69,7 +93,7 @@ def render_views(
     plate.location = seated + Vector((0.0, 0.0, EXPLODED_LIFT_MM))
     electronics.hide_render = False
     camera.location = (330.0, -450.0, 340.0)
-    camera.data.lens = 52
+    camera_data.lens = 52
     modeling.point_at(camera, focus + Vector((0.0, 0.0, 18.0)))
     scene.render.filepath = str(output_directory / f"{NAME}-open.png")
     bpy.ops.render.render(write_still=True)
@@ -88,12 +112,17 @@ def build(output_directory: Path = GENERATED) -> None:
     bpy.context.preferences.filepaths.save_version = 0
     scene = bpy.context.scene
     scene.name = "Single Board Assembly"
-    scene["project_role"] = "Composite presentation only"
-    scene["case_source"] = str(Path("generated") / case_path.name)
-    scene["plate_source"] = str(Path("generated") / plate_path.name)
-    scene["printable_geometry_redefined"] = False
-    scene["printed_part_count"] = 2
-    scene["square_count"] = shared.GRID_COUNT * shared.GRID_COUNT
+    project.apply_metadata(
+        scene,
+        AssemblyMetadata(
+            project_role="Composite presentation only",
+            case_source=str(Path("generated") / case_path.name),
+            plate_source=str(Path("generated") / plate_path.name),
+            printable_geometry_redefined=False,
+            printed_part_count=2,
+            square_count=shared.GRID_COUNT * shared.GRID_COUNT,
+        ),
+    )
 
     if CASE_PART not in bpy.data.objects:
         raise RuntimeError(f"{case_path} is missing {CASE_PART}")

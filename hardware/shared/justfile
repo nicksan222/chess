@@ -2,6 +2,7 @@ set shell := ["bash", "-euo", "pipefail", "-c"]
 
 root := justfile_directory() + "/../.."
 ruff := env_var_or_default("RUFF", "ruff")
+basedpyright := env_var_or_default("BASEDPYRIGHT", "basedpyright")
 
 default:
     @just --list
@@ -10,6 +11,7 @@ default:
 quality:
     cd "{{ root }}" && {{ ruff }} check hardware/shared
     cd "{{ root }}" && {{ ruff }} format --check hardware/shared
+    cd "{{ root }}" && {{ basedpyright }} --project hardware/shared/pyrightconfig.json
 
 # Run shared contract tests.
 test:

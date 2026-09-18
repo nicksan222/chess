@@ -11,6 +11,7 @@ plate without moving either of them.
 """
 
 import sys
+from dataclasses import dataclass
 from pathlib import Path
 
 import bpy
@@ -33,6 +34,32 @@ PART_NAME = "Printable_Board_Case"
 
 FLOOR_VENT_COUNT = 5
 FLOOR_VENT_PITCH_MM = 8.0
+
+
+@dataclass(frozen=True, slots=True)
+class BoardCaseMetadata:
+    design_status: str
+    project_role: str
+    grid_rows: int
+    grid_columns: int
+    pcb_size_mm: str
+    panel_button_count: int
+    pcb_support_count: int
+    host: str
+    reference_build_volume_mm: str
+
+    def apply_to(self, scene: bpy.types.Scene) -> None:
+        project.set_scene_property(scene, "design_status", self.design_status)
+        project.set_scene_property(scene, "project_role", self.project_role)
+        project.set_scene_property(scene, "grid_rows", self.grid_rows)
+        project.set_scene_property(scene, "grid_columns", self.grid_columns)
+        project.set_scene_property(scene, "pcb_size_mm", self.pcb_size_mm)
+        project.set_scene_property(scene, "panel_button_count", self.panel_button_count)
+        project.set_scene_property(scene, "pcb_support_count", self.pcb_support_count)
+        project.set_scene_property(scene, "host", self.host)
+        project.set_scene_property(
+            scene, "reference_build_volume_mm", self.reference_build_volume_mm
+        )
 
 
 def add_case(
@@ -304,30 +331,35 @@ def _cut_plate_screws(
 
 
 def build(output_directory: Path = GENERATED) -> None:
-    scene, printable, construction, studio = project.setup_printable(
+    workspace = project.setup_printable(
         "Printable Board Case",
         shared.BLENDER_SCALE_LENGTH,
     )
-    scene["design_status"] = "Printable prototype"
-    scene["project_role"] = "Case for one PCB, the Pi and the control panel"
-    scene["grid_rows"] = shared.GRID_COUNT
-    scene["grid_columns"] = shared.GRID_COUNT
-    scene["pcb_size_mm"] = f"{shared.PCB_SIZE_MM[0]:g} x {shared.PCB_SIZE_MM[1]:g}"
-    scene["panel_button_count"] = shared.PANEL_BUTTON_COUNT
-    scene["pcb_support_count"] = len(shared.PCB_SUPPORT_POSITIONS_MM)
-    scene["host"] = "Raspberry Pi Zero 2 W, hung under the board"
-    scene["reference_build_volume_mm"] = "420 x 420 x 420 print service"
+    project.apply_metadata(
+        workspace.scene,
+        BoardCaseMetadata(
+            design_status="Printable prototype",
+            project_role="Case for one PCB, the Pi and the control panel",
+            grid_rows=shared.GRID_COUNT,
+            grid_columns=shared.GRID_COUNT,
+            pcb_size_mm=(f"{shared.PCB_SIZE_MM[0]:g} x {shared.PCB_SIZE_MM[1]:g}"),
+            panel_button_count=shared.PANEL_BUTTON_COUNT,
+            pcb_support_count=len(shared.PCB_SUPPORT_POSITIONS_MM),
+            host="Raspberry Pi Zero 2 W, hung under the board",
+            reference_build_volume_mm="420 x 420 x 420 print service",
+        ),
+    )
 
     case_material = materials.solid(
         "Graphite printable case", (0.035, 0.045, 0.05, 1.0), 0.32
     )
     floor_material = materials.solid("Studio floor", (0.025, 0.028, 0.03, 1.0), 0.48)
 
-    case = add_case(printable, construction, case_material)
-    construction.hide_render = True
-    construction.hide_viewport = True
+    case = add_case(workspace.printable, workspace.construction, case_material)
+    workspace.construction.hide_render = True
+    workspace.construction.hide_viewport = True
     presentation.add_studio(
-        studio,
+        workspace.studio,
         floor_material,
         (1500.0, 1500.0),
         (330.0, -420.0, 320.0),

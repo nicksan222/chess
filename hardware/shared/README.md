@@ -17,6 +17,7 @@ This directory is the tool-independent contract between hardware domains.
 Shared code must never import Blender, Schemdraw, Gerbonara, or KiCad. Domain
 folders compose these definitions and own only rendering/tool behavior.
 
-Shared Python is linted and format-checked with Ruff through this package's
-`justfile`. Run `just --justfile hardware/shared/justfile check`; the root
+Shared Python is linted and format-checked with Ruff and strictly type-checked
+with Basedpyright. Both explicit and inferred dynamic types are rejected. Run
+`just --justfile hardware/shared/justfile check`; the root
 `just precommit` and `just check` recipes compose it with the other packages.

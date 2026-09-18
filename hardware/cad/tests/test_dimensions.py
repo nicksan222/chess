@@ -100,8 +100,10 @@ class PrintEnvelopeTest(unittest.TestCase):
 
     def test_metre_scale_error_cannot_fit_reference_printer(self) -> None:
         """A unit slip is the failure this guardrail exists to catch."""
-        wrong_scale = tuple(
-            axis * cad.MILLIMETRES_PER_METRE for axis in cad.TILE_PLATE_SIZE_MM
+        wrong_scale = (
+            cad.TILE_PLATE_SIZE_MM[0] * cad.MILLIMETRES_PER_METRE,
+            cad.TILE_PLATE_SIZE_MM[1] * cad.MILLIMETRES_PER_METRE,
+            cad.TILE_PLATE_SIZE_MM[2] * cad.MILLIMETRES_PER_METRE,
         )
         self.assertFalse(
             cad.fits_build_volume(wrong_scale, cad.REFERENCE_SERVICE_BUILD_VOLUME_MM)

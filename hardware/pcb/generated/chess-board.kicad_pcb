@@ -40365,7 +40365,7 @@
 				)
 			)
 		)
-		(property "NominalValue" "DC 5.5x2.1"
+		(property "NominalValue" "DC 5.5x2.0"
 			(at 0 0 270)
 			(layer "F.SilkS")
 			(hide yes)

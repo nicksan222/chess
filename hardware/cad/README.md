@@ -102,6 +102,9 @@ The CAD `justfile` downloads a checksum-verified Blender build into the ignored
 existing install instead, which is required on platforms without a published
 Linux x86_64 build. Manufacturing exports remain deliberately separate.
 
-CAD Python is linted and format-checked with Ruff through its package-local
-`justfile`. The root recipes, pre-commit hook, and CI compose the same
-capabilities.
+CAD Python is linted and format-checked with Ruff and strictly type-checked with
+Basedpyright using Blender 4.5 stubs. Explicit and inferred dynamic types are
+rejected. A few member/attribute diagnostics are disabled because Blender's
+generated API stubs cannot model RNA's runtime-refined object data; the code
+narrows those boundaries with checked helpers instead. The root recipes,
+pre-commit hook, and CI compose the same capabilities.

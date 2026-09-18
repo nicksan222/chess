@@ -30,7 +30,9 @@ class NativeIdentityTest(unittest.TestCase):
             )
 
     def test_unrelated_insertion_and_reordering_keep_component_and_pad_ids(self):
-        def identities(references):
+        def identities(
+            references: tuple[str, ...],
+        ) -> dict[str, tuple[str, list[tuple[str, str]]]]:
             board = native.new_board()
             for reference in references:
                 native.place(

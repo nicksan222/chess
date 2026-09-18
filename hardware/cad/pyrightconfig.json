@@ -1,0 +1,59 @@
+{
+  "include": [
+    "*.py",
+    "../build_support.py",
+    "blocks",
+    "core",
+    "projects",
+    "tests"
+  ],
+  "extraPaths": [
+    ".."
+  ],
+  "pythonVersion": "3.12",
+  "typeCheckingMode": "strict",
+  "reportAny": "error",
+  "reportExplicitAny": "error",
+  "executionEnvironments": [
+    {
+      "root": "blocks",
+      "extraPaths": [
+        ".",
+        ".."
+      ],
+      "reportAttributeAccessIssue": "none",
+      "reportUnknownArgumentType": "none",
+      "reportUnknownMemberType": "none",
+      "reportUnknownVariableType": "none"
+    },
+    {
+      "root": "core",
+      "extraPaths": [
+        ".",
+        ".."
+      ],
+      "reportAttributeAccessIssue": "none",
+      "reportUnknownArgumentType": "none",
+      "reportUnknownMemberType": "none",
+      "reportUnknownVariableType": "none"
+    },
+    {
+      "root": "projects",
+      "extraPaths": [
+        ".",
+        ".."
+      ],
+      "reportAttributeAccessIssue": "none",
+      "reportUnknownArgumentType": "none",
+      "reportUnknownMemberType": "none",
+      "reportUnknownVariableType": "none"
+    },
+    {
+      "root": ".",
+      "extraPaths": [
+        ".",
+        ".."
+      ]
+    }
+  ]
+}

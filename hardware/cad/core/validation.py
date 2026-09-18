@@ -1,9 +1,13 @@
 """Blender-side validation for generated prototype FDM parts."""
 
+from collections.abc import Iterable
+from typing import cast
+
 import bmesh
 import bpy
 
 from core import dimensions as shared
+from core import modeling
 
 
 def validate_fdm_part(
@@ -11,11 +15,15 @@ def validate_fdm_part(
     build_volume_mm: tuple[float, float, float],
 ) -> None:
     """Require a positive, manifold mesh inside the selected print envelope."""
-    mesh = part.data
+    mesh = modeling.require_object_data(part, bpy.types.Mesh)
     if mesh.validate(verbose=True):
         raise RuntimeError(f"Blender repaired invalid mesh data for {part.name}")
 
-    dimensions = tuple(float(axis) for axis in part.dimensions)
+    dimensions = (
+        float(part.dimensions.x),
+        float(part.dimensions.y),
+        float(part.dimensions.z),
+    )
     if any(axis <= 0.0 for axis in dimensions):
         raise RuntimeError(f"{part.name} has a non-positive physical dimension")
     if not shared.fits_build_volume(dimensions, build_volume_mm):
@@ -26,8 +34,9 @@ def validate_fdm_part(
 
     bm = bmesh.new()
     bm.from_mesh(mesh)
-    boundary_edges = sum(edge.is_boundary for edge in bm.edges)
-    non_manifold_edges = sum(not edge.is_manifold for edge in bm.edges)
+    edges = cast(Iterable[bmesh.types.BMEdge], bm.edges)
+    boundary_edges = sum(edge.is_boundary for edge in edges)
+    non_manifold_edges = sum(not edge.is_manifold for edge in edges)
     volume = abs(bm.calc_volume(signed=True))
     bm.free()
 

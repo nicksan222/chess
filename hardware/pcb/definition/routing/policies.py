@@ -514,7 +514,8 @@ def _power_escape_position(
     """Choose a short fanout that clears its package and nearby signal lanes."""
     at = pad.GetPosition()
     centre = module.GetPosition()
-    dx, dy = (at.x - centre.x, at.y - centre.y)
+    dx = at.x - centre.x
+    dy = at.y - centre.y
     reference = module.GetReference()
     if reference == ComponentReference.HOST_GPIO_HEADER:
         escape_mm, horizontal = (RASPBERRYPIHEADER_POWER_ESCAPE_MM, True)
@@ -526,7 +527,7 @@ def _power_escape_position(
     if horizontal:
         escaped = pcbnew.VECTOR2I(at.x + (distance if dx >= 0 else -distance), at.y)
     else:
-        length = max(1, round((dx * dx + dy * dy) ** 0.5))
+        length = max(1, round(math.hypot(dx, dy)))
         escaped = pcbnew.VECTOR2I(
             at.x + dx * distance // length, at.y + dy * distance // length
         )

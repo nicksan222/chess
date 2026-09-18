@@ -2,6 +2,7 @@
   "include": [
     "*.py",
     "definition",
+    "tests",
     "../shared/components.py",
     "../shared/electronics"
   ],
@@ -10,5 +11,16 @@
   ],
   "stubPath": "typings",
   "pythonVersion": "3.12",
-  "typeCheckingMode": "strict"
+  "typeCheckingMode": "strict",
+  "reportAny": "error",
+  "reportExplicitAny": "error",
+  "executionEnvironments": [
+    {
+      "root": "tests",
+      "reportPrivateUsage": "none"
+    },
+    {
+      "root": "."
+    }
+  ]
 }

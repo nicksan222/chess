@@ -280,7 +280,11 @@ def usable_build_volume(
     build_volume_mm: tuple[float, float, float],
 ) -> tuple[float, float, float]:
     """Return the build volume after reserving an edge margin on every side."""
-    return tuple(axis - 2.0 * PRINT_BED_EDGE_MARGIN_MM for axis in build_volume_mm)
+    return (
+        build_volume_mm[0] - 2.0 * PRINT_BED_EDGE_MARGIN_MM,
+        build_volume_mm[1] - 2.0 * PRINT_BED_EDGE_MARGIN_MM,
+        build_volume_mm[2] - 2.0 * PRINT_BED_EDGE_MARGIN_MM,
+    )
 
 
 def fits_build_volume(

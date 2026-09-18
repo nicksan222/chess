@@ -18,6 +18,7 @@ from build_support import staged_output
 
 from pcb.definition import board as definition
 from pcb.definition.native import ORIGIN_X_MM, ORIGIN_Y_MM, connections, parts
+from shared.json_values import parse_json
 
 PCB_ROOT = Path(__file__).resolve().parent
 REPOSITORY_ROOT = PCB_ROOT.parents[1]
@@ -153,10 +154,11 @@ def native_checks(out: Path) -> None:
         str(out / "drc.rpt"),
         str(out / BOARD.name),
     )
-    erc = json.loads((out / "erc.json").read_text())
-    drc = json.loads((out / "drc.json").read_text())
-    if any(s["violations"] for s in erc["sheets"]) or any(
-        drc[key] for key in ("violations", "unconnected_items", "schematic_parity")
+    erc = object_fields(parse_json((out / "erc.json").read_text()))
+    drc = object_fields(parse_json((out / "drc.json").read_text()))
+    sheets = object_list(erc.get("sheets"))
+    if any(object_fields(sheet).get("violations") for sheet in sheets) or any(
+        drc.get(key) for key in ("violations", "unconnected_items", "schematic_parity")
     ):
         raise RuntimeError(
             f"native electrical/layout checks failed: ERC={erc}; DRC={drc}"
@@ -308,7 +310,7 @@ def physical_evidence(path: Path | None = None) -> None:
     path = path or PCB_ROOT / "definition/evidence/hall-magnet.json"
     if not path.is_file():
         raise RuntimeError(f"missing physical evidence: {path}")
-    record = object_fields(json.loads(path.read_text()))
+    record = object_fields(parse_json(path.read_text()))
     identity = {
         "schema": 1,
         "board_revision": "D-PROTOTYPE",
@@ -373,7 +375,7 @@ def check() -> None:
     definition.load()
     run("ruff", "check", str(PCB_ROOT))
     run("ruff", "format", "--check", str(PCB_ROOT))
-    analyzer = os.environ.get("PYRIGHT", "pyright")
+    analyzer = os.environ.get("BASEDPYRIGHT", "basedpyright")
     run(analyzer, "--project", str(PCB_ROOT / "pyrightconfig.json"))
     env = dict(os.environ, PYTHONPATH=str(PCB_ROOT.parent))
     run(
@@ -434,8 +436,12 @@ def write_report(
 ) -> None:
     projection = definition.netlist(design)
     old_path = previous / "netlist.json"
-    old: dict[str, object] = (
-        json.loads(old_path.read_text())["projects"]["board"]
+    old: Mapping[str, object] = (
+        object_fields(
+            object_fields(
+                object_fields(parse_json(old_path.read_text())).get("projects")
+            ).get("board")
+        )
         if old_path.exists()
         else {}
     )
@@ -457,13 +463,15 @@ def write_report(
     }
     snapshot = {
         "placements": placements,
-        "rules": json.loads((out / PROJECT.name).read_text())["board"][
-            "design_settings"
-        ],
+        "rules": object_fields(
+            object_fields(parse_json((out / PROJECT.name).read_text())).get("board")
+        ).get("design_settings"),
     }
     old_snapshot_path = previous / "layout.json"
-    old_snapshot: dict[str, object] = (
-        json.loads(old_snapshot_path.read_text()) if old_snapshot_path.exists() else {}
+    old_snapshot: Mapping[str, object] = (
+        object_fields(parse_json(old_snapshot_path.read_text()))
+        if old_snapshot_path.exists()
+        else {}
     )
     for key, value in snapshot.items():
         changes.append(
@@ -517,6 +525,12 @@ def string_mapping(value: object) -> TypeGuard[Mapping[str, object]]:
     return isinstance(value, dict) and all(
         isinstance(key, str) for key in cast(Mapping[object, object], value)
     )
+
+
+def object_list(value: object) -> list[object]:
+    if not isinstance(value, list):
+        raise ValueError("expected JSON array")
+    return cast(list[object], value)
 
 
 def object_fields(value: object) -> Mapping[str, object]:

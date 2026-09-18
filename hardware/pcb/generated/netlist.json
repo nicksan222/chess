@@ -2336,7 +2336,7 @@
           "lib": "BARREL_JACK",
           "package": "5.5x2.0 mm THT",
           "part_key": "BARREL_JACK",
-          "value": "DC 5.5x2.1"
+          "value": "DC 5.5x2.0"
         },
         "R1": {
           "assembly": "controls",

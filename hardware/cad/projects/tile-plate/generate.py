@@ -10,6 +10,7 @@ case without moving either of them.
 """
 
 import sys
+from dataclasses import dataclass
 from pathlib import Path
 
 import bpy
@@ -32,6 +33,30 @@ PART_NAME = "Printable_Tile_Plate"
 
 TOP_Z_MM = shared.CASE_HEIGHT_MM
 UNDERSIDE_Z_MM = shared.CASE_HEIGHT_MM - shared.TILE_PLATE_THICKNESS_MM
+
+
+@dataclass(frozen=True, slots=True)
+class TilePlateMetadata:
+    design_status: str
+    project_role: str
+    grid_rows: int
+    grid_columns: int
+    square_count: int
+    dark_square_count: int
+    diffuser_skin_mm: float
+    reference_build_volume_mm: str
+
+    def apply_to(self, scene: bpy.types.Scene) -> None:
+        project.set_scene_property(scene, "design_status", self.design_status)
+        project.set_scene_property(scene, "project_role", self.project_role)
+        project.set_scene_property(scene, "grid_rows", self.grid_rows)
+        project.set_scene_property(scene, "grid_columns", self.grid_columns)
+        project.set_scene_property(scene, "square_count", self.square_count)
+        project.set_scene_property(scene, "dark_square_count", self.dark_square_count)
+        project.set_scene_property(scene, "diffuser_skin_mm", self.diffuser_skin_mm)
+        project.set_scene_property(
+            scene, "reference_build_volume_mm", self.reference_build_volume_mm
+        )
 
 
 def _edge_aware_span(
@@ -249,29 +274,34 @@ def _cut_orientation_notch(
 
 
 def build(output_directory: Path = GENERATED) -> None:
-    scene, printable, construction, studio = project.setup_printable(
+    workspace = project.setup_printable(
         "Printable Tile Plate",
         shared.BLENDER_SCALE_LENGTH,
     )
-    scene["design_status"] = "Printable prototype"
-    scene["project_role"] = "Single overlay replacing 128 tile prints"
-    scene["grid_rows"] = shared.GRID_COUNT
-    scene["grid_columns"] = shared.GRID_COUNT
-    scene["square_count"] = shared.GRID_COUNT * shared.GRID_COUNT
-    scene["dark_square_count"] = len(shared.BOARD_SQUARES.dark_squares)
-    scene["diffuser_skin_mm"] = shared.TILE_PLATE_DIFFUSER_SKIN_MM
-    scene["reference_build_volume_mm"] = "420 x 420 x 420 print service"
+    project.apply_metadata(
+        workspace.scene,
+        TilePlateMetadata(
+            design_status="Printable prototype",
+            project_role="Single overlay replacing 128 tile prints",
+            grid_rows=shared.GRID_COUNT,
+            grid_columns=shared.GRID_COUNT,
+            square_count=shared.GRID_COUNT * shared.GRID_COUNT,
+            dark_square_count=len(shared.BOARD_SQUARES.dark_squares),
+            diffuser_skin_mm=shared.TILE_PLATE_DIFFUSER_SKIN_MM,
+            reference_build_volume_mm="420 x 420 x 420 print service",
+        ),
+    )
 
     plate_material = materials.solid(
         "Ivory printable plate", (0.62, 0.58, 0.50, 1.0), 0.44
     )
     floor_material = materials.solid("Studio floor", (0.025, 0.028, 0.03, 1.0), 0.48)
 
-    plate = add_plate(printable, construction, plate_material)
-    construction.hide_render = True
-    construction.hide_viewport = True
+    plate = add_plate(workspace.printable, workspace.construction, plate_material)
+    workspace.construction.hide_render = True
+    workspace.construction.hide_viewport = True
     presentation.add_studio(
-        studio,
+        workspace.studio,
         floor_material,
         (1500.0, 1500.0),
         (300.0, -360.0, 320.0),

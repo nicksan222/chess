@@ -3,6 +3,7 @@
 import json
 import tempfile
 import unittest
+from collections.abc import Mapping
 from pathlib import Path
 from unittest.mock import patch
 
@@ -35,17 +36,17 @@ class PullRequestReportTest(unittest.TestCase):
             [CopperPoint(1.0, 2.0), CopperPoint(1.0, 3.0), CopperPoint(2.0, 0.0)],
         )
 
-    def _report(self, components):
-        document = {
+    def _report(self, components: Mapping[str, object]) -> str:
+        document: dict[str, object] = {
             "projects": {
                 "board": {
                     "revision": "test board",
-                    "components": components,
+                    "components": dict(components),
                     "nets": {},
                 }
             }
         }
-        base_document = {
+        base_document: dict[str, object] = {
             "projects": {
                 "board": {
                     "revision": "test board",
@@ -54,13 +55,17 @@ class PullRequestReportTest(unittest.TestCase):
                 }
             }
         }
-        layout = {"placements": {}, "rules": {}}
+        layout: dict[str, object] = {"placements": {}, "rules": {}}
         board = BoardSnapshot(
             tracks=frozenset(),
             vias=frozenset(),
             zones=frozenset(),
             board_sha256="same",
         )
+
+        def base_json(_ref: str, name: str) -> dict[str, object]:
+            return base_document if name == "netlist.json" else layout
+
         with tempfile.TemporaryDirectory() as directory:
             current = Path(directory)
             (current / "netlist.json").write_text(json.dumps(document))
@@ -77,12 +82,7 @@ class PullRequestReportTest(unittest.TestCase):
                 )
             )
             with (
-                patch(
-                    "pcb.pr_report._base_json",
-                    side_effect=lambda _ref, name: (
-                        base_document if name == "netlist.json" else layout
-                    ),
-                ),
+                patch("pcb.pr_report._base_json", side_effect=base_json),
                 patch("pcb.pr_report.board_snapshot", return_value=board),
                 patch("pcb.pr_report._base_board", return_value=board),
             ):

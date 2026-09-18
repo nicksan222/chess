@@ -37,7 +37,7 @@ from spice.electrical import (
     LOGIC_3V3,
     PI_GPIO_PULLUP_OHMS,
 )
-from spice.movement import MovementCase
+from spice.movement import MovementCase, SensorEvent
 
 
 def _node(name: str) -> str:
@@ -80,13 +80,11 @@ class BoardHarness:
             )
 
     def _validated_square_nets(self) -> dict[str, str]:
-        found = {}
+        found: dict[str, str] = {}
         for reference, component in self.components.items():
             if component.GetFieldText("PartKey") != "HALL_SENSOR":
                 continue
             square = component.GetFieldText("Square")
-            if not isinstance(square, str):
-                raise ValueError(f"{reference} has no square identity")
             position = wiring.parse_square(square)
             assignment = wiring.expander_of(position)
             expander_pin = Tca9554Pin[f"P{assignment.pin_index}"]
@@ -130,7 +128,7 @@ class BoardHarness:
 
     def _required_net(self, reference: str, pin: str, expected: str) -> str:
         actual = self.net_by_endpoint.get((reference, pin))
-        if actual != expected:
+        if actual is None or actual != expected:
             raise ValueError(
                 f"{reference} pin {pin} must be on {expected} for simulation; "
                 f"found {actual}"
@@ -202,7 +200,9 @@ class BoardHarness:
         unknown = set(touched) - set(self.square_nets)
         if unknown:
             raise ValueError(f"unknown movement squares: {sorted(unknown)}")
-        events_by_square = {square: [] for square in touched}
+        events_by_square: dict[str, list[SensorEvent]] = {
+            square: [] for square in touched
+        }
         for event in scenario.events:
             events_by_square[event.square].append(event)
 
@@ -450,7 +450,7 @@ class BoardHarness:
     def _buttons(self) -> str:
         button_nets = sorted(
             str(name)
-            for name, endpoints in self.connections.items()
+            for name in self.connections
             if name and str(name).startswith("BTN_")
         )
         lines = ["Generated chess-board complete button input bank"]
@@ -500,7 +500,7 @@ class BoardHarness:
         input_node = _node(dc_input)
         fused_node = _node(dc_fused)
         rail_node = _node(five_volts)
-        capacitors = []
+        capacitors: list[tuple[str, str]] = []
         five_volt_capacitor_roles = {
             "LED rail bulk capacitor",
             "Rail decoupling capacitor",

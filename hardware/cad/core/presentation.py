@@ -69,20 +69,22 @@ def add_studio(
     floor.data.materials.append(floor_material)
 
     bpy.ops.object.camera_add(location=camera_location)
-    camera = bpy.context.object
+    camera = modeling.active_object("creating the render camera")
     camera.name = "Camera_Render"
-    camera.data.lens = camera_lens
+    camera_data = modeling.require_object_data(camera, bpy.types.Camera)
+    camera_data.lens = camera_lens
     modeling.point_at(camera, Vector(camera_target))
     modeling.move_to_collection(camera, collection)
     bpy.context.scene.camera = camera
 
     for name, location, energy, size, color in lights:
         bpy.ops.object.light_add(type="AREA", location=location)
-        light = bpy.context.object
+        light = modeling.active_object(f"creating studio light {name}")
         light.name = name
-        light.data.energy = energy
-        light.data.shape = "DISK"
-        light.data.size = size
-        light.data.color = color
+        light_data = modeling.require_object_data(light, bpy.types.AreaLight)
+        light_data.energy = energy
+        light_data.shape = "DISK"
+        light_data.size = size
+        light_data.color = color
         modeling.point_at(light, Vector(camera_target))
         modeling.move_to_collection(light, collection)
