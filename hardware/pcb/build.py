@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import fcntl
 import hashlib
 import json
 import math
@@ -10,13 +9,12 @@ import os
 import shutil
 import subprocess
 import sys
-import tempfile
-from collections.abc import Generator, Mapping
-from contextlib import contextmanager
+from collections.abc import Mapping
 from pathlib import Path
 from typing import TypeGuard, cast
 
 import pcbnew
+from build_support import staged_output
 
 from pcb.definition import board as definition
 from pcb.definition.native import ORIGIN_X_MM, ORIGIN_Y_MM, connections, parts
@@ -85,40 +83,14 @@ def source_hashes() -> dict[str, str]:
         and p.suffix in {".py", ".pyi", ".json"}
         and not {"generated", "__pycache__"}.intersection(p.parts)
     ]
-    files.extend((PCB_ROOT / "justfile", REPOSITORY_ROOT / "pyproject.toml"))
-    return {str(p.relative_to(REPOSITORY_ROOT)): digest(p) for p in sorted(files)}
-
-
-@contextmanager
-def staged_output(destination: Path) -> Generator[Path]:
-    """No generator writes into reviewed output. Roll back publication failures.
-
-    Directory renames expose only whole sets, never a mixture of old and new files.
-    The advisory lock serializes writers, without exposing partial builds.
-    """
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    lock_path = Path(tempfile.gettempdir()) / (
-        "chess-pcb-"
-        + hashlib.sha256(str(destination.resolve()).encode()).hexdigest()[:16]
-        + ".lock"
+    files.extend(
+        (
+            PCB_ROOT / "justfile",
+            REPOSITORY_ROOT / "pyproject.toml",
+            PCB_ROOT.parent / "build_support.py",
+        )
     )
-    with lock_path.open("w") as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX)
-        with tempfile.TemporaryDirectory(
-            prefix=".pcb-build-", dir=destination.parent
-        ) as temporary:
-            stage = Path(temporary) / "generated"
-            stage.mkdir()
-            yield stage
-            backup = Path(temporary) / "previous"
-            if destination.exists():
-                destination.rename(backup)
-            try:
-                stage.rename(destination)
-            except BaseException:
-                if backup.exists():
-                    backup.rename(destination)
-                raise
+    return {str(p.relative_to(REPOSITORY_ROOT)): digest(p) for p in sorted(files)}
 
 
 def generate(design: pcbnew.BOARD, out: Path) -> None:
