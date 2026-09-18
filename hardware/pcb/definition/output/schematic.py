@@ -19,7 +19,6 @@ from pcb.definition.output.symbols import (
 from pcb.definition.parts.catalog import PCB_PARTS
 from shared import dimensions
 from shared.components import COMPONENTS
-from shared.hall_banks import square
 
 SYMBOL_COLUMNS = 4
 
@@ -244,8 +243,8 @@ def groups(design: pcbnew.BOARD) -> dict[str, tuple[pcbnew.FOOTPRINT, ...]]:
     result = {"power": members("power"), "controls": members("controls")}
     for bank in dimensions.HALL_BANKS:
         bank_members = list(members(f"sensing/{bank.label}"))
-        for coordinates in bank.members:
-            bank_members.extend(members(f"square/{square(*coordinates)}"))
+        for position in bank.members:
+            bank_members.extend(members(f"square/{position.name}"))
         result[f"bank-{bank.label}"] = tuple(bank_members)
     return result
 

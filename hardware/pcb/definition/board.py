@@ -17,7 +17,6 @@ from pcb.definition.parts.catalog import PCB_PARTS
 from shared import dimensions, wiring
 from shared.components import COMPONENTS
 from shared.electronics.hall_sensor import HallSensorPin
-from shared.hall_banks import square as square_name
 
 
 def square_centres() -> dict[str, tuple[float, float]]:
@@ -98,10 +97,13 @@ def validate(board: pcbnew.BOARD) -> None:
         for pin, member in zip(
             Tca9554Component.input_pins(), bank.members, strict=True
         ):
-            name = wiring.sense_net(square_name(*member))
+            name = wiring.sense_net(member.name)
             if set(graph[name]) != {
                 (ref, str(pin)),
-                (f"HS{square.sensor_number(*member)}", HallSensorPin.ACTIVE_LOW_OUTPUT),
+                (
+                    f"HS{square.sensor_number(member.file_index, member.rank)}",
+                    HallSensorPin.ACTIVE_LOW_OUTPUT,
+                ),
             }:
                 raise ValueError(f"{bank.label}: incorrect Hall mapping")
     for name, at in square_centres().items():

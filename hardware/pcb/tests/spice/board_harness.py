@@ -86,10 +86,10 @@ class BoardHarness:
             square = component.GetFieldText("Square")
             if not isinstance(square, str):
                 raise ValueError(f"{reference} has no square identity")
-            file_index, rank_index = wiring.parse_square(square)
-            expander_index, gpio_index = wiring.expander_of(file_index, rank_index)
-            expander_pin = Tca9554Pin[f"P{gpio_index}"]
-            bank_label = wiring.HALL_BANKS[expander_index].label
+            position = wiring.parse_square(square)
+            assignment = wiring.expander_of(position)
+            expander_pin = Tca9554Pin[f"P{assignment.pin_index}"]
+            bank_label = assignment.bank.label
             expander_reference = next(
                 candidate_reference
                 for candidate_reference, candidate in self.components.items()

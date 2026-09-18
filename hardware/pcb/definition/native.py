@@ -299,8 +299,8 @@ def place[Part: EndpointResolver](
         field.SetVisible(False)
     sheet = assembly
     if assembly.startswith("square/"):
-        bank, _ = wiring.expander_of(*wiring.parse_square(assembly.split("/")[1]))
-        sheet = "bank-" + dimensions.HALL_BANKS[bank].label
+        channel = wiring.expander_of(wiring.parse_square(assembly.split("/")[1]))
+        sheet = "bank-" + channel.bank.label
     elif assembly.startswith("sensing/"):
         sheet = "bank-" + assembly.split("/")[1]
     module.SetPath(
