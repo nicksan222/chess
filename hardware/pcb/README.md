@@ -42,6 +42,20 @@ reference/geometry-derived, with stable disambiguation for identical items. The
 intentional one-time UUID rekey preserves physical geometry and connectivity, and
 footprint paths link to generated schematic symbols. No frozen identity ledger exists.
 
+## Component registry
+
+`definition/parts/catalog.py` owns one `PcbPart` entry per native product. Each entry
+ties an approved `ComponentSpec` to its typed electronic-model constructor, native
+footprint, library label, nominal value, and default purpose. Add or update common
+PCB metadata there; `PCB_PARTS` is the keyed lookup for schematic and validation code.
+
+Assemblies pass a typed `*_PART` entry, an explicit stable reference, position,
+rotation, and assembly name to `place()`. They override `purpose` only when the role
+is more specific than the product default, and `nominal_value` only for display values
+such as a test point's net. Choosing a capacitor entry remains explicit. Placement
+never creates a net: every connected or intentionally unused pin still appears in an
+explicit `connect()` or `no_connect()` call.
+
 ## Commands
 
 Python 3.12+, KiCad 9, ngspice, Ruff 0.16.5 and Pyright 1.1.411 are installed in the

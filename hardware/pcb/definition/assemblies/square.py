@@ -9,12 +9,8 @@ from itertools import pairwise
 import pcbnew
 
 from pcb.definition.native import connect, no_connect, place
-from pcb.definition.parts.catalog import (
-    CAPACITOR_HALL_BYPASS_OFFSET_MM,
-    CAPACITOR_LED_BYPASS_OFFSET_MM,
-)
+from pcb.definition.parts import catalog as parts
 from shared import dimensions, wiring
-from shared.electronics import CapacitorComponent as Capacitor
 from shared.electronics import CapacitorPin, HallSensorPin, Sk9822Pin
 from shared.electronics import HallSensorComponent as HallSensor
 from shared.electronics import Sk9822Component as Sk9822
@@ -37,53 +33,43 @@ def add_square(board: pcbnew.BOARD, *, name: str, at: tuple[float, float]) -> Sq
     assembly = f"square/{name}"
     led = place(
         board,
-        Sk9822(f"U{6 + chain_index}"),
-        part_key="SK9822",
+        parts.SK9822_PART,
+        f"U{6 + chain_index}",
         at=(lx, ly),
         rotation=180 if (rank + 1) % 2 == 0 else 0,
         assembly=assembly,
-        library="SK9822",
-        value="SK9822",
-        description="Clocked 5050 RGB LED",
         extras={"Square": name, "ChainIndex": str(chain_index + 1)},
     )
     sensor = place(
         board,
-        HallSensor(f"HS{1 + sensor_index}"),
-        part_key="HALL_SENSOR",
+        parts.HALL_SENSOR_PART,
+        f"HS{1 + sensor_index}",
         at=at,
         assembly=assembly,
-        library="HALL",
-        value="DRV5032FC",
-        description="Omnipolar active-low Hall-effect square sensor",
         extras={"Square": name},
     )
     led_cap = place(
         board,
-        Capacitor(f"C{8 + chain_index}"),
-        part_key="CAP_100N",
+        parts.CAP_100N_PART,
+        f"C{8 + chain_index}",
         at=(
-            lx + CAPACITOR_LED_BYPASS_OFFSET_MM[0],
-            ly + CAPACITOR_LED_BYPASS_OFFSET_MM[1],
+            lx + parts.CAPACITOR_LED_BYPASS_OFFSET_MM[0],
+            ly + parts.CAPACITOR_LED_BYPASS_OFFSET_MM[1],
         ),
         assembly=assembly,
-        library="C",
-        value="100nF",
-        description="Local LED decoupling capacitor",
+        purpose="Local LED decoupling capacitor",
         extras={"Square": name},
     )
     sensor_cap = place(
         board,
-        Capacitor(f"C{72 + sensor_index}"),
-        part_key="CAP_100N",
+        parts.CAP_100N_PART,
+        f"C{72 + sensor_index}",
         at=(
-            x + CAPACITOR_HALL_BYPASS_OFFSET_MM[0],
-            y + CAPACITOR_HALL_BYPASS_OFFSET_MM[1],
+            x + parts.CAPACITOR_HALL_BYPASS_OFFSET_MM[0],
+            y + parts.CAPACITOR_HALL_BYPASS_OFFSET_MM[1],
         ),
         assembly=assembly,
-        library="C",
-        value="100nF",
-        description="Local Hall-sensor decoupling capacitor",
+        purpose="Local Hall-sensor decoupling capacitor",
         extras={"Square": name, "Sensor": sensor.reference},
     )
     connect(

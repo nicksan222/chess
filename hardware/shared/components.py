@@ -7,11 +7,7 @@ do not invent package names or substitute anonymous parts.
 
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Generic, TypeVar
-
-Implementation = TypeVar("Implementation")
 
 
 @dataclass(frozen=True)
@@ -41,18 +37,6 @@ class ComponentSpec:
         return self.body_mm
 
 
-# Blender 4.5 embeds Python 3.11, so this shared type cannot use PEP 695 syntax.
-class ComponentImplementation(ABC, Generic[Implementation]):  # noqa: UP046
-    spec: ComponentSpec
-
-    def __init__(self, spec: ComponentSpec) -> None:
-        self.spec = spec
-
-    @abstractmethod
-    def build(self) -> Implementation:
-        """Build the domain-specific representation of :attr:`spec`."""
-
-
 def part(
     key: str,
     description: str,
@@ -63,8 +47,6 @@ def part(
     datasheet: str = "",
 ) -> ComponentSpec:
     """Define one exact, purchasable component."""
-    if body_mm is not None and any(axis <= 0.0 for axis in body_mm):
-        raise ValueError(f"{key}: body dimensions must be positive")
     return ComponentSpec(
         key,
         description,

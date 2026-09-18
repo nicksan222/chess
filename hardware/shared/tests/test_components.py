@@ -8,7 +8,6 @@ from shared.components import (
     OLED_MODULE,
     POWER_SUPPLY,
     SK9822,
-    ComponentImplementation,
     ComponentSpec,
 )
 
@@ -42,10 +41,6 @@ class ComponentsTest(unittest.TestCase):
         self.assertEqual(SK9822.require_body_mm(), (5.4, 5.0, 1.57))
         with self.assertRaisesRegex(ValueError, "POWER_SUPPLY has no body dimensions"):
             POWER_SUPPLY.require_body_mm()
-
-    def test_domain_implementation_must_build(self) -> None:
-        with self.assertRaises(TypeError):
-            ComponentImplementation(SK9822)
 
 
 if __name__ == "__main__":
