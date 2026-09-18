@@ -79,6 +79,11 @@ parity differences, plus the retained tests/SPICE. It exports positions, SVGs an
 board renders. `review.md`, `layout.json` and `manifest.json` record changes, checks,
 source/tool hashes and artifact hashes for that exact build.
 
+Pull-request CI compares those fresh artifacts with the base commit and maintains
+one reviewer comment. It reports changed components and fields, net endpoints,
+placements, nested design-rule settings, native tracks, vias and copper zones,
+plus ERC/DRC counts and links to all board evidence.
+
 Writers use a lock and sibling staging directory. Failure preserves the previous
 output set; successful publication replaces the whole directory with rename rollback.
 Readers never see mixed old/new files, although the directory may briefly be absent
