@@ -1,6 +1,10 @@
 """Semantic PR-report comparisons."""
 
+import json
+import tempfile
 import unittest
+from pathlib import Path
+from unittest.mock import patch
 
 from pcb.pr_report import (
     BoardSnapshot,
@@ -9,10 +13,84 @@ from pcb.pr_report import (
     _net_changes,
     _placement_changes,
     _rule_changes,
+    build_report,
 )
 
 
 class PullRequestReportTest(unittest.TestCase):
+    def _report(self, components):
+        document = {
+            "projects": {
+                "board": {
+                    "revision": "test board",
+                    "components": components,
+                    "nets": {},
+                }
+            }
+        }
+        base_document = {
+            "projects": {
+                "board": {
+                    "revision": "test board",
+                    "components": {},
+                    "nets": {},
+                }
+            }
+        }
+        layout = {"placements": {}, "rules": {}}
+        board = BoardSnapshot(
+            tracks=frozenset(),
+            vias=frozenset(),
+            zones=frozenset(),
+            board_sha256="same",
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            current = Path(directory)
+            (current / "netlist.json").write_text(json.dumps(document))
+            (current / "layout.json").write_text(json.dumps(layout))
+            (current / "manifest.json").write_text(json.dumps({"checks": ["DRC"]}))
+            (current / "erc.json").write_text(json.dumps({"sheets": []}))
+            (current / "drc.json").write_text(
+                json.dumps(
+                    {
+                        "violations": [],
+                        "unconnected_items": [],
+                        "schematic_parity": [],
+                    }
+                )
+            )
+            with (
+                patch(
+                    "pcb.pr_report._base_json",
+                    side_effect=lambda _ref, name: (
+                        base_document if name == "netlist.json" else layout
+                    ),
+                ),
+                patch("pcb.pr_report.board_snapshot", return_value=board),
+                patch("pcb.pr_report._base_board", return_value=board),
+            ):
+                return build_report(
+                    base_ref="main",
+                    head_ref="head",
+                    current=current,
+                    repository=None,
+                    run_url=None,
+                )
+
+    def test_marks_unchanged_board_for_comment_suppression(self):
+        report = self._report({})
+
+        self.assertIn("<!-- pcb-design-changed: false -->", report)
+        self.assertNotIn("Changed files", report)
+
+    def test_marks_semantic_board_change_for_comment_publication(self):
+        report = self._report(
+            {"TP1": {"description": "test point", "value": "", "package": "SMD"}}
+        )
+
+        self.assertIn("<!-- pcb-design-changed: true -->", report)
+        self.assertIn("Added `TP1`", report)
+
     def test_reports_component_and_wiring_changes(self):
         before = {
             "components": {

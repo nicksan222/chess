@@ -12,21 +12,6 @@ on:
         type: string
         required: false
         default: ""
-      head-ref:
-        description: Head commit for a pull-request hardware report
-        type: string
-        required: false
-        default: ""
-      repository:
-        description: GitHub owner and repository for report links
-        type: string
-        required: false
-        default: ""
-      run-url:
-        description: GitHub Actions run URL for report artifacts
-        type: string
-        required: false
-        default: ""
 
 permissions:
   contents: read
@@ -66,12 +51,7 @@ jobs:
         uses: ./.github/actions/run-in-devcontainer
         with:
           image: ${{ inputs.image }}
-          command: >-
-            just --justfile hardware/pcb/justfile pr-report
-            ${{ inputs.base-ref }}
-            ${{ inputs.head-ref }}
-            ${{ inputs.repository }}
-            ${{ inputs.run-url }}
+          command: just --justfile hardware/pcb/justfile pr-report ${{ inputs.base-ref }}
       - uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:

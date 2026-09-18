@@ -51,6 +51,7 @@ development container. From the repository root:
 just --justfile hardware/pcb/justfile generate # Native project, schematic, BOM, DSN
 just --justfile hardware/pcb/justfile check    # Non-publishing source/dimensions checks
 just --justfile hardware/pcb/justfile review   # Fresh ERC/DRC, tests/SPICE, previews
+just --justfile hardware/pcb/justfile pr-report main # Review + semantic Markdown diff
 just --justfile hardware/pcb/justfile release  # Review + measured evidence + fabrication
 ```
 
@@ -79,10 +80,12 @@ parity differences, plus the retained tests/SPICE. It exports positions, SVGs an
 board renders. `review.md`, `layout.json` and `manifest.json` record changes, checks,
 source/tool hashes and artifact hashes for that exact build.
 
-Pull-request CI compares those fresh artifacts with the base commit and maintains
-one reviewer comment. It reports changed components and fields, net endpoints,
-placements, nested design-rule settings, native tracks, vias and copper zones,
-plus ERC/DRC counts and links to all board evidence.
+`pr-report` compares those fresh artifacts with a Git ref (`main` by default) and
+writes `pcb-pr-report.md`. Pull-request CI uses that same recipe and maintains one
+reviewer comment only when the semantic PCB design changes. It reports changed
+components and fields, net endpoints, placements, nested design-rule settings,
+native tracks, vias and copper zones, plus ERC/DRC counts and links to board
+evidence.
 
 Writers use a lock and sibling staging directory. Failure preserves the previous
 output set; successful publication replaces the whole directory with rename rollback.

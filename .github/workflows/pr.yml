@@ -44,9 +44,6 @@ jobs:
     with:
       image: ${{ needs.prebuild.outputs.image }}
       base-ref: ${{ github.event.pull_request.base.sha }}
-      head-ref: ${{ github.event.pull_request.head.sha }}
-      repository: ${{ github.repository }}
-      run-url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
   hardware-report:
     name: Hardware PR report
@@ -60,7 +57,7 @@ jobs:
       - uses: actions/download-artifact@v8
         with:
           name: pcb-pr-report
-      - name: Create or update CI change report
+      - name: Create, update, or remove PCB change report
         if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
         uses: actions/github-script@v8
         with:
@@ -68,6 +65,7 @@ jobs:
             const fs = require('fs');
             const marker = '<!-- pcb-review-report -->';
             const body = fs.readFileSync('pcb-pr-report.md', 'utf8');
+            const changed = body.includes('<!-- pcb-design-changed: true -->');
             const comments = await github.paginate(github.rest.issues.listComments, {
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -77,14 +75,20 @@ jobs:
             const previous = comments.find(comment =>
               comment.user?.type === 'Bot' && comment.body?.includes(marker)
             );
-            if (previous) {
+            if (!changed && previous) {
+              await github.rest.issues.deleteComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: previous.id,
+              });
+            } else if (changed && previous) {
               await github.rest.issues.updateComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 comment_id: previous.id,
                 body,
               });
-            } else {
+            } else if (changed) {
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,

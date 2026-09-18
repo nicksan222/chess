@@ -5,16 +5,17 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import subprocess
 import tempfile
 from collections import Counter
-from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, cast
 
 GENERATED = Path("hardware/pcb/generated")
 MARKER = "<!-- pcb-review-report -->"
+CHANGE_MARKER = "<!-- pcb-design-changed: {changed} -->"
 MAX_DETAILS = 24
 
 
@@ -162,14 +163,33 @@ def _base_board(ref: str) -> BoardSnapshot | None:
         return board_snapshot(path)
 
 
-def _changed_files(base_ref: str, head_ref: str) -> list[str]:
+def _git_text(*arguments: str) -> str:
     result = subprocess.run(
-        ["git", "diff", "--name-only", "-z", f"{base_ref}...{head_ref}"],
+        ["git", *arguments],
         check=True,
         capture_output=True,
         text=True,
     )
-    return sorted(path for path in result.stdout.split("\0") if path)
+    return result.stdout.strip()
+
+
+def _repository_from_origin() -> str | None:
+    remote = _git_text("remote", "get-url", "origin").removesuffix(".git")
+    if "://" in remote:
+        path = remote.split("://", maxsplit=1)[1].split("/", maxsplit=1)
+        return path[1] if len(path) == 2 else None
+    if ":" in remote:
+        return remote.split(":", maxsplit=1)[1]
+    return None
+
+
+def _run_url(repository: str | None) -> str | None:
+    server = os.environ.get("GITHUB_SERVER_URL", "https://github.com")
+    run_id = os.environ.get("GITHUB_RUN_ID")
+    if repository is None:
+        return None
+    suffix = f"/runs/{run_id}" if run_id else ""
+    return f"{server}/{repository}/actions{suffix}"
 
 
 def _signed(value: int) -> str:
@@ -383,45 +403,13 @@ def _violations(current: Path) -> str:
     )
 
 
-def _file_overview(paths: list[str]) -> tuple[list[str], list[str]]:
-    groups: tuple[tuple[str, Callable[[str], bool]], ...] = (
-        (
-            "PCB authoring",
-            lambda path: path.startswith("hardware/pcb/") and "/generated/" not in path,
-        ),
-        ("Generated PCB", lambda path: path.startswith("hardware/pcb/generated/")),
-        ("Mechanical CAD", lambda path: path.startswith("hardware/cad/")),
-        ("Firmware", lambda path: path.startswith("apps/firmware/")),
-        ("Shared crates", lambda path: path.startswith("crates/")),
-        (
-            "CI and tooling",
-            lambda path: (
-                path.startswith(".github/") or path in {"justfile", "pyproject.toml"}
-            ),
-        ),
-    )
-    remaining = set(paths)
-    rows: list[str] = []
-    details: list[str] = []
-    for label, predicate in groups:
-        matches = sorted(path for path in remaining if predicate(path))
-        if matches:
-            rows.append(f"| {label} | {len(matches)} |")
-            details.extend(f"**{label}:** `{path}`" for path in matches)
-            remaining.difference_update(matches)
-    if remaining:
-        rows.append(f"| Documentation and other | {len(remaining)} |")
-        details.extend(f"**Other:** `{path}`" for path in sorted(remaining))
-    return rows, details
-
-
 def build_report(
     *,
     base_ref: str,
     head_ref: str,
     current: Path,
-    repository: str,
-    run_url: str,
+    repository: str | None,
+    run_url: str | None,
 ) -> str:
     current_netlist = _project(_load_json(current / "netlist.json"))
     base_netlist_document = _base_json(base_ref, "netlist.json")
@@ -430,7 +418,6 @@ def build_report(
     base_layout = _base_json(base_ref, "layout.json") or {}
     current_board = board_snapshot(current / "chess-board.kicad_pcb")
     base_board = _base_board(base_ref)
-    paths = _changed_files(base_ref, head_ref)
 
     component_summary, component_details = _component_changes(
         base_netlist, current_netlist
@@ -441,7 +428,6 @@ def build_report(
     )
     rule_summary, rule_details = _rule_changes(base_layout, current_layout)
     copper_summary, copper_details = _copper_changes(base_board, current_board)
-    file_rows, file_details = _file_overview(paths)
 
     manifest = _load_json(current / "manifest.json")
     checks = manifest.get("checks", [])
@@ -460,25 +446,21 @@ def build_report(
         if semantic_changes
         else "No electrical, placement, rule, or copper changes detected."
     )
-    board_link = (
-        f"https://github.com/{repository}/blob/{head_ref}/"
-        "hardware/pcb/generated/chess-board.kicad_pcb"
-    )
+    board_link = None
+    if repository:
+        board_link = (
+            f"https://github.com/{repository}/blob/{head_ref}/"
+            "hardware/pcb/generated/chess-board.kicad_pcb"
+        )
 
     lines = [
         MARKER,
-        "## CI change report",
-        "",
-        f"Compared `{base_ref[:12]}` to `{head_ref[:12]}`. {len(paths)} files changed.",
-        "",
-        "| Area | Files |",
-        "| --- | ---: |",
-        *(file_rows or ["| None | 0 |"]),
-        "",
-        *_details("Changed files", file_details),
-        "### PCB review",
+        CHANGE_MARKER.format(changed=str(semantic_changes).lower()),
+        "## PCB change report",
         "",
         f"**{revision}: {status}**",
+        "",
+        f"Compared `{base_ref[:12]}` to `{head_ref[:12]}`.",
         "",
         "| Review surface | Result |",
         "| --- | --- |",
@@ -497,10 +479,13 @@ def build_report(
         "### Evidence",
         "",
         f"- Passed: {', '.join(str(check) for check in checks)}",
-        f"- [Open the generated board]({board_link})",
-        (
-            "- [Download board renders, schematics, BOMs, and reports]"
-            f"({run_url}#artifacts)"
+        *([f"- [Open the generated board]({board_link})"] if board_link else []),
+        *(
+            [
+                f"- [Open board renders, schematics, BOMs, and reports]({run_url}#artifacts)"
+            ]
+            if run_url
+            else []
         ),
         "- Physical Hall/magnet evidence remains a separate release gate.",
         "",
@@ -512,19 +497,20 @@ def build_report(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--base-ref", required=True)
-    parser.add_argument("--head-ref", required=True)
-    parser.add_argument("--current", type=Path, required=True)
-    parser.add_argument("--repository", required=True)
-    parser.add_argument("--run-url", required=True)
-    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--base-ref", default="main")
+    parser.add_argument("--head-ref", default=None)
+    parser.add_argument("--current", type=Path, default=GENERATED)
+    parser.add_argument("--repository", default=None)
+    parser.add_argument("--run-url", default=None)
+    parser.add_argument("--output", type=Path, default=Path("pcb-pr-report.md"))
     args = parser.parse_args()
+    repository = args.repository or _repository_from_origin()
     report = build_report(
         base_ref=args.base_ref,
-        head_ref=args.head_ref,
+        head_ref=args.head_ref or _git_text("rev-parse", "HEAD"),
         current=args.current,
-        repository=args.repository,
-        run_url=args.run_url,
+        repository=repository,
+        run_url=args.run_url or _run_url(repository),
     )
     args.output.write_text(report)
 
