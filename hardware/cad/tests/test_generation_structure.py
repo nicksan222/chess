@@ -70,10 +70,13 @@ class GeneratorStructureTest(unittest.TestCase):
                     self.assertNotIn(call, text, call)
 
     def test_printable_generators_validate_what_they_produce(self) -> None:
+        lifecycle = (CAD_ROOT / "core" / "project.py").read_text()
+        self.assertIn("validation.validate_fdm_part(", lifecycle)
         for project in PRINTABLE_PROJECTS:
             text = (PROJECTS / project / "generate.py").read_text()
             with self.subTest(generator=project):
-                self.assertIn("validation.validate_fdm_part(", text)
+                self.assertIn("project.setup_printable(", text)
+                self.assertIn("project.save_printable(", text)
 
     def test_legacy_layout_is_removed(self) -> None:
         self.assertFalse((CAD_ROOT / "blender").exists())
@@ -120,6 +123,7 @@ class GeneratedLayoutTest(unittest.TestCase):
             with self.subTest(generator=generator.parent.name):
                 text = generator.read_text()
                 self.assertIn('GENERATED = CAD_ROOT / "generated"', text)
+                self.assertIn("project.output_directory(GENERATED)", text)
                 # Nothing may address the domain root directly for output.
                 self.assertNotIn('CAD_ROOT / f"{NAME}', text)
 
