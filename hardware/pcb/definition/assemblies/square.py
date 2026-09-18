@@ -14,6 +14,7 @@ from shared import dimensions, wiring
 from shared.electronics import CapacitorPin, HallSensorPin, Sk9822Pin
 from shared.electronics import HallSensorComponent as HallSensor
 from shared.electronics import Sk9822Component as Sk9822
+from shared.squares import BoardSquare
 
 
 @dataclass(frozen=True)
@@ -23,15 +24,13 @@ class Square:
     hall_sensor: HallSensor
 
 
-def add_square(board: pcbnew.BOARD, *, name: str, at: tuple[float, float]) -> Square:
-    position = wiring.parse_square(name)
-    file = position.file_index
-    rank = position.rank
-    # Derive stable references from board coordinates, not insertion order.
-    chain_index = rank * 8 + (file if rank % 2 == 0 else 7 - file)
-    sensor_index = sensor_number(file, rank) - 1
-    x, y = at
-    lx, ly = x + dimensions.LED_POSITION_MM[0], y + dimensions.LED_POSITION_MM[1]
+def add_square(board: pcbnew.BOARD, *, board_square: BoardSquare) -> Square:
+    name = board_square.name
+    rank = board_square.position.rank
+    chain_index = board_square.led_chain_index
+    sensor_index = board_square.sensor_number - 1
+    x, y = board_square.hall_position_mm
+    lx, ly = board_square.led_position_mm
     assembly = f"square/{name}"
     led = place(
         board,
@@ -46,7 +45,7 @@ def add_square(board: pcbnew.BOARD, *, name: str, at: tuple[float, float]) -> Sq
         board,
         parts.HALL_SENSOR_PART,
         f"HS{1 + sensor_index}",
-        at=at,
+        at=(x, y),
         assembly=assembly,
         extras={"Square": name},
     )
@@ -98,7 +97,7 @@ def add_square(board: pcbnew.BOARD, *, name: str, at: tuple[float, float]) -> Sq
 
 
 def connect_led_chain(board: pcbnew.BOARD, squares: Mapping[str, Square]) -> None:
-    chain = [squares[position.name].led for position in wiring.led_chain_order()]
+    chain = [squares[square.name].led for square in dimensions.BOARD_SQUARES.led_chain]
     connect(board, wiring.LED_DATA_NET, chain[0].pin(Sk9822Pin.DATA_IN))
     connect(board, wiring.LED_CLOCK_NET, chain[0].pin(Sk9822Pin.CLOCK_IN))
     for (left, right), (data, clock) in zip(
@@ -178,8 +177,3 @@ LED_LINK_NAMES = (
     ("N$221", "N$222"),
     ("N$223", "N$224"),
 )
-
-
-def sensor_number(file: int, rank: int) -> int:
-    """Published Hall references run row-major within each 4x4 quadrant."""
-    return (rank // 4) * 32 + (file // 4) * 16 + (rank % 4) * 4 + file % 4 + 1

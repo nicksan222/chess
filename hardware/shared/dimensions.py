@@ -16,6 +16,7 @@ from types import MappingProxyType
 
 from .components import BUTTON, HALL_SENSOR, OLED_MODULE, SK9822, TCA9554
 from .hall_banks import banks
+from .squares import SquareLayout
 
 # Unit contract. One Blender unit represents one millimetre in generated files.
 MILLIMETRES_PER_METRE = 1_000.0
@@ -287,33 +288,14 @@ TILE_PLATE_SCREW_POSITIONS_MM = (
 )
 TILE_PLATE_ORIENTATION_NOTCH_MM = (6.0, 6.0, TILE_PLATE_THICKNESS_MM)
 
-# --- Derived per-square positions -------------------------------------------
+# --- Derived per-square layout ----------------------------------------------
 
-
-def _square_center(row: int, column: int) -> tuple[float, float]:
-    return (
-        -PLAYING_SPAN_MM / 2.0 + (column + 0.5) * SQUARE_SIZE_MM,
-        PLAYING_SPAN_MM / 2.0 - (row + 0.5) * SQUARE_SIZE_MM,
-    )
-
-
-BOARD_SQUARE_CENTERS_MM = tuple(
-    (row, column, *_square_center(row, column))
-    for row in range(GRID_COUNT)
-    for column in range(GRID_COUNT)
-)
-BOARD_LED_POSITIONS_MM = tuple(
-    (row, column, x + LED_POSITION_MM[0], y + LED_POSITION_MM[1])
-    for row, column, x, y in BOARD_SQUARE_CENTERS_MM
-)
-BOARD_HALL_POSITIONS_MM = tuple(
-    (row, column, x + HALL_SENSOR_POSITION_MM[0], y + HALL_SENSOR_POSITION_MM[1])
-    for row, column, x, y in BOARD_SQUARE_CENTERS_MM
-)
-BOARD_DARK_SQUARES_MM = tuple(
-    (row, column, x, y)
-    for row, column, x, y in BOARD_SQUARE_CENTERS_MM
-    if (row + column) % 2 == 1
+BOARD_SQUARES = SquareLayout.build(
+    grid_count=GRID_COUNT,
+    square_size=SQUARE_SIZE_MM,
+    playing_span=PLAYING_SPAN_MM,
+    led_offset_mm=LED_POSITION_MM,
+    hall_offset_mm=HALL_SENSOR_POSITION_MM,
 )
 
 PRINTED_PART_SIZES_MM = (CASE_OUTER_SIZE_MM, TILE_PLATE_SIZE_MM)
@@ -485,11 +467,11 @@ def validate() -> None:
     # Support bosses stand on the grid lines; nothing else may be there.
     boss_radius = PCB_SUPPORT_BOSS_DIAMETER_MM / 2.0
     for boss_x, boss_y in PCB_SUPPORT_POSITIONS_MM:
-        for _row, _column, led_x, led_y in BOARD_LED_POSITIONS_MM:
+        for led_x, led_y in (square.led_position_mm for square in BOARD_SQUARES):
             gap = max(abs(boss_x - led_x), abs(boss_y - led_y))
             if gap < boss_radius + TILE_PLATE_LED_POCKET_MM[0] / 2.0:
                 raise ValueError("A support boss collides with an LED position")
-        for _row, _column, sensor_x, sensor_y in BOARD_HALL_POSITIONS_MM:
+        for sensor_x, sensor_y in (square.hall_position_mm for square in BOARD_SQUARES):
             if (
                 abs(boss_x - sensor_x) < boss_radius + HALL_SENSOR_BODY_MM[0] / 2.0
                 and abs(boss_y - sensor_y) < boss_radius + HALL_SENSOR_BODY_MM[1] / 2.0
@@ -548,16 +530,7 @@ def validate() -> None:
     if len(set(EXPANDER_POSITIONS_BY_BANK_MM.values())) != 8:
         raise ValueError("GPIO expander positions must be unique")
 
-    for name, count in (
-        ("LED", len(BOARD_LED_POSITIONS_MM)),
-        ("hall", len(BOARD_HALL_POSITIONS_MM)),
-    ):
-        if count != GRID_COUNT * GRID_COUNT:
-            raise ValueError(f"Board composition must contain one {name} per square")
-    if len({(x, y) for _r, _c, x, y in BOARD_LED_POSITIONS_MM}) != GRID_COUNT**2:
-        raise ValueError("Every composed LED position must be unique")
-    if len(BOARD_DARK_SQUARES_MM) != GRID_COUNT * GRID_COUNT // 2:
-        raise ValueError("A checkerboard must have half its squares dark")
+    BOARD_SQUARES.validate_topology()
 
     if not isclose(PCB_SIZE_MM[0], PLAYING_SPAN_MM):
         raise ValueError("Board must be exactly as wide as the playing area")

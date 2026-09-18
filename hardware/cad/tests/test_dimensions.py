@@ -180,21 +180,20 @@ class FdmFeatureTest(unittest.TestCase):
 class PerSquareFeatureTest(unittest.TestCase):
     def test_one_led_and_one_hall_sensor_for_every_square(self) -> None:
         squares = cad.GRID_COUNT * cad.GRID_COUNT
-        self.assertEqual(len(cad.BOARD_SQUARE_CENTERS_MM), squares)
-        self.assertEqual(len(cad.BOARD_LED_POSITIONS_MM), squares)
-        self.assertEqual(len(cad.BOARD_HALL_POSITIONS_MM), squares)
+        self.assertEqual(len(cad.BOARD_SQUARES), squares)
 
     def test_positions_are_unique(self) -> None:
-        for name, table in (
-            ("led", cad.BOARD_LED_POSITIONS_MM),
-            ("hall", cad.BOARD_HALL_POSITIONS_MM),
+        for name, positions in (
+            ("led", {square.led_position_mm for square in cad.BOARD_SQUARES}),
+            ("hall", {square.hall_position_mm for square in cad.BOARD_SQUARES}),
         ):
             with self.subTest(table=name):
-                self.assertEqual(len({(x, y) for _r, _c, x, y in table}), len(table))
+                self.assertEqual(len(positions), len(cad.BOARD_SQUARES))
 
     def test_every_feature_lands_inside_the_playing_area(self) -> None:
         limit = cad.PLAYING_SPAN_MM / 2.0
-        for _row, _column, x, y in cad.BOARD_LED_POSITIONS_MM:
+        for square in cad.BOARD_SQUARES:
+            x, y = square.led_position_mm
             self.assertLess(abs(x) + cad.TILE_PLATE_LED_POCKET_MM[0] / 2.0, limit)
             self.assertLess(abs(y) + cad.TILE_PLATE_LED_POCKET_MM[1] / 2.0, limit)
 
@@ -207,10 +206,12 @@ class PerSquareFeatureTest(unittest.TestCase):
 
     def test_the_checkerboard_is_half_dark(self) -> None:
         self.assertEqual(
-            len(cad.BOARD_DARK_SQUARES_MM), cad.GRID_COUNT * cad.GRID_COUNT // 2
+            len(cad.BOARD_SQUARES.dark_squares),
+            cad.GRID_COUNT * cad.GRID_COUNT // 2,
         )
-        for row, column, _x, _y in cad.BOARD_DARK_SQUARES_MM:
-            self.assertEqual((row + column) % 2, 1)
+        self.assertTrue(
+            all(square.is_dark for square in cad.BOARD_SQUARES.dark_squares)
+        )
 
     def test_hall_sensor_dimensions_have_explicit_xy_and_height(self) -> None:
         self.assertEqual(cad.HALL_SENSOR_BODY_MM, (2.92, 1.30))
@@ -255,7 +256,8 @@ class BoardSupportTest(unittest.TestCase):
     def test_every_support_stands_clear_of_an_led_and_a_hall_sensor(self) -> None:
         radius = cad.PCB_SUPPORT_BOSS_DIAMETER_MM / 2.0
         for boss_x, boss_y in cad.PCB_SUPPORT_POSITIONS_MM:
-            for _row, _column, led_x, led_y in cad.BOARD_LED_POSITIONS_MM:
+            for square in cad.BOARD_SQUARES:
+                led_x, led_y = square.led_position_mm
                 clear = max(abs(boss_x - led_x), abs(boss_y - led_y))
                 self.assertGreaterEqual(
                     clear, radius + cad.TILE_PLATE_LED_POCKET_MM[0] / 2.0
