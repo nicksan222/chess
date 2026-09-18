@@ -8,9 +8,10 @@ import json
 import subprocess
 import tempfile
 from collections import Counter
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 GENERATED = Path("hardware/pcb/generated")
 MARKER = "<!-- pcb-review-report -->"
@@ -22,19 +23,18 @@ class BoardSnapshot:
     """Stable copper facts extracted from a native KiCad board."""
 
     tracks: frozenset[tuple[str, str, tuple[float, float], tuple[float, float], float]]
-    vias: frozenset[
-        tuple[str, tuple[float, float], float, float, tuple[str, ...]]
-    ]
-    zones: frozenset[
-        tuple[str, tuple[str, ...], tuple[float, float, float, float]]
-    ]
+    vias: frozenset[tuple[str, tuple[float, float], float, float, tuple[str, ...]]]
+    zones: frozenset[tuple[str, tuple[str, ...], tuple[float, float, float, float]]]
     board_sha256: str
 
 
 def _json_object(value: object, label: str) -> dict[str, Any]:
-    if not isinstance(value, dict) or not all(isinstance(key, str) for key in value):
+    if not isinstance(value, dict):
         raise ValueError(f"{label} must be a JSON object")
-    return value
+    mapping = cast(dict[object, object], value)
+    if not all(isinstance(key, str) for key in mapping):
+        raise ValueError(f"{label} must be a JSON object")
+    return cast(dict[str, Any], mapping)
 
 
 def _load_json(path: Path) -> dict[str, Any]:
@@ -67,9 +67,12 @@ def _mapping(value: object, label: str) -> dict[str, Any]:
 
 
 def _endpoint(value: object) -> str:
-    if not isinstance(value, list) or len(value) != 2:
+    if not isinstance(value, list):
         raise ValueError("net endpoint must be a two-item list")
-    return f"{value[0]}.{value[1]}"
+    parts = cast(list[object], value)
+    if len(parts) != 2:
+        raise ValueError("net endpoint must be a two-item list")
+    return f"{parts[0]}.{parts[1]}"
 
 
 def _millimetres(pcbnew: Any, value: int) -> float:
@@ -90,9 +93,9 @@ def board_snapshot(path: Path) -> BoardSnapshot:
         ) from error
 
     board = pcbnew.LoadBoard(str(path))
-    tracks: set[
-        tuple[str, str, tuple[float, float], tuple[float, float], float]
-    ] = set()
+    tracks: set[tuple[str, str, tuple[float, float], tuple[float, float], float]] = (
+        set()
+    )
     vias: set[tuple[str, tuple[float, float], float, float, tuple[str, ...]]] = set()
     for item in board.GetTracks():
         if isinstance(item, pcbnew.PCB_VIA):
@@ -268,9 +271,7 @@ def _placement_changes(
     before = _mapping(base_layout.get("placements", {}), "base placements")
     after = _mapping(current_layout.get("placements", {}), "current placements")
     changed = sorted(
-        key
-        for key in set(before) | set(after)
-        if before.get(key) != after.get(key)
+        key for key in set(before) | set(after) if before.get(key) != after.get(key)
     )
     details: list[str] = []
     for reference in changed:
@@ -288,8 +289,9 @@ def _placement_changes(
 def _flatten(value: object, prefix: str = "") -> dict[str, object]:
     if not isinstance(value, dict):
         return {prefix: value}
+    mapping = cast(dict[object, object], value)
     flattened: dict[str, object] = {}
-    for key, child in value.items():
+    for key, child in mapping.items():
         name = f"{prefix}.{key}" if prefix else str(key)
         flattened.update(_flatten(child, name))
     return flattened
@@ -301,9 +303,7 @@ def _rule_changes(
     before = _flatten(base_layout.get("rules", {}))
     after = _flatten(current_layout.get("rules", {}))
     changed = sorted(
-        key
-        for key in set(before) | set(after)
-        if before.get(key) != after.get(key)
+        key for key in set(before) | set(after) if before.get(key) != after.get(key)
     )
     details = [
         f"`{key}`: `{before.get(key, 'not set')}` → `{after.get(key, 'not set')}`"
@@ -340,9 +340,7 @@ def _copper_changes(
     via_groups = Counter(via[0] for via in added_vias)
     removed_via_groups = Counter(via[0] for via in removed_vias)
     for net in sorted(set(via_groups) | set(removed_via_groups)):
-        details.append(
-            f"`{net}`: +{via_groups[net]} / −{removed_via_groups[net]} vias"
-        )
+        details.append(f"`{net}`: +{via_groups[net]} / −{removed_via_groups[net]} vias")
     for net, layers, _bounds in sorted(added_zones):
         details.append(f"Added `{net}` copper zone on {', '.join(layers)}")
     for net, layers, _bounds in sorted(removed_zones):
@@ -386,11 +384,10 @@ def _violations(current: Path) -> str:
 
 
 def _file_overview(paths: list[str]) -> tuple[list[str], list[str]]:
-    groups = (
+    groups: tuple[tuple[str, Callable[[str], bool]], ...] = (
         (
             "PCB authoring",
-            lambda path: path.startswith("hardware/pcb/")
-            and "/generated/" not in path,
+            lambda path: path.startswith("hardware/pcb/") and "/generated/" not in path,
         ),
         ("Generated PCB", lambda path: path.startswith("hardware/pcb/generated/")),
         ("Mechanical CAD", lambda path: path.startswith("hardware/cad/")),
@@ -398,8 +395,9 @@ def _file_overview(paths: list[str]) -> tuple[list[str], list[str]]:
         ("Shared crates", lambda path: path.startswith("crates/")),
         (
             "CI and tooling",
-            lambda path: path.startswith(".github/")
-            or path in {"justfile", "pyproject.toml"},
+            lambda path: (
+                path.startswith(".github/") or path in {"justfile", "pyproject.toml"}
+            ),
         ),
     )
     remaining = set(paths)
