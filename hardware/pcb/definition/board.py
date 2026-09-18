@@ -14,16 +14,9 @@ from pcb.definition.native import (
     point,
 )
 from pcb.definition.parts.catalog import PCB_PARTS
-from shared import dimensions, hall_banks, wiring
+from shared import dimensions, wiring
 from shared.components import COMPONENTS
 from shared.electronics.hall_sensor import HallSensorPin
-
-
-def square_centres() -> dict[str, tuple[float, float]]:
-    return {
-        f"{hall_banks.FILES[column]}{dimensions.GRID_COUNT - row}": (x, y)
-        for row, column, x, y in dimensions.BOARD_SQUARE_CENTERS_MM
-    }
 
 
 def load() -> pcbnew.BOARD:
@@ -33,8 +26,8 @@ def load() -> pcbnew.BOARD:
     power.add_power(board)
     controls.add_controls(board)
     squares = {
-        name: square.add_square(board, name=name, at=at)
-        for name, at in square_centres().items()
+        board_square.name: square.add_square(board, board_square=board_square)
+        for board_square in dimensions.BOARD_SQUARES
     }
     sensing.add_sensor_banks(board, squares=squares)
     square.connect_led_chain(board, squares)
@@ -45,7 +38,7 @@ def load() -> pcbnew.BOARD:
 
 def validate(board: pcbnew.BOARD) -> None:
     from pcb.definition import rules
-    from pcb.definition.assemblies import sensing, square
+    from pcb.definition.assemblies import sensing
     from shared.electronics.tca9554 import Tca9554Component, Tca9554Pin
 
     rules.validate()
@@ -101,12 +94,13 @@ def validate(board: pcbnew.BOARD) -> None:
             if set(graph[name]) != {
                 (ref, str(pin)),
                 (
-                    f"HS{square.sensor_number(member.file_index, member.rank)}",
+                    f"HS{dimensions.BOARD_SQUARES.by_position(member).sensor_number}",
                     HallSensorPin.ACTIVE_LOW_OUTPUT,
                 ),
             }:
                 raise ValueError(f"{bank.label}: incorrect Hall mapping")
-    for name, at in square_centres().items():
+    for board_square in dimensions.BOARD_SQUARES:
+        name = board_square.name
         members = [
             f for f in footprints if f.GetFieldText("Assembly") == f"square/{name}"
         ]
@@ -118,7 +112,7 @@ def validate(board: pcbnew.BOARD) -> None:
         ]:
             raise ValueError(f"{name}: incomplete square assembly")
         sensor = next(f for f in members if f.GetFieldText("PartKey") == "HALL_SENSOR")
-        if sensor.GetPosition() != point(*at):
+        if sensor.GetPosition() != point(*board_square.hall_position_mm):
             raise ValueError(f"{name}: sensor is not at the shared square centre")
 
 

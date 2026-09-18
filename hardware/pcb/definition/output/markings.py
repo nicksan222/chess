@@ -7,7 +7,6 @@ from types import ModuleType
 import pcbnew
 
 import pcb.definition.assemblies.sensing as hall_banks
-import pcb.definition.board as placement
 from pcb.definition import native, rules
 from pcb.definition.parts.catalog import (
     TACTILESWITCH_LABEL_OFFSET_MM,
@@ -103,7 +102,9 @@ def add_front_silkscreen(board: pcbnew.BOARD) -> None:
     _add_text(board, "LED DATA + CLK IN", (-127.0, -118.0), height=0.8)
     _add_text(board, "LED CHAIN END", (146.0, 151.0), height=0.8)
 
-    for name, (x, y) in placement.square_centres().items():
+    for square in shared.BOARD_SQUARES:
+        name = square.name
+        x, y = square.centre_mm
         offset_x, offset_y = SQUARE_LABEL_OFFSET_MM
         _add_text(board, name, (x + offset_x, y + offset_y), height=1.0)
 

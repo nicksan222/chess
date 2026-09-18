@@ -53,12 +53,6 @@ class WiringTest(unittest.TestCase):
             len({wiring.expander_of(position) for position in positions}),
             len(positions),
         )
-        chain = wiring.led_chain_order()
-        self.assertEqual(len(chain), len(positions))
-        self.assertEqual(
-            [position.name for position in chain[:9]],
-            ["A1", "B1", "C1", "D1", "E1", "F1", "G1", "H1", "H2"],
-        )
 
     def test_expander_assignment_has_named_fields(self):
         assignment = wiring.expander_of(wiring.parse_square("C2"))

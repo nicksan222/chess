@@ -81,11 +81,18 @@ def _cut_underside_pockets(
     z1 = UNDERSIDE_Z_MM + depth
     cutters = [
         modeling.box_between(
-            f"Cutter_Underside_Pocket_{row:02d}_{column:02d}",
-            (x - half_span, x + half_span, y - half_span, y + half_span, z0, z1),
+            f"Cutter_Underside_Pocket_{square.row:02d}_{square.column:02d}",
+            (
+                square.centre_mm[0] - half_span,
+                square.centre_mm[0] + half_span,
+                square.centre_mm[1] - half_span,
+                square.centre_mm[1] + half_span,
+                z0,
+                z1,
+            ),
             construction,
         )
-        for row, column, x, y in shared.BOARD_SQUARE_CENTERS_MM
+        for square in shared.BOARD_SQUARES
     ]
     modeling.cut_batch(plate, cutters, "Cutter_All_Underside_Pockets")
 
@@ -101,11 +108,18 @@ def _cut_led_pockets(
     z1 = UNDERSIDE_Z_MM + depth
     cutters = [
         modeling.box_between(
-            f"Cutter_LED_Pocket_{row:02d}_{column:02d}",
-            (x - half_x, x + half_x, y - half_y, y + half_y, z0, z1),
+            f"Cutter_LED_Pocket_{square.row:02d}_{square.column:02d}",
+            (
+                square.led_position_mm[0] - half_x,
+                square.led_position_mm[0] + half_x,
+                square.led_position_mm[1] - half_y,
+                square.led_position_mm[1] + half_y,
+                z0,
+                z1,
+            ),
             construction,
         )
-        for row, column, x, y in shared.BOARD_LED_POSITIONS_MM
+        for square in shared.BOARD_SQUARES
     ]
     modeling.cut_batch(plate, cutters, "Cutter_All_LED_Pockets")
 
@@ -160,7 +174,9 @@ def _cut_dark_squares(
     z0 = TOP_Z_MM - depth
     z1 = TOP_Z_MM + shared.BOOLEAN_RECESS_OVERLAP_MM
     cutters = []
-    for row, column, x, y in shared.BOARD_DARK_SQUARES_MM:
+    for square in shared.BOARD_SQUARES.dark_squares:
+        row, column = square.row, square.column
+        x, y = square.centre_mm
         x0, x1 = _edge_aware_span(x, half_span, limit)
         y0, y1 = _edge_aware_span(y, half_span, limit)
         cutters.append(
@@ -242,7 +258,7 @@ def build(output_directory: Path = GENERATED) -> None:
     scene["grid_rows"] = shared.GRID_COUNT
     scene["grid_columns"] = shared.GRID_COUNT
     scene["square_count"] = shared.GRID_COUNT * shared.GRID_COUNT
-    scene["dark_square_count"] = len(shared.BOARD_DARK_SQUARES_MM)
+    scene["dark_square_count"] = len(shared.BOARD_SQUARES.dark_squares)
     scene["diffuser_skin_mm"] = shared.TILE_PLATE_DIFFUSER_SKIN_MM
     scene["reference_build_volume_mm"] = "420 x 420 x 420 print service"
 

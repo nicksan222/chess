@@ -68,7 +68,7 @@ class DimensionsTest(unittest.TestCase):
             )
 
     def test_square_grid_offsets_and_bank_alignment(self):
-        centres = board.square_centres()
+        centres = {square.name: square.centre_mm for square in dimensions.BOARD_SQUARES}
         self.assertEqual(
             (centres["A1"], centres["H8"]), ((-140.0, -140.0), (140.0, 140.0))
         )

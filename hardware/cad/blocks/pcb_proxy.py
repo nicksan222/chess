@@ -58,9 +58,10 @@ def _add_leds(
     collection: bpy.types.Collection, palette: dict[str, bpy.types.Material]
 ) -> None:
     height = shared.LED_PACKAGE_NOMINAL_SIZE_MM[2]
-    for row, column, x, y in shared.BOARD_LED_POSITIONS_MM:
+    for square in shared.BOARD_SQUARES:
+        x, y = square.led_position_mm
         led = modeling.rounded_box(
-            f"Proxy_LED_{row:02d}_{column:02d}",
+            f"Proxy_LED_{square.row:02d}_{square.column:02d}",
             shared.LED_PACKAGE_NOMINAL_SIZE_MM,
             (x, y, shared.PCB_TOP_Z_MM + height / 2.0),
             0.3,
@@ -69,7 +70,7 @@ def _add_leds(
         led.data.materials.append(palette["body"])
         led["reference"] = shared.LED_PACKAGE_REFERENCE
         emitter = modeling.rounded_box(
-            f"Proxy_LED_Window_{row:02d}_{column:02d}",
+            f"Proxy_LED_Window_{square.row:02d}_{square.column:02d}",
             (*shared.LED_EMITTER_WINDOW_MM, 0.2),
             (x, y, shared.PCB_TOP_Z_MM + height),
             0.0,
@@ -82,9 +83,10 @@ def _add_hall_sensors(
     collection: bpy.types.Collection, palette: dict[str, bpy.types.Material]
 ) -> None:
     height = shared.HALL_SENSOR_HEIGHT_MM
-    for row, column, x, y in shared.BOARD_HALL_POSITIONS_MM:
+    for square in shared.BOARD_SQUARES:
+        x, y = square.hall_position_mm
         sensor = modeling.rounded_box(
-            f"Proxy_Hall_{row:02d}_{column:02d}",
+            f"Proxy_Hall_{square.row:02d}_{square.column:02d}",
             (*shared.HALL_SENSOR_BODY_MM, height),
             (x, y, shared.PCB_TOP_Z_MM + height / 2.0),
             0.2,

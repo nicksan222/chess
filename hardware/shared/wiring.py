@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .dimensions import GRID_COUNT, HALL_BANKS
+from .dimensions import HALL_BANKS
 from .hall_banks import HallBank, SquarePosition
 
 # --- I2C bus ----------------------------------------------------------------
@@ -87,14 +87,3 @@ def expander_of(position: SquarePosition) -> ExpanderChannel:
     raise ValueError(
         f"invalid square coordinates {(position.file_index, position.rank)}"
     )
-
-
-def led_chain_order() -> list[SquarePosition]:
-    """Squares in chain order: a serpentine by rank starting at A1."""
-    chain: list[SquarePosition] = []
-    for index in range(GRID_COUNT**2):
-        rank = index // GRID_COUNT
-        offset = index % GRID_COUNT
-        file_index = offset if rank % 2 == 0 else GRID_COUNT - 1 - offset
-        chain.append(SquarePosition(file_index, rank))
-    return chain
