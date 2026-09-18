@@ -254,13 +254,13 @@ def _add_support_bosses(
 
     They stand on the grid lines, where neither an LED nor a Hall sensor sits.
     """
-    height = shared.PI_BAY_HEIGHT_MM
     bosses = [
-        modeling.cylinder(
+        modeling.cylinder_between(
             f"Boss_PCB_Support_{index:02d}",
             shared.PCB_SUPPORT_BOSS_DIAMETER_MM,
-            height,
-            (x, y, shared.CASE_FLOOR_MM + height / 2.0),
+            (x, y),
+            shared.CASE_FLOOR_MM,
+            shared.PCB_UNDERSIDE_Z_MM,
             construction,
             vertices=32,
         )
@@ -270,17 +270,12 @@ def _add_support_bosses(
 
     pilot_depth = shared.PCB_SUPPORT_PILOT_DEPTH_MM
     pilots = [
-        modeling.cylinder(
+        modeling.cylinder_between(
             f"Cutter_Support_Pilot_{index:02d}",
             shared.PCB_SUPPORT_PILOT_DIAMETER_MM,
-            pilot_depth + shared.BOOLEAN_RECESS_OVERLAP_MM,
-            (
-                x,
-                y,
-                shared.PCB_UNDERSIDE_Z_MM
-                - pilot_depth / 2.0
-                + shared.BOOLEAN_RECESS_OVERLAP_MM / 2.0,
-            ),
+            (x, y),
+            shared.PCB_UNDERSIDE_Z_MM - pilot_depth,
+            shared.PCB_UNDERSIDE_Z_MM + shared.BOOLEAN_RECESS_OVERLAP_MM,
             construction,
             vertices=24,
         )
@@ -296,15 +291,12 @@ def _cut_plate_screws(
     depth = shared.PCB_SUPPORT_PILOT_DEPTH_MM
     ledge_top = shared.CASE_HEIGHT_MM - shared.TILE_PLATE_THICKNESS_MM
     pilots = [
-        modeling.cylinder(
+        modeling.cylinder_between(
             f"Cutter_Plate_Screw_{index}",
             shared.PCB_SUPPORT_PILOT_DIAMETER_MM,
-            depth + shared.BOOLEAN_RECESS_OVERLAP_MM,
-            (
-                x,
-                y,
-                ledge_top - depth / 2.0 + shared.BOOLEAN_RECESS_OVERLAP_MM / 2.0,
-            ),
+            (x, y),
+            ledge_top - depth,
+            ledge_top + shared.BOOLEAN_RECESS_OVERLAP_MM,
             construction,
             vertices=24,
         )
