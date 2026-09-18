@@ -14,14 +14,14 @@ from pcb.definition.native import (
     point,
 )
 from pcb.definition.parts.catalog import PCB_PARTS
-from shared import dimensions, wiring
+from shared import dimensions, hall_banks, wiring
 from shared.components import COMPONENTS
 from shared.electronics.hall_sensor import HallSensorPin
 
 
 def square_centres() -> dict[str, tuple[float, float]]:
     return {
-        f"{wiring.FILES[column]}{dimensions.GRID_COUNT - row}": (x, y)
+        f"{hall_banks.FILES[column]}{dimensions.GRID_COUNT - row}": (x, y)
         for row, column, x, y in dimensions.BOARD_SQUARE_CENTERS_MM
     }
 
