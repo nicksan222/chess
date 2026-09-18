@@ -13,7 +13,6 @@ import pcbnew
 import pcb.definition.routing.paths as grid_router
 from pcb.definition import native, rules
 from pcb.definition.bank_assemblies import BANK_ASSEMBLIES
-from pcb.definition.native import EndpointKey
 from pcb.definition.parts import catalog
 from pcb.definition.parts.catalog import (
     DC_INPUT_JACK,
@@ -30,6 +29,7 @@ from shared.dimensions import PLAYING_SPAN_MM, SQUARE_SIZE_MM
 from shared.electronics import (
     BarrelJackPin,
     ComponentReference,
+    Endpoint,
     FusePin,
     PowerSwitchPin,
     Sk9822Pin,
@@ -67,8 +67,8 @@ class RoutingContext:
 
     board: pcbnew.BOARD
     nets_by_name: Mapping[str, pcbnew.NETINFO_ITEM]
-    pads_by_endpoint: Mapping[EndpointKey, pcbnew.PAD]
-    endpoints_by_net: Mapping[str, tuple[EndpointKey, ...]]
+    pads_by_endpoint: Mapping[Endpoint[str], pcbnew.PAD]
+    endpoints_by_net: Mapping[str, tuple[Endpoint[str], ...]]
     host_header_via_keepouts: frozenset[tuple[int, int]]
 
 
@@ -160,8 +160,9 @@ def signal_escape(
 
 
 def nearest_tree_edges(
-    nodes: Sequence[EndpointKey], route_points: Mapping[EndpointKey, pcbnew.VECTOR2I]
-) -> Iterator[tuple[EndpointKey, EndpointKey]]:
+    nodes: Sequence[Endpoint[str]],
+    route_points: Mapping[Endpoint[str], pcbnew.VECTOR2I],
+) -> Iterator[tuple[Endpoint[str], Endpoint[str]]]:
     """Yield deterministic nearest-neighbour edges connecting every node."""
     connected = {0}
     remaining = set(range(1, len(nodes)))
@@ -201,7 +202,11 @@ def prune_unused_signal_vias(board: pcbnew.BOARD) -> None:
 
 
 def escape_endpoint(
-    ctx: RoutingContext, name: str, endpoint: EndpointKey, *, add_via: bool = False
+    ctx: RoutingContext,
+    name: str,
+    endpoint: Endpoint[str],
+    *,
+    add_via: bool = False,
 ) -> pcbnew.VECTOR2I:
     return signal_escape(
         ctx.board,
@@ -223,20 +228,20 @@ def route_between(
     grid_router.apply_route(ctx.board, net, start, end, route)
 
 
-def ordered_endpoints(ctx: RoutingContext, connection: str) -> list[EndpointKey]:
+def ordered_endpoints(ctx: RoutingContext, connection: str) -> list[Endpoint[str]]:
     return sorted(
         ctx.endpoints_by_net[connection],
         key=lambda node: (
-            node[0] != ComponentReference.HOST_GPIO_HEADER,
-            node[0],
-            node[1],
+            node.reference != ComponentReference.HOST_GPIO_HEADER,
+            node.reference,
+            node.pin,
         ),
     )
 
 
 def reserve_escape_points(
-    ctx: RoutingContext, connection: str, endpoints: Sequence[EndpointKey]
-) -> dict[EndpointKey, pcbnew.VECTOR2I]:
+    ctx: RoutingContext, connection: str, endpoints: Sequence[Endpoint[str]]
+) -> dict[Endpoint[str], pcbnew.VECTOR2I]:
     return {
         endpoint: escape_endpoint(ctx, connection, endpoint, add_via=True)
         for endpoint in endpoints
@@ -246,8 +251,8 @@ def reserve_escape_points(
 def route_tree(
     ctx: RoutingContext,
     connection: str,
-    nodes: Sequence[EndpointKey],
-    route_points: Mapping[EndpointKey, pcbnew.VECTOR2I],
+    nodes: Sequence[Endpoint[str]],
+    route_points: Mapping[Endpoint[str], pcbnew.VECTOR2I],
     *,
     label_errors: bool = False,
     **options: Unpack[RoutingOptions],
@@ -313,10 +318,12 @@ def route_buttons(ctx: RoutingContext) -> None:
         name = button.net_name
         nodes = list(ctx.endpoints_by_net[name])
         pi = next(
-            node for node in nodes if node[0] == ComponentReference.HOST_GPIO_HEADER
+            node
+            for node in nodes
+            if node.reference == ComponentReference.HOST_GPIO_HEADER
         )
-        switch_node = next(node for node in nodes if node[0].startswith("SW"))
-        module = footprint(board, switch_node[0])
+        switch_node = next(node for node in nodes if node.reference.startswith("SW"))
+        module = footprint(board, switch_node.reference)
         primary = next(
             pad
             for pad in module.Pads()
@@ -386,14 +393,14 @@ def route_led_chain(ctx: RoutingContext, *, obstructed_only: bool = False) -> No
     for connection in ctx.endpoints_by_net:
         nodes = list(ctx.endpoints_by_net[connection])
         if len(nodes) != 2 or not all(
-            node in pads and node[0].startswith("U") for node in nodes
+            node in pads and node.reference.startswith("U") for node in nodes
         ):
             continue
-        if nodes[0][1] in Sk9822.input_pins() and nodes[1][1] in Sk9822.output_pins():
+        if nodes[0].pin in Sk9822.input_pins() and nodes[1].pin in Sk9822.output_pins():
             nodes.reverse()
         if (
-            nodes[0][1] not in Sk9822.output_pins()
-            or nodes[1][1] not in Sk9822.input_pins()
+            nodes[0].pin not in Sk9822.output_pins()
+            or nodes[1].pin not in Sk9822.input_pins()
         ):
             continue
         name = connection
@@ -406,7 +413,8 @@ def route_led_chain(ctx: RoutingContext, *, obstructed_only: bool = False) -> No
                 (
                     module.GetBoundingBox()
                     for module in board.GetFootprints()
-                    if module.GetReference() not in {nodes[0][0], nodes[1][0]}
+                    if module.GetReference()
+                    not in {nodes[0].reference, nodes[1].reference}
                     and module.GetBoundingBox().GetLeft() <= x1
                     and (module.GetBoundingBox().GetRight() >= x0)
                     and (
@@ -435,7 +443,7 @@ def route_led_chain(ctx: RoutingContext, *, obstructed_only: bool = False) -> No
             continue
         right_side = start.x > origin
         direction = 1 if right_side else -1
-        is_clock = nodes[0][1] == Sk9822Pin.CLOCK_OUT
+        is_clock = nodes[0].pin == Sk9822Pin.CLOCK_OUT
         distance_mm = (
             (3.0 if right_side else 8.0) if is_clock else 1.0 if right_side else 6.0
         )
@@ -561,7 +569,7 @@ def reserve_hall(ctx: RoutingContext) -> list[PendingHallRoute]:
         ref = bank_assembly.expander_reference
         bounds = _bank_routing_bounds_mm(bank)
         for pin in Tca9554.input_pins():
-            name = ctx.pads_by_endpoint[ref, pin].GetNetname()
+            name = ctx.pads_by_endpoint[Endpoint(ref, pin)].GetNetname()
             start, end = (
                 escape_endpoint(ctx, name, endpoint, add_via=True)
                 for endpoint in ctx.endpoints_by_net[name]

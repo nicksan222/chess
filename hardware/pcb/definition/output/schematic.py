@@ -19,6 +19,7 @@ from pcb.definition.output.symbols import (
 from pcb.definition.parts.catalog import PCB_PARTS
 from shared import dimensions
 from shared.components import COMPONENTS
+from shared.electronics import Endpoint
 
 SYMBOL_COLUMNS = 4
 
@@ -26,15 +27,13 @@ SYMBOL_COLUMN_PITCH_MM = 48.26
 
 SYMBOL_ROW_GAP_MM = 10.16
 
-EndpointKey = tuple[str, str]
-
 
 def connectivity(
     design: pcbnew.BOARD,
-) -> tuple[dict[EndpointKey, str], set[EndpointKey]]:
+) -> tuple[dict[Endpoint[str], str], set[Endpoint[str]]]:
     """Index schematic endpoints through the shared validated connection graph."""
-    nets: dict[EndpointKey, str] = {}
-    no_connects: set[EndpointKey] = set()
+    nets: dict[Endpoint[str], str] = {}
+    no_connects: set[Endpoint[str]] = set()
     for name, endpoints in connections(design).items():
         if name.startswith("unconnected-"):
             no_connects.update(endpoints)
@@ -138,7 +137,7 @@ def render_sheet(
         for pad_index, (pad, offset) in enumerate(zip(pads, offsets, strict=True)):
             logical = logical_pin(pad)
             endpoint_x, endpoint_y = x - 5.08, y - offset
-            key = (item.GetReference(), logical)
+            key = Endpoint(item.GetReference(), logical)
             if key in no_connects:
                 lines.extend(
                     [
@@ -186,7 +185,7 @@ def render_sheet(
 
 
 def pin_roles(
-    component: pcbnew.FOOTPRINT, no_connects: set[EndpointKey] | None = None
+    component: pcbnew.FOOTPRINT, no_connects: set[Endpoint[str]] | None = None
 ) -> dict[str, tuple[str, str]]:
     """Physical pad numbers with semantic names and conservative electrical types.
 
@@ -230,7 +229,7 @@ def pin_roles(
                 kind = "bidirectional"
         # KiCad incorporates symbolic pin names into NC net names. Preserve
         # published unconnected-(REF-PadN) identities for deliberate NCs.
-        if (component.GetReference(), logical) in (no_connects or set()):
+        if Endpoint(component.GetReference(), logical) in (no_connects or set()):
             name = physical
         roles[physical] = (name, kind)
     return roles
