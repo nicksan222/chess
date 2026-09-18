@@ -17,6 +17,7 @@ from pcb.definition.native import (
 from pcb.definition.parts.catalog import PCB_PARTS
 from shared import dimensions, wiring
 from shared.components import COMPONENTS
+from shared.electronics import Endpoint
 from shared.electronics.hall_sensor import HallSensorPin
 
 
@@ -85,15 +86,15 @@ def validate(board: pcbnew.BOARD) -> None:
             )
         )
         for pin, name in expected.items():
-            if pads[ref, pin].GetNetname() != name:
+            if pads[Endpoint(ref, pin)].GetNetname() != name:
                 raise ValueError(f"{ref}: incorrect {pin.name} assignment")
         for pin, member in zip(
             Tca9554Component.input_pins(), bank.members, strict=True
         ):
             name = wiring.sense_net(member.name)
             if set(graph[name]) != {
-                (ref, str(pin)),
-                (
+                Endpoint(ref, pin),
+                Endpoint(
                     f"HS{dimensions.BOARD_SQUARES.by_position(member).sensor_number}",
                     HallSensorPin.ACTIVE_LOW_OUTPUT,
                 ),

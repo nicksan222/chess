@@ -13,11 +13,10 @@ from pcb.definition.output.symbols import ROOT_UUID, uid
 from pcb.definition.parts.catalog import PcbPart
 from pcb.definition.rules import Net
 from shared import dimensions, wiring
-from shared.electronics import BoundPin, EndpointResolver
+from shared.electronics import BoundPin, Endpoint, EndpointResolver
 
 ORIGIN_X_MM = 200.0
 ORIGIN_Y_MM = 220.0
-EndpointKey = tuple[str, str]
 
 
 def point(x: float, y: float) -> pcbnew.VECTOR2I:
@@ -372,15 +371,17 @@ def no_connect(board: pcbnew.BOARD, pin: BoundPin) -> None:
     connect(board, f"unconnected-({reference}-Pad{number})", pin)
 
 
-def endpoint_pads(board: pcbnew.BOARD) -> dict[EndpointKey, pcbnew.PAD]:
+def endpoint_pads(board: pcbnew.BOARD) -> dict[Endpoint[str], pcbnew.PAD]:
     return {
-        (f.GetReference(), logical_pin(p)): p for f in parts(board) for p in f.Pads()
+        Endpoint(f.GetReference(), logical_pin(p)): p
+        for f in parts(board)
+        for p in f.Pads()
     }
 
 
-def connections(board: pcbnew.BOARD) -> dict[str, tuple[EndpointKey, ...]]:
+def connections(board: pcbnew.BOARD) -> dict[str, tuple[Endpoint[str], ...]]:
     """A sorted view of actual native pad assignments, never an input graph."""
-    found: defaultdict[str, set[EndpointKey]] = defaultdict(set)
+    found: defaultdict[str, set[Endpoint[str]]] = defaultdict(set)
     for endpoint, pad in endpoint_pads(board).items():
         found[pad.GetNetname()].add(endpoint)
     return {name: tuple(sorted(endpoints)) for name, endpoints in sorted(found.items())}
