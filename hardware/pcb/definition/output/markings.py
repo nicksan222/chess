@@ -12,8 +12,9 @@ from pcb.definition.parts.catalog import (
     TACTILESWITCH_LABEL_OFFSET_MM,
     TCA9554_SILKSCREEN_CLEARANCE_MM,
 )
-from shared import dimensions, wiring
+from shared import dimensions
 from shared.electronics import RaspberryPiHeaderComponent as RaspberryPiHeader
+from shared.panel import PANEL_BUTTONS
 
 SQUARE_LABEL_OFFSET_MM = (-12.0, 0.0)
 
@@ -137,13 +138,11 @@ def add_front_silkscreen(board: pcbnew.BOARD) -> None:
     ):
         _add_text(board, text, (116.0, y), height=0.8)
 
-    button_positions = dict(
-        zip(wiring.BUTTON_NAMES, shared.PANEL_BUTTON_POSITIONS_MM, strict=True)
-    )
-    for name, (x, y) in button_positions.items():
+    for button in PANEL_BUTTONS:
+        x, y = button.position_mm
         offset = TACTILESWITCH_LABEL_OFFSET_MM
         label_y = y + offset if y > shared.PANEL_ORIGIN_Y_MM else y - offset
-        _add_text(board, name, (x, label_y), height=0.9)
+        _add_text(board, button.name, (x, label_y), height=0.9)
 
     test_points = {
         "5V": (-47.0, -162.5),

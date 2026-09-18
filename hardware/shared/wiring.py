@@ -10,6 +10,7 @@ from dataclasses import dataclass
 
 from .dimensions import HALL_BANKS
 from .hall_banks import HallBank, SquarePosition
+from .panel import PANEL_BUTTONS
 
 # --- I2C bus ----------------------------------------------------------------
 # Eight compact Hall banks share the bus with the display. Acquisition is polled.
@@ -25,25 +26,6 @@ SPI_CLOCK_NET = "SPI_CLK_3V3"
 LED_DATA_NET = "LED_DATA_5V"
 LED_CLOCK_NET = "LED_CLK_5V"
 
-# --- Control panel ----------------------------------------------------------
-# Twelve identical buttons straight onto Broadcom lines. Nothing here goes
-# through an expander, so remapping a button is a host-software change only.
-BUTTON_GPIO: dict[str, int] = {
-    "UP": 5,
-    "DOWN": 6,
-    "LEFT": 12,
-    "RIGHT": 13,
-    "OK": 16,
-    "RESET": 17,
-    "PASS": 19,
-    "F1": 20,
-    "F2": 21,
-    "F3": 22,
-    "F4": 23,
-    "F5": 24,
-}
-BUTTON_NAMES = tuple(BUTTON_GPIO)
-
 # --- Pi line assignment -----------------------------------------------------
 SDA_GPIO = 2
 SCL_GPIO = 3
@@ -54,7 +36,7 @@ ASSIGNED_GPIO = (
     SCL_GPIO,
     SPI_DATA_GPIO,
     SPI_CLOCK_GPIO,
-    *BUTTON_GPIO.values(),
+    *(button.gpio for button in PANEL_BUTTONS),
 )
 
 
@@ -72,10 +54,6 @@ def parse_square(name: str) -> SquarePosition:
 
 def sense_net(square_name: str) -> str:
     return f"SQ_{square_name}"
-
-
-def button_net(name: str) -> str:
-    return f"BTN_{name}"
 
 
 def expander_of(position: SquarePosition) -> ExpanderChannel:

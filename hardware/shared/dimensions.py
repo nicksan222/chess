@@ -16,6 +16,7 @@ from types import MappingProxyType
 
 from .components import BUTTON, HALL_SENSOR, OLED_MODULE, SK9822, TCA9554
 from .hall_banks import banks
+from .panel import PANEL_BUTTONS
 from .squares import SquareLayout
 
 # Unit contract. One Blender unit represents one millimetre in generated files.
@@ -182,21 +183,7 @@ CASE_REAR_APERTURE_CENTER_Z_MM = CASE_FLOOR_MM + PI_BAY_HEIGHT_MM / 2.0
 # --- Control panel ----------------------------------------------------------
 PANEL_ORIGIN_Y_MM = -PLAYING_SPAN_MM / 2.0 - PANEL_STRIP_DEPTH_MM / 2.0
 PANEL_BUTTON_COUNT = 12
-PANEL_BUTTON_COLUMNS = 6
-PANEL_BUTTON_ROWS = 2
 PANEL_BUTTON_HOLE_DIAMETER_MM = 7.0
-PANEL_BUTTON_PITCH_MM = 16.0
-PANEL_BUTTON_BLOCK_CENTER_X_MM = 40.0
-PANEL_BUTTON_POSITIONS_MM = tuple(
-    (
-        PANEL_BUTTON_BLOCK_CENTER_X_MM
-        + (column - (PANEL_BUTTON_COLUMNS - 1) / 2.0) * PANEL_BUTTON_PITCH_MM,
-        PANEL_ORIGIN_Y_MM
-        + ((PANEL_BUTTON_ROWS - 1) / 2.0 - row) * PANEL_BUTTON_PITCH_MM,
-    )
-    for row in range(PANEL_BUTTON_ROWS)
-    for column in range(PANEL_BUTTON_COLUMNS)
-)
 
 # AZ-Delivery 0.96 in SSD1306 module. The window exposes its approximately
 # 23.7 x 12.9 mm viewing area; the recess holds the 27 x 27 mm carrier board,
@@ -493,7 +480,7 @@ def validate() -> None:
             PANEL_BUTTON_HOLE_DIAMETER_MM / 2.0,
             PANEL_BUTTON_HOLE_DIAMETER_MM / 2.0,
         )
-        for x, y in PANEL_BUTTON_POSITIONS_MM
+        for x, y in (button.position_mm for button in PANEL_BUTTONS)
     ) + (
         (
             "display",
@@ -508,9 +495,9 @@ def validate() -> None:
             raise ValueError(f"Control panel {name} extends off the control strip")
         if abs(x) + half_x > PLAYING_SPAN_MM / 2.0:
             raise ValueError(f"Control panel {name} extends off the board")
-    if len(PANEL_BUTTON_POSITIONS_MM) != PANEL_BUTTON_COUNT:
+    if len(PANEL_BUTTONS) != PANEL_BUTTON_COUNT:
         raise ValueError("Control panel must place every button")
-    if len(set(PANEL_BUTTON_POSITIONS_MM)) != PANEL_BUTTON_COUNT:
+    if len({button.position_mm for button in PANEL_BUTTONS}) != PANEL_BUTTON_COUNT:
         raise ValueError("Button positions must be unique")
     if PANEL_OLED_RECESS_CLEARANCE_XY_MM <= 0.0:
         raise ValueError("Display recess must include positive XY assembly clearance")
