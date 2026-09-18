@@ -131,7 +131,7 @@ class DimensionsTest(unittest.TestCase):
             actual,
             {
                 (native.point(x, y).x, native.point(x, y).y)
-                for x, y in dimensions.PANEL_BUTTON_POSITIONS_MM
+                for x, y in (button.position_mm for button in dimensions.PANEL_BUTTONS)
             },
         )
         for ref, (x, y, angle) in dimensions.PCB_STRIP_PLACEMENTS_MM.items():

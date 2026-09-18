@@ -144,7 +144,8 @@ def _add_host(
 def _add_panel(
     collection: bpy.types.Collection, palette: dict[str, bpy.types.Material]
 ) -> None:
-    for index, (x, y) in enumerate(shared.PANEL_BUTTON_POSITIONS_MM):
+    for index, button in enumerate(shared.PANEL_BUTTONS):
+        x, y = button.position_mm
         body = modeling.rounded_box(
             f"Proxy_Button_{index:02d}",
             shared.PANEL_BUTTON_BODY_MM,

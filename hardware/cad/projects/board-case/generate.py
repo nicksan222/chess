@@ -127,11 +127,11 @@ def _cut_panel_apertures(
                 f"Cutter_Button_{index:02d}",
                 shared.PANEL_BUTTON_HOLE_DIAMETER_MM,
                 through_height,
-                (x, y, through_z),
+                (button.x_mm, button.y_mm, through_z),
                 construction,
                 vertices=32,
             )
-            for index, (x, y) in enumerate(shared.PANEL_BUTTON_POSITIONS_MM)
+            for index, button in enumerate(shared.PANEL_BUTTONS)
         ],
         "Cutter_All_Button_Holes",
     )

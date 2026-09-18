@@ -272,14 +272,15 @@ class BoardSupportTest(unittest.TestCase):
 class ControlPanelTest(unittest.TestCase):
     def test_twelve_buttons_are_laid_out_on_the_strip(self) -> None:
         self.assertEqual(cad.PANEL_BUTTON_COUNT, 12)
-        self.assertEqual(len(cad.PANEL_BUTTON_POSITIONS_MM), 12)
-        self.assertEqual(len(set(cad.PANEL_BUTTON_POSITIONS_MM)), 12)
+        self.assertEqual(len(cad.PANEL_BUTTONS), 12)
+        self.assertEqual(len({button.position_mm for button in cad.PANEL_BUTTONS}), 12)
 
     def test_every_panel_feature_is_on_the_strip_not_the_playing_area(self) -> None:
         strip_far = -cad.PLAYING_SPAN_MM / 2.0 - cad.PANEL_STRIP_DEPTH_MM
         strip_near = -cad.PLAYING_SPAN_MM / 2.0
         radius = cad.PANEL_BUTTON_HOLE_DIAMETER_MM / 2.0
-        for x, y in cad.PANEL_BUTTON_POSITIONS_MM:
+        for button in cad.PANEL_BUTTONS:
+            x, y = button.position_mm
             self.assertGreaterEqual(y - radius, strip_far)
             self.assertLessEqual(y + radius, strip_near)
             self.assertLess(abs(x) + radius, cad.PLAYING_SPAN_MM / 2.0)
@@ -303,7 +304,7 @@ class ControlPanelTest(unittest.TestCase):
     def test_the_panel_and_the_display_do_not_overlap(self) -> None:
         display_x = cad.PANEL_OLED_CENTER_MM[0]
         display_edge = display_x + cad.PANEL_OLED_RECESS_MM[0] / 2.0
-        nearest_button = min(x for x, _y in cad.PANEL_BUTTON_POSITIONS_MM)
+        nearest_button = min(button.position_mm[0] for button in cad.PANEL_BUTTONS)
         button_edge = nearest_button - cad.PANEL_BUTTON_HOLE_DIAMETER_MM / 2.0
         self.assertLess(display_edge, button_edge)
 

@@ -38,6 +38,7 @@ from shared.electronics import (
 from shared.electronics import Sk9822Component as Sk9822
 from shared.electronics import Tca9554Component as Tca9554
 from shared.hall_banks import BANK_FILES, BANK_RANKS, HallBank
+from shared.panel import PANEL_BUTTONS
 
 INTERNAL_SIGNAL_LAYERS = (pcbnew.In4_Cu, pcbnew.In5_Cu, pcbnew.In6_Cu)
 
@@ -51,63 +52,13 @@ CONTROL_SIGNAL_NETS = frozenset(
         wiring.LED_DATA_NET,
     }
 )
-BUTTON_NETS = frozenset(map(wiring.button_net, wiring.BUTTON_NAMES))
+BUTTON_NETS = frozenset(button.net_name for button in PANEL_BUTTONS)
 
 OPTIONAL_ESCAPE_VIA_NETS = CONTROL_SIGNAL_NETS
 
-BUTTON_ROUTE_ORDER = tuple(
-    map(
-        wiring.button_net,
-        (
-            "F3",
-            "F4",
-            "F5",
-            "RESET",
-            "PASS",
-            "F1",
-            "F2",
-            "OK",
-            "RIGHT",
-            "LEFT",
-            "DOWN",
-            "UP",
-        ),
-    )
-)
-
 BUTTON_FALLBACK_SIGNAL_LAYERS = (pcbnew.In4_Cu, pcbnew.In5_Cu, pcbnew.In6_Cu)
 
-BUTTON_FALLBACK_PREFERRED_LAYERS: Mapping[str, int] = {
-    wiring.button_net("F1"): pcbnew.In4_Cu,
-    wiring.button_net("LEFT"): pcbnew.In4_Cu,
-    wiring.button_net("OK"): pcbnew.In5_Cu,
-    wiring.button_net("DOWN"): pcbnew.In5_Cu,
-    wiring.button_net("F3"): pcbnew.In6_Cu,
-    wiring.button_net("RIGHT"): pcbnew.In6_Cu,
-}
-
 BUTTON_HEADER_LAUNCH_LENGTH_MM = 4.5
-
-BUTTON_HEADER_LAUNCH_X_OFFSETS_MM: Mapping[str, float] = dict(
-    zip(
-        BUTTON_ROUTE_ORDER,
-        (
-            0.8,
-            0.8,
-            -0.8,
-            0.8,
-            -0.8,
-            0.8,
-            -0.8,
-            0.8,
-            -0.8,
-            0.8,
-            -0.8,
-            0.8,
-        ),
-        strict=True,
-    )
-)
 
 
 @dataclass(frozen=True)
@@ -358,7 +309,8 @@ def route_buttons(ctx: RoutingContext) -> None:
         ctx.nets_by_name,
         ctx.pads_by_endpoint,
     )
-    for index, name in enumerate(BUTTON_ROUTE_ORDER):
+    for index, button in enumerate(PANEL_BUTTONS.routing_order):
+        name = button.net_name
         nodes = list(ctx.endpoints_by_net[name])
         pi = next(
             node for node in nodes if node[0] == ComponentReference.HOST_GPIO_HEADER
@@ -388,12 +340,7 @@ def route_buttons(ctx: RoutingContext) -> None:
                 preferred_layer_index=1 - index % 2,
             )
         except RuntimeError:
-            preferred = BUTTON_FALLBACK_PREFERRED_LAYERS.get(
-                name,
-                BUTTON_FALLBACK_SIGNAL_LAYERS[
-                    index % len(BUTTON_FALLBACK_SIGNAL_LAYERS)
-                ],
-            )
+            preferred = BUTTON_FALLBACK_SIGNAL_LAYERS[button.fallback_layer_index]
             candidates = (preferred,) + tuple(
                 layer for layer in BUTTON_FALLBACK_SIGNAL_LAYERS if layer != preferred
             )
@@ -401,7 +348,7 @@ def route_buttons(ctx: RoutingContext) -> None:
             header = footprint(board, ComponentReference.HOST_GPIO_HEADER)
             direction = 1 if start.y > header.GetPosition().y else -1
             launch = pcbnew.VECTOR2I(
-                start.x + pcbnew.FromMM(BUTTON_HEADER_LAUNCH_X_OFFSETS_MM[name]),
+                start.x + pcbnew.FromMM(button.header_launch_x_offset_mm),
                 start.y + direction * pcbnew.FromMM(BUTTON_HEADER_LAUNCH_LENGTH_MM),
             )
             for layer in candidates:

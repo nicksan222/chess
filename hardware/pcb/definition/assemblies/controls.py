@@ -9,6 +9,7 @@ from pcb.definition.native import connect, no_connect, place
 from pcb.definition.parts import catalog as parts
 from shared import dimensions, wiring
 from shared import electronics as p
+from shared.panel import PANEL_BUTTONS
 
 
 def add_controls(board: pcbnew.BOARD) -> None:
@@ -140,36 +141,19 @@ def add_controls(board: pcbnew.BOARD) -> None:
     ):
         no_connect(board, host.pin(pin))
     # Explicit function order keeps button references stable.
-    buttons = (
-        "UP",
-        "DOWN",
-        "LEFT",
-        "RIGHT",
-        "OK",
-        "RESET",
-        "PASS",
-        "F1",
-        "F2",
-        "F3",
-        "F4",
-        "F5",
-    )
-    positions = dict(
-        zip(wiring.BUTTON_NAMES, dimensions.PANEL_BUTTON_POSITIONS_MM, strict=True)
-    )
-    for index, name in enumerate(buttons, 1):
+    for button in PANEL_BUTTONS:
         switch = place(
             board,
             parts.BUTTON_PART,
-            f"SW{index}",
-            at=positions[name],
+            button.switch_reference,
+            at=button.position_mm,
             assembly="controls",
-            extras={"Function": name},
+            extras={"Function": button.name},
         )
-        pin = p.RaspberryPiHeaderPin[f"BUTTON_{name}_GPIO{wiring.BUTTON_GPIO[name]}"]
+        pin = p.RaspberryPiHeaderPin[f"BUTTON_{button.name}_GPIO{button.gpio}"]
         connect(
             board,
-            wiring.button_net(name),
+            button.net_name,
             host.pin(pin),
             switch.pin(p.TactileSwitchPin.SIGNAL),
         )

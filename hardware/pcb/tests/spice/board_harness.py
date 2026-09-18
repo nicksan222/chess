@@ -28,6 +28,7 @@ from shared.electronics import (
     Tca9554Pin,
     TestPointPin,
 )
+from shared.panel import PANEL_BUTTONS
 from spice.circuit import SpiceCircuit
 from spice.electrical import (
     AHCT125,
@@ -466,8 +467,8 @@ class BoardHarness:
             if len(switches) != 1:
                 raise ValueError(f"{name} must have exactly one tactile switch")
             reference = switches[0]
-            button = name.removeprefix("BTN_")
-            gpio = wiring.BUTTON_GPIO[button]
+            button = PANEL_BUTTONS.by_name(name.removeprefix("BTN_"))
+            gpio = button.gpio
             host_pin = next(
                 pin for pin in RaspberryPiHeaderPin if pin.name.endswith(f"GPIO{gpio}")
             )
