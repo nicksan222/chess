@@ -317,8 +317,10 @@ def _copper_changes(
 ) -> tuple[str, list[str]]:
     if base is None:
         return (
-            f"{len(current.tracks)} segments, {len(current.vias)} vias, "
-            f"{len(current.zones)} zones (no base board)",
+            (
+                f"{len(current.tracks)} segments, {len(current.vias)} vias, "
+                f"{len(current.zones)} zones (no base board)"
+            ),
             [],
         )
     added_tracks = current.tracks - base.tracks
@@ -498,8 +500,10 @@ def build_report(
         "",
         f"- Passed: {', '.join(str(check) for check in checks)}",
         f"- [Open the generated board]({board_link})",
-        "- [Download board renders, schematics, BOMs, and reports]"
-        f"({run_url}#artifacts)",
+        (
+            "- [Download board renders, schematics, BOMs, and reports]"
+            f"({run_url}#artifacts)"
+        ),
         "- Physical Hall/magnet evidence remains a separate release gate.",
         "",
         "_This comment is updated automatically after each CI run._",
