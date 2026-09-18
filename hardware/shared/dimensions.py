@@ -14,6 +14,7 @@ that origin.
 from math import ceil, isclose
 from types import MappingProxyType
 
+from . import placements as _placements
 from .components import BUTTON, HALL_SENSOR, OLED_MODULE, SK9822, TCA9554
 from .hall_banks import banks
 from .panel import PANEL_BUTTONS
@@ -200,31 +201,7 @@ PANEL_OLED_RECESS_DEPTH_MM = 2.0
 PANEL_OLED_CENTER_MM = (-110.0, PANEL_ORIGIN_Y_MM)
 PANEL_BUTTON_BODY_MM = (*BUTTON.require_body_mm()[:2], 5.0)
 PANEL_BUTTON_ACTUATOR_DIAMETER_MM = 3.5
-
-# One-off electrical parts whose positions also govern enclosure access and
-# populated-board collision proxies. Values are (x, y, rotation_degrees).
-PCB_STRIP_PLACEMENTS_MM = MappingProxyType(
-    {
-        "J3": (-150.0, -178.0, -90.0),
-        "F1": (-138.0, -178.0, 0.0),
-        "D1": (-150.0, -165.0, 0.0),
-        "SW13": (-113.0, -190.0, 0.0),
-        "C1": (-128.0, -170.0, 0.0),
-        "C2": (-116.0, -168.0, 0.0),
-        "J2": (-95.0, -172.0, 0.0),
-        "U5": (-70.0, -180.0, 0.0),
-        "C7": (-58.0, -180.0, 0.0),
-        "R1": (-50.0, -170.0, 0.0),
-        "R2": (-50.0, -176.0, 0.0),
-        "TP1": (-47.0, -165.0, 0.0),
-        "TP2": (-40.0, -165.0, 0.0),
-        "TP3": (-33.0, -165.0, 0.0),
-        "TP4": (-26.0, -165.0, 0.0),
-        "TP5": (-19.0, -165.0, 0.0),
-        "TP6": (-12.0, -165.0, 0.0),
-        "TP7": (-47.0, -196.0, 0.0),
-    }
-)
+PCB_STRIP_PLACEMENTS = _placements.PCB_STRIP_PLACEMENTS
 
 # --- Tile plate -------------------------------------------------------------
 # One flat overlay with the checkerboard engraved into it, sitting in a rebate

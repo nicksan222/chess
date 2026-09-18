@@ -134,11 +134,14 @@ class DimensionsTest(unittest.TestCase):
                 for x, y in (button.position_mm for button in dimensions.PANEL_BUTTONS)
             },
         )
-        for ref, (x, y, angle) in dimensions.PCB_STRIP_PLACEMENTS_MM.items():
+        for ref, placement in dimensions.PCB_STRIP_PLACEMENTS.items():
             with self.subTest(reference=ref):
                 f = self.by_ref[ref]
-                self.assertEqual(f.GetPosition(), native.point(x, y))
-                self.assertEqual(f.GetOrientationDegrees() % 360, angle % 360)
+                self.assertEqual(f.GetPosition(), native.point(*placement.centre_mm))
+                self.assertEqual(
+                    f.GetOrientationDegrees() % 360,
+                    placement.rotation_degrees % 360,
+                )
         self.assertEqual(
             self.by_ref["J1"].GetPosition(), native.point(*dimensions.PI_BAY_CENTER_MM)
         )

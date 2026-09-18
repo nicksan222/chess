@@ -189,7 +189,7 @@ def _cut_rear_apertures(
         "Cutter_Jack_Aperture",
         shared.CASE_JACK_APERTURE_DIAMETER_MM,
         depth,
-        (shared.PCB_STRIP_PLACEMENTS_MM["J3"][0], center_y, z),
+        (shared.PCB_STRIP_PLACEMENTS["J3"].x_mm, center_y, z),
         construction,
         vertices=48,
     )
@@ -197,7 +197,7 @@ def _cut_rear_apertures(
     rocker = modeling.rounded_box(
         "Cutter_Rocker_Aperture",
         (shared.CASE_ROCKER_APERTURE_MM[0], depth, shared.CASE_ROCKER_APERTURE_MM[1]),
-        (shared.PCB_STRIP_PLACEMENTS_MM["SW13"][0], center_y, z),
+        (shared.PCB_STRIP_PLACEMENTS["SW13"].x_mm, center_y, z),
         0.6,
         construction,
     )

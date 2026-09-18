@@ -20,13 +20,13 @@ def add_strip[Part: EndpointResolver](
     purpose: str | None = None,
     nominal_value: str | None = None,
 ) -> Part:
-    x, y, rotation = dimensions.PCB_STRIP_PLACEMENTS_MM[reference]
+    placement = dimensions.PCB_STRIP_PLACEMENTS[reference]
     return place(
         board,
         part,
         reference,
-        at=(x, y),
-        rotation=rotation,
+        at=placement.centre_mm,
+        rotation=placement.rotation_degrees,
         assembly=assembly,
         purpose=purpose,
         nominal_value=nominal_value,
