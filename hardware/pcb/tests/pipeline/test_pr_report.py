@@ -8,6 +8,11 @@ from unittest.mock import patch
 
 from pcb.pr_report import (
     BoardSnapshot,
+    CopperBounds,
+    CopperPoint,
+    CopperTrack,
+    CopperVia,
+    CopperZone,
     _component_changes,
     _copper_changes,
     _net_changes,
@@ -18,6 +23,18 @@ from pcb.pr_report import (
 
 
 class PullRequestReportTest(unittest.TestCase):
+    def test_orders_copper_points_by_x_then_y(self):
+        points = [
+            CopperPoint(2.0, 0.0),
+            CopperPoint(1.0, 3.0),
+            CopperPoint(1.0, 2.0),
+        ]
+
+        self.assertEqual(
+            sorted(points),
+            [CopperPoint(1.0, 2.0), CopperPoint(1.0, 3.0), CopperPoint(2.0, 0.0)],
+        )
+
     def _report(self, components):
         document = {
             "projects": {
@@ -135,8 +152,12 @@ class PullRequestReportTest(unittest.TestCase):
         self.assertEqual(rules, ["`defaults.clearance`: `0.2` → `0.3`"])
 
     def test_groups_added_and_removed_copper_by_net_and_layer(self):
-        old_track = ("GND", "B.Cu", (0.0, 0.0), (1.0, 0.0), 0.2)
-        new_track = ("+5V", "F.Cu", (0.0, 0.0), (2.0, 0.0), 0.3)
+        old_track = CopperTrack(
+            "GND", "B.Cu", CopperPoint(0.0, 0.0), CopperPoint(1.0, 0.0), 0.2
+        )
+        new_track = CopperTrack(
+            "+5V", "F.Cu", CopperPoint(0.0, 0.0), CopperPoint(2.0, 0.0), 0.3
+        )
         old = BoardSnapshot(
             tracks=frozenset({old_track}),
             vias=frozenset(),
@@ -145,8 +166,26 @@ class PullRequestReportTest(unittest.TestCase):
         )
         new = BoardSnapshot(
             tracks=frozenset({new_track}),
-            vias=frozenset({("+5V", (2.0, 0.0), 0.8, 0.4, ("F.Cu", "B.Cu"))}),
-            zones=frozenset({("GND", ("B.Cu",), (0.0, 0.0, 10.0, 10.0))}),
+            vias=frozenset(
+                {
+                    CopperVia(
+                        "+5V",
+                        CopperPoint(2.0, 0.0),
+                        0.8,
+                        0.4,
+                        ("F.Cu", "B.Cu"),
+                    )
+                }
+            ),
+            zones=frozenset(
+                {
+                    CopperZone(
+                        "GND",
+                        ("B.Cu",),
+                        CopperBounds(0.0, 0.0, 10.0, 10.0),
+                    )
+                }
+            ),
             board_sha256="new",
         )
 
