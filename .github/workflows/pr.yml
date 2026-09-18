@@ -6,6 +6,7 @@ on:
 permissions:
   contents: read
   packages: write
+  pull-requests: write
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -42,6 +43,60 @@ jobs:
     uses: ./.github/workflows/hardware.yml
     with:
       image: ${{ needs.prebuild.outputs.image }}
+      base-ref: ${{ github.event.pull_request.base.sha }}
+      head-ref: ${{ github.event.pull_request.head.sha }}
+      repository: ${{ github.repository }}
+      run-url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+  hardware-report:
+    name: Hardware PR report
+    needs: hardware
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: pcb-pr-report
+      - name: Create or update CI change report
+        if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const fs = require('fs');
+            const marker = '<!-- pcb-review-report -->';
+            const body = fs.readFileSync('pcb-pr-report.md', 'utf8');
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              per_page: 100,
+            });
+            const previous = comments.find(comment =>
+              comment.user?.type === 'Bot' && comment.body?.includes(marker)
+            );
+            if (previous) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: previous.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+            await core.summary.addRaw(body).write();
+      - name: Publish report to job summary for forked pull requests
+        if: ${{ github.event.pull_request.head.repo.full_name != github.repository }}
+        shell: bash
+        run: cat pcb-pr-report.md >> "${GITHUB_STEP_SUMMARY}"
 
   quality:
     name: Quality
@@ -66,7 +121,7 @@ jobs:
   required-checks:
     name: Required checks
     if: always()
-    needs: [hardware, quality, pi-harness, firmware-check]
+    needs: [hardware, hardware-report, quality, pi-harness, firmware-check]
     runs-on: ubuntu-latest
     steps:
       - name: Verify required jobs succeeded

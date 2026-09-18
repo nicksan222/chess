@@ -7,6 +7,26 @@ on:
         description: Prebuilt development container image
         type: string
         required: true
+      base-ref:
+        description: Base commit for a pull-request hardware report
+        type: string
+        required: false
+        default: ""
+      head-ref:
+        description: Head commit for a pull-request hardware report
+        type: string
+        required: false
+        default: ""
+      repository:
+        description: GitHub owner and repository for report links
+        type: string
+        required: false
+        default: ""
+      run-url:
+        description: GitHub Actions run URL for report artifacts
+        type: string
+        required: false
+        default: ""
 
 permissions:
   contents: read
@@ -33,12 +53,32 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: ./.github/actions/run-in-devcontainer
+        with:
+          fetch-depth: 0
+      - name: Review PCB
+        if: ${{ inputs.base-ref == '' }}
+        uses: ./.github/actions/run-in-devcontainer
         with:
           image: ${{ inputs.image }}
           command: just --justfile hardware/pcb/justfile review
+      - name: Review PCB and generate pull-request report
+        if: ${{ inputs.base-ref != '' }}
+        uses: ./.github/actions/run-in-devcontainer
+        with:
+          image: ${{ inputs.image }}
+          command: >-
+            just --justfile hardware/pcb/justfile pr-report
+            ${{ inputs.base-ref }}
+            ${{ inputs.head-ref }}
+            ${{ inputs.repository }}
+            ${{ inputs.run-url }}
       - uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:
           name: pcb-generated
           path: hardware/pcb/generated
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() && inputs.base-ref != '' }}
+        with:
+          name: pcb-pr-report
+          path: pcb-pr-report.md
