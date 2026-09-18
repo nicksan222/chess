@@ -10,9 +10,9 @@ from typing import Unpack
 
 import pcbnew
 
-import pcb.definition.assemblies.sensing as hall_banks
 import pcb.definition.routing.paths as grid_router
 from pcb.definition import native, rules
+from pcb.definition.bank_assemblies import BANK_ASSEMBLIES
 from pcb.definition.native import EndpointKey
 from pcb.definition.parts import catalog
 from pcb.definition.parts.catalog import (
@@ -609,9 +609,9 @@ def _bank_routing_bounds_mm(bank: HallBank) -> tuple[float, float, float, float]
 def reserve_hall(ctx: RoutingContext) -> list[PendingHallRoute]:
     """Reserve bank/address/port escapes before shared buses add obstacles."""
     pending: list[PendingHallRoute] = []
-    for bank, (ref, _) in zip(
-        hall_banks.dimensions.HALL_BANKS, hall_banks.BANK_REFERENCES, strict=True
-    ):
+    for bank_assembly in BANK_ASSEMBLIES:
+        bank = bank_assembly.bank
+        ref = bank_assembly.expander_reference
         bounds = _bank_routing_bounds_mm(bank)
         for pin in Tca9554.input_pins():
             name = ctx.pads_by_endpoint[ref, pin].GetNetname()

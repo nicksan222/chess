@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import pcbnew
 
+from pcb.definition.bank_assemblies import BANK_ASSEMBLIES
 from pcb.definition.native import (
     add_mechanical_features,
     connections,
@@ -38,7 +39,6 @@ def load() -> pcbnew.BOARD:
 
 def validate(board: pcbnew.BOARD) -> None:
     from pcb.definition import rules
-    from pcb.definition.assemblies import sensing
     from shared.electronics.tca9554 import Tca9554Component, Tca9554Pin
 
     rules.validate()
@@ -67,9 +67,9 @@ def validate(board: pcbnew.BOARD) -> None:
     ):
         raise ValueError("no-connect nets must contain one logical pin")
     pads = endpoint_pads(board)
-    for bank, (ref, _) in zip(
-        dimensions.HALL_BANKS, sensing.BANK_REFERENCES, strict=True
-    ):
+    for bank_assembly in BANK_ASSEMBLIES:
+        bank = bank_assembly.bank
+        ref = bank_assembly.expander_reference
         expected = {
             Tca9554Pin.SUPPLY: "+3V3",
             Tca9554Pin.GROUND: "GND",
