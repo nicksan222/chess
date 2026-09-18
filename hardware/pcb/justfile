@@ -15,6 +15,12 @@ check:
 review:
     cd "{{ root }}" && PYTHONPATH=hardware python3 -m pcb review
 
+# CI-only review followed by a semantic comparison with a PR base commit.
+[private]
+pr-report base_ref head_ref repository run_url:
+    just --justfile "{{ justfile() }}" review
+    cd "{{ root }}" && python3 hardware/pcb/pr_report.py --base-ref "{{ base_ref }}" --head-ref "{{ head_ref }}" --current hardware/pcb/generated --repository "{{ repository }}" --run-url "{{ run_url }}" --output pcb-pr-report.md
+
 release:
     cd "{{ root }}" && PYTHONPATH=hardware python3 -m pcb release
 
