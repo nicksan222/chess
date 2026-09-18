@@ -16,13 +16,23 @@ image="${DEVCONTAINER_IMAGE:?DEVCONTAINER_IMAGE is not set}"
 config_dir="$(mktemp -d "${TMPDIR:-/tmp}/chess-devcontainer.XXXXXX")"
 config="${config_dir}/devcontainer.json"
 
-python3 - "${config}" "${image}" <<'PY'
+python3 - "${config}" "${image}" "${GITHUB_RUN_ID:-}" "${GITHUB_SERVER_URL:-}" <<'PY'
 import json
+import os
 import sys
 from pathlib import Path
 
 path = Path(sys.argv[1])
 image = sys.argv[2]
+run_id = sys.argv[3] if len(sys.argv) > 3 else ""
+server_url = sys.argv[4] if len(sys.argv) > 4 else ""
+
+container_env = {"RUST_BACKTRACE": "1"}
+if run_id:
+    container_env["GITHUB_RUN_ID"] = run_id
+if server_url:
+    container_env["GITHUB_SERVER_URL"] = server_url
+
 path.write_text(
     json.dumps(
         {
@@ -30,7 +40,7 @@ path.write_text(
             "image": image,
             "remoteUser": "vscode",
             "updateRemoteUserUID": True,
-            "containerEnv": {"RUST_BACKTRACE": "1"},
+            "containerEnv": container_env,
         },
         indent=2,
     )

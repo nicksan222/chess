@@ -15,6 +15,11 @@ check:
 review:
     cd "{{ root }}" && PYTHONPATH=hardware python3 -m pcb review
 
+# Review the board and write a semantic report relative to a Git ref.
+pr-report base_ref="main":
+    just --justfile "{{ justfile() }}" review
+    cd "{{ root }}" && python3 hardware/pcb/pr_report.py --base-ref "{{ base_ref }}"
+
 release:
     cd "{{ root }}" && PYTHONPATH=hardware python3 -m pcb release
 
