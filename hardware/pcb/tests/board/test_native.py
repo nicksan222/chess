@@ -3,10 +3,32 @@
 import unittest
 
 from pcb.definition import native
+from pcb.definition.parts import catalog
+from shared.components import COMPONENTS
 from shared.electronics import HallSensorComponent
 
 
 class NativeIdentityTest(unittest.TestCase):
+    def test_registry_owns_every_native_product_once(self):
+        for key, part in catalog.PCB_PARTS.items():
+            with self.subTest(part=key):
+                self.assertIs(part.spec, COMPONENTS[key])
+                self.assertEqual(
+                    part.template.GetFieldText("Package"), part.spec.package
+                )
+                self.assertTrue(part.new_model("X1").supports_part_key(key))
+
+    def test_registry_rejects_a_model_for_the_wrong_product(self):
+        with self.assertRaisesRegex(ValueError, "model does not support product"):
+            catalog.PcbPart(
+                COMPONENTS["CAP_100N"],
+                HallSensorComponent,
+                catalog.CAPACITOR_0603_FOOTPRINT,
+                "C",
+                "100nF",
+                "test",
+            )
+
     def test_unrelated_insertion_and_reordering_keep_component_and_pad_ids(self):
         def identities(references):
             board = native.new_board()
