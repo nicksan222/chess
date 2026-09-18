@@ -100,8 +100,8 @@ class RoutingTest(unittest.TestCase):
             preferred_layer_index=0,
             required_end_layer_index=1,
         )
-        self.assertEqual(route.points[0][2], 0)
-        self.assertEqual(route.points[-1][2], 1)
+        self.assertEqual(route.points[0].layer_index, 0)
+        self.assertEqual(route.points[-1].layer_index, 1)
 
     def test_pad_clearance_and_via_keepouts_are_distinct(self):
         outer_pad = self.add_pad()
@@ -138,10 +138,10 @@ class RoutingTest(unittest.TestCase):
     def test_apply_route_omits_zero_length_stubs_and_uses_native_dimensions(self):
         route = paths.Route(
             (
-                (40, 40, 0),
-                (44, 40, 0),
-                (44, 40, 1),
-                (48, 40, 1),
+                paths.GridNode(40, 40, 0),
+                paths.GridNode(44, 40, 0),
+                paths.GridNode(44, 40, 1),
+                paths.GridNode(48, 40, 1),
             ),
             self.layers,
         )
@@ -168,7 +168,11 @@ class RoutingTest(unittest.TestCase):
         self.assertEqual(vias[0].GetDrillValue(), pcbnew.FromMM(rules.VIA_DRILL_MM))
 
     def test_equal_cost_routes_use_stable_neighbour_order(self):
-        expected = ((40, 40, 0), (48, 40, 0), (48, 48, 0))
+        expected = (
+            paths.GridNode(40, 40, 0),
+            paths.GridNode(48, 40, 0),
+            paths.GridNode(48, 48, 0),
+        )
         routes = {
             self.route(
                 start=(10, 10),

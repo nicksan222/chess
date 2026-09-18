@@ -148,11 +148,35 @@ class RoutingOptions(TypedDict, total=False):
     routing_bounds_mm: tuple[float, float, float, float] | None
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
+class GridNode:
+    """One routing-grid cell on a specific index into a route's layers."""
+
+    x: int
+    y: int
+    layer_index: int
+
+    @classmethod
+    def from_cell(cls, cell: tuple[int, int], layer_index: int) -> GridNode:
+        return cls(cell[0], cell[1], layer_index)
+
+    @property
+    def cell(self) -> tuple[int, int]:
+        return (self.x, self.y)
+
+    def direction_from(self, other: GridNode) -> tuple[int, int, int]:
+        return (
+            self.x - other.x,
+            self.y - other.y,
+            self.layer_index - other.layer_index,
+        )
+
+
+@dataclass(frozen=True, slots=True)
 class Route:
     """Simplified raster points with layer indices, not native KiCad layer IDs."""
 
-    points: tuple[tuple[int, int, int], ...]
+    points: tuple[GridNode, ...]
     layers: tuple[int, ...]
 
 
@@ -257,22 +281,22 @@ def find_route(
         if preferred_layer_index is None
         else (preferred_layer_index,)
     )
-    starts = [(start_cell[0], start_cell[1], layer) for layer in start_layers]
+    starts = [GridNode.from_cell(start_cell, layer) for layer in start_layers]
     target_layers = (
         range(len(layers))
         if required_end_layer_index is None
         else (required_end_layer_index,)
     )
-    targets = {(end_cell[0], end_cell[1], layer) for layer in target_layers}
+    targets = {GridNode.from_cell(end_cell, layer) for layer in target_layers}
     # Serial numbers preserve neighbour order when A* scores tie. Via changes cost
     # more than planar steps so the search prefers staying on the current layer.
-    queue: list[tuple[int, int, tuple[int, int, int]]] = []
+    queue: list[tuple[int, int, GridNode]] = []
     serial = 0
-    distance: dict[tuple[int, int, int], int] = {}
-    previous: dict[tuple[int, int, int], tuple[int, int, int]] = {}
+    distance: dict[GridNode, int] = {}
+    previous: dict[GridNode, GridNode] = {}
     for node in starts:
         distance[node] = 0
-        heuristic = abs(node[0] - end_cell[0]) + abs(node[1] - end_cell[1])
+        heuristic = abs(node.x - end_cell[0]) + abs(node.y - end_cell[1])
         heapq.heappush(queue, (heuristic, serial, node))
         serial += 1
 
@@ -283,7 +307,7 @@ def find_route(
         if node in targets:
             found = node
             break
-        x, y, layer_index = node
+        x, y, layer_index = node.x, node.y, node.layer_index
         candidates = [
             (x + 1, y, layer_index, 1),
             (x - 1, y, layer_index, 1),
@@ -329,7 +353,7 @@ def find_route(
                 )
             ):
                 continue
-            candidate = (nx, ny, nl)
+            candidate = GridNode(nx, ny, nl)
             new_cost = cost + step_cost
             if new_cost >= distance.get(candidate, 1 << 60):
                 continue
@@ -349,9 +373,7 @@ def find_route(
     simple = [path[0]]
     for index in range(1, len(path) - 1):
         before, here, after = path[index - 1], path[index], path[index + 1]
-        delta1 = (here[0] - before[0], here[1] - before[1], here[2] - before[2])
-        delta2 = (after[0] - here[0], after[1] - here[1], after[2] - here[2])
-        if delta1 != delta2:
+        if here.direction_from(before) != after.direction_from(here):
             simple.append(here)
     simple.append(path[-1])
     return Route(tuple(simple), layers)
@@ -366,20 +388,20 @@ def apply_route(
 ) -> None:
     """Materialize a raster route as exact KiCad tracks and vias."""
     points = list(route.points)
-    first = position(points[0][:2])
-    last = position(points[-1][:2])
+    first = position(points[0].cell)
+    last = position(points[-1].cell)
 
     def trace(a: pcbnew.VECTOR2I, b: pcbnew.VECTOR2I, layer_index: int) -> None:
         if a == b:
             return
         native.add_trace(board, net, a, b, route.layers[layer_index], TRACK_MM)
 
-    trace(start, first, points[0][2])
+    trace(start, first, points[0].layer_index)
     for left, right in pairwise(points):
-        at = position(left[:2])
-        destination = position(right[:2])
-        if left[2] == right[2]:
-            trace(at, destination, left[2])
+        at = position(left.cell)
+        destination = position(right.cell)
+        if left.layer_index == right.layer_index:
+            trace(at, destination, left.layer_index)
         else:
             native.add_via(board, net, at)
-    trace(last, end, points[-1][2])
+    trace(last, end, points[-1].layer_index)
