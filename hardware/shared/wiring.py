@@ -6,8 +6,10 @@ parallel naming and mapping decisions.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from .dimensions import GRID_COUNT, HALL_BANKS
-from .hall_banks import FILES, square
+from .hall_banks import HallBank, SquarePosition
 
 # --- I2C bus ----------------------------------------------------------------
 # Eight compact Hall banks share the bus with the display. Acquisition is polled.
@@ -56,14 +58,16 @@ ASSIGNED_GPIO = (
 )
 
 
-def parse_square(name: str) -> tuple[int, int]:
-    text = name.strip().upper()
-    if len(text) < 2 or text[0] not in FILES:
-        raise ValueError(f"invalid square {name!r}")
-    rank = int(text[1:]) - 1
-    if rank not in range(GRID_COUNT):
-        raise ValueError(f"invalid square {name!r}")
-    return FILES.index(text[0]), rank
+@dataclass(frozen=True, slots=True)
+class ExpanderChannel:
+    """The GPIO-expander bank and P0–P7 channel assigned to a square."""
+
+    bank: HallBank
+    pin_index: int
+
+
+def parse_square(name: str) -> SquarePosition:
+    return SquarePosition.parse(name)
 
 
 def sense_net(square_name: str) -> str:
@@ -74,20 +78,23 @@ def button_net(name: str) -> str:
     return f"BTN_{name}"
 
 
-def expander_of(file_index: int, rank: int) -> tuple[int, int]:
+def expander_of(position: SquarePosition) -> ExpanderChannel:
     """Bank and P0–P7 channel owning this square."""
     for bank in HALL_BANKS:
-        if (file_index, rank) in bank.members:
-            return bank.index, bank.members.index((file_index, rank))
-    raise ValueError(f"invalid square coordinates {(file_index, rank)}")
+        for pin_index, member in enumerate(bank.members):
+            if member == position:
+                return ExpanderChannel(bank, pin_index)
+    raise ValueError(
+        f"invalid square coordinates {(position.file_index, position.rank)}"
+    )
 
 
-def led_chain_order() -> list[tuple[str, int, int]]:
+def led_chain_order() -> list[SquarePosition]:
     """Squares in chain order: a serpentine by rank starting at A1."""
-    chain: list[tuple[str, int, int]] = []
+    chain: list[SquarePosition] = []
     for index in range(GRID_COUNT**2):
         rank = index // GRID_COUNT
         offset = index % GRID_COUNT
         file_index = offset if rank % 2 == 0 else GRID_COUNT - 1 - offset
-        chain.append((square(file_index, rank), file_index, rank))
+        chain.append(SquarePosition(file_index, rank))
     return chain

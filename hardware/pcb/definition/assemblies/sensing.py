@@ -12,7 +12,6 @@ from pcb.definition.parts import catalog as parts
 from shared import dimensions, wiring
 from shared.electronics import CapacitorPin, HallSensorPin, Tca9554Pin
 from shared.electronics import Tca9554Component as Tca9554
-from shared.hall_banks import square
 
 # Published reference assignment by bank address; never allocated by traversal.
 BANK_REFERENCES = (
@@ -78,7 +77,7 @@ def add_sensor_banks(
         ):
             connect(board, "+3V3" if high else "GND", expander.pin(pin))
         no_connect(board, expander.pin(Tca9554Pin.INTERRUPT))
-        members = tuple(squares[square(*member)] for member in bank.members)
+        members = tuple(squares[position.name] for position in bank.members)
         for pin, member in zip(Tca9554.input_pins(), members, strict=True):
             connect(
                 board,

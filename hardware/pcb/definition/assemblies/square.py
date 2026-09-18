@@ -24,7 +24,9 @@ class Square:
 
 
 def add_square(board: pcbnew.BOARD, *, name: str, at: tuple[float, float]) -> Square:
-    file, rank = wiring.parse_square(name)
+    position = wiring.parse_square(name)
+    file = position.file_index
+    rank = position.rank
     # Derive stable references from board coordinates, not insertion order.
     chain_index = rank * 8 + (file if rank % 2 == 0 else 7 - file)
     sensor_index = sensor_number(file, rank) - 1
@@ -96,7 +98,7 @@ def add_square(board: pcbnew.BOARD, *, name: str, at: tuple[float, float]) -> Sq
 
 
 def connect_led_chain(board: pcbnew.BOARD, squares: Mapping[str, Square]) -> None:
-    chain = [squares[name].led for name, _, _ in wiring.led_chain_order()]
+    chain = [squares[position.name].led for position in wiring.led_chain_order()]
     connect(board, wiring.LED_DATA_NET, chain[0].pin(Sk9822Pin.DATA_IN))
     connect(board, wiring.LED_CLOCK_NET, chain[0].pin(Sk9822Pin.CLOCK_IN))
     for (left, right), (data, clock) in zip(
