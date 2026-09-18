@@ -19,13 +19,62 @@ CHANGE_MARKER = "<!-- pcb-design-changed: {changed} -->"
 MAX_DETAILS = 24
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, order=True, slots=True)
+class CopperPoint:
+    """Millimetre coordinate in the native board coordinate system."""
+
+    x_mm: float
+    y_mm: float
+
+
+@dataclass(frozen=True, order=True, slots=True)
+class CopperTrack:
+    """Stable identity of one routed copper segment."""
+
+    net_name: str
+    layer: str
+    start: CopperPoint
+    end: CopperPoint
+    width_mm: float
+
+
+@dataclass(frozen=True, order=True, slots=True)
+class CopperVia:
+    """Stable identity of one through-board copper via."""
+
+    net_name: str
+    centre: CopperPoint
+    diameter_mm: float
+    drill_mm: float
+    layers: tuple[str, ...]
+
+
+@dataclass(frozen=True, order=True, slots=True)
+class CopperBounds:
+    """Axis-aligned native board bounds in millimetres."""
+
+    left_mm: float
+    top_mm: float
+    right_mm: float
+    bottom_mm: float
+
+
+@dataclass(frozen=True, order=True, slots=True)
+class CopperZone:
+    """Stable identity of one filled copper zone."""
+
+    net_name: str
+    layers: tuple[str, ...]
+    bounds: CopperBounds
+
+
+@dataclass(frozen=True, slots=True)
 class BoardSnapshot:
     """Stable copper facts extracted from a native KiCad board."""
 
-    tracks: frozenset[tuple[str, str, tuple[float, float], tuple[float, float], float]]
-    vias: frozenset[tuple[str, tuple[float, float], float, float, tuple[str, ...]]]
-    zones: frozenset[tuple[str, tuple[str, ...], tuple[float, float, float, float]]]
+    tracks: frozenset[CopperTrack]
+    vias: frozenset[CopperVia]
+    zones: frozenset[CopperZone]
     board_sha256: str
 
 
@@ -80,8 +129,11 @@ def _millimetres(pcbnew: Any, value: int) -> float:
     return round(float(pcbnew.ToMM(value)), 3)
 
 
-def _point(pcbnew: Any, value: Any) -> tuple[float, float]:
-    return (_millimetres(pcbnew, value.x), _millimetres(pcbnew, value.y))
+def _point(pcbnew: Any, value: Any) -> CopperPoint:
+    return CopperPoint(
+        x_mm=_millimetres(pcbnew, value.x),
+        y_mm=_millimetres(pcbnew, value.y),
+    )
 
 
 def board_snapshot(path: Path) -> BoardSnapshot:
@@ -94,22 +146,20 @@ def board_snapshot(path: Path) -> BoardSnapshot:
         ) from error
 
     board = pcbnew.LoadBoard(str(path))
-    tracks: set[tuple[str, str, tuple[float, float], tuple[float, float], float]] = (
-        set()
-    )
-    vias: set[tuple[str, tuple[float, float], float, float, tuple[str, ...]]] = set()
+    tracks: set[CopperTrack] = set()
+    vias: set[CopperVia] = set()
     for item in board.GetTracks():
         if isinstance(item, pcbnew.PCB_VIA):
             layers = tuple(
                 board.GetLayerName(layer) for layer in item.GetLayerSet().CuStack()
             )
             vias.add(
-                (
-                    item.GetNetname(),
-                    _point(pcbnew, item.GetPosition()),
-                    _millimetres(pcbnew, item.GetWidth(pcbnew.F_Cu)),
-                    _millimetres(pcbnew, item.GetDrillValue()),
-                    layers,
+                CopperVia(
+                    net_name=item.GetNetname(),
+                    centre=_point(pcbnew, item.GetPosition()),
+                    diameter_mm=_millimetres(pcbnew, item.GetWidth(pcbnew.F_Cu)),
+                    drill_mm=_millimetres(pcbnew, item.GetDrillValue()),
+                    layers=layers,
                 )
             )
             continue
@@ -117,30 +167,30 @@ def board_snapshot(path: Path) -> BoardSnapshot:
             (_point(pcbnew, item.GetStart()), _point(pcbnew, item.GetEnd()))
         )
         tracks.add(
-            (
-                item.GetNetname(),
-                board.GetLayerName(item.GetLayer()),
-                endpoints[0],
-                endpoints[1],
-                _millimetres(pcbnew, item.GetWidth()),
+            CopperTrack(
+                net_name=item.GetNetname(),
+                layer=board.GetLayerName(item.GetLayer()),
+                start=endpoints[0],
+                end=endpoints[1],
+                width_mm=_millimetres(pcbnew, item.GetWidth()),
             )
         )
 
-    zones: set[tuple[str, tuple[str, ...], tuple[float, float, float, float]]] = set()
+    zones: set[CopperZone] = set()
     for zone in board.Zones():
         bounds = zone.GetBoundingBox()
         layers = tuple(
             board.GetLayerName(layer) for layer in zone.GetLayerSet().CuStack()
         )
         zones.add(
-            (
-                zone.GetNetname(),
-                layers,
-                (
-                    _millimetres(pcbnew, bounds.GetLeft()),
-                    _millimetres(pcbnew, bounds.GetTop()),
-                    _millimetres(pcbnew, bounds.GetRight()),
-                    _millimetres(pcbnew, bounds.GetBottom()),
+            CopperZone(
+                net_name=zone.GetNetname(),
+                layers=layers,
+                bounds=CopperBounds(
+                    left_mm=_millimetres(pcbnew, bounds.GetLeft()),
+                    top_mm=_millimetres(pcbnew, bounds.GetTop()),
+                    right_mm=_millimetres(pcbnew, bounds.GetRight()),
+                    bottom_mm=_millimetres(pcbnew, bounds.GetBottom()),
                 ),
             )
         )
@@ -350,21 +400,25 @@ def _copper_changes(
     added_zones = current.zones - base.zones
     removed_zones = base.zones - current.zones
     details: list[str] = []
-    track_groups = Counter((track[0], track[1]) for track in added_tracks)
-    removed_groups = Counter((track[0], track[1]) for track in removed_tracks)
+    track_groups = Counter((track.net_name, track.layer) for track in added_tracks)
+    removed_groups = Counter((track.net_name, track.layer) for track in removed_tracks)
     for net, layer in sorted(set(track_groups) | set(removed_groups)):
         details.append(
             f"`{net}` on {layer}: +{track_groups[net, layer]} / "
             f"−{removed_groups[net, layer]} track segments"
         )
-    via_groups = Counter(via[0] for via in added_vias)
-    removed_via_groups = Counter(via[0] for via in removed_vias)
+    via_groups = Counter(via.net_name for via in added_vias)
+    removed_via_groups = Counter(via.net_name for via in removed_vias)
     for net in sorted(set(via_groups) | set(removed_via_groups)):
         details.append(f"`{net}`: +{via_groups[net]} / −{removed_via_groups[net]} vias")
-    for net, layers, _bounds in sorted(added_zones):
-        details.append(f"Added `{net}` copper zone on {', '.join(layers)}")
-    for net, layers, _bounds in sorted(removed_zones):
-        details.append(f"Removed `{net}` copper zone on {', '.join(layers)}")
+    for zone in sorted(added_zones):
+        details.append(
+            f"Added `{zone.net_name}` copper zone on {', '.join(zone.layers)}"
+        )
+    for zone in sorted(removed_zones):
+        details.append(
+            f"Removed `{zone.net_name}` copper zone on {', '.join(zone.layers)}"
+        )
     changed = sum(
         len(items)
         for items in (
