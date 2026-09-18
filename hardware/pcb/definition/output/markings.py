@@ -6,8 +6,8 @@ from types import ModuleType
 
 import pcbnew
 
-import pcb.definition.assemblies.sensing as hall_banks
 from pcb.definition import native, rules
+from pcb.definition.bank_assemblies import BANK_ASSEMBLIES
 from pcb.definition.parts.catalog import (
     TACTILESWITCH_LABEL_OFFSET_MM,
     TCA9554_SILKSCREEN_CLEARANCE_MM,
@@ -108,9 +108,9 @@ def add_front_silkscreen(board: pcbnew.BOARD) -> None:
         offset_x, offset_y = SQUARE_LABEL_OFFSET_MM
         _add_text(board, name, (x + offset_x, y + offset_y), height=1.0)
 
-    for bank, (ref, _) in zip(
-        shared.HALL_BANKS, hall_banks.BANK_REFERENCES, strict=True
-    ):
+    for bank_assembly in BANK_ASSEMBLIES:
+        bank = bank_assembly.bank
+        ref = bank_assembly.expander_reference
         module = board.FindFootprintByReference(ref)
         if module is None:
             raise ValueError(f"missing bank {ref}")

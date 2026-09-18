@@ -6,6 +6,7 @@ from itertools import combinations
 import pcbnew
 
 from pcb.definition import board, native, rules
+from pcb.definition.bank_assemblies import BANK_ASSEMBLIES
 from pcb.definition.parts import catalog as parts
 from shared import dimensions
 
@@ -108,14 +109,14 @@ class DimensionsTest(unittest.TestCase):
                 )
         for f in self.parts:
             if f.GetFieldText("PartKey") == "TCA9554":
-                at = dimensions.EXPANDER_POSITIONS_BY_BANK_MM[f.GetFieldText("Bank")]
-                self.assertEqual(f.GetPosition(), native.point(*at))
-                bank = next(
-                    b
-                    for b in dimensions.HALL_BANKS
-                    if b.label == f.GetFieldText("Bank")
+                bank_assembly = next(
+                    assembly
+                    for assembly in BANK_ASSEMBLIES
+                    if assembly.label == f.GetFieldText("Bank")
                 )
-                cx, cy = bank.centre(
+                at = bank_assembly.expander_position_mm
+                self.assertEqual(f.GetPosition(), native.point(*at))
+                cx, cy = bank_assembly.bank.centre(
                     dimensions.SQUARE_SIZE_MM, dimensions.PLAYING_SPAN_MM
                 )
                 self.assertEqual(at, (cx, cy + 2))

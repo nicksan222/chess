@@ -7,23 +7,12 @@ from collections.abc import Mapping
 import pcbnew
 
 from pcb.definition.assemblies.square import Square
+from pcb.definition.bank_assemblies import BANK_ASSEMBLIES
 from pcb.definition.native import connect, no_connect, place
 from pcb.definition.parts import catalog as parts
-from shared import dimensions, wiring
+from shared import wiring
 from shared.electronics import CapacitorPin, HallSensorPin, Tca9554Pin
 from shared.electronics import Tca9554Component as Tca9554
-
-# Published reference assignment by bank address; never allocated by traversal.
-BANK_REFERENCES = (
-    ("U1", "C3"),
-    ("U2", "C4"),
-    ("U3", "C5"),
-    ("U4", "C6"),
-    ("U70", "C136"),
-    ("U71", "C137"),
-    ("U72", "C138"),
-    ("U73", "C139"),
-)
 
 
 def add_sensor_banks(
@@ -31,28 +20,23 @@ def add_sensor_banks(
     *,
     squares: Mapping[str, Square],
 ) -> None:
-    for bank, (ref, cap_ref) in zip(
-        dimensions.HALL_BANKS, BANK_REFERENCES, strict=True
-    ):
-        x, y = dimensions.EXPANDER_POSITIONS_BY_BANK_MM[bank.label]
-        assembly = f"sensing/{bank.label}"
+    for bank_assembly in BANK_ASSEMBLIES:
+        bank = bank_assembly.bank
+        ref = bank_assembly.expander_reference
         expander = place(
             board,
             parts.TCA9554_PART,
             ref,
-            at=(x, y),
-            assembly=assembly,
+            at=bank_assembly.expander_position_mm,
+            assembly=bank_assembly.assembly_name,
             extras={"Bank": bank.label, "Address": f"0x{bank.address:02X}"},
         )
         bypass = place(
             board,
             parts.CAP_100N_PART,
-            cap_ref,
-            at=(
-                x + parts.TCA9554_BYPASS_OFFSET_MM[0],
-                y + parts.TCA9554_BYPASS_OFFSET_MM[1],
-            ),
-            assembly=assembly,
+            bank_assembly.bypass_reference,
+            at=bank_assembly.bypass_position_mm,
+            assembly=bank_assembly.assembly_name,
             purpose="Expander decoupling capacitor",
             extras={"For": ref},
         )
