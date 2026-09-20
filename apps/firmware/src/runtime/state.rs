@@ -1,6 +1,9 @@
-use menu::{ChessboardAction, Input, MAIN_MENU, MenuState};
+use menu::{Input, MenuState};
 
-use crate::hardware::pins::{Button, ButtonEvent};
+use crate::{
+    hardware::pins::{Button, ButtonEvent},
+    menu::{ChessboardAction, MAIN_MENU},
+};
 
 /// A processed firmware state, suitable for displays and test assertions.
 #[derive(Clone, Debug, Eq, PartialEq)]
