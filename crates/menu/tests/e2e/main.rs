@@ -1,5 +1,5 @@
 use menu::{
-    ChessboardAction, ChessboardCallbacks, Event, Input, Menu, MenuItem, MenuState, MAIN_MENU,
+    ChessboardAction, ChessboardCallbacks, Event, Input, MAIN_MENU, Menu, MenuItem, MenuState,
 };
 
 #[derive(Debug, Eq, PartialEq)]
