@@ -1,4 +1,6 @@
-use menu::{Event, Input, Menu, MenuItem, MenuState};
+use menu::{
+    ChessboardAction, ChessboardCallbacks, Event, Input, Menu, MenuItem, MenuState, MAIN_MENU,
+};
 
 #[derive(Debug, Eq, PartialEq)]
 enum Action {
@@ -7,6 +9,41 @@ enum Action {
     ToggleSound,
     StartUpdate,
     CancelUpdate,
+}
+
+#[derive(Default)]
+struct CallbackHarness {
+    dispatched: Vec<ChessboardAction>,
+}
+
+impl ChessboardCallbacks for CallbackHarness {
+    fn start_local_game(&mut self) {
+        self.dispatched.push(ChessboardAction::StartLocalGame);
+    }
+
+    fn start_online_game(&mut self) {
+        self.dispatched.push(ChessboardAction::StartOnlineGame);
+    }
+
+    fn cancel_online_game(&mut self) {
+        self.dispatched.push(ChessboardAction::CancelOnlineGame);
+    }
+
+    fn show_network_status(&mut self) {
+        self.dispatched.push(ChessboardAction::ShowNetworkStatus);
+    }
+
+    fn start_network_setup(&mut self) {
+        self.dispatched.push(ChessboardAction::StartNetworkSetup);
+    }
+
+    fn forget_network(&mut self) {
+        self.dispatched.push(ChessboardAction::ForgetNetwork);
+    }
+
+    fn reset_game(&mut self) {
+        self.dispatched.push(ChessboardAction::ResetGame);
+    }
 }
 
 static PLAY: Menu<'static, Action> = Menu::new(
@@ -103,5 +140,45 @@ fn external_completion_restores_input_after_blocking_journey() {
     assert_eq!(
         menu.handle(Input::Ok),
         Event::BlockingStarted(&Action::StartUpdate)
+    );
+}
+
+#[test]
+fn product_callback_dispatch_reaches_firmware_implementations() {
+    let mut callbacks = CallbackHarness::default();
+    let mut menu = MenuState::new(&MAIN_MENU);
+
+    assert_eq!(
+        menu.handle_and_dispatch(Input::Ok, &mut callbacks),
+        Event::Opened { depth: 1 }
+    );
+    assert_eq!(
+        menu.handle_and_dispatch(Input::Ok, &mut callbacks),
+        Event::Activated(&ChessboardAction::StartLocalGame)
+    );
+    assert_eq!(
+        menu.handle_and_dispatch(Input::Down, &mut callbacks),
+        Event::SelectionChanged { selected: 1 }
+    );
+    assert_eq!(
+        menu.handle_and_dispatch(Input::Ok, &mut callbacks),
+        Event::BlockingStarted(&ChessboardAction::StartOnlineGame)
+    );
+    assert!(menu.is_blocked());
+    assert_eq!(
+        menu.handle_and_dispatch(Input::Escape, &mut callbacks),
+        Event::BlockingAborted {
+            operation: &ChessboardAction::StartOnlineGame,
+            escape_action: &ChessboardAction::CancelOnlineGame,
+        }
+    );
+
+    assert_eq!(
+        callbacks.dispatched,
+        [
+            ChessboardAction::StartLocalGame,
+            ChessboardAction::StartOnlineGame,
+            ChessboardAction::CancelOnlineGame,
+        ]
     );
 }
