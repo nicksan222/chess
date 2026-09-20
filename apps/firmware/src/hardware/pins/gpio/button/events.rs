@@ -1,23 +1,23 @@
 use crate::events::{Bus, Subscription};
 
-/// A control-panel button expressed as a domain action.
+/// The label printed beside a physical control-panel button.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Button {
-    Previous,
-    Next,
-    Back,
-    Forward,
-    Confirm,
+    Up,
+    Down,
+    Left,
+    Right,
+    Ok,
     Reset,
     Pass,
-    FunctionOne,
-    FunctionTwo,
-    FunctionThree,
-    FunctionFour,
-    FunctionFive,
+    F1,
+    F2,
+    F3,
+    F4,
+    F5,
 }
 
-/// Events produced by a button adapter.
+/// A debounced electrical transition produced by a physical button adapter.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ButtonEvent {
     Pressed(Button),

@@ -29,6 +29,11 @@ impl<const BCM: u8> ButtonPin<BCM> {
         BCM
     }
 
+    /// Returns the physical panel label assigned to this pin.
+    pub const fn button(&self) -> Button {
+        self.button
+    }
+
     pub fn read_level<R: ReadLevel>(&self, reader: &mut R) -> Result<Level, R::Error> {
         reader.read_level(self.gpio)
     }
@@ -46,7 +51,7 @@ impl<const BCM: u8> ButtonPin<BCM> {
     }
 }
 
-/// A debounced action from one panel button.
+/// A debounced physical transition from one panel button.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ButtonAction {
     Pressed,

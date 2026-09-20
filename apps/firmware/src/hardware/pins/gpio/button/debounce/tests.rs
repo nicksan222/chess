@@ -20,6 +20,36 @@ fn bounce_and_held_levels_emit_only_stable_edges() {
 }
 
 #[test]
+fn transition_waits_for_the_complete_debounce_period() {
+    let start = Instant::now();
+    let mut button = Debouncer::new(Level::High);
+
+    assert_eq!(button.observe(Level::Low, start), None);
+    assert_eq!(
+        button.observe(Level::Low, start + DEBOUNCE - POLL_INTERVAL),
+        None
+    );
+    assert_eq!(
+        button.observe(Level::Low, start + DEBOUNCE),
+        Some(ButtonAction::Pressed)
+    );
+}
+
+#[test]
+fn returning_to_the_stable_level_cancels_the_candidate() {
+    let start = Instant::now();
+    let mut button = Debouncer::new(Level::High);
+
+    assert_eq!(button.observe(Level::Low, start), None);
+    assert_eq!(button.observe(Level::High, start + POLL_INTERVAL), None);
+    assert_eq!(button.observe(Level::Low, start + DEBOUNCE), None);
+    assert_eq!(
+        button.observe(Level::Low, start + DEBOUNCE * 2),
+        Some(ButtonAction::Pressed)
+    );
+}
+
+#[test]
 fn read_failure_restarts_debounce_without_losing_last_stable_level() {
     let start = Instant::now();
     let mut button = Debouncer::new(Level::Low);

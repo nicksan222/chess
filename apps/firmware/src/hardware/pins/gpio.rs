@@ -70,18 +70,18 @@ pub struct GPIOPins {
 impl GPIOPins {
     pub(super) const fn get() -> Self {
         Self {
-            up_button: ButtonPin::new(Button::Previous),
-            down_button: ButtonPin::new(Button::Next),
-            left_button: ButtonPin::new(Button::Back),
-            right_button: ButtonPin::new(Button::Forward),
-            ok_button: ButtonPin::new(Button::Confirm),
+            up_button: ButtonPin::new(Button::Up),
+            down_button: ButtonPin::new(Button::Down),
+            left_button: ButtonPin::new(Button::Left),
+            right_button: ButtonPin::new(Button::Right),
+            ok_button: ButtonPin::new(Button::Ok),
             reset_button: ButtonPin::new(Button::Reset),
             pass_button: ButtonPin::new(Button::Pass),
-            function_one_button: ButtonPin::new(Button::FunctionOne),
-            function_two_button: ButtonPin::new(Button::FunctionTwo),
-            function_three_button: ButtonPin::new(Button::FunctionThree),
-            function_four_button: ButtonPin::new(Button::FunctionFour),
-            function_five_button: ButtonPin::new(Button::FunctionFive),
+            function_one_button: ButtonPin::new(Button::F1),
+            function_two_button: ButtonPin::new(Button::F2),
+            function_three_button: ButtonPin::new(Button::F3),
+            function_four_button: ButtonPin::new(Button::F4),
+            function_five_button: ButtonPin::new(Button::F5),
         }
     }
 }

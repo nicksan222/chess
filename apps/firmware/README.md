@@ -17,8 +17,8 @@ The flashable files are written to `dist/firmware`.
 ## Runtime architecture
 
 `src/runtime/` is the one event-driven application loop used by both the
-executable and E2E tests. Hardware adapters publish domain events through
-`src/events/`; Tokio channels never escape that module. `src/harness.rs` starts
+executable and E2E tests. Hardware adapters publish typed physical observations
+through `src/events/`; Tokio channels never escape that module. `src/harness.rs` starts
 the same runtime without physical adapters and provides an acknowledged
 `trigger` operation, so tests never race the event loop or duplicate production
 behavior.
@@ -32,8 +32,8 @@ restarted in the same process.
 
 Button pins in `src/hardware/pins/gpio/button/` own polling, active-low
 translation, and mechanical debounce. Call `start_subscription` with a GPIO
-reader, then await `on_message` for domain-level pressed/released actions.
-Callers do not inspect GPIO levels or raw hardware events.
+reader, then await `on_message` for debounced pressed/released transitions.
+Callers do not inspect GPIO levels.
 
 `src/hardware/display/` constructs the externally maintained `ssd1306` crate's
 buffered driver for the installed 128×64 OLED at address `0x3C`. It is
