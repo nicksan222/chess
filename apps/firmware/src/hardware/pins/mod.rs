@@ -10,8 +10,9 @@ mod i2c;
 mod spi;
 
 pub use gpio::{
-    ButtonAction, ButtonPin, ButtonSubscription, GPIO, GPIOPins, InputOutput, Level, Output, Pin,
-    ReadLevel, Readable, StartSubscriptionError, Writable, WriteLevel,
+    Button, ButtonAction, ButtonEvent, ButtonEventBus, ButtonEventSubscription, ButtonPin,
+    ButtonSubscription, GPIO, GPIOPins, InputOutput, Level, Output, Pin, ReadLevel, Readable,
+    StartSubscriptionError, Writable, WriteLevel,
 };
 pub use i2c::I2CPins;
 pub use spi::SPIPins;

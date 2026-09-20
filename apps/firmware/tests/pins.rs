@@ -1,6 +1,6 @@
 use std::{collections::VecDeque, time::Duration};
 
-use firmware::events::EventEmitter;
+use firmware::hardware::pins::ButtonEventBus;
 use firmware::hardware::pins::{
     BoardPins, ButtonAction, ButtonPin, GPIO, InputOutput, Level, Output, Pin, ReadLevel, Readable,
     Writable, WriteLevel,
@@ -101,7 +101,7 @@ impl ReadLevel for SequenceReader {
 #[test]
 fn starting_a_button_subscription_without_a_runtime_returns_an_error() {
     let pins = BoardPins::get();
-    let events = EventEmitter::new();
+    let events = ButtonEventBus::new();
     let reader = Lines { level: Level::High };
 
     let error = pins
@@ -119,7 +119,7 @@ fn starting_a_button_subscription_without_a_runtime_returns_an_error() {
 #[tokio::test(start_paused = true)]
 async fn button_pins_poll_debounce_and_deliver_domain_actions() {
     let pins = BoardPins::get();
-    let events = EventEmitter::new();
+    let events = ButtonEventBus::new();
     let reader = SequenceReader {
         levels: VecDeque::from([
             Level::High,

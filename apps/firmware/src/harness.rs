@@ -3,7 +3,7 @@
 use std::{io, time::Duration};
 
 use crate::{
-    events::Event,
+    hardware::pins::ButtonEvent,
     runtime::{Firmware, Snapshot},
 };
 
@@ -25,7 +25,7 @@ impl FirmwareHarness {
     }
 
     /// Injects a domain event and waits for the application to process it.
-    pub async fn trigger(&mut self, event: Event) -> io::Result<Snapshot> {
+    pub async fn trigger(&mut self, event: ButtonEvent) -> io::Result<Snapshot> {
         let processed = self.snapshot().processed_events;
         self.firmware
             .events()
