@@ -1,13 +1,7 @@
-#![allow(clippy::upper_case_acronyms)]
+//! Small, typed channel primitives. Event enums belong to their modules.
 
-//! Domain events and publish-subscribe delivery.
-//!
-//! Hardware polling translates electrical state into these domain values
-//! before emission. Consumers therefore react to player intent without knowing
-//! GPIO identities, voltage levels, Tokio channels, or debounce rules.
-
-mod domain;
+mod direct;
 mod pubsub;
 
-pub use domain::{Button, Event};
-pub use pubsub::{EmitError, EventEmitter, EventSubscription, ReceiveError};
+pub use direct::{DirectReceiver, DirectSendError, DirectSender, direct_channel};
+pub use pubsub::{Bus, EmitError, ReceiveError, Subscription};

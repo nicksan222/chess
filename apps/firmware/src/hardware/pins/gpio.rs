@@ -1,10 +1,11 @@
 use core::marker::PhantomData;
 
-use crate::events::Button;
-
 mod button;
 
-pub use button::{ButtonAction, ButtonPin, ButtonSubscription, StartSubscriptionError};
+pub use button::{
+    Button, ButtonAction, ButtonEvent, ButtonEventBus, ButtonEventSubscription, ButtonPin,
+    ButtonSubscription, StartSubscriptionError,
+};
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 #[allow(clippy::upper_case_acronyms)]

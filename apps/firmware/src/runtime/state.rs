@@ -1,12 +1,12 @@
 use menu::{ChessboardAction, Input, MAIN_MENU, MenuState};
 
-use crate::events::{Button, Event};
+use crate::hardware::pins::{Button, ButtonEvent};
 
 /// A processed firmware state, suitable for displays and test assertions.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Snapshot {
     pub processed_events: u64,
-    pub last_event: Option<Event>,
+    pub last_event: Option<ButtonEvent>,
     pub selected_index: usize,
     pub menu_depth: usize,
     /// Requested operation; game/network execution is not implemented yet.
@@ -36,9 +36,9 @@ impl State {
         self.snapshot.clone()
     }
 
-    pub(super) fn handle(&mut self, event: Event) {
+    pub(super) fn handle(&mut self, event: ButtonEvent) {
         self.snapshot.requested_action = None;
-        if let Event::ButtonPressed(button) = event {
+        if let ButtonEvent::Pressed(button) = event {
             if let Some(input) = menu_input(button) {
                 self.snapshot.requested_action = match self.menu.handle(input) {
                     menu::Event::Activated(action) | menu::Event::BlockingStarted(action) => {

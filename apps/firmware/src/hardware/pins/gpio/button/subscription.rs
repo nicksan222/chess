@@ -2,16 +2,19 @@ use std::{error::Error as StdError, fmt};
 
 use tokio::{runtime::Handle, task::JoinHandle, time::Instant};
 
-use crate::events::{Button, Event, EventEmitter, EventSubscription, ReceiveError};
+use crate::events::ReceiveError;
 
-use super::{ButtonAction, debounce::Debouncer, debounce::POLL_INTERVAL};
+use super::{
+    Button, ButtonAction, ButtonEvent, ButtonEventBus, ButtonEventSubscription,
+    debounce::Debouncer, debounce::POLL_INTERVAL,
+};
 use crate::hardware::pins::{GPIO, ReadLevel};
 
 /// A running button poller and its domain-level event subscription.
 #[derive(Debug)]
 pub struct ButtonSubscription {
     button: Button,
-    events: EventSubscription,
+    events: ButtonEventSubscription,
     worker: JoinHandle<()>,
 }
 
@@ -20,13 +23,13 @@ impl ButtonSubscription {
     pub async fn on_message(&mut self) -> Result<ButtonAction, ReceiveError> {
         loop {
             match self.events.recv().await? {
-                Event::ButtonPressed(button) if button == self.button => {
+                ButtonEvent::Pressed(button) if button == self.button => {
                     return Ok(ButtonAction::Pressed);
                 }
-                Event::ButtonReleased(button) if button == self.button => {
+                ButtonEvent::Released(button) if button == self.button => {
                     return Ok(ButtonAction::Released);
                 }
-                Event::ButtonPressed(_) | Event::ButtonReleased(_) => {}
+                ButtonEvent::Pressed(_) | ButtonEvent::Released(_) => {}
             }
         }
     }
@@ -54,7 +57,7 @@ pub(super) fn start<R>(
     gpio: GPIO,
     button: Button,
     reader: R,
-    events: &EventEmitter,
+    events: &ButtonEventBus,
 ) -> Result<ButtonSubscription, StartSubscriptionError>
 where
     R: ReadLevel + Send + 'static,
@@ -70,7 +73,7 @@ where
     })
 }
 
-async fn poll<R>(gpio: GPIO, button: Button, mut reader: R, events: EventEmitter)
+async fn poll<R>(gpio: GPIO, button: Button, mut reader: R, events: ButtonEventBus)
 where
     R: ReadLevel,
 {
@@ -100,8 +103,8 @@ where
         };
 
         let event = match action {
-            ButtonAction::Pressed => Event::ButtonPressed(button),
-            ButtonAction::Released => Event::ButtonReleased(button),
+            ButtonAction::Pressed => ButtonEvent::Pressed(button),
+            ButtonAction::Released => ButtonEvent::Released(button),
         };
         if events.emit(event).is_err() {
             return;

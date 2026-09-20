@@ -1,5 +1,5 @@
 use firmware::{
-    events::{Button, Event},
+    hardware::pins::{Button, ButtonEvent},
     harness::FirmwareHarness,
 };
 
@@ -9,31 +9,31 @@ async fn injected_buttons_drive_the_real_menu() {
     assert_eq!(firmware.snapshot().processed_events, 0);
 
     let moved = firmware
-        .trigger(Event::ButtonPressed(Button::Next))
+        .trigger(ButtonEvent::Pressed(Button::Next))
         .await
         .unwrap();
     assert_eq!(moved.selected_index, 1);
     assert_eq!(moved.processed_events, 1);
 
     let released = firmware
-        .trigger(Event::ButtonReleased(Button::Next))
+        .trigger(ButtonEvent::Released(Button::Next))
         .await
         .unwrap();
     assert_eq!(released.selected_index, 1);
     assert_eq!(released.processed_events, 2);
 
     let previous = firmware
-        .trigger(Event::ButtonPressed(Button::Previous))
+        .trigger(ButtonEvent::Pressed(Button::Previous))
         .await
         .unwrap();
     assert_eq!(previous.selected_index, 0);
     let opened = firmware
-        .trigger(Event::ButtonPressed(Button::Confirm))
+        .trigger(ButtonEvent::Pressed(Button::Confirm))
         .await
         .unwrap();
     assert_eq!(opened.menu_depth, 1);
     let closed = firmware
-        .trigger(Event::ButtonPressed(Button::Back))
+        .trigger(ButtonEvent::Pressed(Button::Back))
         .await
         .unwrap();
     assert_eq!(closed.menu_depth, 0);
@@ -45,7 +45,7 @@ async fn firmware_instances_are_isolated_and_restart_cleanly() {
     let mut first = FirmwareHarness::start().unwrap();
     let second = FirmwareHarness::start().unwrap();
     first
-        .trigger(Event::ButtonPressed(Button::Next))
+        .trigger(ButtonEvent::Pressed(Button::Next))
         .await
         .unwrap();
     assert_eq!(second.snapshot().processed_events, 0);
