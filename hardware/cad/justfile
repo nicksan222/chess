@@ -3,7 +3,6 @@ set shell := ["bash", "-euo", "pipefail", "-c"]
 root := justfile_directory() + "/../.."
 ruff := env_var_or_default("RUFF", "ruff")
 basedpyright := env_var_or_default("BASEDPYRIGHT", "basedpyright")
-python := env_var_or_default("PYTHON", "python3")
 blender_version := "4.5.13"
 blender_archive := "blender-" + blender_version + "-linux-x64.tar.xz"
 blender_sha256 := "da4e69b06b75b9e642d106496c50e7e240218b411d2f6e18271c1d1d819cef91"
@@ -17,7 +16,7 @@ default:
 quality:
     cd "{{ root }}" && {{ ruff }} check hardware/cad
     cd "{{ root }}" && {{ ruff }} format --check hardware/cad
-    cd "{{ root }}" && {{ basedpyright }} --project hardware/cad/pyrightconfig.json --pythonpath {{ python }}
+    cd "{{ root }}" && {{ basedpyright }} --project hardware/cad/pyrightconfig.json
 
 # Validate dimensions and run CAD unit tests.
 test:
