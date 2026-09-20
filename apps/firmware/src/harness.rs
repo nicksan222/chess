@@ -24,7 +24,8 @@ impl FirmwareHarness {
         self.firmware.snapshot()
     }
 
-    /// Injects a domain event and waits for the application to process it.
+    /// Injects a hardware observation and waits for the application to process
+    /// it.
     pub async fn trigger(&mut self, event: ButtonEvent) -> io::Result<Snapshot> {
         let processed = self.snapshot().processed_events;
         self.firmware

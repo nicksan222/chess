@@ -19,7 +19,7 @@ pub struct ButtonSubscription {
 }
 
 impl ButtonSubscription {
-    /// Waits for the next debounced action from this button.
+    /// Waits for the next debounced transition from this button.
     pub async fn on_message(&mut self) -> Result<ButtonAction, ReceiveError> {
         loop {
             match self.events.recv().await? {

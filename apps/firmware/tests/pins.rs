@@ -2,8 +2,8 @@ use std::{collections::VecDeque, time::Duration};
 
 use firmware::hardware::pins::ButtonEventBus;
 use firmware::hardware::pins::{
-    BoardPins, ButtonAction, ButtonPin, GPIO, InputOutput, Level, Output, Pin, ReadLevel, Readable,
-    Writable, WriteLevel,
+    BoardPins, Button, ButtonAction, ButtonPin, GPIO, InputOutput, Level, Output, Pin, ReadLevel,
+    Readable, Writable, WriteLevel,
 };
 
 struct Lines {
@@ -41,20 +41,69 @@ fn board_interfaces_use_the_hardware_bcm_numbers() {
     );
     assert_eq!(
         [
-            pins.gpio.up_button.bcm_number(),
-            pins.gpio.down_button.bcm_number(),
-            pins.gpio.left_button.bcm_number(),
-            pins.gpio.right_button.bcm_number(),
-            pins.gpio.ok_button.bcm_number(),
-            pins.gpio.reset_button.bcm_number(),
-            pins.gpio.pass_button.bcm_number(),
-            pins.gpio.function_one_button.bcm_number(),
-            pins.gpio.function_two_button.bcm_number(),
-            pins.gpio.function_three_button.bcm_number(),
-            pins.gpio.function_four_button.bcm_number(),
-            pins.gpio.function_five_button.bcm_number(),
+            (
+                pins.gpio.up_button.bcm_number(),
+                pins.gpio.up_button.button(),
+            ),
+            (
+                pins.gpio.down_button.bcm_number(),
+                pins.gpio.down_button.button(),
+            ),
+            (
+                pins.gpio.left_button.bcm_number(),
+                pins.gpio.left_button.button(),
+            ),
+            (
+                pins.gpio.right_button.bcm_number(),
+                pins.gpio.right_button.button(),
+            ),
+            (
+                pins.gpio.ok_button.bcm_number(),
+                pins.gpio.ok_button.button(),
+            ),
+            (
+                pins.gpio.reset_button.bcm_number(),
+                pins.gpio.reset_button.button(),
+            ),
+            (
+                pins.gpio.pass_button.bcm_number(),
+                pins.gpio.pass_button.button(),
+            ),
+            (
+                pins.gpio.function_one_button.bcm_number(),
+                pins.gpio.function_one_button.button(),
+            ),
+            (
+                pins.gpio.function_two_button.bcm_number(),
+                pins.gpio.function_two_button.button(),
+            ),
+            (
+                pins.gpio.function_three_button.bcm_number(),
+                pins.gpio.function_three_button.button(),
+            ),
+            (
+                pins.gpio.function_four_button.bcm_number(),
+                pins.gpio.function_four_button.button(),
+            ),
+            (
+                pins.gpio.function_five_button.bcm_number(),
+                pins.gpio.function_five_button.button(),
+            ),
         ],
-        [5, 6, 12, 13, 16, 17, 19, 20, 21, 22, 23, 24]
+        [
+            (5, Button::Up),
+            (6, Button::Down),
+            (12, Button::Left),
+            (13, Button::Right),
+            (16, Button::Ok),
+            (17, Button::Reset),
+            (19, Button::Pass),
+            (20, Button::F1),
+            (21, Button::F2),
+            (22, Button::F3),
+            (23, Button::F4),
+            (24, Button::F5),
+        ]
     );
 }
 
@@ -117,7 +166,7 @@ fn starting_a_button_subscription_without_a_runtime_returns_an_error() {
 }
 
 #[tokio::test(start_paused = true)]
-async fn button_pins_poll_debounce_and_deliver_domain_actions() {
+async fn button_pins_poll_debounce_and_deliver_physical_transitions() {
     let pins = BoardPins::get();
     let events = ButtonEventBus::new();
     let reader = SequenceReader {

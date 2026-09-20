@@ -9,31 +9,31 @@ async fn injected_buttons_drive_the_real_menu() {
     assert_eq!(firmware.snapshot().processed_events, 0);
 
     let moved = firmware
-        .trigger(ButtonEvent::Pressed(Button::Next))
+        .trigger(ButtonEvent::Pressed(Button::Down))
         .await
         .unwrap();
     assert_eq!(moved.selected_index, 1);
     assert_eq!(moved.processed_events, 1);
 
     let released = firmware
-        .trigger(ButtonEvent::Released(Button::Next))
+        .trigger(ButtonEvent::Released(Button::Down))
         .await
         .unwrap();
     assert_eq!(released.selected_index, 1);
     assert_eq!(released.processed_events, 2);
 
     let previous = firmware
-        .trigger(ButtonEvent::Pressed(Button::Previous))
+        .trigger(ButtonEvent::Pressed(Button::Up))
         .await
         .unwrap();
     assert_eq!(previous.selected_index, 0);
     let opened = firmware
-        .trigger(ButtonEvent::Pressed(Button::Confirm))
+        .trigger(ButtonEvent::Pressed(Button::Ok))
         .await
         .unwrap();
     assert_eq!(opened.menu_depth, 1);
     let closed = firmware
-        .trigger(ButtonEvent::Pressed(Button::Back))
+        .trigger(ButtonEvent::Pressed(Button::Left))
         .await
         .unwrap();
     assert_eq!(closed.menu_depth, 0);
@@ -45,7 +45,7 @@ async fn firmware_instances_are_isolated_and_restart_cleanly() {
     let mut first = FirmwareHarness::start().unwrap();
     let second = FirmwareHarness::start().unwrap();
     first
-        .trigger(ButtonEvent::Pressed(Button::Next))
+        .trigger(ButtonEvent::Pressed(Button::Down))
         .await
         .unwrap();
     assert_eq!(second.snapshot().processed_events, 0);

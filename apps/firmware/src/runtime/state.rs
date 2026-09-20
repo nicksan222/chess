@@ -60,17 +60,17 @@ impl State {
 
 fn menu_input(button: Button) -> Option<Input> {
     match button {
-        Button::Previous => Some(Input::Up),
-        Button::Next => Some(Input::Down),
-        Button::Back => Some(Input::Left),
-        Button::Forward => Some(Input::Right),
-        Button::Confirm => Some(Input::Ok),
+        Button::Up => Some(Input::Up),
+        Button::Down => Some(Input::Down),
+        Button::Left => Some(Input::Left),
+        Button::Right => Some(Input::Right),
+        Button::Ok => Some(Input::Ok),
         Button::Reset
         | Button::Pass
-        | Button::FunctionOne
-        | Button::FunctionTwo
-        | Button::FunctionThree
-        | Button::FunctionFour
-        | Button::FunctionFive => None,
+        | Button::F1
+        | Button::F2
+        | Button::F3
+        | Button::F4
+        | Button::F5 => None,
     }
 }
