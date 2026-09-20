@@ -1,7 +1,10 @@
 use ::menu::{Input, MenuState};
 
 use crate::{
-    hardware::pins::{Button, ButtonEvent},
+    hardware::{
+        HardwareEvent,
+        pins::{Button, ButtonEvent},
+    },
     menu::{MAIN_MENU, Request, transitions},
 };
 
@@ -9,7 +12,7 @@ use crate::{
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Snapshot {
     pub processed_events: u64,
-    pub last_event: Option<ButtonEvent>,
+    pub last_event: Option<HardwareEvent>,
     pub selected_index: usize,
     pub menu_depth: usize,
     /// Menu request awaiting an external implementation.
@@ -39,9 +42,9 @@ impl State {
         self.snapshot.clone()
     }
 
-    pub(super) fn handle(&mut self, event: ButtonEvent) {
+    pub(super) fn handle(&mut self, event: HardwareEvent) {
         self.snapshot.requested_action = None;
-        if let ButtonEvent::Pressed(button) = event {
+        if let HardwareEvent::Button(ButtonEvent::Pressed(button)) = event {
             if let Some(input) = menu_input(button) {
                 let request = match self.menu.handle(input) {
                     ::menu::Event::Activated(action) | ::menu::Event::BlockingStarted(action) => {
