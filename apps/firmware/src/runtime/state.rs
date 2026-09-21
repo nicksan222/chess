@@ -1,8 +1,8 @@
-use menu::{Input, MenuState};
+use ::menu::{Input, MenuState};
 
 use crate::{
     hardware::pins::{Button, ButtonEvent},
-    menu::{ChessboardAction, MAIN_MENU},
+    menu::{MAIN_MENU, Request, transitions},
 };
 
 /// A processed firmware state, suitable for displays and test assertions.
@@ -12,12 +12,12 @@ pub struct Snapshot {
     pub last_event: Option<ButtonEvent>,
     pub selected_index: usize,
     pub menu_depth: usize,
-    /// Requested operation; game/network execution is not implemented yet.
-    pub requested_action: Option<ChessboardAction>,
+    /// Menu request awaiting an external implementation.
+    pub requested_action: Option<Request>,
 }
 
 pub(super) struct State {
-    menu: MenuState<'static, ChessboardAction>,
+    menu: MenuState<'static, Request>,
     snapshot: Snapshot,
 }
 
@@ -43,14 +43,18 @@ impl State {
         self.snapshot.requested_action = None;
         if let ButtonEvent::Pressed(button) = event {
             if let Some(input) = menu_input(button) {
-                self.snapshot.requested_action = match self.menu.handle(input) {
-                    menu::Event::Activated(action) | menu::Event::BlockingStarted(action) => {
+                let request = match self.menu.handle(input) {
+                    ::menu::Event::Activated(action) | ::menu::Event::BlockingStarted(action) => {
                         Some(*action)
                     }
-                    menu::Event::BlockingAborted { escape_action, .. } => Some(*escape_action),
-                    menu::Event::ExternalAction(action) => Some(action),
+                    ::menu::Event::BlockingAborted { escape_action, .. } => Some(*escape_action),
+                    ::menu::Event::ExternalAction(action) => Some(action),
                     _ => None,
                 };
+                if let Some(request) = request {
+                    transitions::handle(request);
+                    self.snapshot.requested_action = Some(request);
+                }
             }
         }
         let menu = self.menu.snapshot();
