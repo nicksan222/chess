@@ -38,6 +38,16 @@ repos:
     layers:
       meta-poky:
 
+  meta-openembedded:
+    url: https://git.openembedded.org/meta-openembedded
+    path: layers/meta-openembedded
+    branch: wrynose
+    commit: 47d7dbdd10890bbd429bc0cccbe14435c37e5af1
+    layers:
+      meta-oe:
+      meta-python:
+      meta-networking:
+
   meta-raspberrypi:
     url: https://github.com/agherzan/meta-raspberrypi.git
     path: layers/meta-raspberrypi
@@ -52,7 +62,7 @@ local_conf_header:
     ENABLE_I2C = "1"
     ENABLE_SPI_BUS = "1"
     KERNEL_MODULE_AUTOLOAD:rpi += "i2c-dev"
-    DISTRO_FEATURES:append = " systemd usrmerge"
+    DISTRO_FEATURES:append = " systemd usrmerge wifi"
     DISTRO_FEATURES:remove = "sysvinit"
     DISTRO_FEATURES_OPTED_OUT += "sysvinit"
     VIRTUAL-RUNTIME_init_manager = "systemd"

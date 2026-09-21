@@ -1,6 +1,7 @@
 [Unit]
 Description=Firmware
-After=network.target
+Wants=NetworkManager.service
+After=NetworkManager.service network.target
 
 [Service]
 ExecStart=/usr/bin/firmware

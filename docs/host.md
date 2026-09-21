@@ -91,18 +91,23 @@ NetworkManager has no client-side WPS enrollment, and WPA3 dropped WPS entirely.
 
 Use access-point provisioning instead. On boot with no known network:
 
-1. Raise a hotspot: `nmcli device wifi hotspot ifname wlan0 ssid chess-XXXX`.
-   This needs `dnsmasq-base` installed, because that is what NetworkManager runs
-   internally for a shared connection.
+1. Raise a NetworkManager hotspot on `wlan0` with SSID `chess-XXXX`. The
+   firmware uses the typed `nmrs` D-Bus API rather than shelling out to `nmcli`.
+   NetworkManager's shared mode uses `dnsmasq` for DHCP and DNS.
 2. Advertise the portal with DHCP option 114, per RFC 8910, so phones open it
    automatically.
-3. Serve a page listing scanned networks, take a passphrase, and write it as an
-   `.nmconnection` profile.
+3. Serve a page listing scanned networks, take a passphrase, and ask
+   NetworkManager to persist the client profile.
 4. Drop the hotspot and join.
 
 A single radio cannot be an access point and a client at the same time, so
 provisioning is strictly sequential. The player types the passphrase on their own
 phone keyboard, which is why the board needs no on-device text entry.
+
+The firmware `connectivity` module implements the NetworkManager controller for
+status, scanning, WPA-protected hotspot lifecycle, and joining a selected client
+network. It does not yet serve the captive portal, advertise DHCP option 114, or
+coordinate those operations with startup and menu transitions.
 
 ## What the player sees
 
@@ -128,5 +133,7 @@ clocked, scheduler jitter makes a frame late rather than corrupt.
 
 ## TODO
 
-The systemd-supervised process and Yocto packaging exist. Physical I/O, display,
-network provisioning, and game coordination are not implemented yet.
+The systemd-supervised process, Yocto packaging, display driver, button input,
+and NetworkManager control layer exist. LED output, Hall-sensor acquisition, the
+captive provisioning portal, runtime connectivity coordination, and game
+coordination are not implemented yet.
