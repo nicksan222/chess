@@ -1,8 +1,13 @@
+use std::{collections::VecDeque, time::Duration};
+
 use firmware::{
-    hardware::pins::{Button, ButtonEvent},
+    hardware::{
+        BoardPosition, HardwareEvent, PieceEvent,
+        pins::{BoardPins, Button, ButtonEvent, GPIO, Level, ReadLevel},
+    },
     harness::FirmwareHarness,
     menu::Request,
-    runtime::Snapshot,
+    runtime::{Firmware, Snapshot},
 };
 
 async fn press(firmware: &mut FirmwareHarness, button: Button) -> Snapshot {
@@ -132,6 +137,21 @@ async fn user_journey_visits_every_menu_and_dispatches_every_request() {
 }
 
 #[tokio::test]
+async fn piece_events_are_observed_without_driving_the_menu() {
+    let mut firmware = FirmwareHarness::start().unwrap();
+    let piece = PieceEvent::Placed(BoardPosition::new(3, 4).unwrap());
+
+    let snapshot = firmware.trigger(piece).await.unwrap();
+
+    assert_eq!(snapshot.processed_events, 1);
+    assert_eq!(snapshot.selected_index, 0);
+    assert_eq!(snapshot.menu_depth, 0);
+    assert_eq!(snapshot.requested_action, None);
+    assert_eq!(snapshot.last_event, Some(HardwareEvent::Piece(piece)));
+    firmware.shutdown().await.unwrap();
+}
+
+#[tokio::test]
 async fn firmware_instances_are_isolated_and_restart_cleanly() {
     let mut first = FirmwareHarness::start().unwrap();
     let second = FirmwareHarness::start().unwrap();
@@ -145,6 +165,52 @@ async fn firmware_instances_are_isolated_and_restart_cleanly() {
     let restarted = FirmwareHarness::start().unwrap();
     assert_eq!(restarted.snapshot().selected_index, 0);
     restarted.shutdown().await.unwrap();
+}
+
+struct SequenceReader {
+    levels: VecDeque<Level>,
+}
+
+impl ReadLevel for SequenceReader {
+    type Error = ();
+
+    fn read_level(&mut self, _: GPIO) -> Result<Level, Self::Error> {
+        self.levels.pop_front().ok_or(())
+    }
+}
+
+#[tokio::test(start_paused = true)]
+async fn physical_button_subscription_bridges_into_the_menu_runtime() {
+    let pins = BoardPins::get();
+    let mut firmware = Firmware::start().unwrap();
+    let events = firmware.events();
+    let reader = SequenceReader {
+        levels: VecDeque::from([
+            Level::High,
+            Level::Low,
+            Level::Low,
+            Level::Low,
+            Level::Low,
+            Level::Low,
+        ]),
+    };
+    let _subscription = pins
+        .gpio
+        .down_button
+        .start_subscription(reader, &events)
+        .unwrap();
+
+    let snapshot = tokio::time::timeout(Duration::from_millis(100), firmware.after(0))
+        .await
+        .expect("button subscription should reach the runtime")
+        .unwrap();
+
+    assert_eq!(snapshot.selected_index, 1);
+    assert_eq!(
+        snapshot.last_event,
+        Some(HardwareEvent::Button(ButtonEvent::Pressed(Button::Down)))
+    );
+    firmware.shutdown().await.unwrap();
 }
 
 #[test]

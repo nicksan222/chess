@@ -6,6 +6,8 @@
 
 mod piece;
 
+use crate::events::{Bus, Subscription};
+
 use super::pins::ButtonEvent;
 
 pub use piece::{BoardPosition, PieceEvent};
@@ -16,6 +18,11 @@ pub enum HardwareEvent {
     Button(ButtonEvent),
     Piece(PieceEvent),
 }
+
+/// Shared bus carrying every physical input observation.
+pub type HardwareEventBus = Bus<HardwareEvent>;
+/// Independent subscription to physical input observations.
+pub type HardwareEventSubscription = Subscription<HardwareEvent>;
 
 impl From<ButtonEvent> for HardwareEvent {
     fn from(event: ButtonEvent) -> Self {

@@ -3,8 +3,7 @@ use core::marker::PhantomData;
 mod button;
 
 pub use button::{
-    Button, ButtonAction, ButtonEvent, ButtonEventBus, ButtonEventSubscription, ButtonPin,
-    ButtonSubscription, StartSubscriptionError,
+    Button, ButtonAction, ButtonEvent, ButtonPin, ButtonSubscription, StartSubscriptionError,
 };
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
