@@ -75,6 +75,10 @@ pcb-release:
 firmware-binary:
     just --justfile apps/firmware/justfile cross-build
 
+# Regenerate Yocto crate metadata from the firmware Cargo.lock.
+firmware-update-crates:
+    just --justfile apps/firmware/justfile update-crates
+
 # Validate the complete Yocto configuration.
 firmware-check:
     just --justfile apps/firmware/justfile image-check

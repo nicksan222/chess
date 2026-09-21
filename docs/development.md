@@ -62,11 +62,13 @@ the pull-request firmware checks. Full Yocto image builds are isolated in the
 workflow after the normal checks, and it also runs weekly to detect ecosystem
 drift or manually against any selected branch with **Actions → Firmware → Run
 workflow**. A `v*` tag calls the same build only after the complete tag CI graph
-succeeds, and only that gated invocation may publish release assets. Locally,
-`just firmware-check` parses and dry-runs the BitBake image graph,
-`just firmware-binary` builds the AArch64 application, and `just firmware`
-constructs the complete image.
+succeeds, and only that gated invocation may publish release assets. Locally, `just firmware-update-crates` regenerates the checked-in Yocto crate
+metadata from `apps/firmware/yocto/Cargo.lock`, `just firmware-check` parses and
+dry-runs the BitBake image graph, `just firmware-binary` builds the AArch64
+application, and `just firmware` constructs the complete image.
 
 The version-controlled Git hook and `.pre-commit-config.yaml` both invoke
 `just precommit`, which excludes expensive CAD renders and PCB fabrication
-output.
+output. The pre-commit configuration also checks the generated Yocto crate
+metadata whenever its manifest, lockfile, or generated include changes; stale
+metadata fails with the regeneration command.

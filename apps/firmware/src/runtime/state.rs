@@ -38,17 +38,17 @@ impl State {
 
     pub(super) fn handle(&mut self, event: ButtonEvent) {
         self.snapshot.requested_action = None;
-        if let ButtonEvent::Pressed(button) = event {
-            if let Some(input) = menu_input(button) {
-                self.snapshot.requested_action = match self.menu.handle(input) {
-                    menu::Event::Activated(action) | menu::Event::BlockingStarted(action) => {
-                        Some(*action)
-                    }
-                    menu::Event::BlockingAborted { escape_action, .. } => Some(*escape_action),
-                    menu::Event::ExternalAction(action) => Some(action),
-                    _ => None,
-                };
-            }
+        if let ButtonEvent::Pressed(button) = event
+            && let Some(input) = menu_input(button)
+        {
+            self.snapshot.requested_action = match self.menu.handle(input) {
+                menu::Event::Activated(action) | menu::Event::BlockingStarted(action) => {
+                    Some(*action)
+                }
+                menu::Event::BlockingAborted { escape_action, .. } => Some(*escape_action),
+                menu::Event::ExternalAction(action) => Some(action),
+                _ => None,
+            };
         }
         let menu = self.menu.snapshot();
         self.snapshot.selected_index = menu.selected_index();
