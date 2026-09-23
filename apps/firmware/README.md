@@ -27,8 +27,16 @@ behavior.
 cargo test -p firmware --test e2e
 ```
 
-The E2E cases live in `tests/e2e/`. Each harness owns isolated state and can be
-restarted in the same process.
+The E2E cases live in `tests/e2e/`. The default E2E run requires Docker: Rust
+`testcontainers` starts real NetworkManager in an Ubuntu container and a pinned
+Ubuntu QEMU VM. The VM loads two guest-kernel `mac80211_hwsim` radios; the Rust
+probe uses the production `Connectivity` API to discover and join open/WPA
+networks and start/stop a visible hotspot. KVM accelerates the VM when
+available; without `/dev/kvm`, QEMU uses slower software emulation. A cold VM
+image download is about 600 MB. These tests verify Linux integration, **not**
+the Yocto image or Pi hardware. GPIO E2E tests still feed scripted electrical
+levels into the real debounce/event/runtime path because no Linux GPIO adapter
+is implemented yet.
 
 `src/connectivity/` owns typed, presentation-agnostic Wi-Fi control. Its
 `Connectivity` API reports status, scans access points, manages the WPA

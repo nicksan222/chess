@@ -38,7 +38,7 @@ build:
 # Compile and link the complete firmware crate graph for the Pi architecture.
 cross-build: _cross-toolchain
     cd "{{ root }}" && CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc \
-        cargo build --locked --release --package "{{ package }}" --target "{{ target }}"
+        cargo build --locked --release --package "{{ package }}" --bin "{{ package }}" --target "{{ target }}"
     aarch64-linux-gnu-readelf --file-header \
         "{{ root }}/target/{{ target }}/release/{{ package }}" | grep --quiet 'Machine:.*AArch64'
 

@@ -1,13 +1,18 @@
-use std::{collections::VecDeque, time::Duration};
+mod connectivity;
+mod gpio;
+mod linux;
+mod probe_case;
+mod vm;
+mod wifi;
 
 use firmware::{
     hardware::{
         BoardPosition, HardwareEvent, PieceEvent,
-        pins::{BoardPins, Button, ButtonEvent, GPIO, Level, ReadLevel},
+        pins::{Button, ButtonEvent},
     },
     harness::FirmwareHarness,
     menu::Request,
-    runtime::{Firmware, Snapshot},
+    runtime::Snapshot,
 };
 
 async fn press(firmware: &mut FirmwareHarness, button: Button) -> Snapshot {
@@ -165,71 +170,6 @@ async fn firmware_instances_are_isolated_and_restart_cleanly() {
     let restarted = FirmwareHarness::start().unwrap();
     assert_eq!(restarted.snapshot().selected_index, 0);
     restarted.shutdown().await.unwrap();
-}
-
-struct SequenceReader {
-    levels: VecDeque<Level>,
-}
-
-impl ReadLevel for SequenceReader {
-    type Error = ();
-
-    fn read_level(&mut self, _: GPIO) -> Result<Level, Self::Error> {
-        self.levels.pop_front().ok_or(())
-    }
-}
-
-#[tokio::test(start_paused = true)]
-async fn bouncing_button_press_and_release_reach_the_menu_once_each() {
-    let pins = BoardPins::get();
-    let mut firmware = Firmware::start().unwrap();
-    let events = firmware.events();
-    let reader = SequenceReader {
-        levels: VecDeque::from([
-            Level::High, // Initial, unpressed level.
-            Level::Low,  // Contact bounces before settling.
-            Level::High,
-            Level::Low,
-            Level::Low,
-            Level::Low,
-            Level::Low,
-            Level::Low,
-            Level::High, // Release also has to remain stable.
-            Level::High,
-            Level::High,
-            Level::High,
-            Level::High,
-        ]),
-    };
-    let _subscription = pins
-        .gpio
-        .down_button
-        .start_subscription(reader, &events)
-        .unwrap();
-
-    let snapshot = tokio::time::timeout(Duration::from_millis(100), firmware.after(0))
-        .await
-        .expect("button subscription should reach the runtime")
-        .unwrap();
-
-    assert_eq!(snapshot.selected_index, 1);
-    assert_eq!(snapshot.processed_events, 1);
-    assert_eq!(
-        snapshot.last_event,
-        Some(HardwareEvent::Button(ButtonEvent::Pressed(Button::Down)))
-    );
-
-    let released = tokio::time::timeout(Duration::from_millis(100), firmware.after(1))
-        .await
-        .expect("button release should reach the runtime")
-        .unwrap();
-    assert_eq!(released.selected_index, 1);
-    assert_eq!(released.processed_events, 2);
-    assert_eq!(
-        released.last_event,
-        Some(HardwareEvent::Button(ButtonEvent::Released(Button::Down)))
-    );
-    firmware.shutdown().await.unwrap();
 }
 
 #[test]

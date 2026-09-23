@@ -1,0 +1,11 @@
+#cloud-config
+package_update: true
+packages:
+  - network-manager
+  - hostapd
+  - wpasupplicant
+  - dnsmasq-base
+  - iw
+  - linux-modules-extra-6.8.0-139-generic
+runcmd:
+  - [ bash, -c, 'mkdir -p /mnt/seed; mount /dev/sr0 /mnt/seed; bash /mnt/seed/bootstrap.sh' ]

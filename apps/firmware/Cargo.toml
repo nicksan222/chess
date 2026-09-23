@@ -15,6 +15,15 @@ nmrs = "3.5.2"
 ssd1306 = "0.10.0"
 tokio = { version = "1.53.1", features = ["rt", "sync", "time"] }
 
+# Testcontainers copies this small executable into its Linux fixture. Cargo
+# builds it for integration tests, but Yocto's isolated manifest omits it.
+[[bin]]
+name = "firmware-linux-probe"
+path = "tests/e2e/linux_probe.rs"
+test = false
+bench = false
+
 [dev-dependencies]
 embedded-graphics-simulator = { version = "0.8.0", default-features = false }
+testcontainers = { version = "0.28.0", default-features = false }
 tokio = { version = "1.53.1", features = ["macros", "rt", "sync", "test-util", "time"] }
