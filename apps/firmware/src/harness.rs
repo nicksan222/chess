@@ -3,7 +3,7 @@
 use std::{io, time::Duration};
 
 use crate::{
-    hardware::pins::ButtonEvent,
+    hardware::HardwareEvent,
     runtime::{Firmware, Snapshot},
 };
 
@@ -26,7 +26,11 @@ impl FirmwareHarness {
 
     /// Injects a hardware observation and waits for the application to process
     /// it.
-    pub async fn trigger(&mut self, event: ButtonEvent) -> io::Result<Snapshot> {
+    pub async fn trigger<E>(&mut self, event: E) -> io::Result<Snapshot>
+    where
+        E: Into<HardwareEvent>,
+    {
+        let event = event.into();
         let processed = self.snapshot().processed_events;
         self.firmware
             .events()
