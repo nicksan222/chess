@@ -23,6 +23,7 @@ RUN apt-get update \
         gawk \
         gcc-aarch64-linux-gnu \
         git \
+        gh \
         iputils-ping \
         libc6-dev-arm64-cross \
         libdecor-0-0 \
@@ -64,7 +65,12 @@ RUN apt-get update \
         xdotool \
         xz-utils \
         zstd \
-    && add-apt-repository --yes "${KICAD_PPA}" \
+    && for attempt in 1 2 3; do \
+        add-apt-repository --yes "${KICAD_PPA}" && break; \
+        if [ "${attempt}" -eq 3 ]; then exit 1; fi; \
+        echo "KiCad PPA unavailable; retrying (${attempt}/3)..."; \
+        sleep 15; \
+    done \
     && apt-get update \
     && apt-get install --yes --no-install-recommends kicad \
     && apt-get clean \
