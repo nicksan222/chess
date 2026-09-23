@@ -4,4 +4,6 @@ pub mod display;
 pub mod events;
 pub mod pins;
 
-pub use events::{BoardPosition, HardwareEvent, PieceEvent};
+pub use events::{
+    BoardPosition, HardwareEvent, HardwareEventBus, HardwareEventSubscription, PieceEvent,
+};
