@@ -12,6 +12,9 @@ EXTERNALSRC_BUILD = "${WORKDIR}/build"
 SOURCE_BASEDIR = "${EXTERNALSRC}/apps/firmware"
 CARGO_MANIFEST_PATH = "${SOURCE_BASEDIR}/yocto/Cargo.toml"
 CARGO_LOCK_PATH = "${SOURCE_BASEDIR}/yocto/Cargo.lock"
+# update_crates scans CARGO_LOCK_SRC_DIR recursively, not CARGO_LOCK_PATH.
+# Restrict it to the isolated manifest rather than the entire checkout.
+CARGO_LOCK_SRC_DIR = "${SOURCE_BASEDIR}/yocto"
 
 # base_do_unpack resets SOURCE_BASEDIR to EXTERNALSRC when a recipe combines an
 # external tree with fetched crates. Restore the narrow source directory before
