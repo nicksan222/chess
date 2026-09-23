@@ -32,6 +32,10 @@ jobs:
         with:
           path: .cache/yocto/layers
           key: ${{ runner.os }}-yocto-layers-${{ hashFiles('apps/firmware/yocto/kas/firmware.yml') }}
+      # BitBake uses unprivileged user namespaces inside the container; Ubuntu's
+      # AppArmor restriction on the hosted runner otherwise blocks its sanity check.
+      - name: Allow BitBake user namespaces
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
       - uses: ./.github/actions/run-in-devcontainer
         with:
           image: ${{ inputs.image }}
