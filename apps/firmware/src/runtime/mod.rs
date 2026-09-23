@@ -6,14 +6,14 @@ use std::io;
 
 use tokio::{runtime::Handle, sync::watch, task::JoinHandle};
 
-use crate::{events::ReceiveError, hardware::pins::ButtonEventBus};
+use crate::{events::ReceiveError, hardware::HardwareEventBus};
 use state::State;
 
 pub use state::Snapshot;
 
 /// Owns one running firmware instance. Dropping it stops its event loop.
 pub struct Firmware {
-    events: ButtonEventBus,
+    events: HardwareEventBus,
     updates: watch::Receiver<Snapshot>,
     worker: JoinHandle<Result<(), ReceiveError>>,
 }
@@ -27,7 +27,7 @@ impl Firmware {
                 "starting firmware requires an async runtime: {error}"
             ))
         })?;
-        let events = ButtonEventBus::new();
+        let events = HardwareEventBus::new();
         // Subscribe before returning so even the first injected event is handled.
         let mut subscription = events.subscribe();
         let mut state = State::new();
@@ -46,7 +46,7 @@ impl Firmware {
         })
     }
 
-    pub fn events(&self) -> ButtonEventBus {
+    pub fn events(&self) -> HardwareEventBus {
         self.events.clone()
     }
 

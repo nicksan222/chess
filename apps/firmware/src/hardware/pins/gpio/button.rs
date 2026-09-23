@@ -4,7 +4,7 @@ mod debounce;
 mod events;
 mod subscription;
 
-pub use events::{Button, ButtonEvent, ButtonEventBus, ButtonEventSubscription};
+pub use events::{Button, ButtonEvent};
 pub use subscription::{ButtonSubscription, StartSubscriptionError};
 
 /// A control-panel button connected directly to a GPIO input.
@@ -42,7 +42,7 @@ impl<const BCM: u8> ButtonPin<BCM> {
     pub fn start_subscription<R>(
         &self,
         reader: R,
-        events: &ButtonEventBus,
+        events: &crate::hardware::HardwareEventBus,
     ) -> Result<ButtonSubscription, StartSubscriptionError>
     where
         R: ReadLevel + Send + 'static,

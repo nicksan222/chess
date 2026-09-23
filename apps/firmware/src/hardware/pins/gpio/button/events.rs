@@ -1,5 +1,3 @@
-use crate::events::{Bus, Subscription};
-
 /// The label printed beside a physical control-panel button.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Button {
@@ -23,6 +21,3 @@ pub enum ButtonEvent {
     Pressed(Button),
     Released(Button),
 }
-
-pub type ButtonEventBus = Bus<ButtonEvent>;
-pub type ButtonEventSubscription = Subscription<ButtonEvent>;
