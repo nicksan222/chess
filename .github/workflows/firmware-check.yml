@@ -23,9 +23,27 @@ jobs:
           just-version: 1.40.0
       - run: just --justfile apps/firmware/justfile yocto-check
 
+  generated-crates:
+    name: Generated crates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/cache@v6
+        with:
+          path: .cache/yocto/layers
+          key: ${{ runner.os }}-yocto-layers-${{ hashFiles('apps/firmware/yocto/kas/firmware.yml') }}
+      # BitBake uses unprivileged user namespaces inside the container; Ubuntu's
+      # AppArmor restriction on the hosted runner otherwise blocks its sanity check.
+      - name: Allow BitBake user namespaces
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+      - uses: ./.github/actions/run-in-devcontainer
+        with:
+          image: ${{ inputs.image }}
+          command: just --justfile apps/firmware/justfile verify-crates
+
   firmware-binary:
     name: AArch64 binary
-    needs: firmware-metadata
+    needs: [firmware-metadata, generated-crates]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7

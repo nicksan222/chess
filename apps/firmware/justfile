@@ -9,6 +9,7 @@ machine := "raspberrypi0-2w-64"
 deploy := cache + "/build/tmp/deploy/images/" + machine
 output := root + "/dist/firmware"
 kas_image := "ghcr.io/siemens/kas/kas:5.2"
+kas := env_var_or_default("KAS", "kas")
 ruff := env_var_or_default("RUFF", "ruff")
 
 default:
@@ -47,7 +48,18 @@ _cross-toolchain:
     @command -v aarch64-linux-gnu-readelf >/dev/null || { echo 'error: AArch64 binutils are required; use the development container' >&2; exit 1; }
     @target_libdir="$(rustc --target '{{ target }}' --print target-libdir)"; compgen -G "$target_libdir/libstd-*.rlib" >/dev/null || { echo 'error: the Rust AArch64 target is required; use the development container' >&2; exit 1; }
 
-# Validate crate metadata consumed by BitBake.
+# Regenerate BitBake crate sources and checksums from the isolated Cargo.lock.
+update-crates: _kas
+    mkdir -p "{{ cache }}"
+    cd "{{ root }}" && KAS_WORK_DIR="{{ cache }}" FIRMWARE_SOURCE_DIR="{{ root }}" \
+        {{ kas }} shell -c 'bitbake -c update_crates firmware' "{{ config }}"
+
+# Regenerate crate metadata and fail if it was not already current.
+verify-crates: update-crates
+    cd "{{ root }}" && git diff --exit-code -- \
+        apps/firmware/yocto/meta-firmware/recipes-firmware/firmware/firmware-crates.inc
+
+# Validate generated crate metadata against Cargo.lock.
 validate:
     cd "{{ root }}" && python3 apps/firmware/yocto/validate_crates.py
 
@@ -85,6 +97,10 @@ image: validate _docker
     (cd "{{ output }}" && sha256sum -- * > SHA256SUMS)
     xz --test "{{ output }}/firmware-rpi-zero-2w.img.xz"
     (cd "{{ output }}" && sha256sum --check SHA256SUMS)
+
+[private]
+_kas:
+    @command -v {{ kas }} >/dev/null || { echo 'error: kas is required; use the development container' >&2; exit 1; }
 
 [private]
 _docker:

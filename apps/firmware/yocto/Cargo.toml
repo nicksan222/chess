@@ -3,7 +3,7 @@
 name = "firmware"
 edition = "2024"
 license = "MIT"
-rust-version = "1.85"
+rust-version = "1.90"
 version = "0.0.0"
 
 [lib]
@@ -20,6 +20,7 @@ embedded-graphics = "0.8.2"
 embedded-hal = "1.0.0"
 logger = { path = "../../../crates/logger", features = ["std"] }
 menu = { path = "../../../crates/menu" }
+nmrs = "3.5.2"
 ssd1306 = "0.10.0"
 tokio = { version = "1.53.1", features = ["rt", "sync", "time"] }
 

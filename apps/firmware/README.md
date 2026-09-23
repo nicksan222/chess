@@ -30,6 +30,16 @@ cargo test -p firmware --test e2e
 The E2E cases live in `tests/e2e/`. Each harness owns isolated state and can be
 restarted in the same process.
 
+`src/connectivity/` owns typed, presentation-agnostic Wi-Fi control. Its
+`Connectivity` API reports status, scans access points, manages the WPA
+provisioning hotspot, and joins open or WPA Personal networks. Product code sees
+validated SSIDs, redacted passphrases, and domain results rather than command
+arguments or NetworkManager types. The implementation uses the maintained `nmrs` D-Bus
+client; no shell or `nmcli` process is involved. The Yocto image
+includes NetworkManager Wi-Fi support, `wpa-supplicant`, and `dnsmasq` for
+NetworkManager's shared hotspot mode. Captive-portal presentation and menu
+transition wiring remain separate consumers of this module.
+
 `src/menu/definition.rs` is the single product menu definition. It composes the
 headless `menu` crate's primitives into the Play, Connection, Pairing, Update,
 and Settings submenus. Leaf requests are typed but deliberately immediate and

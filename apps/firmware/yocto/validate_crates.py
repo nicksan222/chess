@@ -10,8 +10,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 LOCKFILE = ROOT / "apps/firmware/yocto/Cargo.lock"
-RECIPE = (
-    ROOT / "apps/firmware/yocto/meta-firmware/recipes-firmware/firmware/firmware.bb"
+CRATES = (
+    ROOT
+    / "apps/firmware/yocto/meta-firmware/recipes-firmware/firmware/firmware-crates.inc"
 )
 
 
@@ -52,10 +53,10 @@ def main() -> None:
         if package.get("source", "").startswith("registry+"):
             packages[(package["name"], package["version"])] = package["checksum"]
 
-    recipe = RECIPE.read_text()
-    sources = set(re.findall(r"crate://crates\.io/([^/\s]+)/([^\s\\]+)", recipe))
+    crates = CRATES.read_text()
+    sources = set(re.findall(r"crate://crates\.io/([^/\s]+)/([^\s\\]+)", crates))
     checksums = dict(
-        re.findall(r'SRC_URI\[([^]]+)\.sha256sum\] = "([0-9a-f]{64})"', recipe)
+        re.findall(r'SRC_URI\[([^]]+)\.sha256sum\] = "([0-9a-f]{64})"', crates)
     )
 
     errors: list[str] = []
@@ -75,6 +76,10 @@ def main() -> None:
         print("firmware Yocto crate metadata is stale:", file=sys.stderr)
         for error in errors:
             print(f"  - {error}", file=sys.stderr)
+        print(
+            "regenerate it with: just firmware-update-crates",
+            file=sys.stderr,
+        )
         raise SystemExit(1)
 
 
