@@ -30,6 +30,15 @@ cargo test -p firmware --test e2e
 The E2E cases live in `tests/e2e/`. Each harness owns isolated state and can be
 restarted in the same process.
 
+`src/menu/definition.rs` is the single product menu definition. It composes the
+headless `menu` crate's primitives into the Play, Connection, Pairing, Update,
+and Settings submenus. Leaf requests are typed but deliberately immediate and
+non-blocking until their external modules define completion and cancellation
+behavior; the menu crate remains product-neutral and performs no operation.
+Each request has one placeholder integration file under `src/menu/transitions/`,
+so future module ownership has an explicit location without entering the menu
+definition or runtime loop.
+
 Button pins in `src/hardware/pins/gpio/button/` own polling, active-low
 translation, and mechanical debounce. Call `start_subscription` with a GPIO
 reader, then await `on_message` for debounced pressed/released transitions.

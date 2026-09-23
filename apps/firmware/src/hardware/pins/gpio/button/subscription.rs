@@ -2,19 +2,19 @@ use std::{error::Error as StdError, fmt};
 
 use tokio::{runtime::Handle, task::JoinHandle, time::Instant};
 
-use crate::events::ReceiveError;
+use crate::events::{Bus, ReceiveError, Subscription};
 
-use super::{
-    Button, ButtonAction, ButtonEvent, ButtonEventBus, ButtonEventSubscription,
-    debounce::Debouncer, debounce::POLL_INTERVAL,
+use super::{Button, ButtonAction, ButtonEvent, debounce::Debouncer, debounce::POLL_INTERVAL};
+use crate::hardware::{
+    HardwareEventBus,
+    pins::{GPIO, ReadLevel},
 };
-use crate::hardware::pins::{GPIO, ReadLevel};
 
 /// A running button poller and its domain-level event subscription.
 #[derive(Debug)]
 pub struct ButtonSubscription {
     button: Button,
-    events: ButtonEventSubscription,
+    events: Subscription<ButtonEvent>,
     worker: JoinHandle<()>,
 }
 
@@ -57,14 +57,15 @@ pub(super) fn start<R>(
     gpio: GPIO,
     button: Button,
     reader: R,
-    events: &ButtonEventBus,
+    events: &HardwareEventBus,
 ) -> Result<ButtonSubscription, StartSubscriptionError>
 where
     R: ReadLevel + Send + 'static,
 {
     let runtime = Handle::try_current().map_err(|_| StartSubscriptionError)?;
-    let event_subscription = events.subscribe();
-    let worker = runtime.spawn(poll(gpio, button, reader, events.clone()));
+    let button_events = Bus::new();
+    let event_subscription = button_events.subscribe();
+    let worker = runtime.spawn(poll(gpio, button, reader, events.clone(), button_events));
 
     Ok(ButtonSubscription {
         button,
@@ -73,8 +74,13 @@ where
     })
 }
 
-async fn poll<R>(gpio: GPIO, button: Button, mut reader: R, events: ButtonEventBus)
-where
+async fn poll<R>(
+    gpio: GPIO,
+    button: Button,
+    mut reader: R,
+    hardware_events: HardwareEventBus,
+    button_events: Bus<ButtonEvent>,
+) where
     R: ReadLevel,
 {
     let mut interval = tokio::time::interval(POLL_INTERVAL);
@@ -106,8 +112,11 @@ where
             ButtonAction::Pressed => ButtonEvent::Pressed(button),
             ButtonAction::Released => ButtonEvent::Released(button),
         };
-        if events.emit(event).is_err() {
+        if button_events.emit(event).is_err() {
             return;
         }
+        // The local subscription above owns delivery to `on_message`; the
+        // shared bus independently bridges the observation into the runtime.
+        let _ = hardware_events.emit(event.into());
     }
 }

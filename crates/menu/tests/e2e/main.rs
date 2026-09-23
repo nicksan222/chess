@@ -1,168 +1,107 @@
-use menu::{ChessboardAction, ChessboardCallbacks, Event, Input, MAIN_MENU, MenuState};
+use menu::{Event, Input, Menu, MenuItem, MenuState};
 
-#[derive(Default)]
-struct FirmwareHarness {
-    actions: Vec<ChessboardAction>,
+#[derive(Debug, Eq, PartialEq)]
+enum Action {
+    StartLocalGame,
+    StartOnlineGame,
+    ToggleSound,
+    StartUpdate,
+    CancelUpdate,
 }
 
-impl ChessboardCallbacks for FirmwareHarness {
-    fn start_local_game(&mut self) {
-        self.actions.push(ChessboardAction::StartLocalGame);
-    }
+static PLAY: Menu<'static, Action> = Menu::new(
+    "Play",
+    &[
+        MenuItem::action("Local", Action::StartLocalGame),
+        MenuItem::action("Online", Action::StartOnlineGame),
+    ],
+);
+static SETTINGS: Menu<'static, Action> = Menu::new(
+    "Settings",
+    &[MenuItem::action("Sound", Action::ToggleSound)],
+);
+static ROOT: Menu<'static, Action> = Menu::new(
+    "Main Menu",
+    &[
+        MenuItem::submenu("Play", &PLAY),
+        MenuItem::submenu("Settings", &SETTINGS),
+    ],
+);
+static OPERATIONS: Menu<'static, Action> = Menu::new(
+    "Operations",
+    &[MenuItem::blocking_action(
+        "Update",
+        Action::StartUpdate,
+        Action::CancelUpdate,
+    )],
+);
 
-    fn start_online_game(&mut self) {
-        self.actions.push(ChessboardAction::StartOnlineGame);
-    }
+#[test]
+fn user_moves_through_submenus_and_returns_to_preserved_focus() {
+    let mut menu = MenuState::new(&ROOT);
 
-    fn cancel_online_game(&mut self) {
-        self.actions.push(ChessboardAction::CancelOnlineGame);
-    }
+    assert_eq!(menu.handle(Input::Right), Event::Opened { depth: 1 });
+    assert_eq!(menu.current_menu(), &PLAY);
+    assert_eq!(
+        menu.handle(Input::Ok),
+        Event::Activated(&Action::StartLocalGame)
+    );
+    assert_eq!(
+        menu.handle(Input::Down),
+        Event::SelectionChanged { selected: 1 }
+    );
+    assert_eq!(
+        menu.handle(Input::Ok),
+        Event::Activated(&Action::StartOnlineGame)
+    );
+    assert_eq!(menu.handle(Input::Left), Event::Closed { depth: 0 });
+    assert_eq!(menu.selected_index(), 0);
 
-    fn show_network_status(&mut self) {
-        self.actions.push(ChessboardAction::ShowNetworkStatus);
-    }
-
-    fn start_network_setup(&mut self) {
-        self.actions.push(ChessboardAction::StartNetworkSetup);
-    }
-
-    fn forget_network(&mut self) {
-        self.actions.push(ChessboardAction::ForgetNetwork);
-    }
-
-    fn reset_game(&mut self) {
-        self.actions.push(ChessboardAction::ResetGame);
-    }
-}
-
-impl FirmwareHarness {
-    fn press<'a>(
-        &mut self,
-        menu: &mut MenuState<'a, ChessboardAction>,
-        input: Input,
-    ) -> Event<'a, ChessboardAction> {
-        menu.handle_and_dispatch(input, self)
-    }
+    assert_eq!(
+        menu.handle(Input::Down),
+        Event::SelectionChanged { selected: 1 }
+    );
+    assert_eq!(menu.handle(Input::Ok), Event::Opened { depth: 1 });
+    assert_eq!(menu.current_menu(), &SETTINGS);
+    assert_eq!(
+        menu.handle(Input::Right),
+        Event::Activated(&Action::ToggleSound)
+    );
+    assert_eq!(menu.handle(Input::Escape), Event::Closed { depth: 0 });
+    assert_eq!(menu.selected_index(), 1);
 }
 
 #[test]
-fn player_starts_each_supported_game_mode() {
-    let mut firmware = FirmwareHarness::default();
-    let mut menu = MenuState::new(&MAIN_MENU);
+fn external_definition_controls_blocking_and_cancellation_journey() {
+    let mut menu = MenuState::new(&OPERATIONS);
 
     assert_eq!(
-        firmware.press(&mut menu, Input::Ok),
-        Event::Opened { depth: 1 }
+        menu.handle(Input::Right),
+        Event::BlockingStarted(&Action::StartUpdate)
     );
+    assert_eq!(menu.handle(Input::Down), Event::InputBlocked);
+    assert_eq!(menu.handle(Input::Ok), Event::InputBlocked);
     assert_eq!(
-        firmware.press(&mut menu, Input::Ok),
-        Event::Activated(&ChessboardAction::StartLocalGame)
-    );
-
-    let mut menu = MenuState::new(&MAIN_MENU);
-    let _ = firmware.press(&mut menu, Input::Ok);
-    let _ = firmware.press(&mut menu, Input::Down);
-    assert_eq!(
-        firmware.press(&mut menu, Input::Ok),
-        Event::BlockingStarted(&ChessboardAction::StartOnlineGame)
-    );
-    assert!(menu.is_blocked());
-    assert_eq!(menu.unblock(), Some(&ChessboardAction::StartOnlineGame));
-
-    assert_eq!(
-        firmware.actions,
-        [
-            ChessboardAction::StartLocalGame,
-            ChessboardAction::StartOnlineGame,
-        ]
-    );
-}
-
-#[test]
-fn player_aborts_online_start_with_escape() {
-    let mut firmware = FirmwareHarness::default();
-    let mut menu = MenuState::new(&MAIN_MENU);
-
-    let _ = firmware.press(&mut menu, Input::Ok);
-    let _ = firmware.press(&mut menu, Input::Down);
-    let _ = firmware.press(&mut menu, Input::Ok);
-
-    assert_eq!(firmware.press(&mut menu, Input::Down), Event::InputBlocked);
-    assert_eq!(
-        firmware.press(&mut menu, Input::Escape),
+        menu.handle(Input::Escape),
         Event::BlockingAborted {
-            operation: &ChessboardAction::StartOnlineGame,
-            escape_action: &ChessboardAction::CancelOnlineGame,
+            operation: &Action::StartUpdate,
+            escape_action: &Action::CancelUpdate,
         }
     );
     assert!(!menu.is_blocked());
-    assert_eq!(
-        firmware.actions,
-        [
-            ChessboardAction::StartOnlineGame,
-            ChessboardAction::CancelOnlineGame,
-        ]
-    );
 }
 
 #[test]
-fn player_uses_network_actions_and_can_cancel_forgetting_credentials() {
-    let mut firmware = FirmwareHarness::default();
-    let mut menu = MenuState::new(&MAIN_MENU);
-
-    let _ = firmware.press(&mut menu, Input::Down);
-    assert_eq!(
-        firmware.press(&mut menu, Input::Ok),
-        Event::Opened { depth: 1 }
-    );
-    let _ = firmware.press(&mut menu, Input::Ok);
-    let _ = firmware.press(&mut menu, Input::Down);
-    let _ = firmware.press(&mut menu, Input::Ok);
-    let _ = firmware.press(&mut menu, Input::Down);
+fn external_completion_restores_input_after_blocking_journey() {
+    let mut menu = MenuState::new(&OPERATIONS);
 
     assert_eq!(
-        firmware.press(&mut menu, Input::Ok),
-        Event::Opened { depth: 2 }
+        menu.handle(Input::Ok),
+        Event::BlockingStarted(&Action::StartUpdate)
     );
+    assert_eq!(menu.unblock(), Some(&Action::StartUpdate));
     assert_eq!(
-        firmware.press(&mut menu, Input::Left),
-        Event::Closed { depth: 1 }
+        menu.handle(Input::Ok),
+        Event::BlockingStarted(&Action::StartUpdate)
     );
-    assert_eq!(
-        firmware.actions,
-        [
-            ChessboardAction::ShowNetworkStatus,
-            ChessboardAction::StartNetworkSetup,
-        ]
-    );
-
-    let _ = firmware.press(&mut menu, Input::Ok);
-    let _ = firmware.press(&mut menu, Input::Ok);
-    assert_eq!(
-        firmware.actions,
-        [
-            ChessboardAction::ShowNetworkStatus,
-            ChessboardAction::StartNetworkSetup,
-            ChessboardAction::ForgetNetwork,
-        ]
-    );
-}
-
-#[test]
-fn player_can_cancel_then_confirm_game_reset() {
-    let mut firmware = FirmwareHarness::default();
-    let mut menu = MenuState::new(&MAIN_MENU);
-
-    let _ = firmware.press(&mut menu, Input::Down);
-    let _ = firmware.press(&mut menu, Input::Down);
-    let _ = firmware.press(&mut menu, Input::Ok);
-    assert_eq!(
-        firmware.press(&mut menu, Input::Left),
-        Event::Closed { depth: 0 }
-    );
-    assert!(firmware.actions.is_empty());
-
-    let _ = firmware.press(&mut menu, Input::Ok);
-    let _ = firmware.press(&mut menu, Input::Ok);
-    assert_eq!(firmware.actions, [ChessboardAction::ResetGame]);
 }
