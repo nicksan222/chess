@@ -180,18 +180,25 @@ impl ReadLevel for SequenceReader {
 }
 
 #[tokio::test(start_paused = true)]
-async fn physical_button_subscription_bridges_into_the_menu_runtime() {
+async fn bouncing_button_press_and_release_reach_the_menu_once_each() {
     let pins = BoardPins::get();
     let mut firmware = Firmware::start().unwrap();
     let events = firmware.events();
     let reader = SequenceReader {
         levels: VecDeque::from([
+            Level::High, // Initial, unpressed level.
+            Level::Low,  // Contact bounces before settling.
             Level::High,
             Level::Low,
             Level::Low,
             Level::Low,
             Level::Low,
             Level::Low,
+            Level::High, // Release also has to remain stable.
+            Level::High,
+            Level::High,
+            Level::High,
+            Level::High,
         ]),
     };
     let _subscription = pins
@@ -206,9 +213,21 @@ async fn physical_button_subscription_bridges_into_the_menu_runtime() {
         .unwrap();
 
     assert_eq!(snapshot.selected_index, 1);
+    assert_eq!(snapshot.processed_events, 1);
     assert_eq!(
         snapshot.last_event,
         Some(HardwareEvent::Button(ButtonEvent::Pressed(Button::Down)))
+    );
+
+    let released = tokio::time::timeout(Duration::from_millis(100), firmware.after(1))
+        .await
+        .expect("button release should reach the runtime")
+        .unwrap();
+    assert_eq!(released.selected_index, 1);
+    assert_eq!(released.processed_events, 2);
+    assert_eq!(
+        released.last_event,
+        Some(HardwareEvent::Button(ButtonEvent::Released(Button::Down)))
     );
     firmware.shutdown().await.unwrap();
 }
