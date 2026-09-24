@@ -45,3 +45,34 @@ impl PieceEvent {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{BoardPosition, PieceEvent};
+    use crate::hardware::HardwareEvent;
+
+    #[test]
+    fn every_board_position_round_trips_through_piece_events() {
+        for row in 0..BoardPosition::SIZE {
+            for column in 0..BoardPosition::SIZE {
+                let position = BoardPosition::new(row, column).unwrap();
+                assert_eq!(position.row(), row);
+                assert_eq!(position.column(), column);
+
+                for event in [PieceEvent::Placed(position), PieceEvent::Removed(position)] {
+                    assert_eq!(event.position(), position);
+                    assert_eq!(HardwareEvent::from(event), HardwareEvent::Piece(event));
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn positions_outside_either_grid_axis_are_rejected() {
+        for coordinate in BoardPosition::SIZE..=u8::MAX {
+            assert_eq!(BoardPosition::new(coordinate, 0), None);
+            assert_eq!(BoardPosition::new(0, coordinate), None);
+            assert_eq!(BoardPosition::new(coordinate, coordinate), None);
+        }
+    }
+}

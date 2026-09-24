@@ -33,3 +33,18 @@ impl fmt::Display for InvalidSsid {
 }
 
 impl StdError for InvalidSsid {}
+
+#[cfg(test)]
+mod tests {
+    use super::Ssid;
+
+    #[test]
+    fn ssid_validation_uses_utf8_bytes_and_rejects_nul() {
+        assert!(Ssid::new("").is_err());
+        assert!(Ssid::new("a\0b").is_err());
+        assert!(Ssid::new("é".repeat(17)).is_err()); // 34 bytes, not 17.
+        assert!(Ssid::new("é".repeat(16)).is_ok()); // Exactly 32 bytes.
+        assert!(Ssid::new("a".repeat(32)).is_ok());
+        assert_eq!(Ssid::new("Home").unwrap().as_str(), "Home");
+    }
+}

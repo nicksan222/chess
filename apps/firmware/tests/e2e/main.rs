@@ -171,8 +171,3 @@ async fn firmware_instances_are_isolated_and_restart_cleanly() {
     assert_eq!(restarted.snapshot().selected_index, 0);
     restarted.shutdown().await.unwrap();
 }
-
-#[test]
-fn starting_firmware_without_runtime_is_an_error() {
-    assert!(FirmwareHarness::start().is_err());
-}

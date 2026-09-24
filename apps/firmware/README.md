@@ -27,7 +27,9 @@ behavior.
 cargo test -p firmware --test e2e
 ```
 
-The E2E cases live in `tests/e2e/`. The default E2E run requires Docker: Rust
+Unit tests live beside their implementations in `src/`; `tests/` is reserved
+for cross-module integration and E2E tests. The E2E cases live in `tests/e2e/`.
+The default E2E run requires Docker: Rust
 `testcontainers` starts real NetworkManager in an Ubuntu container and a pinned
 Ubuntu QEMU VM. The VM loads two guest-kernel `mac80211_hwsim` radios; the Rust
 probe uses the production `Connectivity` API to discover and join open/WPA

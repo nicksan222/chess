@@ -50,3 +50,22 @@ impl fmt::Display for InvalidPassphrase {
 }
 
 impl StdError for InvalidPassphrase {}
+
+#[cfg(test)]
+mod tests {
+    use super::Passphrase;
+
+    #[test]
+    fn passphrase_validation_and_debug_redaction() {
+        assert!(Passphrase::new("short").is_err());
+        assert!(Passphrase::new("abcdefgh\n").is_err()); // Control character.
+        assert!(Passphrase::new("a".repeat(65)).is_err());
+        assert!(Passphrase::new("g".repeat(64)).is_err()); // Not hexadecimal.
+
+        for valid in ["12345678".to_owned(), "a".repeat(63), "f".repeat(64)] {
+            let passphrase = Passphrase::new(valid.clone()).unwrap();
+            assert_eq!(format!("{passphrase:?}"), "Passphrase([REDACTED])");
+            assert!(!format!("{passphrase:?}").contains(&valid));
+        }
+    }
+}

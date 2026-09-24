@@ -191,3 +191,65 @@ async fn poll<R>(
         let _ = hardware_events.emit(event.into());
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use std::{collections::VecDeque, time::Duration};
+
+    use super::*;
+    use crate::hardware::pins::BoardPins;
+
+    #[test]
+    fn starting_a_button_subscription_without_a_runtime_returns_an_error() {
+        let events = HardwareEventBus::new();
+        let reader = SequenceReader {
+            levels: VecDeque::from([Level::High]),
+        };
+        let error = BoardPins::get()
+            .gpio
+            .down_button
+            .start_subscription(reader, &events)
+            .unwrap_err();
+        assert_eq!(
+            error.to_string(),
+            "button subscriptions require an active Tokio runtime"
+        );
+    }
+
+    struct SequenceReader {
+        levels: VecDeque<Level>,
+    }
+
+    impl ReadLevel for SequenceReader {
+        type Error = ();
+
+        fn read_level(&mut self, _: GPIO) -> Result<Level, Self::Error> {
+            self.levels.pop_front().ok_or(())
+        }
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn button_pins_poll_debounce_and_deliver_physical_transitions() {
+        let events = HardwareEventBus::new();
+        let reader = SequenceReader {
+            levels: VecDeque::from([
+                Level::High,
+                Level::Low,
+                Level::Low,
+                Level::Low,
+                Level::Low,
+                Level::Low,
+            ]),
+        };
+        let mut next = BoardPins::get()
+            .gpio
+            .down_button
+            .start_subscription(reader, &events)
+            .unwrap();
+        let action = tokio::time::timeout(Duration::from_millis(100), next.on_message())
+            .await
+            .expect("button poller should produce an action")
+            .unwrap();
+        assert_eq!(action, ButtonAction::Pressed);
+    }
+}

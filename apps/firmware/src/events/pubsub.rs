@@ -106,3 +106,69 @@ impl From<broadcast::error::RecvError> for ReceiveError {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{Bus, ReceiveError};
+
+    #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+    enum TestEvent {
+        SensorReading(u8),
+        Stopped,
+    }
+
+    #[test]
+    fn callers_can_define_their_own_typed_events() {
+        let bus = Bus::<TestEvent>::with_capacity(4);
+        let mut subscription = bus.subscribe();
+
+        bus.emit(TestEvent::SensorReading(42)).unwrap();
+        bus.emit(TestEvent::Stopped).unwrap();
+
+        assert_eq!(
+            subscription.try_recv(),
+            Ok(Some(TestEvent::SensorReading(42)))
+        );
+        assert_eq!(subscription.try_recv(), Ok(Some(TestEvent::Stopped)));
+    }
+
+    #[test]
+    fn every_subscription_receives_events_from_every_emitter_in_order() {
+        let emitter = Bus::new();
+        let other_emitter = emitter.clone();
+        let mut first = emitter.subscribe();
+        let mut second = emitter.subscribe();
+
+        emitter.emit(TestEvent::SensorReading(1)).unwrap();
+        other_emitter.emit(TestEvent::Stopped).unwrap();
+
+        for subscription in [&mut first, &mut second] {
+            assert_eq!(
+                subscription.try_recv(),
+                Ok(Some(TestEvent::SensorReading(1)))
+            );
+            assert_eq!(subscription.try_recv(), Ok(Some(TestEvent::Stopped)));
+            assert_eq!(subscription.try_recv(), Ok(None));
+        }
+    }
+
+    #[test]
+    fn subscriptions_report_lag_without_exposing_channel_errors() {
+        let emitter = Bus::new();
+        let mut subscription = emitter.subscribe();
+
+        for _ in 0..65 {
+            emitter.emit(TestEvent::Stopped).unwrap();
+        }
+
+        assert_eq!(subscription.try_recv(), Err(ReceiveError::Lagged(1)));
+    }
+
+    #[test]
+    fn failed_emission_returns_ownership_of_the_event() {
+        let emitter = Bus::new();
+        let returned = emitter.emit(TestEvent::Stopped).unwrap_err().into_event();
+        assert_eq!(returned, TestEvent::Stopped);
+        assert_eq!(emitter.subscriber_count(), 0);
+    }
+}
