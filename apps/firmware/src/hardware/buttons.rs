@@ -1,14 +1,106 @@
+//! Control-panel buttons: debounce GPIO levels and publish typed events.
+
 use std::{error::Error as StdError, fmt};
 
 use tokio::{runtime::Handle, task::JoinHandle, time::Instant};
 
 use crate::events::{Bus, ReceiveError, Subscription};
 
-use super::{Button, ButtonAction, ButtonEvent, debounce::Debouncer, debounce::POLL_INTERVAL};
-use crate::hardware::{
+use super::{
     HardwareEventBus,
-    pins::{GPIO, ReadLevel},
+    debounce::{Debouncer, POLL_INTERVAL},
+    pins::{GPIO, Level, ReadLevel},
 };
+
+/// The label printed beside a physical control-panel button.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum Button {
+    Up,
+    Down,
+    Left,
+    Right,
+    Ok,
+    Reset,
+    Pass,
+    F1,
+    F2,
+    F3,
+    F4,
+    F5,
+}
+
+/// A debounced electrical transition produced by a physical button adapter.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ButtonEvent {
+    Pressed(Button),
+    Released(Button),
+}
+
+/// A debounced physical transition from one panel button.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ButtonAction {
+    Pressed,
+    Released,
+}
+
+/// A control-panel button connected directly to a GPIO input.
+pub struct ButtonPin<const BCM: u8> {
+    gpio: GPIO,
+    button: Button,
+}
+
+impl<const BCM: u8> ButtonPin<BCM> {
+    pub(super) const fn new(button: Button) -> Self {
+        Self {
+            gpio: GPIO::new(BCM),
+            button,
+        }
+    }
+
+    pub const fn gpio(&self) -> GPIO {
+        self.gpio
+    }
+
+    pub const fn bcm_number(&self) -> u8 {
+        BCM
+    }
+
+    /// Returns the physical panel label assigned to this pin.
+    pub const fn button(&self) -> Button {
+        self.button
+    }
+
+    pub fn read_level<R: ReadLevel>(&self, reader: &mut R) -> Result<Level, R::Error> {
+        reader.read_level(self.gpio)
+    }
+
+    /// Starts polling and debouncing this button.
+    pub fn start_subscription<R>(
+        &self,
+        reader: R,
+        events: &HardwareEventBus,
+    ) -> Result<ButtonSubscription, StartSubscriptionError>
+    where
+        R: ReadLevel + Send + 'static,
+    {
+        let runtime = Handle::try_current().map_err(|_| StartSubscriptionError)?;
+        let button_events = Bus::new();
+        let event_subscription = button_events.subscribe();
+        let worker = runtime.spawn(poll(
+            self.gpio,
+            self.button,
+            reader,
+            events.clone(),
+            button_events,
+        ));
+
+        Ok(ButtonSubscription {
+            button: self.button,
+            events: event_subscription,
+            worker,
+        })
+    }
+}
 
 /// A running button poller and its domain-level event subscription.
 #[derive(Debug)]
@@ -52,27 +144,6 @@ impl fmt::Display for StartSubscriptionError {
 }
 
 impl StdError for StartSubscriptionError {}
-
-pub(super) fn start<R>(
-    gpio: GPIO,
-    button: Button,
-    reader: R,
-    events: &HardwareEventBus,
-) -> Result<ButtonSubscription, StartSubscriptionError>
-where
-    R: ReadLevel + Send + 'static,
-{
-    let runtime = Handle::try_current().map_err(|_| StartSubscriptionError)?;
-    let button_events = Bus::new();
-    let event_subscription = button_events.subscribe();
-    let worker = runtime.spawn(poll(gpio, button, reader, events.clone(), button_events));
-
-    Ok(ButtonSubscription {
-        button,
-        events: event_subscription,
-        worker,
-    })
-}
 
 async fn poll<R>(
     gpio: GPIO,

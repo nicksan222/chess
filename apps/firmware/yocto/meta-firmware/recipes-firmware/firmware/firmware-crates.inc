@@ -53,10 +53,13 @@ SRC_URI += " \
     crate://crates.io/futures-timer/3.0.4 \
     crate://crates.io/futures-util/0.3.34 \
     crate://crates.io/getrandom/0.4.3 \
+    crate://crates.io/gpiocdev/0.8.0 \
+    crate://crates.io/gpiocdev-uapi/0.7.0 \
     crate://crates.io/hashbrown/0.17.1 \
     crate://crates.io/hermit-abi/0.5.3 \
     crate://crates.io/hex/0.4.3 \
     crate://crates.io/indexmap/2.14.2 \
+    crate://crates.io/ioctl-sys/0.8.0 \
     crate://crates.io/js-sys/0.3.105 \
     crate://crates.io/libc/0.2.189 \
     crate://crates.io/linux-raw-sys/0.12.1 \
@@ -179,10 +182,13 @@ SRC_URI[futures-task-0.3.34.sha256sum] = "cd417de3d1d015fc3bfd2b1ea46dfc7bab72ef
 SRC_URI[futures-timer-3.0.4.sha256sum] = "af43fadb8a98512d547e37b4e92e0ced13e205c061b87b4623eff01d918d6968"
 SRC_URI[futures-util-0.3.34.sha256sum] = "0d50a92467f8ba5dd6e3ee5d4bd04d73ab2e4e1c44474a0674821dfce14b79bc"
 SRC_URI[getrandom-0.4.3.sha256sum] = "300e883d756b2e4ec94e02791f39b04b522276138852cfc41d9fb7e904106099"
+SRC_URI[gpiocdev-0.8.0.sha256sum] = "4a6009ef6766dd62a7f5933d379d357ae89eaee4e9c2455b6596f359627660a1"
+SRC_URI[gpiocdev-uapi-0.7.0.sha256sum] = "cb1a3ace06ef708255a33e738ec7a5e7718fe8e53bd9a39299b4f1cd4b13e9a3"
 SRC_URI[hashbrown-0.17.1.sha256sum] = "ed5909b6e89a2db4456e54cd5f673791d7eca6732202bbf2a9cc504fe2f9b84a"
 SRC_URI[hermit-abi-0.5.3.sha256sum] = "e17592d60ebacc7d5e169f4663c5f84f9161cc90328abcfe8456f41e4dfcb284"
 SRC_URI[hex-0.4.3.sha256sum] = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
 SRC_URI[indexmap-2.14.2.sha256sum] = "cc4e190f5d26ca7051642629da2c52fc03bde85a03197c99408dcd291734c855"
+SRC_URI[ioctl-sys-0.8.0.sha256sum] = "8bd11f3a29434026f5ff98c730b668ba74b1033637b8817940b54d040696133c"
 SRC_URI[js-sys-0.3.105.sha256sum] = "ce57d20d1ea864ce2ac172ab472d409214f4fd359f0b2a2775abdf522e2af99e"
 SRC_URI[libc-0.2.189.sha256sum] = "3eaf3ede3fee6db1a4c2ee091bf8a8b4dccdc6d17f656fb07896ee72867612f2"
 SRC_URI[linux-raw-sys-0.12.1.sha256sum] = "32a66949e030da00e8c7d4434b251670a91556f4144941d37452769c25d58a53"

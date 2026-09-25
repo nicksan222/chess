@@ -12,12 +12,20 @@ use firmware::connectivity::{
 };
 
 mod probe_case;
+use firmware::{
+    hardware::{
+        HardwareEvent,
+        linux_gpio::LinuxGpioReader,
+        pins::{BoardPins, ButtonEvent, Level, ReadLevel},
+    },
+    runtime::Firmware,
+};
 use probe_case::ProbeCase;
 
 fn main() -> Result<(), Box<dyn StdError>> {
     let case = match std::env::args().nth(1) {
         Some(name) => ProbeCase::from_arg(&name).ok_or("unknown probe name")?,
-        None => ProbeCase::WifiJourney, // The VM runs this binary without arguments.
+        None => ProbeCase::LinuxJourney, // The VM runs this binary without arguments.
     };
     let runtime = tokio::runtime::Builder::new_current_thread()
         .enable_all()
@@ -29,7 +37,10 @@ fn main() -> Result<(), Box<dyn StdError>> {
             ProbeCase::OpenNetworkWithoutRadio => open_network().await,
             ProbeCase::PersonalNetworkWithoutRadio => personal_network().await,
             ProbeCase::HotspotWithoutRadio => hotspot().await,
-            ProbeCase::WifiJourney => wifi_journey().await,
+            ProbeCase::LinuxJourney => {
+                wifi_journey().await;
+                gpio_journey().await;
+            }
         }
     });
     println!("{}: ok", case.as_arg());
@@ -141,6 +152,53 @@ async fn wifi_journey() {
     connectivity.stop_hotspot().await.unwrap();
     assert_eq!(connectivity.status().await.unwrap(), Status::Disconnected);
     println!("provisioning hotspot lifecycle passed");
+}
+
+async fn gpio_journey() {
+    // The existing scripted tests cover every mapping and debounce edge case.
+    // One real chardev transition proves the Linux reader -> runtime boundary.
+    let config = std::path::Path::new("/sys/kernel/config/gpio-sim/chess-panel");
+    let platform = fs::read_to_string(config.join("dev_name")).unwrap();
+    let chip = fs::read_to_string(config.join("board/chip_name")).unwrap();
+    let chip = chip.trim();
+    let device = std::path::Path::new("/dev").join(chip);
+    let pin = BoardPins::get().gpio.down_button;
+    let pull = std::path::Path::new("/sys/devices/platform")
+        .join(platform.trim())
+        .join(chip)
+        .join(format!("sim_gpio{}/pull", pin.bcm_number()));
+    assert!(device.exists(), "missing GPIO character device: {device:?}");
+    fs::write(&pull, "pull-up").unwrap();
+    let mut reader = LinuxGpioReader::with_external_bias(&device);
+    assert_eq!(reader.read_level(pin.gpio()).unwrap(), Level::High);
+    let mut firmware = Firmware::start().unwrap();
+    let _subscription = pin.start_subscription(reader, &firmware.events()).unwrap();
+    tokio::time::sleep(Duration::from_millis(50)).await;
+    assert_eq!(firmware.snapshot().processed_events, 0);
+
+    fs::write(&pull, "pull-down").unwrap();
+    let pressed = tokio::time::timeout(Duration::from_secs(5), firmware.after(0))
+        .await
+        .expect("Linux GPIO press should reach the firmware runtime")
+        .unwrap();
+    assert_eq!(pressed.processed_events, 1);
+    assert_eq!(
+        pressed.last_event,
+        Some(HardwareEvent::Button(ButtonEvent::Pressed(pin.button())))
+    );
+
+    fs::write(&pull, "pull-up").unwrap();
+    let released = tokio::time::timeout(Duration::from_secs(5), firmware.after(1))
+        .await
+        .expect("Linux GPIO release should reach the firmware runtime")
+        .unwrap();
+    assert_eq!(released.processed_events, 2);
+    assert_eq!(
+        released.last_event,
+        Some(HardwareEvent::Button(ButtonEvent::Released(pin.button())))
+    );
+    firmware.shutdown().await.unwrap();
+    println!("Linux GPIO character-device button transition passed");
 }
 
 async fn disconnected_and_scan() {

@@ -5,7 +5,7 @@ pub enum ProbeCase {
     OpenNetworkWithoutRadio,
     PersonalNetworkWithoutRadio,
     HotspotWithoutRadio,
-    WifiJourney,
+    LinuxJourney,
 }
 
 impl ProbeCase {
@@ -15,7 +15,7 @@ impl ProbeCase {
             Self::OpenNetworkWithoutRadio => "open_network",
             Self::PersonalNetworkWithoutRadio => "personal_network",
             Self::HotspotWithoutRadio => "hotspot",
-            Self::WifiJourney => "wifi_journey",
+            Self::LinuxJourney => "linux_journey",
         }
     }
 
@@ -25,7 +25,7 @@ impl ProbeCase {
             Self::OpenNetworkWithoutRadio,
             Self::PersonalNetworkWithoutRadio,
             Self::HotspotWithoutRadio,
-            Self::WifiJourney,
+            Self::LinuxJourney,
         ]
         .into_iter()
         .find(|case| case.as_arg() == arg)
@@ -43,7 +43,7 @@ mod tests {
             ProbeCase::OpenNetworkWithoutRadio,
             ProbeCase::PersonalNetworkWithoutRadio,
             ProbeCase::HotspotWithoutRadio,
-            ProbeCase::WifiJourney,
+            ProbeCase::LinuxJourney,
         ] {
             assert_eq!(
                 ProbeCase::from_arg(case.as_arg()).unwrap().as_arg(),

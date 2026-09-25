@@ -9,6 +9,7 @@ version.workspace = true
 display-interface = "0.5.0"
 embedded-graphics = "0.8.2"
 embedded-hal = "1.0.0"
+gpiocdev = "0.8.0"
 logger = { path = "../../crates/logger", features = ["std"] }
 menu = { path = "../../crates/menu" }
 nmrs = "3.5.2"
