@@ -50,3 +50,13 @@ impl FirmwareHarness {
         self.firmware.shutdown().await
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::FirmwareHarness;
+
+    #[test]
+    fn starting_firmware_without_runtime_is_an_error() {
+        assert!(FirmwareHarness::start().is_err());
+    }
+}

@@ -35,3 +35,31 @@ impl From<PieceEvent> for HardwareEvent {
         Self::Piece(event)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::hardware::pins::Button;
+
+    #[test]
+    fn every_button_and_transition_converts_to_a_hardware_event() {
+        for button in [
+            Button::Up,
+            Button::Down,
+            Button::Left,
+            Button::Right,
+            Button::Ok,
+            Button::Reset,
+            Button::Pass,
+            Button::F1,
+            Button::F2,
+            Button::F3,
+            Button::F4,
+            Button::F5,
+        ] {
+            for event in [ButtonEvent::Pressed(button), ButtonEvent::Released(button)] {
+                assert_eq!(HardwareEvent::from(event), HardwareEvent::Button(event));
+            }
+        }
+    }
+}
