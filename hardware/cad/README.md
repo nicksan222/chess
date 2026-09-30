@@ -48,8 +48,8 @@ per view, named `<project>.png` or `<project>-<view>.png`.
 
 ## Shared modules
 
-`../shared/dimensions.py` is the authoritative source for measurements shared across
-projects. It derives the playing span from square size and grid count, derives
+`../shared/dimensions/` owns measurements shared across projects, with one
+module per physical object. It derives the playing span from square size and grid count, derives
 the plate span from fit clearance, and validates the vertical stack, the control
 panel layout, the board support positions and the plate fixings. Project READMEs
 describe intent rather than duplicating those values. Dimension tests run the

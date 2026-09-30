@@ -9,7 +9,9 @@ from pcb.definition.native import connect, no_connect, place
 from pcb.definition.parts import catalog as parts
 from shared import dimensions, wiring
 from shared import electronics as p
-from shared.panel import PANEL_BUTTONS
+from shared.panel_buttons import PANEL_BUTTONS
+
+ASSEMBLY_PART_COUNT = 22
 
 
 def add_controls(board: pcbnew.BOARD) -> None:
@@ -150,7 +152,7 @@ def add_controls(board: pcbnew.BOARD) -> None:
             assembly="controls",
             extras={"Function": button.name},
         )
-        pin = p.RaspberryPiHeaderPin[f"BUTTON_{button.name}_GPIO{button.gpio}"]
+        pin = button.header_pin
         connect(
             board,
             button.net_name,

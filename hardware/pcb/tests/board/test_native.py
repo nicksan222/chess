@@ -2,13 +2,21 @@
 
 import unittest
 
-from pcb.definition import native
+from pcb.definition import native, validation
 from pcb.definition.parts import catalog
+from pcb.definition.parts.capacitors import CAPACITOR_0603_FOOTPRINT
+from pcb.definition.parts.part import PcbPart
 from shared.components import COMPONENTS
 from shared.electronics import HallSensorComponent, HallSensorPin
 
 
 class NativeIdentityTest(unittest.TestCase):
+    def test_missing_assembly_reports_its_owner(self):
+        with self.assertRaisesRegex(
+            ValueError, "power: expected 9 components, found 0"
+        ):
+            validation.validate(native.new_board())
+
     def test_registry_owns_every_native_product_once(self):
         for key, part in catalog.PCB_PARTS.items():
             with self.subTest(part=key):
@@ -20,10 +28,10 @@ class NativeIdentityTest(unittest.TestCase):
 
     def test_registry_rejects_a_model_for_the_wrong_product(self):
         with self.assertRaisesRegex(ValueError, "model does not support product"):
-            catalog.PcbPart(
+            PcbPart(
                 COMPONENTS["CAP_100N"],
                 HallSensorComponent,
-                catalog.CAPACITOR_0603_FOOTPRINT,
+                CAPACITOR_0603_FOOTPRINT,
                 "C",
                 "100nF",
                 "test",

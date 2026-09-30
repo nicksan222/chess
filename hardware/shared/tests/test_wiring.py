@@ -43,6 +43,14 @@ class WiringTest(unittest.TestCase):
                 bank.index,
             )
 
+    def test_led_link_nets_identify_both_squares(self):
+        left = SquarePosition.parse("A1")
+        right = SquarePosition.parse("B1")
+        self.assertEqual(
+            wiring.led_link_nets(left, right),
+            ("LED_DATA_A1_TO_B1", "LED_CLOCK_A1_TO_B1"),
+        )
+
     def test_square_mappings_are_bijective(self):
         positions = [
             SquarePosition(file_index, rank)

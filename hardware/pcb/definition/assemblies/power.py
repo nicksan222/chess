@@ -6,14 +6,17 @@ import pcbnew
 
 from pcb.definition.native import connect, place
 from pcb.definition.parts import catalog as parts
+from pcb.definition.parts.part import PcbPart
 from shared import dimensions
 from shared import electronics as p
 from shared.electronics import EndpointResolver
 
+ASSEMBLY_PART_COUNT = 9
+
 
 def add_strip[Part: EndpointResolver](
     board: pcbnew.BOARD,
-    part: parts.PcbPart[Part],
+    part: PcbPart[Part],
     reference: str,
     *,
     assembly: str,

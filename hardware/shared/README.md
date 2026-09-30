@@ -2,13 +2,15 @@
 
 This directory is the tool-independent contract between hardware domains.
 
-- `dimensions.py` owns physical dimensions and coordinates genuinely shared by
-  PCB and CAD: enclosure padding and clearances, populated-board placement,
-  connector access references, and square-subassembly offsets. PCB-only routing
-  rules and CAD-only presentation settings stay in their respective domains.
-- `components.py` is the approved-parts catalog: manufacturer, exact MPN,
-  package, body metadata, and datasheet links.
+- `dimensions/` separates shared measurements by physical object: `board.py`,
+  `case.py`, `panel.py`, and `tile_plate.py`. `printing.py` owns process limits;
+  `validation.py` checks fit across those objects. PCB routing rules and CAD
+  presentation settings remain in their own domains.
+- `components/<part>.py` owns each approved product: manufacturer, exact MPN,
+  package, body metadata, and datasheet link. The package registry enumerates them.
 - `electronics/` owns tool-independent component families and typed pin semantics.
+- `panel_buttons.py` owns each control button's position, typed header pin,
+  switch reference, and routing priority.
 - `hall_banks.py` owns compact bank membership, P-port order, labels, and address
   straps; dimensions and wiring consume it.
 - `wiring.py` owns net names, host GPIO assignments, square-to-sensor mapping,

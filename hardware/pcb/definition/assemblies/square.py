@@ -8,6 +8,7 @@ from itertools import pairwise
 
 import pcbnew
 
+from pcb.definition.assemblies import led_link_names
 from pcb.definition.native import connect, no_connect, place
 from pcb.definition.parts import catalog as parts
 from shared import dimensions, wiring
@@ -16,12 +17,18 @@ from shared.electronics import HallSensorComponent as HallSensor
 from shared.electronics import Sk9822Component as Sk9822
 from shared.squares import BoardSquare
 
+ASSEMBLY_PART_COUNT = 4
+
 
 @dataclass(frozen=True)
 class Square:
     name: str
     led: Sk9822
     hall_sensor: HallSensor
+
+
+LED_BYPASS_OFFSET_MM = (0.0, -8.0)
+HALL_BYPASS_OFFSET_MM = (0.0, -3.0)
 
 
 def add_square(board: pcbnew.BOARD, *, board_square: BoardSquare) -> Square:
@@ -54,8 +61,8 @@ def add_square(board: pcbnew.BOARD, *, board_square: BoardSquare) -> Square:
         parts.CAP_100N_PART,
         f"C{8 + chain_index}",
         at=(
-            lx + parts.CAPACITOR_LED_BYPASS_OFFSET_MM[0],
-            ly + parts.CAPACITOR_LED_BYPASS_OFFSET_MM[1],
+            lx + LED_BYPASS_OFFSET_MM[0],
+            ly + LED_BYPASS_OFFSET_MM[1],
         ),
         assembly=assembly,
         purpose="Local LED decoupling capacitor",
@@ -66,8 +73,8 @@ def add_square(board: pcbnew.BOARD, *, board_square: BoardSquare) -> Square:
         parts.CAP_100N_PART,
         f"C{72 + sensor_index}",
         at=(
-            x + parts.CAPACITOR_HALL_BYPASS_OFFSET_MM[0],
-            y + parts.CAPACITOR_HALL_BYPASS_OFFSET_MM[1],
+            x + HALL_BYPASS_OFFSET_MM[0],
+            y + HALL_BYPASS_OFFSET_MM[1],
         ),
         assembly=assembly,
         purpose="Local Hall-sensor decoupling capacitor",
@@ -100,80 +107,15 @@ def connect_led_chain(board: pcbnew.BOARD, squares: Mapping[str, Square]) -> Non
     chain = [squares[square.name].led for square in dimensions.BOARD_SQUARES.led_chain]
     connect(board, wiring.LED_DATA_NET, chain[0].pin(Sk9822Pin.DATA_IN))
     connect(board, wiring.LED_CLOCK_NET, chain[0].pin(Sk9822Pin.CLOCK_IN))
-    for (left, right), (data, clock) in zip(
-        pairwise(chain), LED_LINK_NAMES, strict=True
-    ):
+    for left_square, right_square in pairwise(dimensions.BOARD_SQUARES.led_chain):
+        left = squares[left_square.name].led
+        right = squares[right_square.name].led
+        data, clock = led_link_names.for_squares(
+            left_square.position, right_square.position
+        )
         connect(board, data, left.pin(Sk9822Pin.DATA_OUT), right.pin(Sk9822Pin.DATA_IN))
         connect(
             board, clock, left.pin(Sk9822Pin.CLOCK_OUT), right.pin(Sk9822Pin.CLOCK_IN)
         )
     no_connect(board, chain[-1].pin(Sk9822Pin.DATA_OUT))
     no_connect(board, chain[-1].pin(Sk9822Pin.CLOCK_OUT))
-
-
-# Fixed link names preserve stable netlist identities across builds.
-LED_LINK_NAMES = (
-    ("N$207", "N$208"),
-    ("N$225", "N$226"),
-    ("N$227", "N$228"),
-    ("N$115", "N$116"),
-    ("N$117", "N$118"),
-    ("N$119", "N$120"),
-    ("N$121", "N$122"),
-    ("LED_D8", "LED_C8"),
-    ("N$123", "N$124"),
-    ("N$125", "N$126"),
-    ("N$127", "N$128"),
-    ("N$129", "N$130"),
-    ("N$131", "N$132"),
-    ("N$133", "N$134"),
-    ("N$135", "N$136"),
-    ("LED_D16", "LED_C16"),
-    ("N$137", "N$138"),
-    ("N$139", "N$140"),
-    ("N$141", "N$142"),
-    ("N$143", "N$144"),
-    ("N$145", "N$146"),
-    ("N$147", "N$148"),
-    ("N$149", "N$150"),
-    ("LED_D24", "LED_C24"),
-    ("N$151", "N$152"),
-    ("N$153", "N$154"),
-    ("N$155", "N$156"),
-    ("N$157", "N$158"),
-    ("N$159", "N$160"),
-    ("N$161", "N$162"),
-    ("N$163", "N$164"),
-    ("LED_D32", "LED_C32"),
-    ("N$165", "N$166"),
-    ("N$167", "N$168"),
-    ("N$169", "N$170"),
-    ("N$171", "N$172"),
-    ("N$173", "N$174"),
-    ("N$175", "N$176"),
-    ("N$177", "N$178"),
-    ("LED_D40", "LED_C40"),
-    ("N$179", "N$180"),
-    ("N$181", "N$182"),
-    ("N$183", "N$184"),
-    ("N$185", "N$186"),
-    ("N$189", "N$190"),
-    ("N$191", "N$192"),
-    ("N$193", "N$194"),
-    ("LED_D48", "LED_C48"),
-    ("N$195", "N$196"),
-    ("N$197", "N$198"),
-    ("N$199", "N$200"),
-    ("N$201", "N$202"),
-    ("N$203", "N$204"),
-    ("N$205", "N$206"),
-    ("N$209", "N$210"),
-    ("LED_D56", "LED_C56"),
-    ("N$211", "N$212"),
-    ("N$213", "N$214"),
-    ("N$215", "N$216"),
-    ("N$217", "N$218"),
-    ("N$219", "N$220"),
-    ("N$221", "N$222"),
-    ("N$223", "N$224"),
-)

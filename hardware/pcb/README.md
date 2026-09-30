@@ -44,10 +44,10 @@ footprint paths link to generated schematic symbols. No frozen identity ledger e
 
 ## Component registry
 
-`definition/parts/catalog.py` owns one `PcbPart` entry per native product. Each entry
-ties an approved `ComponentSpec` to its typed electronic-model constructor, native
-footprint, library label, nominal value, and default purpose. Add or update common
-PCB metadata there; `PCB_PARTS` is the keyed lookup for schematic and validation code.
+`definition/parts/<component>.py` owns each native footprint and its `PcbPart`
+binding: approved product, typed electronic model, library label, nominal value,
+and purpose. `parts/catalog.py` only enumerates those bindings as `PCB_PARTS` for
+schematic and validation code; `parts/part.py` defines the checked binding type.
 
 Assemblies pass a typed `*_PART` entry, an explicit stable reference, position,
 rotation, and assembly name to `place()`. They override `purpose` only when the role

@@ -10,7 +10,7 @@ from dataclasses import dataclass
 
 from .dimensions import HALL_BANKS
 from .hall_banks import HallBank, SquarePosition
-from .panel import PANEL_BUTTONS
+from .panel_buttons import PANEL_BUTTONS
 
 # --- I2C bus ----------------------------------------------------------------
 # Eight compact Hall banks share the bus with the display. Acquisition is polled.
@@ -25,6 +25,13 @@ SPI_DATA_NET = "SPI_DATA_3V3"
 SPI_CLOCK_NET = "SPI_CLK_3V3"
 LED_DATA_NET = "LED_DATA_5V"
 LED_CLOCK_NET = "LED_CLK_5V"
+
+
+def led_link_nets(left: SquarePosition, right: SquarePosition) -> tuple[str, str]:
+    """Name the data and clock link by its two physical squares."""
+    link = f"{left.name}_TO_{right.name}"
+    return (f"LED_DATA_{link}", f"LED_CLOCK_{link}")
+
 
 # --- Pi line assignment -----------------------------------------------------
 SDA_GPIO = 2

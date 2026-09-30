@@ -1,6 +1,6 @@
-........./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
-..................................
+........../kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+....................................
 ----------------------------------------------------------------------
-Ran 42 tests in 1.925s
+Ran 45 tests in 1.594s
 
 OK

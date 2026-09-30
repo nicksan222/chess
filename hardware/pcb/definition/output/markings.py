@@ -8,13 +8,11 @@ import pcbnew
 
 from pcb.definition import native, rules
 from pcb.definition.bank_assemblies import BANK_ASSEMBLIES
-from pcb.definition.parts.catalog import (
-    TACTILESWITCH_LABEL_OFFSET_MM,
-    TCA9554_SILKSCREEN_CLEARANCE_MM,
-)
+from pcb.definition.parts.button import TACTILESWITCH_LABEL_OFFSET_MM
+from pcb.definition.parts.tca9554 import TCA9554_SILKSCREEN_CLEARANCE_MM
 from shared import dimensions
 from shared.electronics import RaspberryPiHeaderComponent as RaspberryPiHeader
-from shared.panel import PANEL_BUTTONS
+from shared.panel_buttons import PANEL_BUTTONS
 
 SQUARE_LABEL_OFFSET_MM = (-12.0, 0.0)
 

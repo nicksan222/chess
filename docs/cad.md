@@ -47,13 +47,13 @@ carries `CASE_CENTER_OFFSET_Y_MM`.
 Both printable parts are generated in **assembly coordinates**: the case floor at
 z = 0, the plate occupying the top 3 mm. `board-assembly` therefore moves neither
 of them. That is deliberate — if the plate ever stops meeting the case, it is a
-real error in `dimensions.py` rather than a positioning mistake in a view, and
+real error in `hardware/shared/dimensions/` rather than a positioning mistake in a view, and
 the render shows it.
 
 ## Shared measurements
 
-Shared CAD measurements live in `hardware/shared/dimensions.py`, which
-validates itself on import. Among other things it checks that the internal stack
+Shared CAD measurements live in `hardware/shared/dimensions/`, grouped by
+board, case, panel, and tile plate. The package validates itself on import. Among other things it checks that the internal stack
 — floor, Pi cavity, board, gap, plate — sums exactly to the case height, that
 every plate screw lands on the case ledge rather than over the PCB, that no
 support boss collides with an LED or a Hall sensor, and that every control-panel feature

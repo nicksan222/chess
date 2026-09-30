@@ -51,7 +51,7 @@ def render_bom(design: pcbnew.BOARD | None = None) -> str:
     text = [
         "# Approved bill of materials",
         "",
-        "Generated from `hardware/shared/components.py` and `definition/board.py`.",
+        "Generated from `hardware/shared/components/` and `definition/board.py`.",
         "Every row names an exact manufacturer part number; substitutions require",
         "updating the shared catalog and passing footprint/package validation.",
         "",
