@@ -8,7 +8,7 @@ default:
     @just --list
 
 # Complete repository validation and generation.
-check: _automation-format
+check: _automation-format agents-check
     #!/usr/bin/env bash
     set -euo pipefail
     for package in {{ rust_packages }}; do just --justfile "$package/justfile" check; done
@@ -18,7 +18,7 @@ check: _automation-format
     just --justfile hardware/pcb/justfile review
 
 # Commit gate without CAD renders or PCB fabrication output.
-precommit: _automation-format
+precommit: _automation-format agents-check
     #!/usr/bin/env bash
     set -euo pipefail
     for package in {{ rust_packages }}; do just --justfile "$package/justfile" check; done
@@ -28,7 +28,7 @@ precommit: _automation-format
     just --justfile hardware/pcb/justfile review
 
 # Formatting, linting, checking, and documentation.
-quality: _automation-format
+quality: _automation-format agents-check
     #!/usr/bin/env bash
     set -euo pipefail
     for package in {{ rust_packages }}; do just --justfile "$package/justfile" quality; done
@@ -46,7 +46,7 @@ _automation-format:
     done
 
 # All package tests, including hardware validation.
-test:
+test: agents-test
     #!/usr/bin/env bash
     set -euo pipefail
     for package in {{ rust_packages }}; do just --justfile "$package/justfile" test; done
@@ -86,6 +86,49 @@ firmware-check:
 # Build the flashable Yocto image.
 firmware:
     just --justfile apps/firmware/justfile image
+
+# Configure runtime Herdr hooks and the pinned review panel (no model calls).
+agents-setup:
+    python3 .agents/team/setup.py
+
+# Start missing team roles; accepts role selectors and launcher flags.
+[positional-arguments]
+agents *args:
+    python3 .agents/team/agents.py up "$@"
+
+# Stop only this team's workspace or selected roles.
+[positional-arguments]
+agents-stop *args:
+    python3 .agents/team/agents.py down "$@"
+
+# Start fresh conversations and clear the session handoff.
+[positional-arguments]
+agents-reset *args:
+    python3 .agents/team/agents.py reset "$@"
+
+# Check container tools and provider login without a model request.
+[positional-arguments]
+agents-doctor *args:
+    python3 .agents/team/agents.py doctor "$@"
+
+# Show all configured models, harnesses and roles without starting them.
+agents-list:
+    python3 .agents/team/agents.py list
+
+# Report local recorded Claude tokens, not remaining subscription allowance.
+[positional-arguments]
+agents-usage *args:
+    python3 .agents/team/usage.py "$@"
+
+# Lint, format-check and test agent tooling without provider/model requests.
+agents-check:
+    ruff check .agents/team
+    ruff format --check .agents/team
+    just agents-test
+
+# Offline regressions; optional native smoke tests use HERDR_TEST_BIN.
+agents-test:
+    python3 -m unittest discover -s .agents/team/tests -v
 
 # Remove package-local caches and transient output.
 clean:

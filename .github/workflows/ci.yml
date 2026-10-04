@@ -26,6 +26,15 @@ jobs:
       - id: prebuild
         uses: ./.github/actions/prebuild-devcontainer
 
+  agent-team:
+    name: Agent team (offline)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+      - run: python3 -m unittest discover -s .agents/team/tests -v
+
   pi-harness:
     name: Pi harness
     runs-on: ubuntu-latest
@@ -60,7 +69,7 @@ jobs:
   firmware:
     name: Firmware
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: [hardware, quality, pi-harness]
+    needs: [hardware, quality, pi-harness, agent-team]
     permissions:
       contents: write
     uses: ./.github/workflows/firmware.yml

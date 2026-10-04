@@ -15,6 +15,10 @@
 __pycache__/
 *.py[cod]
 .cache/
+
+# Agent credentials/configuration overrides stay local.
+.claude/settings.local.json
+/.codex/
 /dist/firmware/
 
 # Generated next to their Python SPICE test cases.

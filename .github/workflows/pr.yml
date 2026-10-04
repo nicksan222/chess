@@ -23,6 +23,15 @@ jobs:
       - id: prebuild
         uses: ./.github/actions/prebuild-devcontainer
 
+  agent-team:
+    name: Agent team (offline)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+      - run: python3 -m unittest discover -s .agents/team/tests -v
+
   pi-harness:
     name: Pi harness
     runs-on: ubuntu-latest
@@ -125,7 +134,7 @@ jobs:
   required-checks:
     name: Required checks
     if: always()
-    needs: [hardware, hardware-report, quality, pi-harness, firmware-check]
+    needs: [hardware, hardware-report, quality, pi-harness, agent-team, firmware-check]
     runs-on: ubuntu-latest
     steps:
       - name: Verify required jobs succeeded

@@ -1,0 +1,50 @@
+# Eight regular roles; up to two task-specific specialists at once.
+# Availability is not a requirement to assign every role to every task.
+session = "chess"
+workspace = "chess-team"
+max_agents = 10
+reviewr = "persiyanov.reviewr"
+default_agents = [
+  "lead", "developer", "firmware-engineer", "hardware-engineer",
+  "mechanical-engineer", "qa", "reviewer", "pushback",
+]
+
+# CLI aliases avoid assuming access to a particular model release.
+# Set harness = "codex", model = "-" to use Codex's configured default.
+[kinds.build]
+harness = "claude"
+model = "sonnet"
+effort = "medium"
+
+[kinds.reasoning]
+harness = "claude"
+model = "opus"
+effort = "high"
+
+[kinds.review]
+harness = "claude"
+model = "opus"
+effort = "medium"
+
+# Electrical/mechanical decisions require explicit reasoning and cited evidence.
+[kinds.engineering]
+harness = "claude"
+model = "opus"
+effort = "high"
+
+[roles]
+lead = "reasoning"
+developer = "build"
+firmware-engineer = "build"
+hardware-engineer = "engineering"
+mechanical-engineer = "engineering"
+qa = "build"
+reviewer = "review"
+pushback = "review"
+# Start only for a concrete task; these do not consume slots until started.
+manufacturing-engineer = "engineering"
+test-engineer = "build"
+devops-engineer = "build"
+pm = "build"
+upgrade-reviewer = "review"
+pr-maker = "build"

@@ -1,0 +1,24 @@
+id = "chess.team"
+name = "Chess team"
+version = "0.1.0"
+min_herdr_version = "0.9.3"
+description = "Manage Chess's project-wide agent team in the devcontainer"
+platforms = ["linux"]
+
+[[actions]]
+id = "up"
+title = "Start missing Chess agents"
+contexts = ["workspace"]
+command = ["python3", "agents.py", "up", "--plugin", "--no-attach"]
+
+[[actions]]
+id = "reset"
+title = "Reset all agent context"
+contexts = ["workspace"]
+command = ["python3", "agents.py", "reset", "--plugin", "--no-attach"]
+
+[[actions]]
+id = "stop"
+title = "Stop all Chess agents"
+contexts = ["workspace"]
+command = ["python3", "agents.py", "down", "--plugin"]
