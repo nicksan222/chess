@@ -504,6 +504,17 @@ class LauncherTests(unittest.TestCase):
 
 
 class SetupAndUsageTests(unittest.TestCase):
+    def test_setup_rejects_host_before_filesystem_or_tool_mutation(self):
+        with (
+            patch.object(setup.Path, "exists", return_value=False),
+            patch.object(setup.Path, "mkdir") as mkdir,
+            patch.object(setup.subprocess, "run") as run,
+            self.assertRaisesRegex(SystemExit, "inside the devcontainer"),
+        ):
+            setup.main()
+        mkdir.assert_not_called()
+        run.assert_not_called()
+
     def test_optional_reviewr_failure_does_not_block_required_setup(self):
         def result(argv, **_kwargs):
             return SimpleNamespace(
@@ -513,6 +524,7 @@ class SetupAndUsageTests(unittest.TestCase):
         with (
             tempfile.TemporaryDirectory() as directory,
             patch.object(setup.Path, "home", return_value=Path(directory)),
+            patch.object(setup, "require_container"),
             patch.object(setup.subprocess, "run", side_effect=result) as run,
             contextlib.redirect_stdout(io.StringIO()) as output,
         ):

@@ -45,7 +45,9 @@ class HerdrIntegrationTests(unittest.TestCase):
         )
         self.addCleanup(self.stop_server)
         for _ in range(50):
-            if self.command("status", "server").returncode == 0:
+            # `status server` can exit zero while reporting a stopped server.
+            # Wait for a successful socket API read, not just a CLI exit code.
+            if self.command("workspace", "list").returncode == 0:
                 break
             if self.server.poll() is not None:
                 self.fail("isolated Herdr server exited before readiness")

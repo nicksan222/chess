@@ -30,9 +30,13 @@ def portable_claude_hooks(home):
     path.write_text(json.dumps(settings, indent=2) + "\n")
 
 
-def main():
+def require_container():
     if not (Path("/.dockerenv").exists() or Path("/run/.containerenv").exists()):
         raise SystemExit("run setup inside the devcontainer")
+
+
+def main():
+    require_container()
     home = Path.home()
     for directory in (".claude", ".codex", ".config/herdr"):
         (home / directory).mkdir(parents=True, exist_ok=True)
