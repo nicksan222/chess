@@ -7,15 +7,15 @@ platforms = ["linux"]
 
 [[actions]]
 id = "up"
-title = "Start missing Chess agents"
+title = "Start all Chess agents"
 contexts = ["workspace"]
 command = ["python3", "agents.py", "up", "--plugin", "--no-attach"]
 
 [[actions]]
-id = "reset"
-title = "Reset all agent context"
+id = "restart"
+title = "Restart all Chess agents"
 contexts = ["workspace"]
-command = ["python3", "agents.py", "reset", "--plugin", "--no-attach"]
+command = ["python3", "agents.py", "restart", "--plugin", "--no-attach"]
 
 [[actions]]
 id = "stop"

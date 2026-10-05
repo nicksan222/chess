@@ -40,10 +40,10 @@ protocol. Do not silently move a failed Pi workflow to another runner.
 
 For authorized Herdr teams, read `.agents/team/team.md` and your assigned role brief.
 `just agents-list` shows the roster; `just agents-doctor` checks tools/login without a
-model request. `just agents lead developer` starts a small software team;
-`just agents lead hardware-engineer mechanical-engineer` starts a hardware/fit team.
-`just agents` asks whether to run the team in Pi or Claude Code (`--harness` skips
-it) and starts eight default roles: lead, developer, firmware engineer, hardware
+model request. There is one team: `just agents` starts it, `just agents-stop` stops it
+and `just agents-restart` restarts it with new conversations, keeping the task handoff.
+`just agents` asks whether to run the team in Pi or Claude Code and starts eight
+default roles: lead, developer, firmware engineer, hardware
 engineer, mechanical engineer, QA, reviewer and pushback. Manufacturing, test engineering,
 DevOps, PM, upgrade review and PR delivery are on demand; the cap is ten active agents.
 There is no student role or per-domain team. One writer per file, one Git owner and one

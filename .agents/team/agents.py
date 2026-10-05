@@ -2,8 +2,8 @@
 """Manage Chess's project-wide Herdr team (adapted from nicksan222/study).
 
 Lifecycle: validate configuration and selectors, check provider login, lock the named
-session, reuse or create the owned workspace, start only missing roles, then release
-the lock before attaching. Plugin actions additionally prove their socket and workspace.
+session, reuse or create the owned workspace, start only missing roles (restart first
+closes the selected or running ones), then release the lock before attaching. Plugin actions additionally prove their socket and workspace.
 """
 
 import argparse
@@ -26,7 +26,7 @@ EFFORTS = {
     "codex": {"minimal", "low", "medium", "high", "xhigh"},
     "pi": {"off", "minimal", "low", "medium", "high", "xhigh", "max"},
 }
-# Interactive `up`/`reset` offer these when --harness is not given.
+# Interactive `up`/`reset`/`restart` offer these when --harness is not given.
 PICKER = [("claude", "Claude Code"), ("pi", "Pi")]
 
 
@@ -172,8 +172,13 @@ class Fleet:
             )
         if self.options.fresh and self.options.roles:
             raise LauncherError("--fresh restarts the whole team; omit agent selectors")
-        if self.plugin and self.options.command not in {"up", "reset", "down"}:
-            raise LauncherError("plugin mode supports only up, reset or down")
+        if self.plugin and self.options.command not in {
+            "up",
+            "reset",
+            "restart",
+            "down",
+        }:
+            raise LauncherError("plugin mode supports only up, reset, restart or down")
 
     def plugin_context(self):
         """Bind a menu action to the session socket and workspace that invoked it."""
@@ -510,8 +515,12 @@ class Fleet:
             self.require_ready(result, role, pane)
         print(f"Started {role}: {provider} {settings['model']} ({settings['effort']}).")
 
-    def up(self, reset=False):
-        """Start missing roles, or replace every conversation for reset/fresh."""
+    def up(self, reset=False, restart=False):
+        """Start missing roles, or replace conversations for reset/fresh/restart.
+
+        Restart keeps the task handoff. With role selectors it replaces only those
+        roles; without them it replaces every running role (defaults if none run).
+        """
         selected_roles = self.selected_roles()
         if not selected_roles:
             raise LauncherError("no agents selected")
@@ -521,6 +530,8 @@ class Fleet:
         if self.options.dangerous and self.harness == "pi":
             print("Pi has no permission prompts; --dangerous changes nothing for it.")
         if self.options.dry_run:
+            if restart and not self.options.roles:
+                print("restart replaces the running roles; defaults if none run:")
             self.roster(selected_roles)
             return
         self.doctor()
@@ -528,27 +539,44 @@ class Fleet:
         self.ensure_server()
         workspace_id = self.workspace_id()
         agents = self.herdr_json("agent", "list")["result"]["agents"]
-        requested_names = {role for role, _ in selected_roles}
-        for agent in agents:
-            belongs_elsewhere = agent.get("workspace_id") != workspace_id
-            if agent.get("name") in requested_names and belongs_elsewhere:
-                raise LauncherError(f"{agent['name']} belongs to another workspace")
         owned = {
             agent["name"]
             for agent in agents
             if agent.get("workspace_id") == workspace_id
         }
+        whole_team = reset or self.options.fresh or (restart and not self.options.roles)
+        if restart and not self.options.roles and owned & set(self.roles):
+            selected_roles = [
+                (role, work) for role, work in self.roles.items() if role in owned
+            ]
+        requested_names = {role for role, _ in selected_roles}
+        # Closing every owned tab one by one could leave a stale empty workspace.
+        if restart and owned and owned <= requested_names:
+            whole_team = True
+        for agent in agents:
+            belongs_elsewhere = agent.get("workspace_id") != workspace_id
+            if agent.get("name") in requested_names and belongs_elsewhere:
+                raise LauncherError(f"{agent['name']} belongs to another workspace")
         self.guard_workspace(workspace_id)
-        if self.options.fresh or reset:
+        # Check the cap before closing anything so a rejected restart changes nothing.
+        survivors = set() if whole_team else owned
+        if len(survivors | requested_names) > self.maximum:
+            raise LauncherError(f"team would exceed MAX_AGENTS={self.maximum}")
+        if whole_team:
             if workspace_id:
                 self.herdr_command("workspace", "close", workspace_id)
             if reset:
                 (self.state / "task.md").unlink(missing_ok=True)
             workspace_id = ""
             owned = set()
-        # Count the union so several incremental starts cannot bypass the team cap.
-        if len(owned | requested_names) > self.maximum:
-            raise LauncherError(f"team would exceed MAX_AGENTS={self.maximum}")
+        elif restart:
+            for agent in agents:
+                if (
+                    agent.get("name") in requested_names
+                    and agent.get("workspace_id") == workspace_id
+                ):
+                    self.herdr_command("pane", "close", agent["pane_id"])
+            owned -= requested_names
         self.herdr_command("plugin", "link", str(TEAM))
         first = False
         for role, work in selected_roles:
@@ -611,7 +639,12 @@ class Fleet:
         self.herdr_command("workspace", "focus", workspace_id)
         if "lead" in requested_names:
             self.herdr_command("agent", "focus", "lead")
-        if first:
+        if restart:
+            print(
+                f"Restarted {', '.join(role for role, _ in selected_roles)}; "
+                "the lead can recover the task from its handoff."
+            )
+        elif first:
             if reset:
                 print("New conversations started with no prior handoff.")
             else:
@@ -667,7 +700,7 @@ class Fleet:
 def parse():
     parser = argparse.ArgumentParser()
     subcommands = parser.add_subparsers(dest="command", required=True)
-    for name in ("up", "reset", "down", "doctor", "list"):
+    for name in ("up", "reset", "restart", "down", "doctor", "list"):
         command_parser = subcommands.add_parser(name)
         command_parser.add_argument("--session")
         command_parser.add_argument(
@@ -682,7 +715,7 @@ def parse():
         command_parser.set_defaults(
             fresh=False, no_attach=False, dry_run=False, dangerous=False
         )
-        if name in {"up", "reset"}:
+        if name in {"up", "reset", "restart"}:
             command_parser.add_argument("--no-attach", action="store_true")
             command_parser.add_argument("--dry-run", action="store_true")
             command_parser.add_argument(
@@ -703,6 +736,8 @@ def main():
             fleet.up()
         elif options.command == "reset":
             fleet.up(reset=True)
+        elif options.command == "restart":
+            fleet.up(restart=True)
         elif options.command == "down":
             fleet.down()
         elif options.command == "doctor":

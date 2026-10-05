@@ -1,10 +1,17 @@
 # Chess agent team
 
 Optional Herdr runtime alongside the existing [Pi setup](../../.pi/README.md).
-The team runs in either Claude Code or Pi: in a terminal, `just agents` and
-`just agents-reset` ask which one to use (Enter keeps the `fleet.toml` defaults,
-which are Claude Code). `--harness claude|pi|codex` skips the question; menu actions
-and non-interactive runs never ask and use `fleet.toml`.
+There is one team and three lifecycle commands:
+
+```sh
+just agents          # start the whole team
+just agents-stop     # stop the whole team
+just agents-restart  # restart the whole team (new conversations, task handoff kept)
+```
+
+In a terminal, `just agents` and `just agents-restart` ask whether to run the team in
+Claude Code or Pi (Enter keeps the `fleet.toml` defaults, which are Claude Code). Menu
+actions and non-interactive runs never ask and use `fleet.toml`.
 All fourteen configured roles use Claude Code by default. The eight regular roles
 are lead, portable Rust developer, firmware engineer, hardware engineer, mechanical
 engineer, QA, reviewer and pushback. Manufacturing engineer, test engineer, DevOps
@@ -29,7 +36,7 @@ Setup never signs you in, starts agents, makes model calls, or pre-trusts the
 checkout. Run `claude` once and accept workspace trust yourself on first use.
 If startup is blocked or times out, the launcher keeps that pane for inspection instead
 of destroying the dialog. Attach to the session, answer prompts yourself, then
-`just agents-stop ROLE` and `just agents ROLE` to complete a clean startup/brief.
+`just agents-restart` to complete a clean startup/brief.
 
 Login inside the container:
 
@@ -41,23 +48,15 @@ just agents-doctor --harness pi
 codex login
 just agents-doctor
 just agents-list
-just agents lead developer --dry-run
-just agents lead developer
-# PCB/enclosure work without unrelated software roles:
-just agents lead hardware-engineer mechanical-engineer
-# Pi adapter/runtime work:
-just agents lead firmware-engineer
-# Or start the complete default team (asks Claude Code or Pi):
 just agents
-just agents --harness pi                # skip the question
 ```
 
 With Pi, every role uses Pi's configured default model (`.pi/settings.json`), the
 work kind's effort becomes `--thinking`, the brief is appended to the system prompt,
 and the `subagent` tool is excluded so roles cannot spawn nested teams. Pi has no
 permission prompts, so `--dangerous` changes nothing for it; Pi roles act without
-asking. `up` keeps running roles in their original harness: use `--fresh` (or
-`just agents-stop ROLE`) to switch.
+asking. `just agents` keeps running roles in their original harness: use
+`just agents-restart` and pick the other harness to switch.
 
 Claude/Codex credentials and Herdr configuration use separate named Docker
 volumes, not host credential bind mounts. Login survives a container rebuild,
@@ -70,20 +69,19 @@ Doctor warns about API credentials; it does not make a model request.
 ## Lifecycle
 
 ```sh
-just agents --no-attach                 # start/reuse without opening the UI
-herdr --session chess                   # attach; Ctrl+B Q detaches, agents keep running
-just agents reviewer --session chess    # add only a missing role
-just agents pr-maker --no-attach        # only with a delivery assignment
-just agents-stop pr-maker               # release an on-demand slot
-just agents --fresh --no-attach         # new conversations, retain task checkpoint
-just agents-reset --no-attach           # new conversations, clear task checkpoint
-just agents-stop                       # close this team's workspace only
+just agents                             # start the whole team and attach
+herdr --session chess                   # re-attach; Ctrl+B Q detaches, agents keep running
+just agents-restart                     # new conversations for the running team, handoff kept
+just agents-stop                        # close this team's workspace only
 just agents-usage --hours 24            # local recorded tokens, not plan allowance
 just agents-check                      # lint, format and offline regressions
 just agents-test                       # just the offline regression suite
 HERDR_TEST_BIN="$(command -v herdr)" just agents-test # isolated native API smoke tests
 ```
 
+The lead starts or stops an on-demand role directly with the launcher, e.g.
+`python3 .agents/team/agents.py up pr-maker --no-attach` and `python3 .agents/team/agents.py down pr-maker`; it also accepts
+`--session NAME`, `--harness`, `--dry-run` and `--dangerous` for advanced use.
 Use `--session NAME` on launcher commands for a separate named session. Do not
 run duplicate sessions for the same task. Names permit ASCII letters, digits,
 underscores and hyphens, starting with a letter/digit. `list`/`--dry-run` work
@@ -104,10 +102,11 @@ The launcher locks each session during mutations, enforces the cap across
 incremental starts, rejects foreign role collisions and cleans definitively failed
 new panes. Blocked/timed-out startup panes are kept for operator intervention, not
 silently accepted or retried.
+The Herdr menu offers the same start, restart and stop actions.
 Menu actions are bound to their invoking session/socket/workspace.
 
 Provider permission checks remain enabled. If you knowingly want unattended
-permission bypass, pass `--dangerous` to `agents`/`agents-reset` explicitly.
+permission bypass, pass `--dangerous` to `python3 .agents/team/agents.py up` or `restart` explicitly.
 A container is not a complete sandbox: agents still see credentials, mounted
 source, the network and the in-container Docker daemon. The menu never enables
 bypass, and restarting without this flag restores ordinary permission behavior.

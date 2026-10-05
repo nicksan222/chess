@@ -139,7 +139,7 @@ See [`docs/development.md`](docs/development.md) for the full workflow.
 
 Coding assistants can use the existing [Pi setup](.pi/README.md) or the optional
 [Claude Code / Herdr team](.agents/team/README.md). Rebuild the devcontainer,
-run `claude auth login`, then `just agents-doctor` and `just agents lead developer`.
+run `claude auth login`, then `just agents-doctor` and `just agents`.
 `just agents` starts the eight-role engineering team, including hardware, mechanical
 and firmware engineers. Manufacturing, test and DevOps specialists are available on
 demand; provider permissions remain on by default.

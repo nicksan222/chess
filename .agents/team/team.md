@@ -10,7 +10,7 @@ The default roster has eight roles. Availability is not a requirement to use eve
 small tasks should start only the needed agents. At most ten agents may run together,
 leaving two concurrent slots for the six on-demand roles. The lead chooses those roles
 for concrete outcomes; do not auto-evict workers, create per-domain/nested teams or raise
-the cap without operator approval. Start missing roles with `just agents <role> --no-attach`.
+the cap without operator approval. Start a missing role with `python3 .agents/team/agents.py up <role> --no-attach`.
 
 | Role | Responsibility | Normal authoring scope (only assigned files) |
 | --- | --- | --- |

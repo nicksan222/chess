@@ -337,6 +337,79 @@ class LauncherTests(unittest.TestCase):
         fleet.down()
         fleet.herdr_command.assert_called_once_with("pane", "close", "ours")
 
+    def test_restart_selected_role_replaces_only_that_role(self):
+        fleet = self.fake_up()
+        fleet.options.roles = ["developer"]
+        fleet.herdr_json.side_effect = [
+            {
+                "result": {
+                    "agents": [
+                        {"name": "lead", "workspace_id": "ws", "pane_id": "lead"},
+                        {"name": "developer", "workspace_id": "ws", "pane_id": "old"},
+                    ]
+                }
+            },
+            {"result": {"root_pane": {"pane_id": "new"}}},
+        ]
+        fleet.state.mkdir(parents=True)
+        (fleet.state / "task.md").write_text("handoff")
+        with contextlib.redirect_stdout(io.StringIO()):
+            fleet.up(restart=True)
+        closed = [
+            call.args
+            for call in fleet.herdr_command.call_args_list
+            if call.args[1:2] == ("close",)
+        ]
+        self.assertEqual(closed, [("pane", "close", "old")])
+        fleet.start_role.assert_called_once_with(
+            "developer", fleet.roles["developer"], "new"
+        )
+        self.assertTrue((fleet.state / "task.md").exists())
+
+    def test_restart_whole_team_keeps_running_roster_and_handoff(self):
+        running = ["lead", "developer", "pr-maker"]
+        fleet = self.fake_up()
+        fleet.herdr_json.side_effect = [
+            {
+                "result": {
+                    "agents": [
+                        {"name": name, "workspace_id": "ws", "pane_id": name}
+                        for name in running
+                    ]
+                }
+            },
+            {
+                "result": {
+                    "workspace": {"workspace_id": "new-ws"},
+                    "root_pane": {"pane_id": "p0"},
+                    "tab": {"tab_id": "t0"},
+                }
+            },
+            {"result": {"root_pane": {"pane_id": "p1"}}},
+            {"result": {"root_pane": {"pane_id": "p2"}}},
+        ]
+        fleet.state.mkdir(parents=True)
+        (fleet.state / "task.md").write_text("handoff")
+        with contextlib.redirect_stdout(io.StringIO()):
+            fleet.up(restart=True)
+        fleet.herdr_command.assert_any_call("workspace", "close", "ws")
+        self.assertEqual(
+            sorted(call.args[0] for call in fleet.start_role.call_args_list),
+            sorted(running),
+        )
+        self.assertTrue((fleet.state / "task.md").exists())
+
+    def test_restart_cap_rejected_before_closing_anything(self):
+        existing = [
+            {"name": name, "workspace_id": "ws", "pane_id": name}
+            for name in self.fleet.defaults + ["test-engineer", "devops-engineer"]
+        ]
+        fleet = self.fake_up(existing)
+        fleet.options.roles = ["developer", "pr-maker"]
+        with self.assertRaisesRegex(agents.LauncherError, "MAX_AGENTS"):
+            fleet.up(restart=True)
+        fleet.herdr_command.assert_not_called()
+
     def test_failed_start_closes_only_new_pane(self):
         fleet = self.fake_up()
         fleet.options.roles = ["developer"]

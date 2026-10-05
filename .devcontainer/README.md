@@ -59,15 +59,19 @@ for the supported names and cloud-provider settings.
 Host-only fallback downloads (`.cache/blender`, `.cache/pcb`) exist for people
 who run the tools outside the container.
 
-After create:
+After create, the first VS Code terminal greets you with a 👋 welcome: toolchain
+versions, which agents are signed in, and the commands below. Bring it back with
+`just welcome`.
 
 ```sh
+just welcome               # toolchain/login status and starter commands
 bun run --cwd .pi check    # type-check project Pi extensions
 pi                         # start the coding agent; use /login for OAuth
 claude auth login          # persistent Claude login; no automatic sign-in
 just agents-doctor         # tools/login check, no model request
-just agents lead developer # portable Rust team (eight engineering roles with just agents)
-just agents lead hardware-engineer mechanical-engineer # circuit/enclosure team
+just agents                # start the eight-role team
+just agents-restart        # restart it, task handoff kept
+just agents-stop           # stop it
 just agents-test           # offline launcher/configuration tests
 just pcb                    # test, then generate PCB review output
 just cad                    # test, then generate CAD output

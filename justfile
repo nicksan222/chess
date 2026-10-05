@@ -7,6 +7,10 @@ python_packages := "hardware/shared hardware/cad hardware/pcb"
 default:
     @just --list
 
+# Show the devcontainer welcome: toolchain, logins and starter commands.
+welcome:
+    @bash .devcontainer/welcome.sh
+
 # Complete repository validation and generation.
 check: _automation-format agents-check
     #!/usr/bin/env bash
@@ -90,20 +94,17 @@ firmware:
 agents-setup:
     python3 .agents/team/setup.py
 
-# Start missing team roles (asks Claude Code or Pi); accepts role selectors and flags.
-[positional-arguments]
-agents *args:
-    python3 .agents/team/agents.py up "$@"
+# Start the whole agent team (asks Claude Code or Pi).
+agents:
+    python3 .agents/team/agents.py up
 
-# Stop only this team's workspace or selected roles.
-[positional-arguments]
-agents-stop *args:
-    python3 .agents/team/agents.py down "$@"
+# Stop the whole agent team.
+agents-stop:
+    python3 .agents/team/agents.py down
 
-# Start fresh conversations and clear the session handoff.
-[positional-arguments]
-agents-reset *args:
-    python3 .agents/team/agents.py reset "$@"
+# Restart the whole agent team with new conversations; keeps the task handoff.
+agents-restart:
+    python3 .agents/team/agents.py restart
 
 # Check container tools and provider login without a model request.
 [positional-arguments]
