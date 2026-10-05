@@ -40,6 +40,7 @@ def options(**overrides):
         "no_attach": True,
         "dry_run": False,
         "dangerous": False,
+        "harness": None,
     }
     return argparse.Namespace(**(values | overrides))
 
@@ -219,6 +220,89 @@ class LauncherTests(unittest.TestCase):
         self.assertNotIn("--model", start.args)
         self.assertNotIn("--dangerously-bypass-approvals-and-sandbox", start.args)
         self.assertEqual(prompt.args[:3], ("agent", "prompt", "developer"))
+
+    def test_pi_harness_overrides_kind_with_brief_and_no_subagents(self):
+        self.fleet.lock()
+        self.fleet.harness = "pi"
+        self.fleet.options.dangerous = True
+        self.fleet.herdr_command = Mock(return_value=self.start_result)
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.fleet.start_role("developer", "build", "pane")
+        argv = self.fleet.herdr_command.call_args.args
+        self.assertEqual(argv[argv.index("--kind") + 1], "pi")
+        self.assertEqual(
+            argv[argv.index("--append-system-prompt") + 1],
+            str(self.fleet.state / "developer.md"),
+        )
+        self.assertEqual(argv[argv.index("--exclude-tools") + 1], "subagent")
+        self.assertEqual(argv[argv.index("--thinking") + 1], "medium")
+        self.assertNotIn("--model", argv)
+        self.assertNotIn("sonnet", argv)
+        self.assertFalse(any(arg.startswith("--dangerously") for arg in argv))
+        self.assertEqual(self.fleet.herdr_command.call_count, 1)
+
+    def test_picker_selects_harness_only_when_interactive(self):
+        tty = Mock(isatty=Mock(return_value=True))
+        with (
+            patch.object(agents.sys, "stdin", tty),
+            patch.object(agents.sys, "stdout", tty),
+            patch("builtins.input", side_effect=["9", "2"]),
+            patch("builtins.print"),
+        ):
+            self.fleet.choose_harness()
+        self.assertEqual(self.fleet.harness, "pi")
+        self.assertEqual(self.fleet.settings("review")["harness"], "pi")
+
+        fleet = agents.Fleet(options())
+        with patch("builtins.input") as prompt:
+            fleet.choose_harness()  # unittest stdin/stdout are not both terminals
+        prompt.assert_not_called()
+        self.assertEqual(fleet.settings("build")["model"], "sonnet")
+
+    def test_picker_enter_keeps_fleet_defaults_and_eof_aborts(self):
+        tty = Mock(isatty=Mock(return_value=True))
+        with (
+            patch.object(agents.sys, "stdin", tty),
+            patch.object(agents.sys, "stdout", tty),
+            patch("builtins.print"),
+        ):
+            with patch("builtins.input", return_value=""):
+                self.fleet.choose_harness()
+            self.assertIsNone(self.fleet.harness)
+            with (
+                patch("builtins.input", side_effect=EOFError),
+                self.assertRaisesRegex(agents.LauncherError, "no harness chosen"),
+            ):
+                self.fleet.choose_harness()
+
+    def test_doctor_checks_pi_login_without_model_request(self):
+        self.fleet.validate_container = Mock()
+        self.fleet.harness = "pi"
+        ready = SimpleNamespace(returncode=0, stdout='{"status":"ready"}')
+        with (
+            patch.object(agents.shutil, "which", return_value="/bin/tool"),
+            patch.object(agents, "call", return_value=ready) as call,
+            patch.object(self.fleet, "pi_provider", return_value="openai-codex"),
+            contextlib.redirect_stdout(io.StringIO()),
+        ):
+            self.fleet.doctor()
+        self.assertEqual(
+            [item.args[0] for item in call.call_args_list],
+            [
+                ["herdr", "--version"],
+                ["pi", "--version"],
+                ["pi", "auth", "check", "--provider", "openai-codex", "--json"],
+            ],
+        )
+        missing = SimpleNamespace(returncode=1, stdout='{"status":"missing"}')
+        with (
+            patch.object(agents.shutil, "which", return_value="/bin/tool"),
+            patch.object(agents, "call", return_value=missing),
+            patch.object(self.fleet, "pi_provider", return_value="openai-codex"),
+            contextlib.redirect_stdout(io.StringIO()),
+            self.assertRaisesRegex(agents.LauncherError, "Pi is not signed in"),
+        ):
+            self.fleet.doctor()
 
     def test_plugin_workspace_guard(self):
         self.fleet.plugin = True
@@ -533,6 +617,8 @@ class SetupAndUsageTests(unittest.TestCase):
         commands = [call.args[0] for call in run.call_args_list]
         self.assertIn(["herdr", "integration", "install", "claude"], commands)
         self.assertIn(["herdr", "integration", "install", "codex"], commands)
+        self.assertIn(["herdr", "integration", "install", "pi"], commands)
+        self.assertIn(["pi", "--version"], commands)
         self.assertTrue(any(command[1:3] == ["plugin", "link"] for command in commands))
         self.assertIn(["claude", "--version"], commands)
 

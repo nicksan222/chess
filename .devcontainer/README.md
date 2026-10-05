@@ -17,11 +17,11 @@ devcontainer exec --workspace-folder . just check
 
 The image provides:
 
-- Node.js 22, Bun 1.4, and the [Pi coding agent](https://pi.dev/), installed
-  during container creation;
-- pinned Claude Code and Herdr, plus Codex, provider status hooks and the Reviewr
-  panel; the optional [agent team](../.agents/team/README.md) defaults to Claude
-  Code for all roles;
+- Node.js 22, Bun 1.4, and every agent harness: pinned Claude Code and Herdr in the
+  image, pinned [Pi](https://pi.dev/) and Codex installed during container creation
+  (creation fails if any is missing), plus Herdr's Claude/Codex/Pi status hooks and
+  the Reviewr panel; `just agents` asks whether the optional
+  [agent team](../.agents/team/README.md) runs in Claude Code or Pi;
 - a Bun-managed `.pi` TypeScript project with pinned Pi API types, workspace
   IntelliSense, and `bun run --cwd .pi check` validation for project extensions;
 - stable Rust with `rustfmt`, Clippy, Just, and the AArch64 GNU target/linker;

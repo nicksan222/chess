@@ -1,6 +1,10 @@
 # Chess agent team
 
 Optional Herdr runtime alongside the existing [Pi setup](../../.pi/README.md).
+The team runs in either Claude Code or Pi: in a terminal, `just agents` and
+`just agents-reset` ask which one to use (Enter keeps the `fleet.toml` defaults,
+which are Claude Code). `--harness claude|pi|codex` skips the question; menu actions
+and non-interactive runs never ask and use `fleet.toml`.
 All fourteen configured roles use Claude Code by default. The eight regular roles
 are lead, portable Rust developer, firmware engineer, hardware engineer, mechanical
 engineer, QA, reviewer and pushback. Manufacturing engineer, test engineer, DevOps
@@ -17,7 +21,7 @@ Starting the fleet may consume subscription/API usage.
 
 Rebuild/reopen the devcontainer after pulling these changes. The image pins
 Claude Code 2.1.287 and checksum-verified Herdr 0.9.3. Post-create installs
-Codex 0.159.3, Herdr's provider hooks, Reviewr v0.39.0 and the Chess menu plugin.
+Pi, Codex 0.159.3, Herdr's Claude/Codex/Pi hooks, Reviewr v0.39.0 and the Chess menu plugin.
 `just agents-setup` repeats runtime integration setup (network required for Reviewr).
 Reviewr is optional: a marketplace outage warns without blocking the container or team;
 retry setup later to install the panel.
@@ -31,6 +35,8 @@ Login inside the container:
 
 ```sh
 claude auth login
+# Pi instead (or as well): run pi, then /login for its default provider
+just agents-doctor --harness pi
 # Optional alternate harness:
 codex login
 just agents-doctor
@@ -41,9 +47,17 @@ just agents lead developer
 just agents lead hardware-engineer mechanical-engineer
 # Pi adapter/runtime work:
 just agents lead firmware-engineer
-# Or start the complete default team:
+# Or start the complete default team (asks Claude Code or Pi):
 just agents
+just agents --harness pi                # skip the question
 ```
+
+With Pi, every role uses Pi's configured default model (`.pi/settings.json`), the
+work kind's effort becomes `--thinking`, the brief is appended to the system prompt,
+and the `subagent` tool is excluded so roles cannot spawn nested teams. Pi has no
+permission prompts, so `--dangerous` changes nothing for it; Pi roles act without
+asking. `up` keeps running roles in their original harness: use `--fresh` (or
+`just agents-stop ROLE`) to switch.
 
 Claude/Codex credentials and Herdr configuration use separate named Docker
 volumes, not host credential bind mounts. Login survives a container rebuild,

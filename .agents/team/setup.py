@@ -38,9 +38,9 @@ def require_container():
 def main():
     require_container()
     home = Path.home()
-    for directory in (".claude", ".codex", ".config/herdr"):
+    for directory in (".claude", ".codex", ".pi/agent", ".config/herdr"):
         (home / directory).mkdir(parents=True, exist_ok=True)
-    for provider in ("claude", "codex"):
+    for provider in ("claude", "codex", "pi"):
         subprocess.run(["herdr", "integration", "install", provider], check=True)
     portable_claude_hooks(home)
     reviewr = subprocess.run(
@@ -62,10 +62,10 @@ def main():
     subprocess.run(
         ["herdr", "plugin", "link", str(Path(__file__).resolve().parent)], check=True
     )
-    for tool in ("claude", "codex", "herdr"):
+    for tool in ("claude", "codex", "pi", "herdr"):
         subprocess.run([tool, "--version"], check=True)
     print(
-        "Herdr configured. Run claude auth login (or codex login), then just agents-doctor."
+        "Herdr configured. Run claude auth login (or pi, then /login), then just agents-doctor."
     )
 
 

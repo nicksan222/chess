@@ -24,7 +24,10 @@ REPO = TEAM.parent.parent
 EFFORTS = {
     "claude": {"low", "medium", "high", "xhigh", "max"},
     "codex": {"minimal", "low", "medium", "high", "xhigh"},
+    "pi": {"off", "minimal", "low", "medium", "high", "xhigh", "max"},
 }
+# Interactive `up`/`reset` offer these when --harness is not given.
+PICKER = [("claude", "Claude Code"), ("pi", "Pi")]
 
 
 class LauncherError(Exception):
@@ -94,6 +97,7 @@ class Fleet:
         self.kinds = config["kinds"]
         self.roles = config["roles"]
         self.herdr = os.getenv("HERDR_BIN_PATH", "herdr")
+        self.harness = getattr(options, "harness", None)
         self.plugin = options.plugin
         self.lockfile = None
         if self.plugin:
@@ -193,6 +197,62 @@ class Fleet:
         if not self.session:
             raise LauncherError("Herdr did not report the plugin session name")
 
+    def settings(self, work):
+        """Work-kind settings, retargeted when a harness was chosen for this run.
+
+        Model aliases are harness-specific, so another harness keeps its own
+        configured default model; the effort carries over when it is supported.
+        """
+        settings = self.kinds[work]
+        if not self.harness or self.harness == settings["harness"]:
+            return settings
+        effort = settings["effort"]
+        return {
+            "harness": self.harness,
+            "model": "-",
+            "effort": effort if effort in EFFORTS[self.harness] else "-",
+        }
+
+    def choose_harness(self):
+        """Ask which harness runs the team; non-interactive runs use fleet.toml."""
+        if self.harness or self.plugin:
+            return
+        if not (sys.stdin.isatty() and sys.stdout.isatty()):
+            return
+        print("Which agent harness should run the team?")
+        for number, (_, label) in enumerate(PICKER, 1):
+            print(f"  {number}) {label}")
+        print("  Enter) fleet.toml defaults")
+        while True:
+            try:
+                answer = input("Choice: ").strip().lower()
+            except (EOFError, KeyboardInterrupt) as error:
+                print()
+                raise LauncherError("no harness chosen; nothing started") from error
+            if not answer:
+                return
+            for number, (harness, label) in enumerate(PICKER, 1):
+                if answer in {str(number), harness, label.lower()}:
+                    self.harness = harness
+                    return
+            print(f"Enter 1-{len(PICKER)} or press Enter.")
+
+    def pi_provider(self, model):
+        """The provider Pi resolves for a model ('-' means its configured default)."""
+        if "/" in model:
+            return model.split("/", 1)[0]
+        for path in (
+            REPO / ".pi/settings.json",
+            Path.home() / ".pi/agent/settings.json",
+        ):
+            try:
+                provider = json.loads(path.read_text()).get("defaultProvider")
+            except (OSError, json.JSONDecodeError):
+                continue
+            if provider:
+                return provider
+        return None
+
     def herdr_command(self, *arguments, capture=True, check=True):
         """Use the selected transport; keep protocol JSON out of human-facing output."""
         command = [self.herdr]
@@ -230,7 +290,8 @@ class Fleet:
         call([self.herdr, "--version"], env=transport_environment(self.plugin))
         seen = set()
         for _, work in self.selected_roles():
-            provider = self.kinds[work]["harness"]
+            settings = self.settings(work)
+            provider = settings["harness"]
             if provider in seen:
                 continue
             seen.add(provider)
@@ -253,6 +314,26 @@ class Fleet:
                         "Warning: API credentials are set; Claude may use API billing instead of your subscription."
                     )
                 print("Claude login found (no model request made).")
+            elif provider == "pi":
+                pi_provider = self.pi_provider(settings["model"])
+                if not pi_provider:
+                    raise LauncherError(
+                        "Pi has no default provider: set defaultProvider in .pi/settings.json"
+                    )
+                result = call(
+                    ["pi", "auth", "check", "--provider", pi_provider, "--json"],
+                    capture=True,
+                    check=False,
+                )
+                try:
+                    ready = json.loads(result.stdout).get("status") == "ready"
+                except json.JSONDecodeError:
+                    ready = False
+                if not ready:
+                    raise LauncherError(
+                        f"Pi is not signed in to {pi_provider}: run pi, then /login"
+                    )
+                print(f"Pi {pi_provider} login found (no model request made).")
             else:
                 call(["codex", "login", "status"])
         print("Container ready (no model request made).")
@@ -356,7 +437,7 @@ class Fleet:
 
     def start_role(self, role, work, pane):
         """Write one private role brief, then start its provider in a new pane."""
-        settings = self.kinds[work]
+        settings = self.settings(work)
         prompt = self.state / f"{role}.md"
         try:
             team_brief = (TEAM / "team.md").read_text()
@@ -379,9 +460,18 @@ class Fleet:
                 "--disallowedTools",
                 "Agent,Workflow",
             ]
+        elif provider == "pi":
+            # Pi reads a file path's contents; exclude pi-subagents (no nested teams).
+            provider_arguments = [
+                "--append-system-prompt",
+                str(prompt),
+                "--exclude-tools",
+                "subagent",
+            ]
         else:
             provider_arguments = []
-        if self.options.dangerous:
+        # Pi has no permission prompts to bypass.
+        if self.options.dangerous and provider != "pi":
             flag = (
                 "--dangerously-skip-permissions"
                 if provider == "claude"
@@ -393,6 +483,8 @@ class Fleet:
         if settings["effort"] != "-":
             if provider == "claude":
                 provider_arguments.extend(["--effort", settings["effort"]])
+            elif provider == "pi":
+                provider_arguments.extend(["--thinking", settings["effort"]])
             else:
                 effort = f'model_reasoning_effort="{settings["effort"]}"'
                 provider_arguments.extend(["-c", effort])
@@ -425,6 +517,9 @@ class Fleet:
             raise LauncherError("no agents selected")
         if len(selected_roles) > self.maximum:
             raise LauncherError(f"request exceeds max_agents={self.maximum}")
+        self.choose_harness()
+        if self.options.dangerous and self.harness == "pi":
+            print("Pi has no permission prompts; --dangerous changes nothing for it.")
         if self.options.dry_run:
             self.roster(selected_roles)
             return
@@ -458,7 +553,10 @@ class Fleet:
         first = False
         for role, work in selected_roles:
             if role in owned:
-                print(f"{role} already present; keeping its conversation.")
+                print(
+                    f"{role} already present; keeping its conversation "
+                    "and harness (--fresh to switch)."
+                )
                 continue
             if not workspace_id:
                 response = self.herdr_json(
@@ -560,7 +658,7 @@ class Fleet:
         )
         width = max(map(len, self.roles)) + 2
         for role, work in items or self.roles.items():
-            settings = self.kinds[work]
+            settings = self.settings(work)
             print(
                 f"{role:<{width}} {settings['harness']:<8} {settings['model']:<24} {settings['effort']}"
             )
@@ -576,6 +674,11 @@ def parse():
             "--plugin", action="store_true", help=argparse.SUPPRESS
         )
         command_parser.add_argument("roles", nargs="*")
+        command_parser.add_argument(
+            "--harness",
+            choices=sorted(EFFORTS),
+            help="run every selected role in this harness (skips the picker)",
+        )
         command_parser.set_defaults(
             fresh=False, no_attach=False, dry_run=False, dangerous=False
         )

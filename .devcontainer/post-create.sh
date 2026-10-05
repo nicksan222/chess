@@ -7,7 +7,17 @@ git config --local core.hooksPath .githooks
 sudo chown "$(id -u):$(id -g)" \
     "${HOME}/.pi/agent" "${HOME}/.local/share/pi-worktrees" \
     "${HOME}/.claude" "${HOME}/.codex" "${HOME}/.config/herdr"
-npm install --global --ignore-scripts @earendil-works/pi-coding-agent @openai/codex@0.159.3
+# Node comes from a devcontainer feature, so npm harnesses install here, pinned.
+# Claude Code and Herdr are pinned in the image (see Dockerfile).
+npm install --global --ignore-scripts \
+    @earendil-works/pi-coding-agent@1.0.3 @openai/codex@0.159.3
+for harness in pi claude codex herdr; do
+    if ! command -v "${harness}" >/dev/null 2>&1; then
+        printf 'error: agent harness %s is not installed; rebuild the container\n' \
+            "${harness}" >&2
+        exit 1
+    fi
+done
 bun install --cwd .pi --frozen-lockfile
 bun run --cwd .pi check
 
@@ -27,8 +37,9 @@ The container is ready. Hardware toolchains, Bun, Pi, Claude Code, Codex and Her
   pi                          start the Pi coding agent
   claude auth login           sign in to Claude (persisted across rebuilds)
   just agents-doctor          check Herdr tools/login without model requests
-  just agents lead developer  start a small Claude Code team
+  just agents lead developer  start a small team (asks Claude Code or Pi)
   just agents                 start the eight-role engineering team
+  just agents --harness pi    start the team in Pi without asking
   just agents lead hardware-engineer mechanical-engineer  circuit/enclosure team
   just                        list repository capabilities
   just cad                    test, then generate CAD output

@@ -91,7 +91,7 @@ firmware:
 agents-setup:
     python3 .agents/team/setup.py
 
-# Start missing team roles; accepts role selectors and launcher flags.
+# Start missing team roles (asks Claude Code or Pi); accepts role selectors and flags.
 [positional-arguments]
 agents *args:
     python3 .agents/team/agents.py up "$@"
