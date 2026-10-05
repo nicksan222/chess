@@ -12,7 +12,7 @@ use embedded_graphics::{
     text::{Baseline, Text},
 };
 use embedded_graphics_simulator::{OutputSettingsBuilder, SimulatorDisplay};
-use embedded_hal::i2c::{ErrorType, I2c, Operation};
+use embedded_hal::i2c::{Error as I2cError, ErrorKind, ErrorType, I2c, Operation};
 use firmware::hardware::display::{Display, HEIGHT, I2C_ADDRESS, WIDTH};
 
 const COMMAND: u8 = 0x00;
@@ -139,6 +139,108 @@ fn display_power_commands_do_not_mutate_the_transmitted_frame() {
     let commands = command_bytes(&bus.writes.borrow());
     assert!(commands.ends_with(&[0xAE, 0xAF]));
     save_screenshot("power-control", &SimulatorDisplay::new(panel_size()));
+}
+
+/// A bus that stops answering after `accepted` write operations.
+struct DyingI2C {
+    accepted: usize,
+}
+
+#[derive(Debug)]
+struct BusDown;
+
+impl I2cError for BusDown {
+    fn kind(&self) -> ErrorKind {
+        ErrorKind::Other
+    }
+}
+
+impl ErrorType for DyingI2C {
+    type Error = BusDown;
+}
+
+impl I2c for DyingI2C {
+    fn transaction(&mut self, _: u8, _: &mut [Operation<'_>]) -> Result<(), Self::Error> {
+        if self.accepted == 0 {
+            return Err(BusDown);
+        }
+        self.accepted -= 1;
+        Ok(())
+    }
+}
+
+#[test]
+fn a_dead_bus_is_reported_by_every_operation_that_touches_it() {
+    assert!(Display::new(DyingI2C { accepted: 0 }).initialize().is_err());
+
+    // Initialization needs several writes; a bus that dies midway still fails it.
+    assert!(Display::new(DyingI2C { accepted: 2 }).initialize().is_err());
+
+    let mut display = Display::new(DyingI2C {
+        accepted: usize::MAX,
+    });
+    display.initialize().unwrap();
+    display.set_power(true).unwrap();
+    display.flush().unwrap();
+    let mut dead = Display::new(DyingI2C { accepted: 0 });
+    assert!(dead.set_power(false).is_err());
+    // The driver sends only what changed, so a frame needs something to send.
+    Pixel(Point::new(1, 1), BinaryColor::On)
+        .draw(&mut dead)
+        .unwrap();
+    assert!(dead.flush().is_err());
+}
+
+#[test]
+fn clearing_the_buffer_makes_the_next_flush_blank_without_any_io() {
+    let bus = CapturingI2C::default();
+    let mut display = initialized_display(&bus);
+    Rectangle::new(Point::zero(), panel_size())
+        .into_styled(PrimitiveStyle::with_fill(BinaryColor::On))
+        .draw(&mut display)
+        .unwrap();
+
+    display.clear_buffer();
+    assert!(
+        bus.writes.borrow().is_empty(),
+        "clear_buffer performs no I/O"
+    );
+    display.flush().unwrap();
+
+    let frame = transmitted_frame(&bus);
+    assert_eq!(frame.len(), BUFFER_SIZE);
+    assert!(frame.iter().all(|byte| *byte == 0));
+    save_screenshot("cleared-frame", &display_from_frame(&frame));
+}
+
+#[test]
+fn drawing_outside_the_panel_is_clipped_and_never_corrupts_the_frame() {
+    let bus = CapturingI2C::default();
+    let mut display = initialized_display(&bus);
+    for point in [
+        Point::new(-1, 0),
+        Point::new(0, -1),
+        Point::new(WIDTH.into(), 0),
+        Point::new(0, HEIGHT.into()),
+        Point::new(1000, 1000),
+    ] {
+        Pixel(point, BinaryColor::On).draw(&mut display).unwrap();
+    }
+    // One in-bounds pixel makes the driver send a frame at all (it sends only changes).
+    Pixel(Point::new(7, 20), BinaryColor::On)
+        .draw(&mut display)
+        .unwrap();
+
+    display.flush().unwrap();
+
+    let frame = transmitted_frame(&bus);
+    assert_eq!(frame.len(), BUFFER_SIZE);
+    // Page-major layout: byte = (y / 8) * WIDTH + x, bit = y % 8.
+    let only = (20 / 8) * usize::from(WIDTH) + 7;
+    for (index, byte) in frame.iter().enumerate() {
+        let expected = if index == only { 1 << (20 % 8) } else { 0 };
+        assert_eq!(*byte, expected, "frame byte {index}");
+    }
 }
 
 fn initialized_display(bus: &CapturingI2C) -> Display<CapturingI2C> {

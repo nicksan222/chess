@@ -17,30 +17,20 @@ The flashable files are written to `dist/firmware`.
 ## Runtime architecture
 
 `src/runtime/` is the one event-driven application loop used by both the
-executable and E2E tests. Hardware adapters publish typed physical observations
+executable and the runtime tests. Hardware adapters publish typed physical observations
 through `src/events/`; Tokio channels never escape that module. `src/harness.rs` starts
 the same runtime without physical adapters and provides an acknowledged
 `trigger` operation, so tests never race the event loop or duplicate production
 behavior.
 
-```sh
-cargo test -p firmware --test e2e
-```
-
-Unit tests live beside their implementations in `src/`; `tests/` is reserved
-for cross-module integration and E2E tests. The E2E cases live in `tests/e2e/`.
-The default E2E run requires Docker: Rust
-`testcontainers` starts real NetworkManager in an Ubuntu container and a pinned
-Ubuntu QEMU VM. The VM loads two guest-kernel `mac80211_hwsim` radios; the Rust
-probe uses the production `Connectivity` API to discover and join open/WPA
-networks and start/stop a visible hotspot. In the same guest, `gpio-sim` creates
-a 32-line Linux GPIO chip. The probe drives simulated input pulls and verifies
-that the production `LinuxGpioReader` reads `/dev/gpiochip*` to deliver one
-representative button's press and release to the firmware runtime. Existing
-scripted GPIO cases cover all 12 mappings, bounce, initially held buttons,
-and read failures deterministically. KVM accelerates the VM when available;
-without `/dev/kvm`, QEMU uses slower software emulation. A cold VM image download is about 600 MB.
-These tests verify Linux integration, **not** the Yocto image or Pi hardware.
+`just --justfile apps/firmware/justfile test` runs unit tests and `tests/`: the
+production runtime with injected hardware (`tests/runtime/`), display rendering
+(`tests/display/`) and the command line. It needs no Docker or hardware. Scripted
+GPIO cases cover all 12 button mappings, bounce, initially held buttons and read
+failures. Product logic above the Linux adapters is tested against in-memory
+fakes; the adapters themselves (NetworkManager through `nmrs`, GPIO through
+`gpiocdev`) run only on the board, where real Wi-Fi, GPIO and display behaviour is
+validated.
 The Linux GPIO reader is available to callers but is not yet wired into the
 production executable's startup.
 
@@ -68,9 +58,8 @@ translation, and mechanical debounce. Call `start_subscription` with a GPIO
 reader, then await `on_message` for debounced pressed/released transitions.
 `hardware::linux_gpio::LinuxGpioReader` requests inputs with internal pull-ups
 on a caller-selected Linux GPIO chip; the button adapter interprets a low level
-as pressed. The VM uses the external-bias constructor because `gpio-sim` drives
-those levels via its separate sysfs interface. Callers do not inspect GPIO
-levels.
+as pressed. `with_external_bias` leaves line bias to the board instead of
+requesting an internal pull-up. Callers do not inspect GPIO levels.
 
 `src/hardware/display/` constructs the externally maintained `ssd1306` crate's
 buffered driver for the installed 128×64 OLED at address `0x3C`. It is

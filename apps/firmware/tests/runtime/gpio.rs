@@ -177,3 +177,15 @@ async fn failed_gpio_reads_do_not_prevent_later_press_and_release() {
     ];
     verify_button(&BoardPins::get().gpio.down_button, Button::Down, &samples).await;
 }
+
+#[cfg(target_os = "linux")]
+#[test]
+fn a_missing_gpio_chip_is_a_read_error_not_a_level() {
+    use firmware::hardware::linux_gpio::LinuxGpioReader;
+
+    let pin = BoardPins::get().gpio.down_button;
+    let mut reader = LinuxGpioReader::new("/dev/gpiochip-does-not-exist");
+    assert!(pin.read_level(&mut reader).is_err());
+    // Asking again retries instead of caching the failure.
+    assert!(pin.read_level(&mut reader).is_err());
+}
