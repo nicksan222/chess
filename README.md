@@ -1,6 +1,8 @@
 <div align="center">
 
-# Chess ♟️
+<img src="docs/assets/logo.svg" width="128" alt="Chess logo: the smart chessboard seen from above, with a knight's move glowing through its tiles">
+
+# Chess
 
 ### A physical chessboard with software in its bones.
 
