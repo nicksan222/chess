@@ -10,7 +10,7 @@ import pcbnew
 
 from pcb.definition import rules
 from pcb.definition.output.symbols import ROOT_UUID, uid
-from pcb.definition.parts.catalog import PcbPart
+from pcb.definition.parts.part import PcbPart
 from pcb.definition.rules import Net
 from shared import dimensions, wiring
 from shared.electronics import BoundPin, Endpoint, EndpointResolver

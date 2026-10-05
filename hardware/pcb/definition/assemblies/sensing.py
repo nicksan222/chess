@@ -14,6 +14,8 @@ from shared import wiring
 from shared.electronics import CapacitorPin, HallSensorPin, Tca9554Pin
 from shared.electronics import Tca9554Component as Tca9554
 
+ASSEMBLY_PART_COUNT = 2
+
 
 def add_sensor_banks(
     board: pcbnew.BOARD,

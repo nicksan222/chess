@@ -7,10 +7,11 @@ Pi Zero 2 W. There is no microcontroller and no separate schematic source tree.
 
 - [`hardware/shared/wiring.py`](../hardware/shared/wiring.py) owns net names,
   GPIO assignments, expander mapping, and LED chain order.
-- [`hardware/shared/components.py`](../hardware/shared/components.py) owns stable
-  component identities and physical package metadata.
-- [`hardware/shared/dimensions.py`](../hardware/shared/dimensions.py) owns the
-  board envelope and feature positions shared with CAD.
+- [`hardware/shared/components/`](../hardware/shared/components/) contains one
+  approved-product file per part, with its identity and physical package metadata.
+- [`hardware/shared/dimensions/board.py`](../hardware/shared/dimensions/board.py) owns
+  the playing grid and PCB envelope; the neighboring case, panel, and tile-plate
+  modules own their physical measurements.
 - [`hardware/pcb/definition/board.py`](../hardware/pcb/definition/board.py) composes
   the reviewed typed component assemblies and connectivity.
 - [`hardware/pcb/generated/bom.md`](../hardware/pcb/generated/bom.md) is the

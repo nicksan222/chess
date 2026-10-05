@@ -1,8 +1,32 @@
-"""Physical placement of one-off components on the PCB control strip."""
+"""Control-strip openings, display fit, and shared PCB placements."""
 
 from dataclasses import dataclass
 from types import MappingProxyType
 
+from shared.components import BUTTON, OLED_MODULE
+
+from .board import PANEL_STRIP_DEPTH_MM, PLAYING_SPAN_MM
+
+# --- Control panel ----------------------------------------------------------
+PANEL_ORIGIN_Y_MM = -PLAYING_SPAN_MM / 2.0 - PANEL_STRIP_DEPTH_MM / 2.0
+PANEL_BUTTON_COUNT = 12
+PANEL_BUTTON_HOLE_DIAMETER_MM = 7.0
+
+# AZ-Delivery 0.96 in SSD1306 module. The window exposes its approximately
+# 23.7 x 12.9 mm viewing area; the recess holds the 27 x 27 mm carrier board,
+# connected to J2 by four short wires.
+PANEL_OLED_MODULE_MM = OLED_MODULE.require_body_mm()
+PANEL_OLED_WINDOW_MM = (23.7, 12.9)
+# Per-side XY clearance for printed-part tolerance and hand assembly.
+PANEL_OLED_RECESS_CLEARANCE_XY_MM = 0.5
+PANEL_OLED_RECESS_MM = tuple(
+    dimension + 2.0 * PANEL_OLED_RECESS_CLEARANCE_XY_MM
+    for dimension in PANEL_OLED_MODULE_MM[:2]
+)
+PANEL_OLED_RECESS_DEPTH_MM = 2.0
+PANEL_OLED_CENTER_MM = (-110.0, PANEL_ORIGIN_Y_MM)
+PANEL_BUTTON_BODY_MM = (*BUTTON.require_body_mm()[:2], 5.0)
+PANEL_BUTTON_ACTUATOR_DIAMETER_MM = 3.5
 Point = tuple[float, float]
 
 

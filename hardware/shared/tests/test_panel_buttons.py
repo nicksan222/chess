@@ -1,8 +1,10 @@
 """Golden tests for the unified control-panel button contract."""
 
 import unittest
+from dataclasses import replace
 
-from shared.panel import PANEL_BUTTONS
+from shared.electronics.raspberry_pi_header import RaspberryPiHeaderPin
+from shared.panel_buttons import PANEL_BUTTONS
 
 
 class PanelLayoutTest(unittest.TestCase):
@@ -56,3 +58,27 @@ class PanelLayoutTest(unittest.TestCase):
             [button.net_name for button in PANEL_BUTTONS],
             [f"BTN_{record[0]}" for record in expected],
         )
+
+    def test_gpio_follows_typed_header_pin(self) -> None:
+        button = replace(
+            PANEL_BUTTONS.by_name("UP"),
+            header_pin=RaspberryPiHeaderPin.BUTTON_DOWN_GPIO6,
+        )
+        self.assertEqual(button.gpio, 6)
+
+    def test_button_header_pins_are_explicit(self) -> None:
+        expected = (
+            RaspberryPiHeaderPin.BUTTON_UP_GPIO5,
+            RaspberryPiHeaderPin.BUTTON_DOWN_GPIO6,
+            RaspberryPiHeaderPin.BUTTON_LEFT_GPIO12,
+            RaspberryPiHeaderPin.BUTTON_RIGHT_GPIO13,
+            RaspberryPiHeaderPin.BUTTON_OK_GPIO16,
+            RaspberryPiHeaderPin.BUTTON_RESET_GPIO17,
+            RaspberryPiHeaderPin.BUTTON_PASS_GPIO19,
+            RaspberryPiHeaderPin.BUTTON_F1_GPIO20,
+            RaspberryPiHeaderPin.BUTTON_F2_GPIO21,
+            RaspberryPiHeaderPin.BUTTON_F3_GPIO22,
+            RaspberryPiHeaderPin.BUTTON_F4_GPIO23,
+            RaspberryPiHeaderPin.BUTTON_F5_GPIO24,
+        )
+        self.assertEqual(tuple(button.header_pin for button in PANEL_BUTTONS), expected)

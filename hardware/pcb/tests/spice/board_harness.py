@@ -13,7 +13,9 @@ from fractions import Fraction
 import pcbnew
 
 from pcb.definition.native import connections, parts
-from pcb.definition.parts.catalog import DC_INPUT_JACK, INPUT_FUSE, MAIN_POWER_SWITCH
+from pcb.definition.parts.barrel_jack import DC_INPUT_JACK
+from pcb.definition.parts.fuse import INPUT_FUSE
+from pcb.definition.parts.power_switch import MAIN_POWER_SWITCH
 from shared import wiring
 from shared.electronics import (
     Ahct125Pin,
@@ -28,7 +30,7 @@ from shared.electronics import (
     Tca9554Pin,
     TestPointPin,
 )
-from shared.panel import PANEL_BUTTONS
+from shared.panel_buttons import PANEL_BUTTONS
 from spice.circuit import SpiceCircuit
 from spice.electrical import (
     AHCT125,

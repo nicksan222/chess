@@ -3,7 +3,7 @@
     "*.py",
     "definition",
     "tests",
-    "../shared/components.py",
+    "../shared/components",
     "../shared/electronics"
   ],
   "extraPaths": [

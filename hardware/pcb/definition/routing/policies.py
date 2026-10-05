@@ -13,15 +13,15 @@ import pcbnew
 import pcb.definition.routing.paths as grid_router
 from pcb.definition import native, rules
 from pcb.definition.bank_assemblies import BANK_ASSEMBLIES
-from pcb.definition.parts import catalog
-from pcb.definition.parts.catalog import (
-    DC_INPUT_JACK,
-    INPUT_FUSE,
-    MAIN_POWER_SWITCH,
+from pcb.definition.parts.barrel_jack import DC_INPUT_JACK
+from pcb.definition.parts.fuse import INPUT_FUSE
+from pcb.definition.parts.power_switch import MAIN_POWER_SWITCH
+from pcb.definition.parts.raspberry_pi_header import (
     RASPBERRYPIHEADER_BUTTON_VIA_KEEPOUT_HALF_WIDTH_MM,
     RASPBERRYPIHEADER_BUTTON_VIA_KEEPOUT_LENGTH_MM,
     RASPBERRYPIHEADER_POWER_ESCAPE_MM,
 )
+from pcb.definition.routing import escape_policy
 from pcb.definition.routing.paths import RoutingOptions
 from pcb.definition.rules import Net
 from shared import wiring
@@ -38,7 +38,7 @@ from shared.electronics import (
 from shared.electronics import Sk9822Component as Sk9822
 from shared.electronics import Tca9554Component as Tca9554
 from shared.hall_banks import BANK_FILES, BANK_RANKS, HallBank
-from shared.panel import PANEL_BUTTONS
+from shared.panel_buttons import PANEL_BUTTONS
 
 INTERNAL_SIGNAL_LAYERS = (pcbnew.In4_Cu, pcbnew.In5_Cu, pcbnew.In6_Cu)
 
@@ -146,8 +146,8 @@ def signal_escape(
     centre = footprint.GetPosition()
     dx, dy = (at.x - centre.x, at.y - centre.y)
     component_mpn = footprint.GetValue()
-    escape_mm = catalog.signal_escape_distance_mm(component_mpn, pad.GetNumber())
-    force_horizontal = catalog.uses_horizontal_signal_escape(component_mpn)
+    escape_mm = escape_policy.signal_escape_distance_mm(component_mpn, pad.GetNumber())
+    force_horizontal = escape_policy.uses_horizontal_signal_escape(component_mpn)
     distance = pcbnew.FromMM(escape_mm)
     if force_horizontal or abs(dx) >= abs(dy):
         escaped = pcbnew.VECTOR2I(at.x + (distance if dx >= 0 else -distance), at.y)
@@ -520,7 +520,7 @@ def _power_escape_position(
     if reference == ComponentReference.HOST_GPIO_HEADER:
         escape_mm, horizontal = (RASPBERRYPIHEADER_POWER_ESCAPE_MM, True)
     else:
-        escape_mm, horizontal = catalog.power_escape_policy(
+        escape_mm, horizontal = escape_policy.power_escape_policy(
             module.GetValue(), pad.GetNumber()
         )
     distance = pcbnew.FromMM(escape_mm)

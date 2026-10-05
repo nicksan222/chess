@@ -49,7 +49,7 @@ bridge core or the shared crates.
 
 ## Where the contracts are
 
-- **The physical stack.** `hardware/shared/dimensions.py` decides the heights
+- **The physical stack.** `hardware/shared/dimensions/case.py` decides the heights
   that let the plate sit flush over the board, and validates that they sum
   correctly on import.
 
