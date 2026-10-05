@@ -17,15 +17,14 @@ check: _automation-format agents-check
     just --justfile hardware/cad/justfile check
     just --justfile hardware/pcb/justfile review
 
-# Commit gate without CAD renders or PCB fabrication output.
+# Fast commit gate: lint and tests; no renders, PCB regeneration or cross-build (CI runs them).
 precommit: _automation-format agents-check
     #!/usr/bin/env bash
     set -euo pipefail
     for package in {{ rust_packages }}; do just --justfile "$package/justfile" check; done
-    just firmware-binary
     just --justfile hardware/shared/justfile check
     just --justfile hardware/cad/justfile check-fast
-    just --justfile hardware/pcb/justfile review
+    just --justfile hardware/pcb/justfile quality
 
 # Formatting, linting, checking, and documentation.
 quality: _automation-format agents-check
