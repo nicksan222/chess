@@ -194,7 +194,14 @@ async fn poll<R>(
 
 #[cfg(test)]
 mod tests {
-    use std::{collections::VecDeque, time::Duration};
+    use std::{
+        collections::VecDeque,
+        sync::{
+            Arc,
+            atomic::{AtomicUsize, Ordering},
+        },
+        time::Duration,
+    };
 
     use super::*;
     use crate::hardware::pins::BoardPins;
@@ -251,5 +258,177 @@ mod tests {
             .expect("button poller should produce an action")
             .unwrap();
         assert_eq!(action, ButtonAction::Pressed);
+    }
+
+    /// Replays scripted samples (`None` is a failed read), then repeats `tail`.
+    struct ScriptedReader {
+        samples: VecDeque<Option<Level>>,
+        tail: Option<Level>,
+        reads: Arc<AtomicUsize>,
+    }
+
+    impl ScriptedReader {
+        fn new(samples: &[Option<Level>], tail: Option<Level>) -> Self {
+            Self {
+                samples: samples.iter().copied().collect(),
+                tail,
+                reads: Arc::default(),
+            }
+        }
+    }
+
+    impl ReadLevel for ScriptedReader {
+        type Error = ();
+
+        fn read_level(&mut self, _: GPIO) -> Result<Level, Self::Error> {
+            self.reads.fetch_add(1, Ordering::SeqCst);
+            self.samples.pop_front().unwrap_or(self.tail).ok_or(())
+        }
+    }
+
+    const STABLE: usize = 5; // Five 5-ms samples complete the 20-ms debounce.
+
+    #[tokio::test(start_paused = true)]
+    async fn two_held_buttons_each_publish_their_own_press_on_the_shared_bus() {
+        let events = HardwareEventBus::new();
+        let mut observed = events.subscribe();
+        let pins = BoardPins::get().gpio;
+        let mut samples = vec![Some(Level::High)];
+        samples.extend([Some(Level::Low); STABLE]);
+        let down = pins
+            .down_button
+            .start_subscription(ScriptedReader::new(&samples, Some(Level::Low)), &events)
+            .unwrap();
+        let up = pins
+            .up_button
+            .start_subscription(ScriptedReader::new(&samples, Some(Level::Low)), &events)
+            .unwrap();
+
+        tokio::time::sleep(Duration::from_millis(100)).await;
+
+        let mut seen = Vec::new();
+        while let Some(event) = observed.try_recv().unwrap() {
+            seen.push(event);
+        }
+        assert_eq!(seen.len(), 2, "{seen:?}");
+        for button in [Button::Down, Button::Up] {
+            assert!(
+                seen.contains(&ButtonEvent::Pressed(button).into()),
+                "{button:?} missing from {seen:?}"
+            );
+        }
+        drop((down, up));
+    }
+
+    /// Every pin owns its subscription, so one pin's presses never reach another pin's
+    /// `on_message`. (`on_message` also filters by button, but that arm is not reachable
+    /// through `start_subscription`; this test checks the isolation, not that filter.)
+    #[tokio::test(start_paused = true)]
+    async fn each_pin_subscription_is_isolated_from_the_other_pins() {
+        let events = HardwareEventBus::new();
+        let pins = BoardPins::get().gpio;
+        let mut samples = vec![Some(Level::High)];
+        samples.extend([Some(Level::Low); STABLE]);
+        let mut up = pins
+            .up_button
+            .start_subscription(
+                ScriptedReader::new(&[Some(Level::High)], Some(Level::High)),
+                &events,
+            )
+            .unwrap();
+        let _down = pins
+            .down_button
+            .start_subscription(ScriptedReader::new(&samples, Some(Level::Low)), &events)
+            .unwrap();
+
+        let waited = tokio::time::timeout(Duration::from_millis(200), up.on_message()).await;
+        assert!(waited.is_err(), "Up must not report Down's press");
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn dropping_the_subscription_stops_polling_the_reader() {
+        let events = HardwareEventBus::new();
+        let reader = ScriptedReader::new(&[], Some(Level::High));
+        let reads = Arc::clone(&reader.reads);
+        let subscription = BoardPins::get()
+            .gpio
+            .ok_button
+            .start_subscription(reader, &events)
+            .unwrap();
+
+        tokio::time::sleep(Duration::from_millis(50)).await;
+        assert!(reads.load(Ordering::SeqCst) >= 5);
+        drop(subscription);
+        tokio::time::sleep(Duration::from_millis(5)).await; // Let the abort land.
+        let stopped = reads.load(Ordering::SeqCst);
+        tokio::time::sleep(Duration::from_millis(100)).await;
+        assert_eq!(reads.load(Ordering::SeqCst), stopped);
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn a_failing_first_read_is_skipped_and_the_next_level_is_the_baseline() {
+        let events = HardwareEventBus::new();
+        let mut observed = events.subscribe();
+        // The first valid sample (Low, a held button) must not invent a press.
+        let reader = ScriptedReader::new(&[None, None, Some(Level::Low)], Some(Level::Low));
+        let _subscription = BoardPins::get()
+            .gpio
+            .reset_button
+            .start_subscription(reader, &events)
+            .unwrap();
+
+        tokio::time::sleep(Duration::from_millis(100)).await;
+
+        assert_eq!(observed.try_recv(), Ok(None));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn a_reader_that_never_recovers_produces_no_events_and_no_panic() {
+        let events = HardwareEventBus::new();
+        let mut observed = events.subscribe();
+        let reader = ScriptedReader::new(&[Some(Level::High)], None);
+        let reads = Arc::clone(&reader.reads);
+        let mut subscription = BoardPins::get()
+            .gpio
+            .pass_button
+            .start_subscription(reader, &events)
+            .unwrap();
+
+        let waited =
+            tokio::time::timeout(Duration::from_millis(500), subscription.on_message()).await;
+
+        assert!(waited.is_err(), "no transition may be reported");
+        assert_eq!(observed.try_recv(), Ok(None));
+        assert!(reads.load(Ordering::SeqCst) > 50, "polling must continue");
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn a_press_interrupted_by_a_failed_read_restarts_its_debounce() {
+        let events = HardwareEventBus::new();
+        let mut subscription = BoardPins::get()
+            .gpio
+            .function_one_button
+            .start_subscription(
+                ScriptedReader::new(
+                    &[
+                        Some(Level::High),
+                        Some(Level::Low),
+                        Some(Level::Low),
+                        Some(Level::Low),
+                        Some(Level::Low), // Four of five stable samples...
+                        None,             // ...then a failure forgets them.
+                    ],
+                    Some(Level::Low),
+                ),
+                &events,
+            )
+            .unwrap();
+        let mut observed = events.subscribe();
+
+        // Low was first seen at 5 ms. Without the restart the press would fire at 30 ms
+        // (when the samples resume); with it, at 50 ms. Look strictly between.
+        tokio::time::sleep(Duration::from_millis(42)).await;
+        assert_eq!(observed.try_recv(), Ok(None));
+        assert_eq!(subscription.on_message().await, Ok(ButtonAction::Pressed));
     }
 }

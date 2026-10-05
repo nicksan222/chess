@@ -75,6 +75,28 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn sending_to_a_dropped_receiver_returns_the_value() {
+        let (sender, receiver) = direct_channel(1);
+        drop(receiver);
+
+        let error = sender.send(TestEvent::First).await.unwrap_err();
+        assert_eq!(error.to_string(), "the direct event receiver is closed");
+        assert_eq!(error.into_inner(), TestEvent::First);
+    }
+
+    #[tokio::test]
+    async fn queued_values_are_drained_before_the_closed_sender_ends_the_stream() {
+        let (sender, mut receiver) = direct_channel(2);
+        sender.send(TestEvent::First).await.unwrap();
+        sender.send(TestEvent::Second).await.unwrap();
+        drop(sender);
+
+        assert_eq!(receiver.recv().await, Some(TestEvent::First));
+        assert_eq!(receiver.recv().await, Some(TestEvent::Second));
+        assert_eq!(receiver.recv().await, None);
+    }
+
+    #[tokio::test]
     async fn delivers_once_and_applies_backpressure() {
         let (sender, mut receiver) = direct_channel(1);
         sender.send(TestEvent::First).await.unwrap();

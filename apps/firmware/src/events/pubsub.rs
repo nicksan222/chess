@@ -164,6 +164,71 @@ mod tests {
         assert_eq!(subscription.try_recv(), Err(ReceiveError::Lagged(1)));
     }
 
+    #[tokio::test]
+    async fn recv_reports_lag_then_resumes_with_the_oldest_retained_event() {
+        let bus = Bus::<u32>::with_capacity(2);
+        let mut subscription = bus.subscribe();
+        for value in 0..5 {
+            bus.emit(value).unwrap();
+        }
+
+        assert_eq!(subscription.recv().await, Err(ReceiveError::Lagged(3)));
+        assert_eq!(subscription.recv().await, Ok(3));
+        assert_eq!(subscription.recv().await, Ok(4));
+    }
+
+    #[tokio::test]
+    async fn closing_the_bus_drains_queued_events_then_reports_closed() {
+        let bus = Bus::new();
+        let mut subscription = bus.subscribe();
+        bus.emit(TestEvent::Stopped).unwrap();
+        drop(bus);
+
+        assert_eq!(subscription.recv().await, Ok(TestEvent::Stopped));
+        assert_eq!(subscription.recv().await, Err(ReceiveError::Closed));
+        assert_eq!(subscription.try_recv(), Err(ReceiveError::Closed));
+    }
+
+    #[test]
+    fn subscriber_count_tracks_subscriptions_and_clones_share_the_bus() {
+        let bus = Bus::<u8>::default();
+        let clone = bus.clone();
+        assert_eq!(bus.subscriber_count(), 0);
+        let first = bus.subscribe();
+        let second = clone.subscribe();
+        assert_eq!(bus.subscriber_count(), 2);
+        assert_eq!(clone.subscriber_count(), 2);
+        drop(first);
+        assert_eq!(bus.subscriber_count(), 1);
+        drop(second);
+        assert_eq!(bus.subscriber_count(), 0);
+    }
+
+    #[test]
+    fn a_new_subscription_does_not_see_earlier_events() {
+        let bus = Bus::new();
+        let mut early = bus.subscribe();
+        bus.emit(TestEvent::SensorReading(1)).unwrap();
+        let mut late = bus.subscribe();
+        bus.emit(TestEvent::SensorReading(2)).unwrap();
+
+        assert_eq!(early.try_recv(), Ok(Some(TestEvent::SensorReading(1))));
+        assert_eq!(late.try_recv(), Ok(Some(TestEvent::SensorReading(2))));
+        assert_eq!(late.try_recv(), Ok(None));
+    }
+
+    #[test]
+    fn errors_have_readable_messages() {
+        let emitter = Bus::new();
+        let error = emitter.emit(TestEvent::Stopped).unwrap_err();
+        assert_eq!(error.to_string(), "the event bus has no subscribers");
+        assert_eq!(ReceiveError::Closed.to_string(), "the event bus is closed");
+        assert_eq!(
+            ReceiveError::Lagged(7).to_string(),
+            "the subscriber skipped 7 event(s)"
+        );
+    }
+
     #[test]
     fn failed_emission_returns_ownership_of_the_event() {
         let emitter = Bus::new();

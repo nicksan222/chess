@@ -68,4 +68,56 @@ mod tests {
             assert!(!format!("{passphrase:?}").contains(&valid));
         }
     }
+
+    #[test]
+    fn length_boundaries_are_inclusive_and_empty_is_rejected() {
+        assert!(Passphrase::new("").is_err());
+        assert!(Passphrase::new("1234567").is_err()); // 7
+        assert!(Passphrase::new("12345678").is_ok()); // 8
+        assert!(Passphrase::new("a".repeat(63)).is_ok());
+        assert!(Passphrase::new("g".repeat(64)).is_err()); // 64 but not hexadecimal
+        assert!(Passphrase::new("a".repeat(64)).is_ok()); // 64 hexadecimal digits
+        assert!(Passphrase::new("A".repeat(64)).is_ok()); // uppercase hexadecimal
+        assert!(Passphrase::new("0".repeat(65)).is_err());
+    }
+
+    #[test]
+    fn length_counts_bytes_not_characters() {
+        assert!(Passphrase::new("é".repeat(4)).is_ok()); // 4 characters, 8 bytes.
+        assert!(Passphrase::new("é".repeat(3)).is_err()); // 6 bytes.
+        assert!(Passphrase::new("€".repeat(21)).is_ok()); // 63 bytes.
+        assert!(Passphrase::new("€".repeat(22)).is_err()); // 66 bytes.
+    }
+
+    #[test]
+    fn control_characters_are_rejected_anywhere_including_c1_and_tab() {
+        for bad in ["abcdefg\u{7f}", "abc\tdefgh", "\0abcdefgh", "abcdefg\u{85}"] {
+            assert!(Passphrase::new(bad).is_err(), "{bad:?}");
+        }
+        assert!(Passphrase::new("pass phrase!").is_ok()); // Spaces are fine.
+    }
+
+    #[test]
+    fn invalid_passphrase_explains_the_constraint() {
+        assert_eq!(
+            Passphrase::new("x").unwrap_err().to_string(),
+            "WPA passphrase must contain 8–63 bytes or 64 hexadecimal digits"
+        );
+    }
+
+    #[test]
+    fn secrets_do_not_leak_through_containing_types_debug_output() {
+        use crate::connectivity::{Credentials, Hotspot, Ssid};
+
+        let secret = "hunter2-hunter2";
+        let credentials = Credentials::Personal(Passphrase::new(secret).unwrap());
+        assert!(!format!("{credentials:?}").contains(secret));
+        let hotspot = Hotspot {
+            ssid: Ssid::new("Setup").unwrap(),
+            passphrase: Passphrase::new(secret).unwrap(),
+        };
+        let shown = format!("{hotspot:?} {:#?}", hotspot.clone());
+        assert!(!shown.contains(secret));
+        assert!(shown.contains("Setup"));
+    }
 }

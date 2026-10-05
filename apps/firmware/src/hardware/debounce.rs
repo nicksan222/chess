@@ -119,6 +119,64 @@ mod tests {
     }
 
     #[test]
+    fn opposite_level_replaces_the_candidate_and_restarts_the_window() {
+        let start = Instant::now();
+        let mut button = Debouncer::new(Level::Low);
+
+        // High becomes a candidate, then Low (stable) cancels it; a later High
+        // must wait a full period from its own first sighting.
+        assert_eq!(button.observe(Level::High, start), None);
+        assert_eq!(button.observe(Level::Low, start + DEBOUNCE / 2), None);
+        assert_eq!(button.observe(Level::High, start + DEBOUNCE), None);
+        assert_eq!(
+            button.observe(Level::High, start + DEBOUNCE * 2 - POLL_INTERVAL),
+            None
+        );
+        assert_eq!(
+            button.observe(Level::High, start + DEBOUNCE * 2),
+            Some(ButtonAction::Released)
+        );
+    }
+
+    #[test]
+    fn press_release_press_chain_needs_a_full_window_for_each_edge() {
+        let start = Instant::now();
+        let mut button = Debouncer::new(Level::High);
+        let mut edges = Vec::new();
+        // One sample per poll for 6 periods at each level.
+        let mut now = start;
+        for level in [Level::Low, Level::High, Level::Low] {
+            for _ in 0..=(DEBOUNCE.as_millis() / POLL_INTERVAL.as_millis()) {
+                if let Some(action) = button.observe(level, now) {
+                    edges.push(action);
+                }
+                now += POLL_INTERVAL;
+            }
+        }
+        assert_eq!(
+            edges,
+            [
+                ButtonAction::Pressed,
+                ButtonAction::Released,
+                ButtonAction::Pressed
+            ]
+        );
+    }
+
+    #[test]
+    fn interrupt_without_a_candidate_is_harmless() {
+        let start = Instant::now();
+        let mut button = Debouncer::new(Level::High);
+        button.interrupt();
+        assert_eq!(button.observe(Level::High, start), None);
+        assert_eq!(button.observe(Level::Low, start), None);
+        assert_eq!(
+            button.observe(Level::Low, start + DEBOUNCE),
+            Some(ButtonAction::Pressed)
+        );
+    }
+
+    #[test]
     fn initial_level_is_a_baseline_not_a_synthetic_press() {
         let mut button = Debouncer::new(Level::Low);
         assert_eq!(button.observe(Level::Low, Instant::now()), None);

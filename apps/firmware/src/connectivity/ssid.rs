@@ -47,4 +47,30 @@ mod tests {
         assert!(Ssid::new("a".repeat(32)).is_ok());
         assert_eq!(Ssid::new("Home").unwrap().as_str(), "Home");
     }
+
+    #[test]
+    fn one_byte_is_the_shortest_valid_name_and_spaces_are_allowed() {
+        assert!(Ssid::new("a").is_ok());
+        assert!(Ssid::new(" ").is_ok());
+        assert!(Ssid::new("a".repeat(33)).is_err());
+        assert!(Ssid::new("€".repeat(10)).is_ok()); // 30 bytes.
+        assert!(Ssid::new("€".repeat(11)).is_err()); // 33 bytes.
+    }
+
+    #[test]
+    fn names_order_by_their_text_for_stable_scan_tie_breaks() {
+        let mut names = ["b", "B", "a", "ab"].map(|name| Ssid::new(name).unwrap());
+        names.sort();
+        let sorted: Vec<_> = names.iter().map(Ssid::as_str).collect();
+        assert_eq!(sorted, ["B", "a", "ab", "b"]);
+    }
+
+    #[test]
+    fn invalid_ssid_explains_the_constraint() {
+        let error = Ssid::new("").unwrap_err();
+        assert_eq!(
+            error.to_string(),
+            "SSID must contain between 1 and 32 bytes and no NUL"
+        );
+    }
 }
