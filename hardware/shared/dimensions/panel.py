@@ -1,4 +1,12 @@
-"""Control-strip openings, display fit, and shared PCB placements."""
+"""Control-strip openings, display fit, and shared PCB placements.
+
+Role: where the controls sit on the 40 mm strip in front of the playing area, the
+button and OLED module fit numbers the plate bezel is cut from, and
+`PCB_STRIP_PLACEMENTS`, the single table of hand-placed parts on the board (power entry,
+eFuse, LED switch, test points...). The PCB generator places parts from that table and
+`hardware/cad` tests read it, so a part can move in one place only. Panel button
+positions themselves come from `shared/panel_buttons.py`.
+"""
 
 from dataclasses import dataclass
 from types import MappingProxyType
@@ -10,11 +18,12 @@ from .board import PANEL_STRIP_DEPTH_MM, PLAYING_SPAN_MM
 # --- Control panel ----------------------------------------------------------
 PANEL_ORIGIN_Y_MM = -PLAYING_SPAN_MM / 2.0 - PANEL_STRIP_DEPTH_MM / 2.0
 PANEL_BUTTON_COUNT = 12
-PANEL_BUTTON_HOLE_DIAMETER_MM = 7.0
+# E-Switch TL1105 round stem through the bezel, now part of the tile plate.
+PANEL_BUTTON_HOLE_DIAMETER_MM = 5.0
 
-# AZ-Delivery 0.96 in SSD1306 module. The window exposes its approximately
-# 23.7 x 12.9 mm viewing area; the recess holds the 27 x 27 mm carrier board,
-# connected to J2 by four short wires.
+# AZ-Delivery 0.96 in SSD1306 module. The plate window exposes its approximately
+# 23.7 x 12.9 mm viewing area; the recess in the plate underside holds the
+# 27 x 27 mm carrier board, connected to J2 by four short wires.
 PANEL_OLED_MODULE_MM = OLED_MODULE.require_body_mm()
 PANEL_OLED_WINDOW_MM = (23.7, 12.9)
 # Per-side XY clearance for printed-part tolerance and hand assembly.
@@ -25,15 +34,32 @@ PANEL_OLED_RECESS_MM = tuple(
 )
 PANEL_OLED_RECESS_DEPTH_MM = 2.0
 PANEL_OLED_CENTER_MM = (-110.0, PANEL_ORIGIN_Y_MM)
-PANEL_BUTTON_BODY_MM = (*BUTTON.require_body_mm()[:2], 5.0)
+# Overall height of the approved TL1105 above the PCB, stem included.
+PANEL_BUTTON_HEIGHT_MM = BUTTON.require_body_mm()[2]
+# TL1105 housing height, E-Switch catalog pp.24-25. The plate is relieved above
+# each housing so print and board tolerances cannot land the plate on it.
+PANEL_BUTTON_BODY_MM = (*BUTTON.require_body_mm()[:2], 3.6)
+PANEL_BUTTON_RELIEF_DEPTH_MM = 1.0
+PANEL_BUTTON_RELIEF_CLEARANCE_MM = 0.5
+# TL1105 "C" round stem, E-Switch catalog pp.24-25.
 PANEL_BUTTON_ACTUATOR_DIAMETER_MM = 3.5
+# The stem must stand proud of the bezel to be pressed, but not so far that it
+# snags or levers on the switch.
+PANEL_BUTTON_MIN_PROTRUSION_MM = 0.5
+PANEL_BUTTON_MAX_PROTRUSION_MM = 2.0
 Point = tuple[float, float]
 
 
 @dataclass(frozen=True, slots=True)
 class BoardPlacement:
+    """Centre, rotation and side of a hand-placed footprint.
+
+    `bottom=True` places a through-hole part on the PCB underside; the PCB code flips it.
+    """
+
     centre_mm: Point
     rotation_degrees: float = 0.0
+    bottom: bool = False
 
     @property
     def x_mm(self) -> float:
@@ -44,15 +70,44 @@ class BoardPlacement:
         return self.centre_mm[1]
 
 
+# Reference designator -> placement (board mm, Y up; centre-origin of the footprint). Parts
+# not listed here are placed by their own assembly (squares, Hall banks, buttons). The
+# comments record why a part sits where it does: most positions are fixed by the PCB
+# tests (decoupling distance, selective-solder spacing, silkscreen/mask webs).
 PCB_STRIP_PLACEMENTS = MappingProxyType(
     {
-        "J3": BoardPlacement((-150.0, -178.0), -90.0),
-        "F1": BoardPlacement((-138.0, -178.0)),
-        "D1": BoardPlacement((-150.0, -165.0)),
-        "SW13": BoardPlacement((-113.0, -190.0)),
-        "C1": BoardPlacement((-128.0, -170.0)),
-        "C2": BoardPlacement((-116.0, -168.0)),
-        "J2": BoardPlacement((-95.0, -172.0)),
+        # Power entry (S3a, interface H1/H2): J4 hole row at (-105, +128) on the
+        # bottom, opening +Y toward the rear-wall jack and rocker; footprint origin
+        # is the body centre, 4.45 mm past the hole row toward the opening.
+        "J4": BoardPlacement((-105.0, 132.45), 180.0, bottom=True),
+        # Seen from below, J4 circuit 1 is on the right (JST VH p4 is drawn from
+        # the mounting side), so DC_IN is at -X and +5V at +X from the top (S3c B1).
+        "F1": BoardPlacement((-108.0, 121.0)),
+        # S4b eFuse cluster (top side): U74 between the DC_FUSED loop (west, fed
+        # from J4.3) and its +5V via rows (east); bias parts in the open area east.
+        "U74": BoardPlacement((-92.0, 132.5)),
+        # S4c (manufacturing review): >= 5 mm from J4's top-side joints so J4 can
+        # be selectively soldered.
+        "D1": BoardPlacement((-106.5, 135.4), 180.0),
+        "C141": BoardPlacement((-94.4, 136.9), 90.0),
+        # S4c/S6: 3 mm from J4-4 to R4's courtyard, for selective soldering.
+        "R4": BoardPlacement((-97.4, 133.0), 180.0),
+        "C142": BoardPlacement((-89.3, 130.1)),
+        "R3": BoardPlacement((-88.9, 132.5), 270.0),
+        "C143": BoardPlacement((-88.4, 135.0)),
+        # S4c: OVLO spike filter in R5's row, pin 1 facing R5's OVLO pad.
+        "C144": BoardPlacement((-85.9, 130.6), 180.0),
+        "R5": BoardPlacement((-83.0, 130.6)),
+        "R6": BoardPlacement((-83.0, 133.2)),
+        "R7": BoardPlacement((-75.5, 133.2)),
+        "R8": BoardPlacement((-83.0, 135.8)),
+        "C2": BoardPlacement((-87.6, 139.0)),
+        "C1": BoardPlacement((-66.0, 132.0), bottom=True),
+        "C140": BoardPlacement((-56.0, 132.0), bottom=True),
+        # OLED harness header, opening -Y toward the plate-mounted module's pads.
+        # Interface M6: the mated SHR housing and wire bend end before the module
+        # zone (y <= -166.5).
+        "J2": BoardPlacement((-110.0, -158.5)),
         "U5": BoardPlacement((-70.0, -180.0)),
         "C7": BoardPlacement((-58.0, -180.0)),
         "R1": BoardPlacement((-50.0, -170.0)),
