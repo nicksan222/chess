@@ -89,6 +89,9 @@ def render_board[BoardNet: Net](circuit: Circuit[BoardNet]) -> pcbnew.BOARD:
         render_trace(board, route, outline, nets[route.net.label])
     for route in circuit.vias():
         render_via(board, route, outline, nets[route.net.label])
+    from pcb.harness.checks.pcbnew.board import validate_board
+
+    validate_board(circuit, board)
     return board
 
 

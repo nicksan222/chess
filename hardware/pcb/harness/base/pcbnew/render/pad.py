@@ -61,8 +61,25 @@ def render_pad[Pin: StrEnum](
             PadShape.RECTANGLE: pcbnew.PAD_SHAPE_RECT,
             PadShape.CIRCLE: pcbnew.PAD_SHAPE_CIRCLE,
             PadShape.OVAL: pcbnew.PAD_SHAPE_OVAL,
+            PadShape.CUSTOM: pcbnew.PAD_SHAPE_CUSTOM,
         }[pad.shape]
     )
+    if pad.shape is PadShape.CUSTOM:
+        native.SetAnchorPadShape(pcbnew.F_Cu, pcbnew.PAD_SHAPE_RECT)
+        points = pcbnew.VECTOR_VECTOR2I()
+        for point in pad.polygon:
+            points.append(
+                pcbnew.VECTOR2I(pcbnew.FromMM(point.x_mm), pcbnew.FromMM(-point.y_mm))
+            )
+        native.AddPrimitivePoly(pcbnew.F_Cu, points, 0, True)
+    if pad.solder_mask_margin_mm is not None:
+        native.SetLocalSolderMaskMargin(pcbnew.FromMM(pad.solder_mask_margin_mm))
+    if pad.thermal_spoke_width_mm is not None:
+        native.SetLocalThermalSpokeWidthOverride(
+            pcbnew.FromMM(pad.thermal_spoke_width_mm)
+        )
+    if pad.solid_zone_connection:
+        native.SetLocalZoneConnection(pcbnew.ZONE_CONNECTION_FULL)
     if pad.kind is PadKind.SURFACE:
         native.SetAttribute(pcbnew.PAD_ATTRIB_SMD)
         native.SetLayerSet(native.SMDMask())

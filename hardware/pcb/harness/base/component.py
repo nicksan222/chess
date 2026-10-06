@@ -79,6 +79,13 @@ class ComponentDefinition[Pin: StrEnum]:
             for pad in self.land_pattern.pads
         ):
             raise ValueError("land pattern copper must fit inside the courtyard")
+        if self.land_pattern is not None and any(
+            abs(pad.center.x_mm + point.x_mm) > self.courtyard.width_mm / 2
+            or abs(pad.center.y_mm + point.y_mm) > self.courtyard.height_mm / 2
+            for pad in self.land_pattern.pads
+            for point in pad.polygon
+        ):
+            raise ValueError("custom pad copper must fit inside the courtyard")
 
 
 @dataclass(frozen=True, slots=True)
