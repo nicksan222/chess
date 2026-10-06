@@ -301,3 +301,85 @@ def route_efuse_bias(ctx: RoutingContext) -> None:
             preferred_layer_index=1,
             label_errors=True,
         )
+
+
+def _courtyard(board: pcbnew.BOARD) -> tuple[int, int, int, int]:
+    """U74's F.CrtYd rectangle (left, top, right, bottom) in board units."""
+    module = board.FindFootprintByReference(rules.FINE_PITCH_REFERENCE)
+    if module is None:
+        raise ValueError("the fine-pitch exception needs U74")
+    points = [
+        p
+        for shape in module.GraphicalItems()
+        if shape.GetLayer() == pcbnew.F_CrtYd
+        for p in (shape.GetStart(), shape.GetEnd())
+    ]
+    xs, ys = [p.x for p in points], [p.y for p in points]
+    return min(xs), min(ys), max(xs), max(ys)
+
+
+def _clip(
+    start: pcbnew.VECTOR2I, end: pcbnew.VECTOR2I, box: tuple[int, int, int, int]
+) -> tuple[float, float] | None:
+    """Liang-Barsky: the parameter span of start->end inside `box`, if any."""
+    t0, t1 = 0.0, 1.0
+    dx, dy = end.x - start.x, end.y - start.y
+    left, top, right, bottom = box
+    for p, q in (
+        (-dx, start.x - left),
+        (dx, right - start.x),
+        (-dy, start.y - top),
+        (dy, bottom - start.y),
+    ):
+        if p == 0:
+            if q < 0:
+                return None
+            continue
+        t = q / p
+        if p < 0:
+            t0 = max(t0, t)
+        else:
+            t1 = min(t1, t)
+    return (t0, t1) if t0 <= t1 else None
+
+
+def _along(start: pcbnew.VECTOR2I, end: pcbnew.VECTOR2I, t: float) -> pcbnew.VECTOR2I:
+    """The point at fraction `t` (0-1) along the segment start->end."""
+    return pcbnew.VECTOR2I(
+        round(start.x + t * (end.x - start.x)), round(start.y + t * (end.y - start.y))
+    )
+
+
+def split_fine_pitch_escapes(board: pcbnew.BOARD) -> None:
+    """Keep the U74 exception on escape copper only (S4c, reviewer r-m2).
+
+    The scoped rule covers F.Cu tracks touching U74's courtyard. A track that runs on
+    past the courtyard plus `rules.FINE_PITCH_ESCAPE_MARGIN_MM` is cut where it
+    leaves that margin; the outer pieces no longer touch the courtyard, so the board
+    clearance applies to them, and they are widened to the board track width.
+    """
+    left, top, right, bottom = _courtyard(board)
+    margin = pcbnew.FromMM(rules.FINE_PITCH_ESCAPE_MARGIN_MM)
+    escape = (left - margin, top - margin, right + margin, bottom + margin)
+    for track in list(board.GetTracks()):
+        if isinstance(track, pcbnew.PCB_VIA) or track.GetLayer() != pcbnew.F_Cu:
+            continue
+        start, end = track.GetStart(), track.GetEnd()
+        half = track.GetWidth() // 2
+        touching = (left - half, top - half, right + half, bottom + half)
+        inside = _clip(start, end, escape)
+        if _clip(start, end, touching) is None or inside is None:
+            continue
+        t0, t1 = inside
+        if t0 <= 0.0 and t1 >= 1.0:
+            continue
+
+        net, width = track.GetNet(), pcbnew.ToMM(track.GetWidth())
+        outer = max(width, rules.TRACE_WIDTH_MM)
+        board.Remove(track)
+        cut0, cut1 = _along(start, end, t0), _along(start, end, t1)
+        native.add_trace(board, net, cut0, cut1, pcbnew.F_Cu, width)
+        if t0 > 0.0:
+            native.add_trace(board, net, start, cut0, pcbnew.F_Cu, outer)
+        if t1 < 1.0:
+            native.add_trace(board, net, cut1, end, pcbnew.F_Cu, outer)

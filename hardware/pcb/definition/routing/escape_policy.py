@@ -1,7 +1,15 @@
-"""Per-product signal and power escape choices for PCB routing."""
+"""Per-product signal and power escape choices for PCB routing.
+
+Role: for each SMD product, how far (and in which direction) a pad's escape via sits from
+its pad. These distances are not arbitrary: they keep the via ring away from neighbouring
+pads and the solder-mask web above the fab minimum (`tests/board/test_silkscreen.py`,
+`test_decoupling.py`), and keep the grid router's lanes open. Used by
+`routing/policies.py`. Changing one means re-running the board review.
+"""
 
 import pcbnew
 
+from pcb.definition import rules
 from pcb.definition.parts.catalog import PCB_PARTS
 from shared.components import AHCT125, HALL_SENSOR, TCA9554
 
