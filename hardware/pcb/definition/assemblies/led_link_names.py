@@ -1,8 +1,17 @@
-"""Published names for existing LED links; new links get endpoint names."""
+"""Published names for existing LED links; new links get endpoint names.
+
+Role: keeps the net names of the LED chain's data/clock hops stable. Each key is an
+ordered (from-square, to-square) hop of the serpentine chain and each value is the
+(data, clock) net-name pair already used by earlier revisions of the design.
+`for_squares` is the single lookup used when the LED chain is connected.
+"""
 
 from shared import wiring
 from shared.hall_banks import SquarePosition
 
+# Names such as "N$207" are auto-generated style names inherited from earlier
+# revisions; "LED_Dn/LED_Cn" ones mark the hop at each rank turn (H1->H2, A2->A3 ...).
+# They are kept verbatim so net identities do not change; do not "tidy" them.
 LEGACY_NAMES: dict[tuple[str, str], tuple[str, str]] = {
     ("A1", "B1"): ("N$207", "N$208"),
     ("B1", "C1"): ("N$225", "N$226"),
@@ -71,5 +80,8 @@ LEGACY_NAMES: dict[tuple[str, str], tuple[str, str]] = {
 
 
 def for_squares(left: SquarePosition, right: SquarePosition) -> tuple[str, str]:
-    """Keep an existing net identity or name a new physical connection."""
+    """Keep an existing net identity or name a new physical connection.
+
+    Hops not in `LEGACY_NAMES` get the endpoint-derived names from `wiring`.
+    """
     return LEGACY_NAMES.get((left.name, right.name), wiring.led_link_nets(left, right))
