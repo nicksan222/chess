@@ -25,3 +25,56 @@ class PowerMosfetPin(StrEnum):
     DRAIN_6 = "6"
     DRAIN_7 = "7"
     DRAIN_8 = "8"
+
+
+SOURCE_PINS = (
+    PowerMosfetPin.SOURCE_1,
+    PowerMosfetPin.SOURCE_2,
+    PowerMosfetPin.SOURCE_3,
+)
+DRAIN_PINS = (
+    PowerMosfetPin.DRAIN_5,
+    PowerMosfetPin.DRAIN_6,
+    PowerMosfetPin.DRAIN_7,
+    PowerMosfetPin.DRAIN_8,
+)
+
+
+class PowerMosfetComponent(ElectronicComponent[PowerMosfetPin]):
+    """Typed model of the LED rail switch Q1 (P-channel)."""
+
+    pin_type = PowerMosfetPin
+    specs = (LED_SWITCH,)
+
+
+class SmallMosfetPin(StrEnum):
+    """BSS138 SOT-23 pins: gate, source, drain."""
+
+    GATE = "1"
+    SOURCE = "2"
+    DRAIN = "3"
+
+
+class SmallMosfetComponent(ElectronicComponent[SmallMosfetPin]):
+    """Typed model of the LED switch driver Q2 (N-channel)."""
+
+    pin_type = SmallMosfetPin
+    specs = (LED_SWITCH_DRIVER,)
+
+
+class LogicGatePin(StrEnum):
+    """SN74LVC1G97 SOT-23-6 pins: three inputs (In0, In1, In2), output Y, supply and ground."""
+
+    INPUT_1 = "1"
+    GROUND = "2"
+    INPUT_0 = "3"
+    OUTPUT = "4"
+    SUPPLY = "5"
+    INPUT_2 = "6"
+
+
+class LogicGateComponent(ElectronicComponent[LogicGatePin]):
+    """Typed model of the buffer-enable gate U75."""
+
+    pin_type = LogicGatePin
+    specs = (LED_ENABLE_GATE,)
