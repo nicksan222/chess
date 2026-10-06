@@ -75,10 +75,11 @@ weak-pull-up variation, slow edges, and LED-coupled noise need measurement at th
 furthest channels; a typical estimate is not a worst-case guarantee. Keep the
 DRV5032FC 3.3 V open-drain output and local 100 nF bypassing.
 
-SDA/SCL pull-ups R1/R2 remain 4.7 kΩ to 3.3 V. Include the Pi's approximately
-1.8 kΩ pull-ups and any display-module pulls when measuring the parallel load
-(4.7 kΩ || 1.8 kΩ is about 1.30 kΩ). Verify sink VOL and rise time against the
-complete nine-target bus capacitance, particularly before attempting 400 kHz.
+The board has no SDA/SCL pull-ups of its own (R1/R2 were removed): the only ones are
+the Pi's approximately 1.8 kΩ to 3.3 V, plus any display-module pulls (measure the
+module before fitting; they must be 4.7 kΩ or higher, or absent). Simulation of the
+complete nine-target bus capacitance passes at the Pi's default 100 kHz only; 400 kHz
+fails the SDA rise-time limit, so do not raise the I²C rate (docs/hardware.md).
 The retained stackup and local Hall routes do not prove signal integrity.
 
 These are the contract for future hardware workers, not an implemented driver
