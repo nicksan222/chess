@@ -36,6 +36,29 @@ RES_1K_PART = PcbPart(
     Resistor,
     RESISTOR_FOOTPRINT,
     "R",
-    "4.7k",
-    RES_4K7.description,
+    "1k",
+    RES_1K.description,
+    DrawingView.MOUNTING_SIDE,
 )
+
+
+def _resistor_part(spec: ComponentSpec, value: str) -> PcbPart[Resistor]:
+    """Other Yageo 0603 resistors (RC and RT share the mounting table land)."""
+    return PcbPart(
+        spec,
+        Resistor,
+        RESISTOR_FOOTPRINT,
+        "R",
+        value,
+        spec.description,
+        DrawingView.MOUNTING_SIDE,
+    )
+
+
+RES_1K65_PART = _resistor_part(RES_1K65, "1.65k")
+RES_261K_PART = _resistor_part(RES_261K, "261k")
+RES_604K_PRECISION_PART = _resistor_part(RES_604K_PRECISION, "604k 0.1%")
+RES_169K_PRECISION_PART = _resistor_part(RES_169K_PRECISION, "169k 0.1%")
+RES_56_PART = _resistor_part(RES_56, "56R")
+RES_10K_PART = _resistor_part(RES_10K, "10k")
+RES_100K_PART = _resistor_part(RES_100K, "100k")
