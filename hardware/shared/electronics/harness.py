@@ -44,3 +44,91 @@ class HarnessWire:
         return {18: POWER_HARNESS_WIRES, 28: OLED_HARNESS_WIRES}[self.gauge_awg][
             self.colour
         ]
+
+
+# Interface S3a H1 + S3c H4 + S4b. Switchcraft 722A drawing "712A 722A 732A" rev J:
+# terminals CENTER PIN, SLEEVE, SLEEVE SHUNT (shunt left open). Rocker RA11131100:
+# function 1 Off-On, contact 2-1 (E-Switch RA1 catalog drawing 11/2/2022), two
+# 4.80 x 0.80 mm tabs; an SPST contact is symmetric, so either tab serves. Since
+# S4b the rocker switches DC_FUSED onto RUN (eFuse enable, ~1.1 mA wetting load),
+# not the board's load current.
+POWER_HARNESS = (
+    HarnessWire(
+        "J4",
+        PowerHeaderPin.DC_INPUT,
+        "DC_IN",
+        "red",
+        18,
+        POWER_WIRE_LENGTH_MM,
+        "BARREL_JACK",
+        BarrelJackPin.CENTRE_POSITIVE,
+        "solder lug",
+    ),
+    HarnessWire(
+        "J4",
+        PowerHeaderPin.GROUND,
+        "GND",
+        "black",
+        18,
+        POWER_WIRE_LENGTH_MM,
+        "BARREL_JACK",
+        BarrelJackPin.SLEEVE_GROUND,
+        "solder lug",
+    ),
+    HarnessWire(
+        "J4",
+        PowerHeaderPin.FUSED_TO_SWITCH,
+        "DC_FUSED",
+        "orange",
+        18,
+        POWER_WIRE_LENGTH_MM,
+        "POWER_SWITCH",
+        PowerSwitchPin.FUSED_INPUT,
+        "FASTON 2-520275-2",
+    ),
+    HarnessWire(
+        "J4",
+        PowerHeaderPin.RUN,
+        "RUN",
+        "white",
+        18,
+        POWER_WIRE_LENGTH_MM,
+        "POWER_SWITCH",
+        PowerSwitchPin.RUN_OUTPUT,
+        "FASTON 2-520275-2",
+    ),
+)
+
+# Interface H2/M6: J2 to the AZ-Delivery module's labelled pads, soldered.
+OLED_HARNESS = tuple(
+    HarnessWire(
+        "J2",
+        pin,
+        net,
+        colour,
+        28,
+        OLED_WIRE_LENGTH_MM,
+        "OLED_MODULE",
+        label,
+        "solder to pad",
+    )
+    for pin, net, colour, label in (
+        (OledHeaderPin.GROUND, "GND", "black", "GND"),
+        (OledHeaderPin.THREE_VOLTS_THREE, "+3V3", "red", "VCC"),
+        (OledHeaderPin.I2C_CLOCK, "I2C_SCL", "yellow", "SCL"),
+        (OledHeaderPin.I2C_DATA, "I2C_SDA", "blue", "SDA"),
+    )
+)
+
+HARNESSES = {"Power entry": POWER_HARNESS, "OLED": OLED_HARNESS}
+
+# Bought parts each harness is made from, with the quantity one board needs:
+# connector parts here, plus one line per wire colour taken from the wires.
+_CONNECTOR_PARTS = {
+    "Power entry": {
+        "POWER_HARNESS_HOUSING": 1,
+        "POWER_HARNESS_CONTACT": 4,
+        "ROCKER_RECEPTACLE": 2,
+    },
+    "OLED": {"OLED_HARNESS_HOUSING": 1, "OLED_HARNESS_CONTACT": 4},
+}
