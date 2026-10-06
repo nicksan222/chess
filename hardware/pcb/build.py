@@ -533,15 +533,24 @@ def check() -> None:
         env=env,
     )
 
-    run(
-        sys.executable,
-        "-m",
-        "unittest",
-        "discover",
-        "-s",
-        str(PCB_ROOT / "harness"),
-        env=env,
-    )
+    for directory, pattern in (
+        (PCB_ROOT / "harness", "*_test.py"),
+        (PCB_ROOT / "components", "*_test.py"),
+        (PCB_ROOT / "harness" / "checks", "test_*.py"),
+    ):
+        run(
+            sys.executable,
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            str(directory),
+            "-t",
+            str(PCB_ROOT.parent),
+            "-p",
+            pattern,
+            env=env,
+        )
 
 
 def build(command: str, destination: Path = GENERATED_DIR) -> None:

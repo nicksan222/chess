@@ -190,10 +190,18 @@ check substitutes for those measurements. See [`definition/evidence/`](definitio
 `harness/` provides typed circuit declarations, reusable passive component kinds,
 SPICE checks, and a KiCad board-only renderer. It is separate from the production
 board in `definition/board.py`; shared hardware contracts remain authoritative.
-`components/` reserves a home for board-specific products using the harness.
+`components/` defines the concrete board and off-board products using the harness.
 
-Run the colocated harness tests with `PYTHONPATH=hardware python3 -m unittest
-discover -s hardware/pcb/harness`, or use `python3 -m unittest discover` from the
-repository root. The PCB `check` recipe also runs these tests. The tiny divider in
-`harness/examples/tiny_project.py` demonstrates simulation and project creation;
+Harness behavior tests are colocated `*_test.py` files. Component-specific tests
+live beside their definitions in `components/`; automatic checks of the entire
+catalog live in `harness/checks/`, with native KiCad checks under its `pcbnew/`
+subfolder. See the [check inventory](harness/checks/README.md).
+
+Run `just --justfile hardware/pcb/justfile harness-tests`, `component-tests`, or
+`component-checks` separately. The PCB `check` recipe and root
+`PYTHONPATH=hardware python3 -m unittest discover` run all three suites.
+The automatic documentation gate requires network access and fails for missing
+URLs, HTTP errors or invalid document responses.
+The tiny divider in `harness/examples/tiny_project.py` demonstrates simulation and
+project creation;
 its example products are fixtures, not purchasing recommendations.

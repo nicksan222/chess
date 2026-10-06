@@ -1,10 +1,10 @@
 """Standard unittest discovery entry point for the colocated ``*_test.py`` files.
 
-The harness keeps each test beside the class or converter it explains. Python's
-default discovery pattern is ``test*.py``, so this module bridges that standard
-command to the required colocated naming convention. Run from the repository
-root with ``PYTHONPATH=hardware python3 -m unittest discover
--s hardware/pcb/harness``.
+The harness keeps behavior tests beside the class or converter they explain.
+Automatic catalog checks live in ``checks/`` and use ``test_*.py``. This bridge
+loads both suites during standard discovery; the components package has its own
+bridge for component-specific tests. For offline harness behavior checks use
+``discover -s hardware/pcb/harness -t hardware -p '*_test.py'``.
 """
 
 from __future__ import annotations
@@ -16,14 +16,17 @@ from pathlib import Path
 def load_tests(
     loader: unittest.TestLoader, _tests: unittest.TestSuite, _pattern: str | None
 ) -> unittest.TestSuite:
-    """Load harness tests and future board-specific component tests."""
+    """Load harness behavior tests and the automatic declaration checks."""
     hardware = Path(__file__).resolve().parents[2]
     suite = unittest.TestSuite()
-    for directory in (hardware / "pcb" / "harness", hardware / "pcb" / "components"):
+    for directory, pattern in (
+        (hardware / "pcb" / "harness", "*_test.py"),
+        (hardware / "pcb" / "harness" / "checks", "test_*.py"),
+    ):
         suite.addTests(
             loader.discover(
                 start_dir=str(directory),
-                pattern="*_test.py",
+                pattern=pattern,
                 top_level_dir=str(hardware),
             )
         )

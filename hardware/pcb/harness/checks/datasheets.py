@@ -131,3 +131,20 @@ def check_all(references: Iterable[tuple[str, str]]) -> tuple[DatasheetResult, .
     with ThreadPoolExecutor(max_workers=8) as executor:
         checked = tuple(executor.map(check, sorted(urls)))
     return checked + tuple(missing)
+
+
+def main() -> int:
+    """Print an audit; missing or unverified references cause a nonzero exit."""
+    from .catalog import datasheet_references
+
+    report = check_all(datasheet_references())
+    for row in report:
+        print(f"{row.status}: {', '.join(row.components)}: {row.detail}")
+    print(
+        f"Datasheets: {sum(row.status == 'valid' for row in report)} valid URLs; {sum(row.status == 'failed' for row in report)} failed URLs; {sum(row.status == 'missing' for row in report)} components missing URLs"
+    )
+    return int(any(row.status != "valid" for row in report))
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -26,6 +26,21 @@ release:
 # Root/CI entry point.
 quality: check
 
+# Colocated tests of harness behavior, without live documentation requests.
+harness-tests:
+    cd "{{ root }}" && PYTHONPATH=hardware python3 -m unittest discover -s hardware/pcb/harness -t hardware -p '*_test.py'
+
+# Component-specific pin maps, values, dimensions and purchasing identity.
+component-tests:
+    cd "{{ root }}" && PYTHONPATH=hardware python3 -m unittest discover -s hardware/pcb/components -t hardware -p '*_test.py'
+
+# Apply harness-owned catalog, documentation and native checks to all components.
+component-checks:
+    cd "{{ root }}" && PYTHONPATH=hardware python3 -m unittest discover -s hardware/pcb/harness/checks -t hardware -p 'test_*.py'
+
+datasheets:
+    cd "{{ root }}" && PYTHONPATH=hardware python3 -m pcb.harness.checks.datasheets
+
 clean:
     find "{{ root }}/hardware/pcb" -type d -name __pycache__ -prune -exec rm -rf {} +
     rm -f "{{ root }}/hardware/pcb/generated/"*.kicad_prl "{{ root }}/hardware/pcb/generated/"~*.lck
