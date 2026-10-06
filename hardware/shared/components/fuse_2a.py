@@ -9,5 +9,5 @@ FUSE_2A = part(
     "Littelfuse",
     "0453002.MR",
     (6.1, 2.7, 2.7),
-    "https://www.littelfuse.com/assetdocs/littelfuse-fuse-453-datasheet",
+    "https://atta.szlcsc.com/upload/public/pdf/source/20171109/C48467_15102201734031103760.pdf",
 )

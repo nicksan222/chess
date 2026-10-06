@@ -14,4 +14,5 @@ RES_56 = part(
     "Yageo",
     "RC0603FR-0756RL",
     (1.6, 0.8, 0.55),
+    datasheet="https://www.yageogroup.com/content/datasheet/asset/file/PYU-RC_GROUP_51_ROHS_L",
 )

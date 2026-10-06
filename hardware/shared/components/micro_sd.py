@@ -1,7 +1,7 @@
 """Approved product: SanDisk microSD card for the Pi.
 
 Off-board: listed in the human BOM only (`output/exports.EXTRA_ASSEMBLY_PARTS`).
-No body size or datasheet is recorded.
+Body size is not recorded; the manufacturer product sheet is linked.
 """
 
 from .spec import part
@@ -12,4 +12,5 @@ MICRO_SD = part(
     "microSD",
     "SanDisk",
     "SDSQQNR-032G-GN6IA",
+    datasheet="https://documents.sandisk.com/content/dam/asset-library/en_us/assets/public/sandisk/product/memory-cards/high-endurance-uhs-i-microsd/data-sheet-high-endurance-uhs-i-microsd.pdf",
 )

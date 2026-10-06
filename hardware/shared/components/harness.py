@@ -37,6 +37,7 @@ ROCKER_RECEPTACLE = part(
     "FASTON 187 receptacle",
     "TE Connectivity",
     "2-520275-2",
+    datasheet="https://media.distrelec.com/Web/Downloads/_t/ds/2-520275-2_eng_tds.pdf",
 )
 # JST SH catalogue p1/p4: housing and AWG #32-#28 crimp contact for J2.
 OLED_HARNESS_HOUSING = part(
@@ -82,6 +83,10 @@ def _alpha_wire(
         kind,
         "Alpha Wire",
         f"{series} {ALPHA_COLOUR_CODES[colour]}005",
+        datasheet=(
+            "https://www.alphawire.com/disteAPI/SpecPDF/DownloadProductSpecPdf?productPartNumber="
+            + series.replace("/", "%2F")
+        ),
         purchase_unit="100 ft spool",
         cut_length_mm=length_mm,
     )

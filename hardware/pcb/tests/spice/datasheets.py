@@ -32,22 +32,22 @@ class Span:
     high: float
 
 
-# --- Supply. The GST12A05-P1J spec (meanwell.com GST12A-SPEC.PDF) returns 404 and
-# no mirror was found; the GST25B family sheet (2016-03-16) is used and the gap is
-# verification ASSUMPTION "GST12A05 output": 5 V tolerance +-5.0 % (incl. setup,
-# line, load regulation); overload 110-150 % rated power, hiccup; over-voltage
-# 110-140 % rated voltage, zener clamp; 5-12 V cord UL2468 16 AWG 1000 +-50 mm.
+# --- Supply. MEAN WELL GST18A-SPEC 2026-04-03, pp2-3, GST18A05-P1J:
+# 5 V tolerance +-5.0 % (incl. setup, line, load regulation); 3 A rated;
+# overload 110-150 % rated power, hiccup; OVP 110-140 % rated voltage,
+# zener clamp; 80 mV p-p ripple; UL1185 16 AWG cord 1200 +-50 mm.
+# The board's 2 A operating budget and fuse remain unchanged.
 PSU_RATED_VOLTS = 5.0
-PSU_RATED_AMPS = 2.0  # GST12A05: 5 V 2 A (shared/components/power_supply.py).
+PSU_RATED_AMPS = 3.0  # GST18A05-P1J, independent of the 2 A board budget.
 PSU_VOLTS = Span(PSU_RATED_VOLTS * 0.95, PSU_RATED_VOLTS * 1.05)
 PSU_OVERLOAD_FRACTION = Span(1.10, 1.50)
 PSU_OVER_VOLTAGE_FRACTION = Span(1.10, 1.40)
-PSU_RIPPLE_VOLTS_PP = 0.080  # GST25B05 ripple and noise (max.).
+PSU_RIPPLE_VOLTS_PP = 0.080  # GST18A05 ripple and noise (max.).
 PSU_CORD_AWG = 16
-PSU_CORD_METRES = Span(0.95, 1.05)
+PSU_CORD_METRES = Span(1.15, 1.25)
 # Cord loop inductance [CALC], parallel wires: L = (mu0 / pi) acosh(s / d) per metre.
-# UL2468 16 AWG zip cord, d 1.29 mm at about 2.9 mm centres: 0.58 uH/m, so 0.61 uH
-# for 1.05 m; plus the 18 AWG harness pair and the jack, about 0.8 uH. No cord drawing
+# UL1185 16 AWG cord, d 1.29 mm at about 2.9 mm centres: 0.58 uH/m, so 0.73 uH
+# for 1.25 m; plus the 18 AWG harness pair and the jack, about 0.9 uH. No cord drawing
 # is on file (verification ASSUMPTION "Cord inductance"): 0.5-1.5 uH is simulated.
 PSU_CORD_HENRIES = (0.5e-6, 1.5e-6)
 

@@ -9,4 +9,5 @@ POWER_SWITCH = part(
     "panel snap-in rocker",
     "E-Switch",
     "RA11131100",
+    datasheet="https://configured-product-images.s3.amazonaws.com/2D/specs/RA11131100.pdf",
 )

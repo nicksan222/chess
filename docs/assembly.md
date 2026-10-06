@@ -21,8 +21,8 @@ the open-assumptions list (`hardware/pcb/definition/verification.py`) all pass. 
 
 `hardware/pcb/generated/bom.md` is generated from the approved exact-MPN catalog and
 reviewed netlist; its off-board rows (marked `off-board`) are the parts that do not
-solder onto the PCB: the Pi Zero 2 W and its male header, the OLED module, the GST12A05-P1J
-5 V 2 A supply, the Switchcraft 722A panel jack, the RA11131100 panel rocker and the
+solder onto the PCB: the Pi Zero 2 W and its male header, the OLED module, the GST18A05-P1J
+5 V 3 A supply, the Switchcraft 722A panel jack, the RA11131100 panel rocker and the
 harness wire, housings, contacts and FASTON receptacles.
 [`harness.md`](../hardware/pcb/generated/harness.md) lists the harness parts per
 harness.

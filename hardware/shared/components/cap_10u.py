@@ -9,4 +9,5 @@ CAP_10U = part(
     "Yageo",
     "CC0805KKX5R6BB106",
     (2.0, 1.25, 1.25),
+    datasheet="https://www.yageogroup.com/download/specsheet/CC0805KKX5R6BB106",
 )

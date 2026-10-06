@@ -6,7 +6,8 @@ Describe how the board is powered and where the current goes.
 
 ## No conversion on the board
 
-A MEAN WELL GST12A05-P1J 5 V 2 A regulated supply feeds a Switchcraft 722A panel
+The board keeps a 2 A operating budget and fuse rating.
+A MEAN WELL GST18A05-P1J 5 V 3 A regulated supply feeds a Switchcraft 722A panel
 jack in the case's rear wall, and that is the rail. There is no buck converter, no
 inductor, no USB power negotiation and no battery. The 3.3 V the expanders and the
 display need comes off the Raspberry Pi's own header.
@@ -67,7 +68,7 @@ not measurements.
 - **Residual risks (assumptions, not closed):**
   - The window's top corner (5.663 V) is above the SK9822-A's 5.5 V absolute maximum
     and its 5.3 V recommended maximum, so a supply failing into 5.5-5.66 V stays on.
-    A 5.25 V supply (the GST12A05's +5 % limit) is inside 5.3 V.
+    A 5.25 V supply (the GST18A05's +5 % limit) is inside 5.3 V.
   - A supply that steps up to 6-7 V while running trips after about 0.7-1.7 ms, but
     the bulk capacitors hold the rail above 5.5 V for about 10 ms, with a peak of about
     6 V on the LEDs. D1 (SMBJ12CA, breakdown 13.3-14.7 V) does not clamp at 6-7 V.
@@ -92,14 +93,14 @@ not measurements.
 
 | Load | Draw |
 |---|---|
-| 64 SK9822-A at unrestricted full white (budgeted at 18 mA per channel) | 3.97 A including the host (above the 2 A supply and fuse) |
+| 64 SK9822-A at unrestricted full white (budgeted at 18 mA per channel) | 3.97 A including the host (above the 2 A board budget and fuse) |
 | Raspberry Pi Zero 2 W | about 0.4 A (included above) |
 | Eight expanders and the buffer | small; not separately budgeted |
 
 Full white is therefore not allowed. `hardware/pcb/definition/manufacturing.json`
 sets the approved LED limit at a global brightness of 3/31 (the SK9822-A has a
 five-bit brightness field per LED), and `tests/board/test_power_budget.py` checks that
-limit against the 2 A supply and fuse ratings. Capping brightness is part of the
+limit against the 2 A board operating budget and fuse rating. Capping brightness is part of the
 protocol, not something the application has to remember.
 
 Copper is sized for the 2 A fuse rating: input traces are 1.5 mm and each plane entry
@@ -175,7 +176,7 @@ No automated check proves any of these; they stay in `ASSUMPTIONS`
 - U74 assembly (fine-pitch QFN, X-ray) and selective soldering of the bottom
   through-hole joints at the fab;
 - the rocker switching about 5 mA of wetting current reliably, contact resistances,
-  the jack's 2.0 mm centre pin mating with the GST12A05-P1J plug, and harness crimps and
+  the jack's 2.0 mm centre pin mating with the GST18A05-P1J plug, and harness crimps and
   cavity order.
 
 ## Watchdog

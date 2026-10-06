@@ -508,12 +508,12 @@ class EfuseSpiceTest(unittest.TestCase):
         circuit.expect("input", 0.0, ilim.low)
         run_circuit("test_efuse_approved.py", circuit)
 
-    def test_full_white_exceeds_the_supply_overload_and_the_fuse(self) -> None:
-        # Budget, not a sag model: a 2 A supply hiccups (110-150 % overload) and
-        # the fuse is rated 2 A, so full white must be refused by firmware.
+    def test_full_white_exceeds_the_board_budget_and_supply_rating(self) -> None:
+        # Full white exceeds both the 2 A board/fuse budget and 3 A adapter
+        # rating. It need not exceed the adapter's 150% hiccup threshold;
+        # firmware must refuse it independently of adapter protection.
         amps = board_circuits().power_current(full_white=True)
-        overload = datasheets.PSU_RATED_AMPS * datasheets.PSU_OVERLOAD_FRACTION.high
-        self.assertGreater(amps, overload)
+        self.assertGreater(amps, 2.0)
         self.assertGreater(amps, datasheets.PSU_RATED_AMPS)
 
 

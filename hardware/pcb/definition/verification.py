@@ -32,7 +32,7 @@ ASSUMPTIONS = MappingProxyType(
             "Switchcraft 722A split Ø0.080 in centre pin is made for the 5.5 x 2.1 "
             "plug (EDG41 p134: S760, bore 2.03-2.13; plf6: pin .075-.077 in, "
             "insertion <= 3 lb, withdrawal >= 4 oz, contact <= 0.01 ohm initial, "
-            "0.02 ohm after humidity and durability); the GST12A05-P1J plug itself "
+            "0.02 ohm after humidity and durability); the GST18A05-P1J plug itself "
             "is not dimensioned on file; bench fit/retention/contact check"
         ),
         "J4 back offset": (
@@ -67,10 +67,11 @@ ASSUMPTIONS = MappingProxyType(
             "panel buttons rely on the Pi's internal pull-up, requested by firmware "
             "(apps/firmware/src/hardware/linux_gpio.rs Bias::PullUp); no board resistor"
         ),
-        "GST12A05 output": (
-            "GST12A-SPEC.PDF returns 404: SPICE corners use the GST25B family sheet "
-            "(5 V +-5 %, overload 110-150 % hiccup, OVP 110-140 %, 16 AWG 1 m cord); "
-            "bench: no-load and 2 A output voltage of the supplied unit"
+        "GST18A05 output": (
+            "GST18A-SPEC 2026-04-03 gives 5 V +-5 %, 80 mV p-p ripple, "
+            "3 A rated, overload 110-150 % hiccup, OVP 110-140 %, "
+            "16 AWG 1.2 m cord; bench: no-load and 2 A output voltage of "
+            "the supplied unit (the board retains its 2 A budget)"
         ),
         "eFuse model": (
             "U74 (TPS259474ARPWR) is simulated from SLVSFC9C tables, no vendor "

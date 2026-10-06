@@ -9,4 +9,5 @@ CAP_100N = part(
     "Yageo",
     "CC0603KRX7R9BB104",
     (1.6, 0.8, 0.8),
+    datasheet="https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104",
 )

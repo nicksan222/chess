@@ -65,11 +65,11 @@ class PowerBudgetTest(unittest.TestCase):
         power = manufacturing["power"]
         brightness = Fraction(power["led_global_brightness_max"])
 
-        # The approved GST12A05-P1J supply and 0453002.MR fuse are each
-        # rated 2 A. A replacement supply needs a reviewed rating here.
-        approved_supply_ratings = {"GST12A05-P1J": 2.0}
+        # The approved adapter is rated 3 A; the board budget and fuse stay 2 A.
+        approved_supply_ratings = {"GST18A05-P1J": 3.0}
         self.assertIn(POWER_SUPPLY.mpn, approved_supply_ratings)
-        self.assertEqual(
+        self.assertEqual(power["supply_amps"], 2.0)
+        self.assertLessEqual(
             power["supply_amps"], approved_supply_ratings[POWER_SUPPLY.mpn]
         )
         self.assertEqual(components["F1"]["part_key"], "FUSE_2A")

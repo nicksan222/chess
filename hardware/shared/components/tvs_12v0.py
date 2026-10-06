@@ -16,5 +16,5 @@ TVS_12V0 = part(
     "Littelfuse",
     "SMBJ12CA",
     (4.6, 3.6, 2.3),
-    "https://www.littelfuse.com/assetdocs/tvs-diodes-smbj-datasheet",
+    "https://docs.rs-online.com/72ea/0900766b814f6468.pdf",
 )
