@@ -74,6 +74,37 @@ CAP_560U_PART = PcbPart(
     Capacitor,
     CAPACITOR_ELECTROLYTIC_8MM,
     "C",
-    "1000uF 10V",
-    CAP_1000U.description,
+    "560uF 10V",
+    CAP_560U.description,
+    DrawingView.MOUNTING_SIDE,
+)
+
+# eFuse dVdt (10 nF), ITIMER (1 nF, S6d) and IN bypass (1 uF): Yageo X7R 0603 on
+# the same Murata-table 0603 land as CAP_100N.
+CAP_10N_PART = PcbPart(
+    CAP_10N,
+    Capacitor,
+    CAPACITOR_0603_FOOTPRINT,
+    "C",
+    "10nF",
+    CAP_10N.description,
+    DrawingView.MOUNTING_SIDE,
+)
+CAP_1N_PART = PcbPart(
+    CAP_1N,
+    Capacitor,
+    CAPACITOR_0603_FOOTPRINT,
+    "C",
+    "1nF",
+    CAP_1N.description,
+    DrawingView.MOUNTING_SIDE,
+)
+CAP_1U_PART = PcbPart(
+    CAP_1U,
+    Capacitor,
+    CAPACITOR_0603_FOOTPRINT,
+    "C",
+    "1uF 25V",
+    CAP_1U.description,
+    DrawingView.MOUNTING_SIDE,
 )
