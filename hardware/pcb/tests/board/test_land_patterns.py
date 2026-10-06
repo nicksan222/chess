@@ -585,3 +585,77 @@ class LandPatternTest(unittest.TestCase):
     """Compares the native templates and the placed board with the hand-typed datasheet rows."""
 
     rails: ClassVar[dict[tuple[str, str], str]]
+    references: ClassVar[dict[str, list[str]]]
+    led_pads: ClassVar[dict[str, dict[str, pcbnew.VECTOR2I]]]
+    led_centres: ClassVar[dict[str, pcbnew.VECTOR2I]]
+    placed: ClassVar[dict[str, list[pcbnew.FOOTPRINT]]]
+    native_board: ClassVar[pcbnew.BOARD]
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        """Build the board once and collect rail nets, references and the placed LED pads."""
+        native_board = board.load()
+        cls.rails = {}
+        cls.references = {}
+        cls.led_pads = {}
+        cls.led_centres = {}
+        cls.placed = {}
+        cls.native_board = native_board
+        for footprint in native.parts(native_board):
+            key = footprint.GetFieldText("PartKey")
+            if key == "SK9822":
+                square = footprint.GetFieldText("Square")
+                cls.led_centres[square] = footprint.GetPosition()
+                cls.led_pads[square] = {
+                    pad.GetNumber(): pad.GetPosition() for pad in footprint.Pads()
+                }
+            cls.references.setdefault(key, []).append(footprint.GetReference())
+            cls.placed.setdefault(key, []).append(footprint)
+            for pad in footprint.Pads():
+                cls.rails[(footprint.GetReference(), pad.GetNumber())] = (
+                    pad.GetNetname()
+                )
+
+    def test_every_catalog_part_is_verified_or_explicitly_unverified(self) -> None:
+        golden = {pattern.part_key for pattern in GOLDEN}
+        self.assertFalse(golden & UNVERIFIED.keys())
+        self.assertEqual(golden | UNVERIFIED.keys(), set(PCB_PARTS))
+        for key, reason in UNVERIFIED.items():
+            with self.subTest(part=key):
+                self.assertGreater(len(reason), 20)
+
+    def test_mpn_and_package_match_the_cited_datasheet(self) -> None:
+        for golden in GOLDEN:
+            with self.subTest(part=golden.part_key):
+                part = PCB_PARTS[golden.part_key]
+                self.assertEqual(part.spec.mpn, golden.mpn)
+                self.assertEqual(part.spec.package, golden.package)
+                self.assertEqual(part.template.GetFieldText("Package"), golden.package)
+                if golden.body_ranges_mm is None:
+                    continue
+                body = part.spec.require_body_mm()
+                for axis, (value, (low, high)) in enumerate(
+                    zip(body, golden.body_ranges_mm, strict=True)
+                ):
+                    self.assertGreaterEqual(value, low, f"body axis {axis}")
+                    self.assertLessEqual(value, high, f"body axis {axis}")
+
+    def test_pad_numbers_carry_the_datasheet_pin_function(self) -> None:
+        for golden in GOLDEN:
+            part = PCB_PARTS[golden.part_key]
+            model = part.new_model("LAND_PATTERN_CHECK")
+            template_numbers = {pad.GetNumber() for pad in part.template.Pads()}
+            with self.subTest(part=golden.part_key, check="pad set"):
+                self.assertEqual(template_numbers, {pad.number for pad in golden.pads})
+            for expected in golden.pads:
+                if expected.function is None:
+                    continue
+                with self.subTest(part=golden.part_key, pad=expected.number):
+                    logical = DUPLICATE_PADS.get(expected.number, expected.number)
+                    pin = model.resolve_endpoint(logical).pin
+                    self.assertEqual(
+                        pin.name,
+                        expected.function,
+                        f"{golden.source}: pad {expected.number} is "
+                        f"{expected.datasheet_name}",
+                    )
