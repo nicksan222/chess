@@ -787,3 +787,87 @@ class LandPatternTest(unittest.TestCase):
                     and pad.GetShape() == pcbnew.PAD_SHAPE_RECT
                 ]
                 self.assertEqual(others, [])
+
+    def test_efuse_corner_pads_carry_the_datasheet_leg(self) -> None:
+        # SLVSFC9C p73: corner pads add a 0.25 mm leg at x = -/+0.725 out to
+        # y = +/-1.2 (outline x 0.6-1.2, y 0.55-1.2 per corner; area 0.2675 mm2).
+        template = PCB_PARTS["EFUSE"].template
+        for pad in template.Pads():
+            if pad.GetNumber() not in ("1", "4", "7", "10"):
+                continue
+            outline = pcbnew.SHAPE_POLY_SET()
+            pad.TransformShapeToPolygon(
+                outline, pcbnew.F_Cu, 0, pcbnew.FromMM(0.001), pcbnew.ERROR_INSIDE
+            )
+            box = pad.GetBoundingBox()  # includes the custom-pad leg
+            extent = (
+                abs(
+                    pcbnew.ToMM(box.GetLeft() + box.GetRight()) / 2
+                    - pcbnew.ToMM(template.GetPosition().x)
+                ),
+                pcbnew.ToMM(box.GetRight() - box.GetLeft()),
+                pcbnew.ToMM(box.GetBottom() - box.GetTop()),
+            )
+            with self.subTest(pad=pad.GetNumber()):
+                self.assertAlmostEqual(extent[0], 0.9, delta=TOLERANCE_MM)
+                self.assertAlmostEqual(extent[1], 0.6, delta=TOLERANCE_MM)
+                self.assertAlmostEqual(extent[2], 0.65, delta=TOLERANCE_MM)
+                self.assertAlmostEqual(outline.Area() / 1e12, 0.2675, delta=0.002)
+
+    def test_supply_pins_reach_their_rails_on_every_placed_part(self) -> None:
+        for golden in GOLDEN:
+            references = self.references.get(golden.part_key, [])
+            with self.subTest(part=golden.part_key, check="placed"):
+                self.assertTrue(references)
+            for expected in golden.pads:
+                if expected.rail is None:
+                    continue
+                for reference in references:
+                    with self.subTest(reference=reference, pad=expected.number):
+                        self.assertEqual(
+                            self.rails[(reference, expected.number)], expected.rail
+                        )
+
+    def test_led_inputs_face_upstream_and_outputs_face_downstream(self) -> None:
+        # Datasheet pins: 1 SDI, 2 CKI in; 6 SDO, 5 CKO out. Serpentine A1-H1, H2-A2...
+        def distance(a: pcbnew.VECTOR2I, b: pcbnew.VECTOR2I) -> float:
+            """Straight-line distance between two native points."""
+            return math.hypot(a.x - b.x, a.y - b.y)
+
+        for rank in range(1, 9):
+            files = "abcdefgh" if rank % 2 else "hgfedcba"
+            chain = [f"{file.upper()}{rank}" for file in files]
+            for upstream, downstream in pairwise(chain):
+                with self.subTest(link=f"{upstream}->{downstream}"):
+                    before = self.led_centres[upstream]
+                    after = self.led_centres[downstream]
+                    pads_in = self.led_pads[downstream]
+                    pads_out = self.led_pads[upstream]
+                    for into, out_of in (("1", "6"), ("2", "5")):
+                        self.assertLess(
+                            distance(pads_in[into], before),
+                            distance(pads_in[out_of], before),
+                        )
+                        self.assertLess(
+                            distance(pads_out[out_of], after),
+                            distance(pads_out[into], after),
+                        )
+
+    def test_rank_turns_keep_outputs_and_inputs_on_the_turning_column_side(
+        self,
+    ) -> None:
+        # H1->H2, H3->H4, ... turn on the +X (H) edge; A2->A3, ... on the -X edge.
+        for rank in range(1, 8):
+            column = "H" if rank % 2 else "A"
+            side = 1 if column == "H" else -1
+            upstream, downstream = f"{column}{rank}", f"{column}{rank + 1}"
+            with self.subTest(turn=f"{upstream}->{downstream}"):
+                for square, pins in ((upstream, ("6", "5")), (downstream, ("1", "2"))):
+                    centre = self.led_centres[square].x
+                    for pin in pins:
+                        offset = self.led_pads[square][pin].x - centre
+                        self.assertGreater(side * offset, 0, f"{square} pad {pin}")
+
+
+if __name__ == "__main__":
+    unittest.main()
