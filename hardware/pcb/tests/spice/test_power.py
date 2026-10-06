@@ -207,6 +207,101 @@ class EfuseSpiceTest(unittest.TestCase):
         circuit.rows.append(".op")
         return circuit
 
+    def test_ovlo_window_sits_between_the_supply_and_a_wrong_adapter(self) -> None:
+        # User decision (2026-10-06): every in-spec supply turns on (GST25B05 +5 %
+        # plus half its 80 mVp-p ripple) and 6.0 V is cut off, at every corner.
+        stage = self.stage
+        latest, earliest = stage.ovlo_trip(high=True), stage.ovlo_trip(high=False)
+        supply_peak = datasheets.PSU_VOLTS.high + datasheets.PSU_RIPPLE_VOLTS_PP / 2
+        self.assertGreaterEqual(earliest, 5.30)
+        # SK9822-A: the in-spec supply stays within the LEDs' recommended 5.3 V;
+        # the trip window above it is ASSUMPTION "LED supply window".
+        self.assertLessEqual(
+            datasheets.PSU_VOLTS.high, datasheets.SK9822_VDD_RECOMMENDED_MAX
+        )
+        self.assertGreater(earliest, supply_peak)
+        self.assertLess(latest, 6.0)
+        for name, supply, on in (
+            ("supply_peak", supply_peak, True),
+            ("wrong_6v", 6.0, False),
+        ):
+            circuit = self._op(
+                f"Generated chess-board OVLO {name} [BEH]", supply, high=not on
+            )
+            circuit.controls.append("let result_rail = v(out)")
+            if on:
+                circuit.expect("rail", 4.9, supply)
+            else:
+                circuit.expect("rail", -0.01, 0.01)
+            with self.subTest(case=name):
+                run_circuit(f"test_efuse_ovlo_{name}.py", circuit)
+
+    def test_over_voltage_supplies_are_cut_off(self) -> None:
+        ovp = datasheets.PSU_RATED_VOLTS * datasheets.PSU_OVER_VOLTAGE_FRACTION.high
+        stage = self.stage
+        for supply in (6.0, ovp, 12.0):
+            circuit = self._op(
+                f"Generated chess-board {supply:g} V supply [BEH]", supply
+            )
+            circuit.controls.extend(
+                (
+                    "let result_rail = v(out)",
+                    "let result_input_ma = abs(i(vpsu)) * 1000",
+                )
+            )
+            circuit.expect("rail", -0.01, 0.01)
+            # Below SMBJ12CA VBR (13.3 V) the TVS is off: only the dividers and
+            # the rocker's wetting load draw current, up to a 12 V wrong adapter
+            # (user decision D2).
+            bias = supply * sum(
+                1 / sum(stage.ohms(role, -1) for role in roles)
+                for roles in (
+                    ("wetting",),
+                    ("ovlo_top", "ovlo_bottom"),
+                    ("enable_top", "enable_bottom"),
+                )
+            )
+            self.assertLess(supply, datasheets.TVS_BREAKDOWN_VOLTS.low)
+            circuit.expect("input_ma", 0.0, 1000 * bias * 1.01)
+            with self.subTest(supply=supply):
+                run_circuit(f"test_efuse_supply_{supply:g}.py", circuit)
+
+    def _plug(
+        self,
+        name: str,
+        supply: str,
+        *,
+        high: bool,
+        ovlo_filter: bool = True,
+        henries: float = 0.0,
+        end_ms: float = 30.0,
+        load_ohms: float = 1e3,
+    ) -> SpiceCircuit:
+        """Plug-in through the cord (L in series with the low-corner path R) with
+        the rocker on, at the fastest dVdt; `high` picks the latest OVLO trip."""
+        rising = datasheets.EFUSE_THRESHOLD_RISING_VOLTS
+        base = _corner(fast=True, ron="low")
+        corner = Corner(
+            base.ron,
+            rising.high if high else rising.low,
+            base.slew_volts_per_s,
+            base.ilim,
+        )
+        circuit = self.stage.front_end(
+            name,
+            corner,
+            supply,
+            path_ohms=self.path_ohms,
+            run_on=True,
+            trip="high" if high else "low",
+            ovlo_filter=ovlo_filter,
+            path_henries=henries,
+        )
+        circuit.rows.extend(self._rail_caps())
+        circuit.rows.append(f"RLOAD out 0 {load_ohms}")
+        circuit.rows.append(f".tran 10u {end_ms}m 0 10u uic")
+        return circuit
+
     def test_rail_settles_after_switch_on_with_every_fitted_capacitor(self) -> None:
         circuit = board_circuits().power_startup().clear_expectations()
         circuit.expect("5v_at_1ms", *BOARD_POWER.healthy_rail.tuple())
