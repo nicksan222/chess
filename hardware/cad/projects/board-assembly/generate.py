@@ -88,14 +88,48 @@ def load_plate(plate_path: Path, collection: bpy.types.Collection) -> bpy.types.
     return plate
 
 
+def check_fit(case: bpy.types.Object, plate: bpy.types.Object) -> None:
+    """Fail the build if the seated parts or the board proxy overlap.
+
+    The proxy board, Pi, buttons and display are what must fit; per-square
+    parts are covered by the shared stack validation. The case and the plate are each
+    checked against the board, Pi, header and display proxies and the button proxies,
+    plus the case against the plate. LED, Hall and expander proxies and proxy-to-proxy
+    overlaps are not checked here.
+    """
+    checks = [(case, plate)] + [
+        (part, modeling.require_object(name))
+        for part in (case, plate)
+        for name in FIT_PROXIES
+    ]
+    checks += [
+        (part, modeling.require_object(f"{prefix}_{index:02d}"))
+        for part in (case, plate)
+        for prefix in ("Proxy_Button", "Proxy_Button_Actuator")
+        for index in range(shared.PANEL_BUTTON_COUNT)
+    ]
+    for first, second in checks:
+        volume = validation.overlap_volume_mm3(first, second)
+        if volume > FIT_TOLERANCE_MM3:
+            raise RuntimeError(
+                f"{first.name} and {second.name} overlap by {volume:.2f} mm3"
+            )
+
+
 def render_views(
     plate: bpy.types.Object,
     electronics: bpy.types.Collection,
     output_directory: Path,
 ) -> None:
+    """Render the finished view, then the open view, and restore the plate.
+
+    The camera comes from the case file's studio. Hiding `electronics` in the finished
+    view shows the product as a player sees it.
+    """
     scene = bpy.context.scene
     camera = modeling.require_object("Camera_Render")
     camera_data = modeling.require_object_data(camera, bpy.types.Camera)
+    # Point the camera at the middle of the case (offset for the control strip).
     focus = Vector((0.0, shared.CASE_CENTER_OFFSET_Y_MM, 8.0))
     # The imported origin is already the assembled position, so it is the datum
     # the open view lifts away from rather than something to be overwritten.
@@ -124,12 +158,18 @@ def render_views(
 
 
 def build(output_directory: Path = GENERATED) -> None:
+    """Open the generated case, add the plate and board proxy, check fit, and render.
+
+    Raises if either source .blend is missing: run the element projects first.
+    """
     case_path = output_directory / "board-case.blend"
     plate_path = output_directory / "tile-plate.blend"
     for source_path in (case_path, plate_path):
         if not source_path.is_file():
             raise RuntimeError(f"Generate element project first: {source_path}")
 
+    # Start from the case file itself (not a copy of its geometry) so the case is
+    # exactly the printed model.
     bpy.ops.wm.open_mainfile(filepath=str(case_path))
     bpy.context.preferences.filepaths.save_version = 0
     scene = bpy.context.scene
@@ -153,6 +193,8 @@ def build(output_directory: Path = GENERATED) -> None:
     electronics = modeling.new_collection("ELECTRONICS_REFERENCE")
     plate = load_plate(plate_path, plate_collection)
     pcb_proxy.add_board(electronics)
+    # Fail before saving or rendering if anything collides.
+    check_fit(bpy.data.objects[CASE_PART], plate)
 
     output_path = output_directory / f"{NAME}.blend"
     bpy.ops.wm.save_as_mainfile(filepath=str(output_path))

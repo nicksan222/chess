@@ -1,13 +1,20 @@
 """Generate the printable case that holds the board, the Pi and the panel.
 
-One of the project's two printed parts. It carries a single PCB on a grid of
-bosses, hangs the Raspberry Pi underneath it, presents twelve buttons and a
-display through a face-up bezel at the front, and receives the tile plate in a
-rebate over the playing area.
+One of the project's two printed parts: an open tub. The PCB drops straight
+into a pocket and rests on a ledge under its edge and on a grid of bosses, the
+Raspberry Pi hangs underneath it, and the tile plate, which also carries the
+control bezel, closes the top in a rebate on the rim outboard of the board.
 
 Geometry is built in assembly coordinates: the case floor sits at z = 0 and its
 top face at `CASE_HEIGHT_MM`, so the assembly view can load this part and the
 plate without moving either of them.
+
+Pipeline: `build()` creates the scene, `add_case()` makes a rounded block and cuts or adds
+each feature in turn (cavity and pocket, plate rebate, rear and side apertures, floor
+vents, support bosses, plate screw pilots), then `project.save_printable()` validates, saves and
+renders. Every size comes from `shared` (`hardware/shared/dimensions/`); the Pi transform
+there fixes where the microSD slot and vents go. Cutters sit in the hidden CONSTRUCTION
+collection; batched cutters must not overlap each other (see `modeling.cut_batch`).
 """
 
 import sys
@@ -29,21 +36,24 @@ from core import (
     project,
 )
 
+# Output file stem and the object name `board-assembly` imports; keep both stable.
 NAME = "board-case"
 PART_NAME = "Printable_Board_Case"
 
+# Floor vents under the Pi: five slots, side by side across its short axis.
 FLOOR_VENT_COUNT = 5
 FLOOR_VENT_PITCH_MM = 8.0
 
 
 @dataclass(frozen=True, slots=True)
 class BoardCaseMetadata:
+    """Facts stored as custom properties on the scene (visible in the saved .blend)."""
+
     design_status: str
     project_role: str
     grid_rows: int
     grid_columns: int
     pcb_size_mm: str
-    panel_button_count: int
     pcb_support_count: int
     host: str
     reference_build_volume_mm: str
@@ -54,7 +64,6 @@ class BoardCaseMetadata:
         project.set_scene_property(scene, "grid_rows", self.grid_rows)
         project.set_scene_property(scene, "grid_columns", self.grid_columns)
         project.set_scene_property(scene, "pcb_size_mm", self.pcb_size_mm)
-        project.set_scene_property(scene, "panel_button_count", self.panel_button_count)
         project.set_scene_property(scene, "pcb_support_count", self.pcb_support_count)
         project.set_scene_property(scene, "host", self.host)
         project.set_scene_property(
@@ -67,6 +76,12 @@ def add_case(
     construction: bpy.types.Collection,
     case_material: bpy.types.Material,
 ) -> bpy.types.Object:
+    """Build the case: a solid block, then each feature applied in order.
+
+    Order is functional: the cavity must be cut before the bosses are added (bosses
+    are a union, so hollowing afterwards would remove them), and the pilots are cut last,
+    into the bosses and the rim. The smaller wall and floor features go in between.
+    """
     case = modeling.rounded_box(
         PART_NAME,
         shared.CASE_OUTER_SIZE_MM,
@@ -75,11 +90,10 @@ def add_case(
         printable,
     )
     case.data.materials.append(case_material)
-    case["purpose"] = "Single-PCB case with a face-up control bezel"
+    case["purpose"] = "Open tub for one PCB; the plate carries the bezel"
 
     _hollow_cavity(case, construction)
     _cut_plate_rebate(case, construction)
-    _cut_panel_apertures(case, construction)
     _cut_rear_apertures(case, construction)
     _cut_side_slot(case, construction)
     _cut_floor_vents(case, construction)
@@ -89,11 +103,11 @@ def add_case(
 
 
 def _hollow_cavity(case: bpy.types.Object, construction: bpy.types.Collection) -> None:
-    """Remove the interior, leaving a ledge for the plate to rest on.
+    """Remove the interior: a cavity under the board and a pocket around it.
 
-    The cavity is inset from the playing area by the plate ledge rather than by
-    the wall thickness, so the frame stays solid and the cavity ceiling needs no
-    support to print.
+    The cavity is narrower than the board by the ledge overlap, so the wall
+    left between the two carries the board edge. The pocket is the board
+    outline plus clearance and runs up to the rim the plate rests on.
     """
     cavity_height = (
         shared.CASE_HEIGHT_MM - shared.TILE_PLATE_THICKNESS_MM - shared.CASE_FLOOR_MM
