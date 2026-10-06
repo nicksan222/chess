@@ -157,3 +157,89 @@ class FirmwarePinParityTest(unittest.TestCase):
     buttons: ClassVar[dict[str, int]]
     i2c: ClassVar[dict[str, tuple[int, str]]]
     spi: ClassVar[dict[str, tuple[int, str]]]
+    led_enable: ClassVar[tuple[int, str, str]]
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        """Parse pins.rs once; warns when an overridden pins file is used."""
+        if PINS_RS != DEFAULT_PINS_RS:
+            print(f"WARNING: using overridden pins file {PINS_RS}", file=sys.stderr)
+        source = PINS_RS.read_text()
+        cls.buttons = parse_buttons(source)
+        cls.i2c = _bus(source, "I2CPins")
+        cls.spi = _bus(source, "SPIPins")
+        cls.led_enable = parse_led_enable(source)
+
+    def test_header_table_is_a_complete_forty_pin_header(self) -> None:
+        self.assertEqual(set(HEADER_TO_BCM), {str(n) for n in range(1, 41)})
+        bcm = [v for v in HEADER_TO_BCM.values() if v is not None]
+        self.assertEqual(sorted(bcm), list(range(28)))
+
+    def test_enum_pins_agree_with_the_golden_header_table(self) -> None:
+        for pin in RaspberryPiHeaderPin:
+            if "GPIO" in pin.name:
+                expected = int(pin.name.rsplit("GPIO", maxsplit=1)[1])
+                with self.subTest(pin=pin.name):
+                    self.assertEqual(HEADER_TO_BCM[pin.value], expected)
+        self.assertEqual(HEADER_TO_BCM[RaspberryPiHeaderPin.I2C_SDA.value], SDA_GPIO)
+        self.assertEqual(HEADER_TO_BCM[RaspberryPiHeaderPin.I2C_SCL.value], SCL_GPIO)
+
+    def test_every_button_uses_the_gpio_the_board_wires(self) -> None:
+        board = {b.name: b for b in PANEL_BUTTONS}
+        self.assertEqual(set(self.buttons), set(board))
+        for name, bcm in self.buttons.items():
+            with self.subTest(button=name):
+                self.assertEqual(HEADER_TO_BCM[board[name].header_pin.value], bcm)
+                self.assertEqual(board[name].gpio, bcm)
+
+    def test_i2c_and_spi_use_the_gpio_the_board_wires(self) -> None:
+        expected = {
+            ("i2c", "data"): (RaspberryPiHeaderPin.I2C_SDA, SDA_GPIO),
+            ("i2c", "clock"): (RaspberryPiHeaderPin.I2C_SCL, SCL_GPIO),
+            ("spi", "data"): (RaspberryPiHeaderPin.SPI_DATA_GPIO10, SPI_DATA_GPIO),
+            ("spi", "clock"): (RaspberryPiHeaderPin.SPI_CLOCK_GPIO11, SPI_CLOCK_GPIO),
+        }
+        firmware = {
+            ("i2c", "data"): self.i2c["data"][0],
+            ("i2c", "clock"): self.i2c["clock"][0],
+            ("spi", "data"): self.spi["data"][0],
+            ("spi", "clock"): self.spi["clock"][0],
+        }
+        for key, (header_pin, wiring_gpio) in expected.items():
+            with self.subTest(signal=key):
+                self.assertEqual(HEADER_TO_BCM[header_pin.value], firmware[key])
+                self.assertEqual(wiring_gpio, firmware[key])
+
+    def test_no_signal_is_missing_or_extra_on_either_side(self) -> None:
+        firmware = [
+            *self.buttons.values(),
+            self.i2c["data"][0],
+            self.i2c["clock"][0],
+            self.spi["data"][0],
+            self.spi["clock"][0],
+            self.led_enable[0],
+        ]
+        self.assertEqual(len(firmware), len(set(firmware)), "duplicate firmware GPIO")
+        self.assertEqual(len(ASSIGNED_GPIO), len(set(ASSIGNED_GPIO)))
+        self.assertEqual(set(firmware), set(ASSIGNED_GPIO))
+        self.assertEqual(len(firmware), 17)
+
+    def test_led_enable_is_the_boards_active_high_default_low_output(self) -> None:
+        self.assertEqual(RaspberryPiHeaderPin.LED_EN_GPIO26.value, LED_EN_HEADER_PIN)
+        self.assertEqual(HEADER_TO_BCM[LED_EN_HEADER_PIN], LED_EN_BCM)
+        self.assertEqual(LED_EN_GPIO, LED_EN_BCM)
+        self.assertEqual(self.led_enable, (LED_EN_BCM, "Output", "Low"))
+
+    def test_buses_sit_on_their_peripheral_alternate_functions(self) -> None:
+        self.assertEqual(self.i2c["data"][0], I2C1_SDA)
+        self.assertEqual(self.i2c["clock"][0], I2C1_SCL)
+        self.assertEqual(self.spi["data"][0], SPI0_MOSI)
+        self.assertEqual(self.spi["clock"][0], SPI0_SCLK)
+
+    def test_pin_capabilities_match_signal_direction(self) -> None:
+        self.assertEqual({self.i2c["data"][1], self.i2c["clock"][1]}, {"InputOutput"})
+        self.assertEqual({self.spi["data"][1], self.spi["clock"][1]}, {"Output"})
+
+
+if __name__ == "__main__":
+    unittest.main()
