@@ -108,6 +108,29 @@ def _add_text(
     label.SetTextSize(pcbnew.VECTOR2I(pcbnew.FromMM(height), pcbnew.FromMM(height)))
     label.SetTextThickness(pcbnew.FromMM(rules.SILK_LINE_MM))
     board.Add(label)
+    return label
+
+
+def _label_beside_chain_end(board: pcbnew.BOARD) -> None:
+    """Sit the end label left of the last LED's actual pads, clear of their mask."""
+    end = dimensions.BOARD_SQUARES.led_chain[-1].name
+    led = next(
+        f
+        for f in native.parts(board)
+        if f.GetFieldText("PartKey") == "SK9822" and f.GetFieldText("Square") == end
+    )
+    pads = [p.GetBoundingBox() for p in led.Pads()]
+    left = min(box.GetLeft() for box in pads)
+    label = _add_text(board, "LED CHAIN END", (0.0, 0.0), height=0.8)
+    box = label.GetBoundingBox()
+    gap = pcbnew.FromMM(CHAIN_END_LABEL_GAP_MM)
+    at = label.GetPosition()
+    label.SetPosition(
+        pcbnew.VECTOR2I(
+            at.x + left - gap - box.GetRight(),
+            at.y + led.GetPosition().y - (box.GetTop() + box.GetBottom()) // 2,
+        )
+    )
 
 
 def add_front_silkscreen(board: pcbnew.BOARD) -> None:
@@ -119,15 +142,18 @@ def add_front_silkscreen(board: pcbnew.BOARD) -> None:
         (116.0, -165.0),
         height=1.5,
     )
-    _add_text(board, "J3 5V CENTER +", (-144.0, -193.5))
-    _add_text(board, "F1 2A MAX", (-137.0, -171.0))
-    _add_text(board, "SW13 POWER", (-113.0, -181.5))
-    _add_text(board, "J2: GND 3V3 SCL SDA", (-95.0, -165.0), height=0.9)
-    _add_text(board, "D1 K=+5V", (-150.0, -159.5), height=0.9)
+    _add_text(board, "J4: 1 DC-IN 2 GND 3 FUSED 4 RUN", (-105.0, 125.9), height=0.8)
+    # Labels follow their parts: below F1, above D1 and J2 (clear of pads).
+    for reference, text, (dx, dy) in (
+        ("F1", "F1 2A FAST", (0.0, -3.4)),
+        ("D1", "D1 TVS", (0.0, 2.6)),
+        ("J2", "J2 OLED: 1 GND 2 3V3 3 SCL 4 SDA", (0.0, 4.1)),
+    ):
+        x, y = shared.PCB_STRIP_PLACEMENTS[reference].centre_mm
+        _add_text(board, text, (x + dx, y + dy), height=0.8)
     _add_text(board, "U5  SPI 3V3 -> LED 5V", (-30.0, -181.0), height=0.8)
-    _add_text(board, "R1/R2 I2C PULL-UPS", (-68.0, -166.0), height=0.8)
     _add_text(board, "LED DATA + CLK IN", (-127.0, -118.0), height=0.8)
-    _add_text(board, "LED CHAIN END", (146.0, 151.0), height=0.8)
+    _label_beside_chain_end(board)
 
     for square in shared.BOARD_SQUARES:
         name = square.name

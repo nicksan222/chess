@@ -1,4 +1,16 @@
-"""Hierarchical KiCad schematic rendering from the native board."""
+"""Hierarchical KiCad schematic rendering from the native board.
+
+Role: writes the human-readable schematic for review. It is *derived* from the
+native board (footprints, their `Assembly` field and actual pad-to-net assignment);
+nothing here is a source of connectivity. Output is an overview sheet plus one sheet
+per subsystem (power, controls, and one per Hall bank which also holds that bank's
+squares), a generated symbol library and a `sym-lib-table`. Nets are shown with
+global labels on each pin rather than drawn wires, so a sheet is a pin-by-pin
+net listing that KiCad can ERC and cross-check against the PCB.
+
+Everything is deterministic (UUIDs come from `symbols.uid`) so regenerating an
+unchanged design yields identical files. Never hand-edit the generated output.
+"""
 
 from __future__ import annotations
 
@@ -21,17 +33,25 @@ from shared import dimensions
 from shared.components import COMPONENTS
 from shared.electronics import Endpoint
 
+# Layout of symbols on a sheet, in schematic mm (KiCad grid is 1.27 mm): up to
+# four symbols per row.
 SYMBOL_COLUMNS = 4
 
+# Horizontal distance between symbol columns, wide enough for the net labels.
 SYMBOL_COLUMN_PITCH_MM = 48.26
 
+# Extra vertical space between rows, beyond the symbols' own heights.
 SYMBOL_ROW_GAP_MM = 10.16
 
 
 def connectivity(
     design: pcbnew.BOARD,
 ) -> tuple[dict[Endpoint[str], str], set[Endpoint[str]]]:
-    """Index schematic endpoints through the shared validated connection graph."""
+    """Index schematic endpoints through the shared validated connection graph.
+
+    Returns (net name per endpoint, endpoints marked no-connect). Pads whose net
+    starts with "unconnected-" are the deliberate no-connects from `no_connect()`.
+    """
     nets: dict[Endpoint[str], str] = {}
     no_connects: set[Endpoint[str]] = set()
     for name, endpoints in connections(design).items():
@@ -43,7 +63,13 @@ def connectivity(
 
 
 def row_centres(pin_counts: list[int]) -> list[float]:
-    """Space symbol rows according to their tallest neighbouring members."""
+    """Space symbol rows according to their tallest neighbouring members.
+
+    Takes the pin count of each placed symbol (in slot order) and returns each
+    row's centre y. A symbol is 2.54 mm per pin tall, so spacing by the tallest
+    symbol per row keeps the 40-pin header clear without making rows of two-pin
+    parts huge.
+    """
     if not pin_counts:
         return []
     row_pin_counts = [
@@ -59,7 +85,14 @@ def row_centres(pin_counts: list[int]) -> list[float]:
 def render_sheet(
     design: pcbnew.BOARD, members: tuple[pcbnew.FOOTPRINT, ...], sheet: str
 ) -> str:
-    """Compose a deterministic sheet without reading or writing board artifacts."""
+    """Compose a deterministic sheet without reading or writing board artifacts.
+
+    `members` are the footprints on this sheet in display order and `sheet` its
+    name (used to derive UUIDs). Steps: header and title block; library symbols;
+    slot assignment (one column/row per symbol, new assembly starts a new row);
+    row headings; then each symbol with a global label or no-connect per pin.
+    """
+    # Connectivity is read from the board's pads, so labels cannot disagree with it.
     nets, no_connects = connectivity(design)
     placed = members
     lines = [
@@ -96,7 +129,8 @@ def render_sheet(
         )
     lines.append("  )")
 
-    # A repeated square occupies one complete row. A two-part bank header must
+    # Assign each footprint a (row, column) slot. A repeated square occupies one
+    # complete row. A two-part bank header must
     # not push half the following square onto a different row.
     slots: dict[str, int] = {}
     slot = 0
@@ -104,6 +138,7 @@ def render_sheet(
     counts: list[int] = []
     headings: dict[int, str] = {}
     for component in members:
+        # Start a new row whenever the assembly changes, and record its heading.
         if component.GetFieldText("Assembly") != previous_assembly:
             slot = ((slot + SYMBOL_COLUMNS - 1) // SYMBOL_COLUMNS) * SYMBOL_COLUMNS
             headings[slot // SYMBOL_COLUMNS] = component.GetFieldText("Assembly")
@@ -113,6 +148,7 @@ def render_sheet(
         counts[slot] = len(layouts[component.GetReference()][0])
         slot += 1
     row_y_positions = row_centres(counts)
+    # One bold heading above each assembly's row (e.g. "square/A1").
     for row, heading in headings.items():
         height = max(counts[row * SYMBOL_COLUMNS : (row + 1) * SYMBOL_COLUMNS]) * 1.27
         lines.extend(
@@ -134,6 +170,9 @@ def render_sheet(
         # many-metre-tall schematic.
         x = 25.4 + column * SYMBOL_COLUMN_PITCH_MM
         y = row_y_positions[row]
+        # Each pin gets either a no-connect flag or a global label with its net name.
+        # The label sits at the pin end (5.08 mm left of the symbol), so two pins on
+        # the same net are connected by name, and labels line up with the pin rows.
         for pad_index, (pad, offset) in enumerate(zip(pads, offsets, strict=True)):
             logical = logical_pin(pad)
             endpoint_x, endpoint_y = x - 5.08, y - offset
@@ -172,6 +211,7 @@ def render_sheet(
                 f"/{ROOT_UUID}/{uid('sheet:' + sheet)}",
             )
         )
+    # Single-page sheet bookkeeping required by KiCad's file format.
     lines.extend(
         [
             "  (sheet_instances",
@@ -192,8 +232,14 @@ def pin_roles(
     Supply/connector terminals remain passive: ERC does not model the external
     regulator, switch or fuse as an ideal voltage source. Active signal directions
     are checked, including open-drain Hall outputs and input-only expander ports.
+
+    Returns {physical pad number: (symbol pin name, ERC pin type)}. Types are keyed
+    on the part key and the typed pin name from `shared.electronics`; a pin not
+    listed stays "passive". Choosing a wrong direction would hide real wiring
+    mistakes (or raise false ERC errors), so change these only with the datasheet.
     """
     roles: dict[str, tuple[str, str]] = {}
+    # Resolve the typed pin model so names come from datasheet roles, not pad numbers.
     model = PCB_PARTS[component.GetFieldText("PartKey")].new_model(
         component.GetReference()
     )
