@@ -34,14 +34,18 @@ class DrawingView(Enum):
 class PcbPart[Part: EndpointResolver]:
     """One approved product's logical model, land pattern, and display defaults."""
 
-    spec: ComponentSpec
-    model: Callable[[str], Part]
-    template: pcbnew.FOOTPRINT
-    library: str
-    nominal_value: str
-    default_purpose: str
+    spec: ComponentSpec  # Approved product: MPN, package, body, datasheet.
+    model: Callable[[str], Part]  # Pin model class; called with a reference designator.
+    template: pcbnew.FOOTPRINT  # Native footprint copied for each placement.
+    library: str  # Short library label stored on the footprint.
+    nominal_value: str  # Default displayed value; placement may override.
+    default_purpose: str  # Default role text; placement may override.
+    drawing_view: DrawingView  # Side the land drawing is seen from (bottom flips).
 
     def __post_init__(self) -> None:
+        # Three guards: display text present; the template's Package field equals the
+        # approved product's package (wrong footprint for the part); and the pin model
+        # actually supports this product key (wrong pinout for the part).
         if not all((self.library, self.nominal_value, self.default_purpose)):
             raise ValueError(f"{self.spec.key}: PCB display defaults must not be empty")
         if self.template.GetFieldText("Package") != self.spec.package:
