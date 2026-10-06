@@ -87,34 +87,61 @@ not measurements.
 - **Not modelled:** the eFuse vendor model and its thermal shutdown. Start-up limiting,
   the breaker, the fast trip and the auto-retry are simulated from the datasheet; how long
   it limits before thermal shutdown is a bench item.
-The suppressor and the fuse work as a pair. A spike is clamped; a reverse-polarity
-or over-voltage supply makes the suppressor conduct hard enough to open the fuse
-rather than letting the mistake reach the Pi. That pairing is why the board needs
-no series protection diode, which at four amps would have to dissipate watts.
 
 ## Current budget
 
 | Load | Draw |
 |---|---|
-| 64 SK9822 at unrestricted full white | about 3.84 A |
-| Raspberry Pi Zero 2 W | about 0.4 A |
-| Four expanders and the buffer | under 0.05 A |
+| 64 SK9822-A at unrestricted full white (budgeted at 18 mA per channel) | 3.97 A including the host (above the 2 A supply and fuse) |
+| Raspberry Pi Zero 2 W | about 0.4 A (included above) |
+| Eight expanders and the buffer | small; not separately budgeted |
 
-That is roughly 4.3 A worst case against the approved 6 A supply. In normal use it sits well
-under 1.5 A, because SK9822 carries a five-bit brightness field per LED and the
-host caps it. Capping brightness is therefore part of the protocol rather than
-something the application has to remember.
+Full white is therefore not allowed. `hardware/pcb/definition/manufacturing.json`
+sets the approved LED limit at a global brightness of 3/31 (the SK9822-A has a
+five-bit brightness field per LED), and `tests/board/test_power_budget.py` checks that
+limit against the 2 A supply and fuse ratings. Capping brightness is part of the
+protocol, not something the application has to remember.
 
-Pour generous 5 V and ground copper and place the bulk capacitor centrally in the
-array, so the rail is injected across the entire playing area instead of being fed
-through the chain. On a single board that costs nothing; the wiring harness of
-revision A is what made power injection a problem worth documenting.
+Copper is sized for the 2 A fuse rating: input traces are 1.5 mm and each plane entry
+is checked at 2 A (IPC-2221 steady state, 10 °C rise, `tests/board/test_ampacity.py`).
+A resistor-mesh SPICE model of the +5V and ground planes puts the worst-LED drop at
+1.44 mV at the approved limit and 7.9 mV at full white against a 50 mV budget
+(`tests/spice/plane_mesh.py`). These are calculations and simulations, not
+measurements.
 
-## Do not double-feed the Pi
+The protection analysis above covers supply-to-Pi voltage, inrush against the fuse's
+I²t and the fault cases. Until the bench items below are done, the power path is not
+qualified.
 
-Power the board from the barrel jack only. The Pi takes its 5 V through the
-header, so also connecting its micro-USB port puts two supplies in opposition
-across the same rail.
+## LED rail switch
+
+The LEDs are **off at boot**. A 100 kΩ pull-down holds `LED_EN` (BCM 26, header
+pin 37) low, which keeps Q1 off. The 74AHCT125 buffer's outputs are high-impedance
+until the LED rail is up: a TI SN74LVC1G97 (U75) combines the switch's gate and enable
+signals into the buffer's output enables, so the buffer cannot drive the LED inputs
+early, and it disables the outputs within about 1 µs when the rail switches off. While the buffer
+is off, 10 kΩ pull-downs (R17/R18) hold the first LED's data and clock inputs low. Without
+the switch a chain left in a lit state would draw about 4 A at power-up, which trips the
+eFuse (immediately into 1.8-2.2 A limiting, or by the breaker within 1.6 ms). The firmware contract (`hardware/shared/electronics/sk9822.py`):
+
+1. Set `LED_EN` high.
+2. Stream **blank frames for at least 10 ms** (the blanking period). The buffer passes
+   them to the LEDs about 2-3 ms after `LED_EN` rises (simulated 1.78-3.05 ms, with the
+   LED rail at 4.6 V or more by then); frames sent earlier are dropped. Then send
+   normal frames.
+3. To switch off, send a blank frame, then take `LED_EN` low.
+
+SPI clock at most 10 MHz. Frame: 32 zero bits, per LED `111` + 5-bit brightness then
+Green, Red, Blue bytes (the SK9822-A order), then an end frame of `max(32, ceil(N/2))`
+one bits for N LEDs. The simulation gives the LED rail a 10-90 % rise of about 0.95 ms
+with a blanked chain, and a 0.56 A input peak. **A chain that powers up lit is not safe**:
+in simulation `+5V` falls below the Pi's 4.63 V within about 3 ms, whichever way the
+eFuse trips, which makes the board boot-loop. That residual is recorded as an assumption; bench it by enabling an
+uninitialised chain. With the buffer held off, the LED data and clock inputs stay within
+0.12 V of the LED rail in simulation (including the buffer's maximum off-state leakage;
+limit 0.3 V above it) and within 25 mV of ground while the buffer is off.
+
+## Never power the Pi from its own USB while it is fitted
 
 This is deliberately a documented constraint rather than a circuit. An ideal-diode
 input selector would cost more complexity than the mistake is worth on a
