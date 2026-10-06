@@ -673,44 +673,11 @@ class BoardHarness:
             datasheets.SK9822_STATIC_AMPS
             + 3 * datasheets.SK9822_CHANNEL_AMPS_MAX * float(brightness)
         )
-
-    def _power(self, full_white: bool) -> str:
-        dc_input, dc_fused, five_volts = self._power_path_nets()
-        input_node = _node(dc_input)
-        fused_node = _node(dc_fused)
-        rail_node = _node(five_volts)
-        load = self.power_current(full_white=full_white)
-        fuse_rating = float(self._component_value("FUSE_2A").split()[0])
-        overloaded = load > fuse_rating
-        name = "full-white" if full_white else "approved"
-        lines = [
-            f"Generated chess-board {name} power load",
-            (
-                f"* EXPECT result_current "
-                f"{load - BOARD_POWER.current_tolerance_amps} "
-                f"{load + BOARD_POWER.current_tolerance_amps}"
-            ),
-            (
-                f"* EXPECT result_5v {BOARD_POWER.overloaded_rail.minimum} "
-                f"{BOARD_POWER.overloaded_rail.maximum}"
-                if overloaded
-                else f"* EXPECT result_5v {BOARD_POWER.healthy_rail.minimum} "
-                f"{BOARD_POWER.healthy_rail.maximum}"
-            ),
-            f"VINPUT {input_node} 0 {BOARD_POWER.supply_volts}",
-            f"RFUSE {input_node} {fused_node} {BOARD_POWER.path_ohms / 2}",
-            f"RSWITCH {fused_node} {rail_node} {BOARD_POWER.path_ohms / 2}",
-            f"ILOAD {rail_node} 0 {load}",
-            ".tran 1u 10u",
-            f".meas tran result_5v FIND v({rail_node}) AT=5u",
-            ".meas tran input_current FIND i(VINPUT) AT=5u",
-            ".meas tran result_current PARAM='-input_current'",
-            ".end",
-        ]
-        return "\n".join(lines) + "\n"
+        return datasheets.HOST_AND_LOGIC_AMPS + len(leds) * each
 
     @staticmethod
     def _circuit(source: str) -> SpiceCircuit:
+        """Turn circuit text into a `SpiceCircuit`: the first line is the title, `* EXPECT result_...` lines become assertions."""
         title, *rows = source.rstrip().splitlines()
         circuit = SpiceCircuit(title)
         for row in rows:
@@ -733,25 +700,13 @@ class BoardHarness:
         return circuit
 
     def movement(self, case: MovementCase) -> SpiceCircuit:
+        """Circuit for one chronological piece-movement case."""
         return self._circuit(self._movement(case))
 
-    def all_squares(self) -> SpiceCircuit:
-        return self._circuit(self._all_squares())
-
-    def level_shifter(self) -> SpiceCircuit:
-        return self._circuit(self._level_shifter())
-
     def open_drain_inputs(self) -> SpiceCircuit:
+        """Circuit for the Hall inputs and I2C open-drain buses."""
         return self._circuit(self._open_drain_inputs())
 
     def buttons(self) -> SpiceCircuit:
+        """Circuit for the twelve panel buttons, each built from its pad geometry."""
         return self._circuit(self._buttons())
-
-    def power(self, *, full_white: bool = False) -> SpiceCircuit:
-        return self._circuit(self._power(full_white))
-
-    def power_off(self) -> SpiceCircuit:
-        return self._circuit(self._power_off())
-
-    def power_startup(self) -> SpiceCircuit:
-        return self._circuit(self._power_startup())
