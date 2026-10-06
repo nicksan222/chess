@@ -3,6 +3,7 @@
 from .ahct125 import Ahct125Component, Ahct125Pin
 from .barrel_jack import BarrelJackComponent, BarrelJackPad, BarrelJackPin
 from .base import (
+    RETIRED_REFERENCES,
     BoundPin,
     ComponentPin,
     ComponentReference,
@@ -11,7 +12,16 @@ from .base import (
     EndpointResolver,
 )
 from .connectors import OledHeaderComponent, OledHeaderPin
+from .efuse import EfuseComponent, EfusePin
 from .hall_sensor import HallSensorComponent, HallSensorPin
+from .mosfet import (
+    LogicGateComponent,
+    LogicGatePin,
+    PowerMosfetComponent,
+    PowerMosfetPin,
+    SmallMosfetComponent,
+    SmallMosfetPin,
+)
 from .passives import (
     CapacitorComponent,
     CapacitorPin,
@@ -24,6 +34,7 @@ from .passives import (
     TvsDiodeComponent,
     TvsDiodePin,
 )
+from .power_header import PowerHeaderComponent, PowerHeaderPin
 from .raspberry_pi_header import (
     HeaderLegend,
     HeaderLegendEntry,
@@ -40,6 +51,7 @@ from .tca9554 import Tca9554Component, Tca9554Pin
 from .test_point import TestPointComponent, TestPointPin
 
 __all__ = (
+    "RETIRED_REFERENCES",
     "Ahct125Component",
     "Ahct125Pin",
     "BarrelJackComponent",
@@ -50,6 +62,8 @@ __all__ = (
     "CapacitorPin",
     "ComponentPin",
     "ComponentReference",
+    "EfuseComponent",
+    "EfusePin",
     "ElectronicComponent",
     "Endpoint",
     "EndpointResolver",
@@ -59,8 +73,14 @@ __all__ = (
     "HallSensorPin",
     "HeaderLegend",
     "HeaderLegendEntry",
+    "LogicGateComponent",
+    "LogicGatePin",
     "OledHeaderComponent",
     "OledHeaderPin",
+    "PowerHeaderComponent",
+    "PowerHeaderPin",
+    "PowerMosfetComponent",
+    "PowerMosfetPin",
     "PowerSwitchComponent",
     "PowerSwitchPin",
     "RaspberryPiHeaderComponent",
@@ -69,6 +89,8 @@ __all__ = (
     "ResistorPin",
     "Sk9822Component",
     "Sk9822Pin",
+    "SmallMosfetComponent",
+    "SmallMosfetPin",
     "TactileSwitchComponent",
     "TactileSwitchPad",
     "TactileSwitchPin",

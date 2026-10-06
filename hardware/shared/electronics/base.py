@@ -28,7 +28,9 @@ class BoundPin(Protocol):
     """A component pin bound to a concrete reference."""
 
     @property
-    def endpoint(self) -> Endpoint[str]: ...
+    def endpoint(self) -> Endpoint[str]:
+        """The (reference, pin) pair this pin stands for."""
+        ...
 
 
 class EndpointResolver(Protocol):
@@ -37,13 +39,21 @@ class EndpointResolver(Protocol):
     reference: str
 
     @property
-    def pins(self) -> tuple[BoundPin, ...]: ...
+    def pins(self) -> tuple[BoundPin, ...]:
+        """Every pin of the component, bound to its reference."""
+        ...
 
-    def supports_part_key(self, part_key: str) -> bool: ...
+    def supports_part_key(self, part_key: str) -> bool:
+        """True if this model is the right pin model for the product `part_key`."""
+        ...
 
-    def resolve_endpoint(self, number: str) -> Endpoint[str]: ...
+    def resolve_endpoint(self, number: str) -> Endpoint[str]:
+        """The endpoint for a serialized pin number; raises KeyError if there is no such pin."""
+        ...
 
-    def bind_pin(self, number: str) -> BoundPin: ...
+    def bind_pin(self, number: str) -> BoundPin:
+        """Bind a serialized pin number to this component (validated at the input boundary)."""
+        ...
 
 
 @dataclass(frozen=True)
@@ -55,6 +65,7 @@ class ComponentPin(Generic[PinType]):  # noqa: UP046
 
     @property
     def endpoint(self) -> Endpoint[PinType]:
+        """The (reference, pin) pair for this component's pin."""
         return Endpoint(self.component.reference, self.definition)
 
 
@@ -63,11 +74,18 @@ class ComponentReference(StrEnum):
 
     HOST_GPIO_HEADER = "J1"
     DISPLAY_HEADER = "J2"
-    DC_INPUT_JACK = "J3"
+    POWER_ENTRY_HEADER = "J4"
     INPUT_FUSE = "F1"
     INPUT_TVS = "D1"
-    MAIN_POWER_SWITCH = "SW13"
     LED_LEVEL_SHIFTER = "U5"
+    INPUT_EFUSE = "U74"
+    LED_DATA_TERMINATION = "R9"
+
+
+# References of parts that left the board (S3a: panel jack and rocker are wired to
+# J4). They are never reused for another part.
+# S5: R1/R2 (I2C pull-ups) left the board; the Pi's own 1.8 kOhm pull-ups remain.
+RETIRED_REFERENCES = frozenset({"J3", "SW13", "R1", "R2"})
 
 
 class ElectronicComponent(Generic[PinType]):  # noqa: UP046
@@ -87,12 +105,15 @@ class ElectronicComponent(Generic[PinType]):  # noqa: UP046
 
     @classmethod
     def supports_part_key(cls, part_key: str) -> bool:
+        """True if one of the model's approved products has this key (`PcbPart` uses it to reject a wrong pin model)."""
         return any(spec.key == part_key for spec in cls.specs)
 
     def get_pins(self) -> tuple[PinType, ...]:
+        """All pins of the component's pin enum, in declaration order."""
         return tuple(self.pin_type)
 
     def get_pin(self, pin: PinType) -> PinType:
+        """Return `pin` after checking it belongs to this component's enum (so a pin of another part cannot be used by mistake)."""
         if not isinstance(pin, self.pin_type):
             raise TypeError(
                 f"{self.reference} expects {self.pin_type.__name__}, "
@@ -101,12 +122,14 @@ class ElectronicComponent(Generic[PinType]):  # noqa: UP046
         return pin
 
     def get_pin_by_number(self, number: str) -> PinType:
+        """The enum pin for a serialized number (e.g. from a netlist); raises KeyError if there is none."""
         try:
             return self.pin_type(number)
         except ValueError as error:
             raise KeyError(f"{self.reference} has no logical pin {number!r}") from error
 
     def pin(self, pin: PinType) -> ComponentPin[PinType]:
+        """Bind a typed pin to this component's reference, for use in `connect()`."""
         return ComponentPin(self, self.get_pin(pin))
 
     def bind_pin(self, number: str) -> ComponentPin[PinType]:
@@ -115,10 +138,13 @@ class ElectronicComponent(Generic[PinType]):  # noqa: UP046
 
     @property
     def pins(self) -> tuple[ComponentPin[PinType], ...]:
+        """Every pin bound to this component."""
         return tuple(self.pin(pin) for pin in self.get_pins())
 
     def endpoint(self, pin: PinType) -> Endpoint[PinType]:
+        """The (reference, pin) endpoint of a typed pin."""
         return self.pin(pin).endpoint
 
     def resolve_endpoint(self, number: str) -> Endpoint[PinType]:
+        """The endpoint for a serialized pin number."""
         return self.endpoint(self.get_pin_by_number(number))
