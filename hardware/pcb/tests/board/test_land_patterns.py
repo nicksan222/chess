@@ -491,5 +491,97 @@ GOLDEN = (
     ),
     LandPattern(
         "POWER_HEADER",
-    )
+        "B4PS-VH",
+        "VH 4P side entry THT",
+        # JST VH catalogue p3 (side entry B4PS-VH: B 15.78, 10.9 deep, 8.5 high) and
+        # p4 layout (viewed from the mounting side): four Ø1.65 (+0.1) holes at 3.96,
+        # circuit 1 left, plug from -Y. Origin at the body centre, holes 4.45 above
+        # (body from about 1 mm behind the hole row; ASSUMPTION "PTH copper rings").
+        "JST VH catalogue p3-p4",
+        ((15.7, 15.9), (10.8, 11.0), (8.4, 8.6)),
+        (
+            LandPad("1", "1", "DC_INPUT", None, (-5.94, 4.45), None, (1.65, 1.65)),
+            LandPad("2", "2", "GROUND", "GND", (-1.98, 4.45), None, (1.65, 1.65)),
+            LandPad(
+                "3", "3", "FUSED_TO_SWITCH", None, (1.98, 4.45), None, (1.65, 1.65)
+            ),
+            LandPad("4", "4", "RUN", None, (5.94, 4.45), None, (1.65, 1.65)),
+        ),
+        polarity_pad="1",
+    ),
+    # S4b eFuse bias and S5 R9 parts on the cited 0603 lands above (same EIA size, same
+    # makers' tables; Yageo RT thin film uses the same chip-resistor mounting).
+    *(
+        LandPattern(
+            key,
+            mpn,
+            "0603 (1608 metric)",
+            "Yageo chip resistor mounting V.10 p4 Table 1",
+            None,
+            (
+                LandPad("1", "1", "TERMINAL_A", None, (-0.85, 0.0), (0.9, 0.8)),
+                LandPad("2", "2", "TERMINAL_B", None, (0.85, 0.0), (0.9, 0.8)),
+            ),
+        )
+        for key, mpn in (
+            ("RES_56", "RC0603FR-0756RL"),
+            ("RES_10K", "RC0603FR-0710KL"),
+            ("RES_100K", "RC0603FR-07100KL"),
+            ("RES_1K65", "RC0603FR-071K65L"),
+            ("RES_261K", "RC0603FR-07261KL"),
+            ("RES_604K_PRECISION", "RT0603BRD07604KL"),
+            ("RES_169K_PRECISION", "RT0603BRD07169KL"),
+        )
+    ),
+    *(
+        LandPattern(
+            key,
+            mpn,
+            "0603 (1608 metric)",
+            "Murata JEMCGC-2701X p25 Table 2",
+            None,
+            (
+                LandPad(
+                    "1", "1", "SUPPLY_OR_ELECTRODE_A", None, (-0.675, 0.0), (0.65, 0.7)
+                ),
+                LandPad(
+                    "2", "2", "RETURN_OR_ELECTRODE_B", None, (0.675, 0.0), (0.65, 0.7)
+                ),
+            ),
+        )
+        for key, mpn in (
+            ("CAP_10N", "CC0603KRX7R9BB103"),
+            ("CAP_1N", "CC0603KRX7R9BB102"),
+            ("CAP_1U", "CC0603KRX7R8BB105"),
+        )
+    ),
 )
+
+# Logical pin of a duplicated tactile-switch pad (pcb.definition.native.logical_pin).
+DUPLICATE_PADS = {"1b": "1", "2b": "2"}
+
+
+def _rotate(point: Point, degrees: int) -> Point:
+    """Rotate a Y-up datasheet coordinate counter-clockwise by a right angle."""
+    radians = math.radians(degrees)
+    x, y = point
+    return (
+        round(x * math.cos(radians) - y * math.sin(radians), 6),
+        round(x * math.sin(radians) + y * math.cos(radians), 6),
+    )
+
+
+def _rotate_size(size: Point, degrees: int) -> Point:
+    """Pad size as seen after a quarter-turn frame rotation (width and height swap when not a multiple of 180)."""
+    return (size[1], size[0]) if degrees % 180 else size
+
+
+def _datasheet_view(position: pcbnew.VECTOR2I) -> Point:
+    """Native template coordinates (Y down) as Y-up millimetres."""
+    return (pcbnew.ToMM(position.x), -pcbnew.ToMM(position.y))
+
+
+class LandPatternTest(unittest.TestCase):
+    """Compares the native templates and the placed board with the hand-typed datasheet rows."""
+
+    rails: ClassVar[dict[tuple[str, str], str]]
