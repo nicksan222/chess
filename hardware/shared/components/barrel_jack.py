@@ -1,4 +1,4 @@
-"""Approved barrel jack product."""
+"""Approved product: the rear-panel DC input jack (wired to J4, not on the PCB)."""
 
 from .spec import part
 

@@ -1,4 +1,4 @@
-"""Approved ahct125 product."""
+"""Approved product: SN74AHCT125DR quad buffer (LED data/clock level shifter, U5)."""
 
 from .spec import part
 
