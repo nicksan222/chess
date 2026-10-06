@@ -1,4 +1,10 @@
-"""Semantic PR-report comparisons."""
+"""Semantic PR-report comparisons.
+
+Role: tests for `pr_report.py` using small hand-written netlist/layout/copper data,
+so no KiCad, Git or generated files are needed. They check that real design changes
+are described in reviewer terms, and that an unchanged design is flagged so CI can
+suppress the comment.
+"""
 
 import json
 import tempfile
@@ -25,6 +31,9 @@ from pcb.pr_report import (
 
 class PullRequestReportTest(unittest.TestCase):
     def test_orders_copper_points_by_x_then_y(self):
+        # `CopperPoint` ordering is used to give track endpoints a canonical order
+        # (so a segment compares equal in either direction); dataclass order is
+        # x first, then y, and equal points tie.
         points = [
             CopperPoint(2.0, 0.0),
             CopperPoint(1.0, 3.0),

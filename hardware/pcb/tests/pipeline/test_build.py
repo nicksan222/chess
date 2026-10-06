@@ -169,3 +169,78 @@ class BuildTest(unittest.TestCase):
                 self.assertRaisesRegex(RuntimeError, "checks failed"),
             ):
                 build.native_checks(out)
+
+    def test_review_lists_every_residual_test_with_its_assumption(self):
+        # S6c (pushback-final): residual tests are named in review.md and the test
+        # count says how many of them there are.
+        from pcb.definition.verification import ASSUMPTIONS
+
+        residuals = dict(build.known_residuals())
+        self.assertEqual(
+            residuals,
+            {
+                "spice.test_led_switch.LedSwitchSpiceTest."
+                "test_enable_into_a_lit_chain_is_the_recorded_residual": (
+                    "LED power-up state"
+                ),
+                "spice.test_power.EfuseSpiceTest."
+                "test_running_supply_step_reaches_the_rail_until_ovlo_trips": (
+                    "OVLO filter"
+                ),
+                "spice.test_power.EfuseSpiceTest."
+                "test_ovlo_restart_is_a_latch_off_at_normal_supplies": "OVLO window",
+                "spice.test_power.EfuseSpiceTest."
+                "test_reversed_wrong_adapter_exceeds_the_bias_pin_limit": (
+                    "Reversed 12 V adapter"
+                ),
+            },
+        )
+        self.assertLessEqual(set(residuals.values()), set(ASSUMPTIONS))
+        lines = build.test_summary("Ran 140 tests in 40.0s\n", [build.TESTS_CHECK])
+        self.assertIn(
+            "- Passed: unit and SPICE tests (140 tests; 4 of them bound known "
+            "residuals, listed below)",
+            lines,
+        )
+        self.assertIn("## Known residuals", lines)
+        for test, name in residuals.items():
+            self.assertIn(f'- `{test}`: ASSUMPTION "{name}"', lines)
+
+    def test_residual_scan_reads_a_marked_test_from_source(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "pkg").mkdir()
+            (root / "pkg" / "test_x.py").write_text(
+                "class T:\n"
+                '    @residual("A")\n'
+                "    def test_a(self): ...\n"
+                "    def test_b(self): ...\n"
+            )
+            self.assertEqual(
+                build.known_residuals(root), [("pkg.test_x.T.test_a", "A")]
+            )
+
+    def test_every_runtime_residual_is_in_the_source_scan(self):
+        # Reviewer-s6c m4: the AST scan matches the decorator by name, so an aliased
+        # import would hide a residual from review.md. Load every test and compare
+        # the methods actually marked at runtime with the scan.
+        from spice.residuals import RESIDUAL_ATTRIBUTE
+
+        root = build.PCB_ROOT / "tests"
+        suite = unittest.defaultTestLoader.discover(
+            str(root), pattern="test_*.py", top_level_dir=str(root)
+        )
+        marked: set[str] = set()
+
+        def walk(item: unittest.TestSuite | unittest.TestCase) -> None:
+            if isinstance(item, unittest.TestSuite):
+                for child in item:
+                    walk(child)
+                return
+            method = getattr(type(item), item._testMethodName, None)
+            if getattr(method, RESIDUAL_ATTRIBUTE, None) is not None:
+                marked.add(item.id())
+
+        walk(suite)
+        self.assertTrue(marked)
+        self.assertEqual(marked, {test for test, _ in build.known_residuals()})
