@@ -231,3 +231,68 @@ class BoardContractTest(unittest.TestCase):
             self.assertEqual(self.endpoint_net[endpoint], "+5V")
         for endpoint in (("U75", "2"), ("C146", "2")):
             self.assertEqual(self.endpoint_net[endpoint], "GND")
+        for endpoint in (("R14", "2"), ("Q2", "2")):
+            self.assertEqual(self.endpoint_net[endpoint], "GND")
+        for endpoint in (("R15", "2"), ("Q1", "1"), ("Q1", "2"), ("Q1", "3")):
+            self.assertEqual(self.endpoint_net[endpoint], "+5V")
+        leds = [
+            r for r, part in self.components.items() if part["part_key"] == "SK9822"
+        ]
+        self.assertEqual(len(leds), 64)
+        for endpoint in (
+            ("Q1", "5"),
+            ("Q1", "6"),
+            ("Q1", "7"),
+            ("Q1", "8"),
+            ("C145", "2"),
+            *((led, "4") for led in leds),
+        ):
+            self.assertEqual(self.endpoint_net[endpoint], "LED_5V")
+
+    def test_input_protection_and_supply_polarity(self) -> None:
+        # Harness (S3a H1, S4b): jack tip -> J4.1 -> F1 -> DC_FUSED -> U74 IN; U74
+        # OUT is +5V (which also feeds the Pi header's 5 V pins); J4.3 -> rocker ->
+        # J4.4 RUN enables U74; jack sleeve -> J4.2 GND. Guards against a
+        # swapped-polarity, unfused or unprotected connection.
+        self.assertEqual(self.components["F1"]["part_key"], "FUSE_2A")
+        self.assertEqual(self.components["J4"]["part_key"], "POWER_HEADER")
+        self.assertEqual(self.components["U74"]["part_key"], "EFUSE")
+        self.assertEqual(self.components["D1"]["part_key"], "TVS_12V0")  # S6 D2
+        self.assert_net("DC_IN", ("J4", "1"), ("F1", "1"))
+        self.assert_net(
+            "DC_FUSED",
+            ("F1", "2"),
+            ("J4", "3"),
+            ("U74", "5"),
+            ("D1", "1"),
+            ("C141", "1"),
+            ("R4", "2"),
+        )
+        self.assert_net("RUN", ("J4", "4"), ("R6", "1"), ("R8", "1"))
+        self.assert_net("EFUSE_EN", ("U74", "1"), ("R6", "2"), ("R7", "1"))
+        # S4c: C144 filters OVLO; R4/R6 604k and R5 169k (0.1 %), R7 261k, R8 1k.
+        self.assert_net(
+            "EFUSE_OVLO",
+            ("U74", "2"),
+            ("U74", "4"),
+            ("R4", "1"),
+            ("R5", "1"),
+            ("C144", "1"),
+        )
+        for reference, key in (
+            ("R4", "RES_604K_PRECISION"),
+            ("R5", "RES_169K_PRECISION"),
+            ("R6", "RES_604K_PRECISION"),
+            ("R7", "RES_261K"),
+            ("R8", "RES_1K"),
+            ("C144", "CAP_10N"),
+            # S6d: 1 nF ITIMER, breaker blanking 0.46-1.6 ms (F1 pulse rule).
+            ("C143", "CAP_1N"),
+        ):
+            self.assertEqual(self.components[reference]["part_key"], key)
+        for endpoint in (("U74", "6"), ("J1", "2"), ("J1", "4")):
+            self.assertEqual(self.endpoint_net[endpoint], "+5V")
+        for endpoint in (("J4", "2"), ("D1", "2"), ("U74", "8"), ("C144", "2")):
+            self.assertEqual(self.endpoint_net[endpoint], "GND")
+        for retired in ("J3", "SW13", "R1", "R2"):
+            self.assertNotIn(retired, self.components)
