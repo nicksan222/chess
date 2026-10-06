@@ -226,3 +226,86 @@ def board_links(board: pcbnew.BOARD, harness: BoardHarness) -> list[Link]:
                     link.rows.append(f"Rser_{link.tag} {ends[0]} {ends[1]} {ohms}")
         links.append(link)
     return links
+
+
+@dataclass(frozen=True)
+class Drive:
+    """Driver corner: Thevenin resistance and 0-100 % ramp time."""
+
+    ohms: float
+    rise_ns: float
+
+
+def edge(
+    link: Link,
+    drive: Drive,
+    *,
+    vcc: float,
+    rising: bool,
+    peak_max: float | None = None,
+) -> SpiceCircuit:
+    """One driver edge on one link (links run alone: many unrelated line delays in
+    one deck multiply ngspice's breakpoints), with its limits as expectations.
+
+    peak <= VDD + 0.3 V (or `peak_max`) and trough >= -0.3 V (SK9822 §7 VIN);
+    `hold` stays past the far threshold; `settle` (ns from the edge start until the
+    last crossing of 90 % / 10 % of VDD) is at most half a §8 clock phase.
+    """
+    t = link.tag
+    start, end = (0.0, vcc) if rising else (vcc, 0.0)
+    receiver = link.node(link.pads[link.receiver])
+    circuit = SpiceCircuit(f"LED link {link.nets[0]}, {drive}, {vcc:g} V")
+    circuit.rows.extend(
+        (
+            *link.rows,
+            f"V{t} {t}_src 0 PULSE({start} {end} {EDGE_START_NS}n {drive.rise_ns}n 1n 100n 200n)",
+            f"Rdrv_{t} {t}_src {link.node(link.pads[link.driver])} {drive.ohms}",
+            f"Crx_{t} {receiver} 0 {datasheets.SK9822_INPUT_FARADS}",
+            f".tran 10p {END_NS}n",
+        )
+    )
+    fraction = (
+        datasheets.SK9822_VIH_FRACTION if rising else datasheets.SK9822_VIL_FRACTION
+    )
+    far = fraction * vcc
+    direction, extreme = ("RISE", "MIN") if rising else ("FALL", "MAX")
+    circuit.controls.extend(
+        (
+            f"meas tran cross WHEN v({receiver})={far} {direction}=1",
+            f"meas tran result_peak MAX v({receiver})",
+            f"meas tran result_trough MIN v({receiver})",
+            f"meas tran result_hold {extreme} v({receiver}) FROM=$&cross",
+            f"meas tran last WHEN v({receiver})={(0.9 if rising else 0.1) * vcc} CROSS=LAST",
+            f"let result_settle = (last - {EDGE_START_NS}n) * 1e9",
+            f"let result_arrival = (cross - {EDGE_START_NS}n) * 1e9",
+            "print result_settle",
+            "print result_arrival",
+        )
+    )
+    circuit.expect("settle", 0.0, SETTLE_NS)
+    margin = datasheets.SK9822_INPUT_ABSOLUTE_MARGIN
+    circuit.expect("peak", 0.0, vcc + margin if peak_max is None else peak_max)
+    circuit.expect("trough", -margin, vcc)
+    # 5 mV numerical allowance: `hold` starts exactly at the crossing.
+    if rising:
+        circuit.expect("hold", far - 0.005, vcc + margin)
+    else:
+        circuit.expect("hold", -margin, far + 0.005)
+    return circuit
+
+
+def setup_margin_ns(data_settle_ns: float, clock_arrival_ns: float) -> float:
+    """Data-to-clock setup at the receiver at the contract clock (reviewer m2).
+
+    Data changes at the driver's clock-low edge; the next rising clock leaves the
+    driver half a period later. The receiver needs the data settled (last 10/90 %
+    crossing, `edge` result `settle`) TSETUP before the clock crosses 0.7 x VDD
+    (`edge` result `arrival`). Links are simulated separately (their delays in one
+    deck multiply ngspice breakpoints).
+    """
+    return (
+        datasheets.SK9822_CLOCK_PHASE_NS
+        + clock_arrival_ns
+        - data_settle_ns
+        - datasheets.SK9822_SETUP_NS
+    )
