@@ -51,36 +51,27 @@ def add_strip[Part: EndpointResolver](
 
 
 def add_power(board: pcbnew.BOARD) -> None:
-    jack = add_strip(
-        board,
-        parts.BARREL_JACK_PART,
-        "J3",
-        assembly="power",
-    )
-    fuse = add_strip(
-        board,
-        parts.FUSE_2A_PART,
-        "F1",
-        assembly="power",
-    )
-    switch = add_strip(
-        board,
-        parts.POWER_SWITCH_PART,
-        "SW13",
-        assembly="power",
-    )
-    tvs = add_strip(
-        board,
-        parts.TVS_6V8_PART,
-        "D1",
-        assembly="power",
-    )
-    bulk = add_strip(
-        board,
-        parts.CAP_1000U_PART,
-        "C1",
-        assembly="power",
-        purpose="LED rail bulk capacitor",
+    """J4 brings the harness in; fuse, TVS and the U74 eFuse follow it.
+
+    Harness (interface H1, S4b): jack tip -> J4.1 DC_IN -> F1 -> DC_FUSED (U74 IN,
+    D1, C141, R4) and J4.3 -> rocker -> J4.4 RUN; jack sleeve -> J4.2 GND. RUN
+    (1k R8 wetting load) enables U74 through R6/R7 (604k/261k); OVLO from
+    DC_FUSED through R4/R5 (604k/169k, 0.1 %) with C144 10 nF filtering hot-plug
+    spikes (S4c); U74 OUT is the +5V rail.
+    """
+    header = add_strip(board, parts.POWER_HEADER_PART, "J4", assembly="power")
+    fuse = add_strip(board, parts.FUSE_2A_PART, "F1", assembly="power")
+    tvs = add_strip(board, parts.TVS_12V0_PART, "D1", assembly="power")
+    efuse = add_strip(board, parts.EFUSE_PART, "U74", assembly="power")
+    bulk = tuple(
+        add_strip(
+            board,
+            parts.CAP_560U_PART,
+            reference,
+            assembly="power",
+            purpose="LED rail bulk capacitor",
+        )
+        for reference in ("C1", "C140")
     )
     bypass = add_strip(
         board,
@@ -89,17 +80,50 @@ def add_power(board: pcbnew.BOARD) -> None:
         assembly="power",
         purpose="Rail decoupling capacitor",
     )
+    efuse_input = add_strip(
+        board, parts.CAP_1U_PART, "C141", assembly="power", purpose="eFuse input bypass"
+    )
+
+    def resistor(part: PcbPart[p.ResistorComponent], reference: str, purpose: str):
+        return add_strip(board, part, reference, assembly="power", purpose=purpose)
+
+    limit = resistor(parts.RES_1K65_PART, "R3", "eFuse current limit (ILM)")
+    ovlo_top = resistor(parts.RES_604K_PRECISION_PART, "R4", "OVLO divider, top")
+    ovlo_bottom = resistor(parts.RES_169K_PRECISION_PART, "R5", "OVLO divider, bottom")
+    enable_top = resistor(
+        parts.RES_604K_PRECISION_PART, "R6", "EN divider from RUN, top"
+    )
+    enable_bottom = resistor(parts.RES_261K_PART, "R7", "EN divider, bottom")
+    wetting = resistor(parts.RES_1K_PART, "R8", "Rocker contact wetting load")
+    ovlo_filter = add_strip(
+        board, parts.CAP_10N_PART, "C144", assembly="power", purpose="OVLO spike filter"
+    )
+    slew = add_strip(
+        board, parts.CAP_10N_PART, "C142", assembly="power", purpose="eFuse dVdt"
+    )
+    timer = add_strip(
+        board, parts.CAP_1N_PART, "C143", assembly="power", purpose="eFuse ITIMER"
+    )
+    a, b = p.ResistorPin.TERMINAL_A, p.ResistorPin.TERMINAL_B
+    supply, ground = (
+        p.CapacitorPin.SUPPLY_OR_ELECTRODE_A,
+        p.CapacitorPin.RETURN_OR_ELECTRODE_B,
+    )
     connect(
         board,
         "DC_IN",
-        jack.pin(p.BarrelJackPin.CENTRE_POSITIVE),
+        header.pin(p.PowerHeaderPin.DC_INPUT),
         fuse.pin(p.FusePin.UNFUSED_INPUT),
     )
     connect(
         board,
         "DC_FUSED",
         fuse.pin(p.FusePin.FUSED_OUTPUT),
-        switch.pin(p.PowerSwitchPin.FUSED_INPUT),
+        header.pin(p.PowerHeaderPin.FUSED_TO_SWITCH),
+        efuse.pin(p.EfusePin.INPUT),
+        tvs.pin(p.TvsDiodePin.PROTECTED_INPUT),
+        efuse_input.pin(supply),
+        ovlo_top.pin(b),
     )
     connect(
         board,
