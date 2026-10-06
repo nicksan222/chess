@@ -1,4 +1,17 @@
-"""Native board authoring, checked logical-pin assignment, and KiCad serialization."""
+"""Native board authoring, checked logical-pin assignment, and KiCad serialization.
+
+Role: the thin layer between this repo's typed part/pin contracts and KiCad's
+`pcbnew` API. Assemblies call `place()` to install an approved footprint and
+`connect()` to assign pads to nets; `new_board()` configures design rules from
+`rules.py`; `write_board()` saves the board, fills copper zones and exports the
+Specctra DSN (exported for optional external-router use or review; the
+build itself does not consume it). There is deliberately no second model of the
+board: connectivity is read back from the pads themselves (`connections()`).
+
+Coordinate convention: callers use shared board millimetres (origin at the playing
+area centre, Y up). KiCad uses an absolute page position with Y down, so `point()`
+is the only place that converts.
+"""
 
 from __future__ import annotations
 
@@ -10,17 +23,23 @@ import pcbnew
 
 from pcb.definition import rules
 from pcb.definition.output.symbols import ROOT_UUID, uid
-from pcb.definition.parts.part import PcbPart
+from pcb.definition.parts.part import DrawingView, PcbPart
 from pcb.definition.rules import Net
 from shared import dimensions, wiring
 from shared.electronics import BoundPin, Endpoint, EndpointResolver
 
+# Where the board's centre-origin (0, 0) lands on KiCad's page. The values are
+# arbitrary but must stay fixed: they place the board inside the page and feed the
+# geometry-derived UUIDs, so changing them moves everything in the generated files.
 ORIGIN_X_MM = 200.0
 ORIGIN_Y_MM = 220.0
 
 
 def point(x: float, y: float) -> pcbnew.VECTOR2I:
-    """Translate shared, centre-origin coordinates into KiCad coordinates."""
+    """Translate shared, centre-origin coordinates into KiCad coordinates.
+
+    Adds the page origin and flips Y (shared Y is up, KiCad Y is down).
+    """
     return pcbnew.VECTOR2I(
         pcbnew.FromMM(x + ORIGIN_X_MM), pcbnew.FromMM(ORIGIN_Y_MM - y)
     )
@@ -34,7 +53,11 @@ def add_trace(
     layer: int = pcbnew.F_Cu,
     width: float = rules.TRACE_WIDTH_MM,
 ) -> None:
-    """Add one exact point-to-point copper segment."""
+    """Add one exact point-to-point copper segment.
+
+    Used by routing code once it has chosen a path; no clearance checking happens
+    here (DRC does that), and `layer` is a pcbnew layer id.
+    """
     trace = pcbnew.PCB_TRACK(board)
     trace.SetStart(start)
     trace.SetEnd(end)
@@ -45,7 +68,11 @@ def add_trace(
 
 
 def add_via(board: pcbnew.BOARD, net: pcbnew.NETINFO_ITEM, at: pcbnew.VECTOR2I) -> None:
-    """Add one standard through-via at an exact position."""
+    """Add one standard through-via at an exact position.
+
+    Size comes from `rules` so every via is the same, matching the minimum via size
+    configured in `new_board()`.
+    """
     via = pcbnew.PCB_VIA(board)
     via.SetPosition(at)
     via.SetWidth(pcbnew.FromMM(rules.VIA_PAD_MM))
@@ -55,7 +82,13 @@ def add_via(board: pcbnew.BOARD, net: pcbnew.NETINFO_ITEM, at: pcbnew.VECTOR2I) 
 
 
 def _add_mounting_holes(board: pcbnew.BOARD) -> None:
-    """Add one plated-copper-free screw clearance over every case boss."""
+    """Add one plated-copper-free screw clearance over every case boss.
+
+    Positions come from the shared case dimensions so the PCB holes line up with
+    the enclosure supports. Each hole is a non-plated (NPTH) pad with no copper, plus
+    a courtyard square slightly larger than the hole to keep parts away from it. The
+    footprint is board-only: not in the BOM or the pick-and-place file.
+    """
     shared = dimensions
     diameter = shared.PCB_MOUNTING_HOLE_DIAMETER_MM
     for index, (x, y) in enumerate(shared.PCB_SUPPORT_POSITIONS_MM, 1):
@@ -97,6 +130,11 @@ def _add_mounting_holes(board: pcbnew.BOARD) -> None:
 
 
 def _add_outline(board: pcbnew.BOARD) -> None:
+    """Draw the rectangular board edge on Edge_Cuts.
+
+    The rectangle spans the playing area plus the front control strip: its top edge
+    is the playing area's top, and it extends downward by the full PCB height.
+    """
     width, height, _ = dimensions.PCB_SIZE_MM
     x0, x1 = (-width / 2, width / 2)
     y1 = dimensions.PLAYING_SPAN_MM / 2
@@ -113,7 +151,16 @@ def _add_outline(board: pcbnew.BOARD) -> None:
 
 
 def add_power_planes(board: pcbnew.BOARD) -> None:
-    """Add inset ground, 5 V, and 3.3 V zones on dedicated internal layers."""
+    """Add inset ground, 5 V, 3.3 V and LED 5 V zones on dedicated internal layers.
+
+    One full-board plane per rail (GND on In1, +5V on In2, +3V3 on In3, the switched
+    LED_5V on In6 since S6), inset 1 mm
+    from the outline so copper stays clear of the edge. Planes give power and ground
+    low-impedance distribution; signals route on the remaining layers. Zones are
+    only outlines here: `write_board()` fills them.
+    """
+    # Derive the inset rectangle from the drawn outline, not from dimensions, so the
+    # planes always follow whatever outline was actually added.
     edges = [
         item
         for item in board.GetDrawings()
@@ -133,6 +180,7 @@ def add_power_planes(board: pcbnew.BOARD) -> None:
         (Net.GROUND, pcbnew.In1_Cu),
         (Net.FIVE_VOLTS, pcbnew.In2_Cu),
         (Net.THREE_VOLTS_THREE, pcbnew.In3_Cu),
+        (Net.LED_FIVE_VOLTS, pcbnew.In6_Cu),
     ):
         zone = pcbnew.ZONE(board)
         net = board.FindNet(name)
@@ -147,14 +195,23 @@ def add_power_planes(board: pcbnew.BOARD) -> None:
 
 
 def write_board(board: pcbnew.BOARD, board_path: Path, dsn_path: Path) -> None:
-    """Fill zones, save the native board, and export its router interchange file."""
+    """Fill zones, save the native board, and export its router interchange file.
+
+    Steps: save; reload and fill copper zones; save again; rewrite KiCad-assigned
+    UUIDs to the stable semantic ones from `stable_uuid_map`; export the Specctra
+    DSN, which the build itself does not consume.
+    The temporary `.kicad_pro` KiCad writes beside the filled copy is deleted.
+    """
     pcbnew.SaveBoard(str(board_path), board)
+    # Fill zones on a reloaded copy, then replace the saved file with it.
     filled = pcbnew.LoadBoard(str(board_path))
     pcbnew.ZONE_FILLER(filled).Fill(filled.Zones())
     temporary = board_path.with_suffix(".filled.kicad_pcb")
     pcbnew.SaveBoard(str(temporary), filled)
     temporary.replace(board_path)
     temporary.with_suffix(".kicad_pro").unlink(missing_ok=True)
+    # Replace every `(uuid "...")` token with its deterministic equivalent so the
+    # saved file is reproducible and diffs show only real design changes.
     identities = stable_uuid_map(filled)
     text = board_path.read_text()
     board_path.write_text(
@@ -166,17 +223,22 @@ def write_board(board: pcbnew.BOARD, board_path: Path, dsn_path: Path) -> None:
     )
     filled = pcbnew.LoadBoard(str(board_path))
     dsn_path.parent.mkdir(parents=True, exist_ok=True)
+    # The DSN is exported for optional external-router use or review only.
     if not pcbnew.ExportSpecctraDSN(filled, str(dsn_path)):
         raise RuntimeError("KiCad failed to export the autorouter design")
     lines = dsn_path.read_text().splitlines(keepends=True)
     if not lines or not lines[0].startswith('(pcb "'):
         raise RuntimeError("unexpected KiCad Specctra header")
+    # Normalize the header to the DSN's own file name so the output does not depend
+    # on whatever name KiCad wrote there.
     lines[0] = f'(pcb "{dsn_path.name}"\n'
     dsn_path.write_text("".join(lines))
 
 
 def stable_uuid_map(board: pcbnew.BOARD) -> dict[str, str]:
-    """Semantic identities survive insertion and ordering of unrelated objects.
+    """Map each item's random KiCad UUID to a deterministic, meaning-derived one.
+
+    Semantic identities survive insertion and ordering of unrelated objects.
 
     Exact duplicate geometric items use an occurrence counter scoped to that
     geometry only. Net codes and the global construction index are never keys.

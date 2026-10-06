@@ -18,7 +18,6 @@
     "solder_mask": "Green",
     "silkscreen": "White",
     "controlled_impedance": false,
-    "plated_component_slot_mm": [1.0, 1.6],
     "mounting_hole_mm": 3.4
   }
 }

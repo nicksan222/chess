@@ -44,12 +44,21 @@ def load() -> pcbnew.BOARD:
     sensing.add_sensor_banks(board, squares=squares)
     square.connect_led_chain(board, squares)
     add_mechanical_features(board)
+    # Last, so it checks the finished board: approved products, complete pad
+    # assignment, square centres and Hall-bank wiring.
     validate(board)
     return board
 
 
 def netlist(board: pcbnew.BOARD | None = None) -> dict[str, object]:
-    """Expanded output derived from native fields and actual pad-to-net assignment."""
+    """Expanded output derived from native fields and actual pad-to-net assignment.
+
+    Written to `generated/netlist.json`. It is not a design input (nothing
+    regenerates the board from it), but tests and review reports read it. Reading
+    connectivity from the pads themselves means the netlist cannot disagree with the board. Nets named `unconnected-*` are KiCad's placeholders for
+    pads deliberately marked no-connect, so they are listed as connections flagged
+    `no_connect` but excluded from `nets`.
+    """
     board = board if board is not None else load()
     graph = connections(board)
     return {
@@ -63,6 +72,8 @@ def netlist(board: pcbnew.BOARD | None = None) -> dict[str, object]:
                 "value": f.GetFieldText("NominalValue"),
                 "description": f.GetFieldText("Purpose"),
                 "assembly": f.GetFieldText("Assembly"),
+                # Selected per-footprint fields that carry design intent (square,
+                # LED chain slot, Hall sensor number, bank/address, capacitor target).
                 "extras": {
                     k: v
                     for k, v in f.GetFieldsText().items()
