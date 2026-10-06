@@ -7,6 +7,11 @@ populated circuit board so a reader can see what fills the cavity.
 Both parts are generated in assembly coordinates, so neither is moved here. If
 the case and the plate ever stop meeting, that is a real dimension error rather
 than a positioning mistake in this file.
+
+Inputs: `generated/board-case.blend` and `generated/tile-plate.blend`, so this project
+must run after both (it has a `generation-order` file). Outputs: `board-assembly.blend`
+and two renders, finished and open (plate lifted). `check_fit` fails the build if any
+seated part overlaps another or a checked proxy.
 """
 
 import sys
@@ -23,17 +28,31 @@ GENERATED = CAD_ROOT / "generated"
 
 from blocks import pcb_proxy
 from core import dimensions as shared
-from core import modeling, project
+from core import modeling, project, validation
 
+# Output file stem; the renders are `<NAME>-finished.png` and `<NAME>-open.png`.
 NAME = "board-assembly"
 
+# Object names inside the two source .blend files; must match their generators.
 CASE_PART = "Printable_Board_Case"
 PLATE_PART = "Printable_Tile_Plate"
+# How far the plate is raised in the "open" view so the board and Pi are visible.
 EXPLODED_LIFT_MM = 70.0
+# Overlap volume (mm3) ignored as boolean/mesh noise; anything larger is a real clash.
+FIT_TOLERANCE_MM3 = 1.0
+# Non-printed proxy objects (from `blocks/pcb_proxy.py`) that must clear the printed parts.
+FIT_PROXIES = (
+    "Proxy_Circuit_Board",
+    "Proxy_Raspberry_Pi",
+    "Proxy_Pi_Header",
+    "Proxy_Display_Module",
+)
 
 
 @dataclass(frozen=True, slots=True)
 class AssemblyMetadata:
+    """Facts stored as custom properties on the scene."""
+
     project_role: str
     case_source: str
     plate_source: str
@@ -55,13 +74,16 @@ class AssemblyMetadata:
 
 
 def load_plate(plate_path: Path, collection: bpy.types.Collection) -> bpy.types.Object:
-    """Import the plate exactly as its own generator produced it."""
+    """Import the plate exactly as its own generator produced it.
+
+    Checks the plate outline (X/Y only, to 0.01 mm) against the shared dimensions; it
+    does not check thickness or features, so `check_fit` is the further safeguard.
+    """
     parts = modeling.load_objects(plate_path, (PLATE_PART,))
     plate = parts[PLATE_PART]
-    if abs(plate.dimensions.x - shared.TILE_PLATE_SPAN_MM) > 0.01:
-        raise RuntimeError(
-            f"Plate source does not match shared dimensions: {plate.dimensions.x}"
-        )
+    size = (plate.dimensions.x, plate.dimensions.y)
+    if any(abs(a - b) > 0.01 for a, b in zip(size, shared.TILE_PLATE_SIZE_MM)):
+        raise RuntimeError(f"Plate source does not match shared dimensions: {size}")
     collection.objects.link(plate)
     return plate
 

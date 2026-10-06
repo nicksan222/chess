@@ -69,7 +69,11 @@ def setup_printable(
     scene_name: str,
     scale_length: float,
 ) -> PrintableScene:
-    """Create the common scene and collections for one printable project."""
+    """Create the common scene and collections for one printable project.
+
+    `scale_length` is the Blender unit scale (shared `BLENDER_SCALE_LENGTH`), so one
+    unit reads as a millimetre. The render is 1200 x 900 on a near-black background.
+    """
     modeling.clear_scene()
     scene = presentation.configure_scene(
         scene_name,
@@ -91,7 +95,13 @@ def save_printable(
     project_name: str,
     volume_property: VolumeProperty,
 ) -> Path:
-    """Validate, save, and render one printable project."""
+    """Validate, save, and render one printable project.
+
+    Validation comes first so an invalid mesh (invalid mesh data, non-manifold, zero volume,
+    too big for `build_volume_mm`) fails the build before anything is published. Writes
+    `<project_name>.blend` and `<project_name>.png`, and records the mesh volume under
+    `volume_property`. Returns the .blend path.
+    """
     validation.validate_fdm_part(part, build_volume_mm)
     bpy.context.scene[volume_property] = part["mesh_volume_mm3"]
     output_directory.mkdir(parents=True, exist_ok=True)

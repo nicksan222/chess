@@ -1,4 +1,11 @@
-"""Blender-side validation for generated prototype FDM parts."""
+"""Blender-side validation for generated prototype FDM parts.
+
+Role: the mesh checks `project.save_printable` runs before a part is saved, plus the
+overlap measurement `board-assembly` uses to prove parts do not collide. These catch
+problems a render hides: an invalid or open mesh, a zero-volume result from a failed boolean,
+a part too large for its reference build volume. They check geometry only, not whether a
+print service can actually make the part.
+"""
 
 from collections.abc import Iterable
 from typing import cast
@@ -14,7 +21,13 @@ def validate_fdm_part(
     part: bpy.types.Object,
     build_volume_mm: tuple[float, float, float],
 ) -> None:
-    """Require a positive, manifold mesh inside the selected print envelope."""
+    """Require a positive, manifold mesh inside the selected print envelope.
+
+    Order: Blender's own mesh repair must change nothing, dimensions must be positive and
+    fit `build_volume_mm`, then no boundary or non-manifold edges and a non-zero volume.
+    On success the measurements are stored on the object as custom properties, which the
+    saved .blend and the project metadata then carry.
+    """
     mesh = modeling.require_object_data(part, bpy.types.Mesh)
     if mesh.validate(verbose=True):
         raise RuntimeError(f"Blender repaired invalid mesh data for {part.name}")
@@ -55,3 +68,23 @@ def validate_fdm_part(
     part["mesh_boundary_edges"] = boundary_edges
     part["mesh_non_manifold_edges"] = non_manifold_edges
     part["mesh_volume_mm3"] = round(volume, 2)
+
+
+def overlap_volume_mm3(first: bpy.types.Object, second: bpy.types.Object) -> float:
+    """Volume two seated meshes share, measured on a throwaway copy of the first.
+
+    A copy is intersected with the second so neither original is modified. The exact solver
+    is slow on large parts; callers apply a small tolerance (see `FIT_TOLERANCE_MM3`).
+    """
+    probe = cast(bpy.types.Object, first.copy())
+    probe.data = modeling.require_object_data(first, bpy.types.Mesh).copy()
+    bpy.context.scene.collection.objects.link(probe)
+    modeling.boolean_apply(probe, second, "INTERSECT")
+    mesh = modeling.require_object_data(probe, bpy.types.Mesh)
+    bm = bmesh.new()
+    bm.from_mesh(mesh)
+    volume = abs(bm.calc_volume(signed=True))
+    bm.free()
+    bpy.data.objects.remove(probe, do_unlink=True)
+    bpy.data.meshes.remove(mesh)
+    return volume
