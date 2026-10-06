@@ -1,4 +1,15 @@
-"""Ordered chessboard routing policies, sharing one native copper state."""
+"""Ordered chessboard routing policies, sharing one native copper state.
+
+Role: decides *which nets are routed in what order and how* on top of the generic grid router
+in `paths.py`. `route()` is the entry point, in this order: fixed wide power copper, the eFuse power
+copper and the LED-switch copper, the first LED data termination and a first LED-chain pass,
+Hall escapes reserved, control signals, buttons, buses, Hall routes, the eFuse bias nets,
+a second LED-chain pass for the links still obstructed, pruning of unused signal vias, and
+last the splitting of the fine-pitch eFuse escapes. The order matters: earlier copper
+becomes an obstacle for everything after it, and several nets only route if their neighbours
+are fixed first (see the comments at each step). All sizes and escape distances come from
+`rules`, `escape_policy` and the shared dimensions.
+"""
 
 from __future__ import annotations
 
@@ -12,10 +23,10 @@ import pcbnew
 
 import pcb.definition.routing.paths as grid_router
 from pcb.definition import native, rules
+from pcb.definition.assemblies.square import LED_TURN_TERMINATIONS
 from pcb.definition.bank_assemblies import BANK_ASSEMBLIES
-from pcb.definition.parts.barrel_jack import DC_INPUT_JACK
 from pcb.definition.parts.fuse import INPUT_FUSE
-from pcb.definition.parts.power_switch import MAIN_POWER_SWITCH
+from pcb.definition.parts.power_header import POWER_ENTRY_HEADER
 from pcb.definition.parts.raspberry_pi_header import (
     RASPBERRYPIHEADER_BUTTON_VIA_KEEPOUT_HALF_WIDTH_MM,
     RASPBERRYPIHEADER_BUTTON_VIA_KEEPOUT_LENGTH_MM,
@@ -27,11 +38,11 @@ from pcb.definition.rules import Net
 from shared import wiring
 from shared.dimensions import PLAYING_SPAN_MM, SQUARE_SIZE_MM
 from shared.electronics import (
-    BarrelJackPin,
     ComponentReference,
     Endpoint,
     FusePin,
-    PowerSwitchPin,
+    PowerHeaderPin,
+    ResistorPin,
     Sk9822Pin,
     TactileSwitchPad,
 )
@@ -40,25 +51,43 @@ from shared.electronics import Tca9554Component as Tca9554
 from shared.hall_banks import BANK_FILES, BANK_RANKS, HallBank
 from shared.panel_buttons import PANEL_BUTTONS
 
-INTERNAL_SIGNAL_LAYERS = (pcbnew.In4_Cu, pcbnew.In5_Cu, pcbnew.In6_Cu)
+# In6 is the LED_5V plane since S6.
+# Inner layers available to signal routing (In1-In3 are rail planes, In6 is LED_5V).
+INTERNAL_SIGNAL_LAYERS = (pcbnew.In4_Cu, pcbnew.In5_Cu)
 
 SENSOR_ROUTING_LAYERS = (pcbnew.F_Cu, pcbnew.B_Cu, *INTERNAL_SIGNAL_LAYERS)
 
+# Nets routed together by `route_control_signals` (SPI, LED data/clock, switch gate drive).
 CONTROL_SIGNAL_NETS = frozenset(
     {
         wiring.SPI_CLOCK_NET,
         wiring.SPI_DATA_NET,
         wiring.LED_CLOCK_NET,
         wiring.LED_DATA_NET,
+        # S6 LED rail switch gate drive.
+        wiring.LED_ENABLE_NET,
+        wiring.LED_ENABLE_N_NET,
+        "LED_EN_GATE",
+        "LED_SW_GATE",
+        wiring.LED_OUTPUT_ENABLE_N_NET,
     }
 )
+# The twelve button nets; their Pi-header launch corridors are kept free of vias.
 BUTTON_NETS = frozenset(button.net_name for button in PANEL_BUTTONS)
+# U74 and its pin-adjacent parts: rails fanned by routing/efuse.py.
+EFUSE_EXPLICIT_PARTS = frozenset({"U74", "R3", "C142", "C143", "C144"})
 
 OPTIONAL_ESCAPE_VIA_NETS = CONTROL_SIGNAL_NETS
 
-BUTTON_FALLBACK_SIGNAL_LAYERS = (pcbnew.In4_Cu, pcbnew.In5_Cu, pcbnew.In6_Cu)
+# The launch stub is laid unchecked, so only the inner signal layers qualify.
+BUTTON_FALLBACK_SIGNAL_LAYERS = INTERNAL_SIGNAL_LAYERS
 
+# How far the fallback button route launches from the header pad before the grid router starts.
 BUTTON_HEADER_LAUNCH_LENGTH_MM = 4.5
+
+
+# References of the three left rank-turn terminators (R10-R12).
+TURN_TERMINATORS = frozenset(LED_TURN_TERMINATIONS.values())
 
 
 @dataclass(frozen=True)
@@ -148,8 +177,12 @@ def signal_escape(
     component_mpn = footprint.GetValue()
     escape_mm = escape_policy.signal_escape_distance_mm(component_mpn, pad.GetNumber())
     force_horizontal = escape_policy.uses_horizontal_signal_escape(component_mpn)
+    horizontal = force_horizontal or abs(dx) >= abs(dy)
+    half = pcbnew.ToMM(pad.GetSize().x if horizontal else pad.GetSize().y) / 2
+    if add_via:
+        escape_mm = max(escape_mm, half + escape_policy.VIA_MASK_WEB_REACH_MM)
     distance = pcbnew.FromMM(escape_mm)
-    if force_horizontal or abs(dx) >= abs(dy):
+    if horizontal:
         escaped = pcbnew.VECTOR2I(at.x + (distance if dx >= 0 else -distance), at.y)
     else:
         escaped = pcbnew.VECTOR2I(at.x, at.y + (distance if dy >= 0 else -distance))
@@ -208,6 +241,7 @@ def escape_endpoint(
     *,
     add_via: bool = False,
 ) -> pcbnew.VECTOR2I:
+    """Escape one connection endpoint (see `signal_escape`); returns where routing resumes."""
     return signal_escape(
         ctx.board,
         ctx.nets_by_name[name],
@@ -229,6 +263,7 @@ def route_between(
 
 
 def ordered_endpoints(ctx: RoutingContext, connection: str) -> list[Endpoint[str]]:
+    """Endpoints of a net in a deterministic order, Pi header first (so trees grow from it)."""
     return sorted(
         ctx.endpoints_by_net[connection],
         key=lambda node: (
@@ -242,6 +277,11 @@ def ordered_endpoints(ctx: RoutingContext, connection: str) -> list[Endpoint[str
 def reserve_escape_points(
     ctx: RoutingContext, connection: str, endpoints: Sequence[Endpoint[str]]
 ) -> dict[Endpoint[str], pcbnew.VECTOR2I]:
+    """Lay every endpoint's escape stub and via up front, so later routes treat them as obstacles.
+
+    Reserving all of a net's escapes before routing any of its edges keeps a route from passing
+    where another endpoint's via will stand.
+    """
     return {
         endpoint: escape_endpoint(ctx, connection, endpoint, add_via=True)
         for endpoint in endpoints
@@ -257,6 +297,11 @@ def route_tree(
     label_errors: bool = False,
     **options: Unpack[RoutingOptions],
 ) -> None:
+    """Connect `nodes` into one tree with nearest-neighbour edges, routing each edge.
+
+    `route_points` gives each node's start point (usually its escape end). `options` pass to the
+    grid router (layers, vias, preferred layer). With `label_errors`, a failure names the pair.
+    """
     net = ctx.nets_by_name[connection]
     for left, right in nearest_tree_edges(nodes, route_points):
         try:

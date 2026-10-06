@@ -243,7 +243,11 @@ class GridNode:
 
 @dataclass(frozen=True, slots=True)
 class Route:
-    """Simplified raster points with layer indices, not native KiCad layer IDs."""
+    """Simplified raster points with layer indices, not native KiCad layer IDs.
+
+    `points` keeps only endpoints, corners and layer changes; `layers` is the tuple
+    the indices refer to, so `apply_route` can map them back to KiCad layers.
+    """
 
     points: tuple[GridNode, ...]
     layers: tuple[int, ...]
@@ -269,6 +273,14 @@ def find_route(
     (left, top, right, bottom), with Y increasing downward. It limits track
     centre lines (including exact endpoint stubs), not the full copper width.
     Board-edge restrictions additionally reserve clearance for tracks and vias.
+
+    Other parameters: `margin_mm` pads the search window around the endpoints'
+    bounding box (bigger is slower but finds detours). `preferred_layer_index`
+    fixes the layer the route starts on and `required_end_layer_index` the layer it
+    must finish on (None = any). `allow_vias` permits layer changes; `diagonals`
+    permits 45-degree steps. `additional_via_keepouts` are extra cells where vias
+    are banned. Raises RuntimeError when no path exists, and ValueError when the
+    endpoints themselves are illegal; callers rely on the former to try fallbacks.
     """
     if not layers:
         raise ValueError("at least one routing layer is required")
@@ -279,6 +291,7 @@ def find_route(
         if index is not None and not 0 <= index < len(layers):
             raise ValueError(f"{label} layer index {index} is outside {layers}")
 
+    # --- Bounds: stay inside the board edge by the pour margin plus half a track.
     # Check exact endpoints before snapping: a legal cell can hide an illegal stub.
     start_cell, end_cell = grid_cell(start), grid_cell(end)
     margin = round(margin_mm / GRID_MM)
@@ -306,12 +319,15 @@ def find_route(
             raise ValueError(
                 f"{label} endpoint is outside routing bounds {exact_bounds}"
             )
+    # Convert the allowed rectangle to cells, rounding inward so a snapped cell is
+    # never outside the exact bounds.
     board_bounds = (
         math.ceil(left / GRID_MM),
         math.ceil(top / GRID_MM),
         math.floor(right / GRID_MM),
         math.floor(bottom / GRID_MM),
     )
+    # Vias are bigger than tracks, so they need a larger edge inset.
     via_inset = rules.POUR_TO_OUTLINE_MM + rules.VIA_PAD_MM / 2
     via_bounds = (
         math.ceil((mm(edge.GetLeft()) + via_inset) / GRID_MM),
@@ -319,6 +335,7 @@ def find_route(
         math.floor((mm(edge.GetRight()) - via_inset) / GRID_MM),
         math.floor((mm(edge.GetBottom()) - via_inset) / GRID_MM),
     )
+    # Search window: the endpoints' box grown by `margin`, clipped to the board.
     bounds = (
         max(board_bounds[0], min(start_cell[0], end_cell[0]) - margin),
         max(board_bounds[1], min(start_cell[1], end_cell[1]) - margin),
@@ -341,10 +358,14 @@ def find_route(
         layers,
         additional_via_keepouts,
     )
+    # The endpoints sit on pads of this net, so they must be reachable even if a
+    # neighbour's keepout touches their cell.
     for layer in layers:
         blocked[layer].discard(start_cell)
         blocked[layer].discard(end_cell)
 
+    # --- A* search. Start on any layer (or the preferred one) and finish on any
+    # layer (or the required one).
     start_layers = (
         range(len(layers))
         if preferred_layer_index is None
@@ -361,6 +382,7 @@ def find_route(
     # more than planar steps so the search prefers staying on the current layer.
     queue: list[tuple[int, int, GridNode]] = []
     serial = 0
+    # Best known cost to each node, and the predecessor for path reconstruction.
     distance: dict[GridNode, int] = {}
     previous: dict[GridNode, GridNode] = {}
     for node in starts:
@@ -392,6 +414,8 @@ def find_route(
                     (x - 1, y - 1, layer_index, 2),
                 )
             )
+        # A via costs 16 steps: layer changes cost copper and manufacturability, so
+        # the search only makes one when it saves a lot of detour.
         if allow_vias:
             candidates.extend(
                 (x, y, other_layer, 16)
@@ -404,6 +428,7 @@ def find_route(
             cell = (nx, ny)
             if cell in blocked[layers[nl]]:
                 continue
+            # Forbid cutting a corner between two blocked cells on a diagonal step.
             if (
                 diagonals
                 and nx != x
@@ -434,6 +459,7 @@ def find_route(
     if found is None:
         raise RuntimeError(f"no route for {net.GetNetname()} in {bounds}")
 
+    # Walk predecessors back to a start node, then reverse.
     path = [found]
     while path[-1] not in starts:
         path.append(previous[path[-1]])
@@ -455,7 +481,11 @@ def apply_route(
     end: pcbnew.VECTOR2I,
     route: Route,
 ) -> None:
-    """Materialize a raster route as exact KiCad tracks and vias."""
+    """Materialize a raster route as exact KiCad tracks and vias.
+
+    `start`/`end` are the true (possibly off-grid) pad positions; short stubs join
+    them to the first/last grid cell. Each layer change becomes a via at that cell.
+    """
     points = list(route.points)
     first = position(points[0].cell)
     last = position(points[-1].cell)
