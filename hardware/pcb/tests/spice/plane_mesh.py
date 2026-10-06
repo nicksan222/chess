@@ -207,3 +207,79 @@ class PlaneMesh:
         filled = zone.GetFilledPolysList(zone.GetLayer()).Area()
         outline = zone.Outline().Area()
         return filled / outline
+
+    def rows_for(self, prefix: str, zone: pcbnew.ZONE) -> list[str]:
+        """SPICE resistor rows for one plane: a grid of sheet resistors scaled by the fill ratio."""
+        ohms = self.sheet_ohms / self._fill_ratio(zone)
+        lines: list[str] = []
+        for column in range(self.columns):
+            for row in range(self.rows):
+                here = f"{prefix}_{column}_{row}"
+                if column + 1 < self.columns:
+                    lines.append(
+                        f"R{prefix}h_{column}_{row} {here} "
+                        f"{prefix}_{column + 1}_{row} {ohms:.6e}"
+                    )
+                if row + 1 < self.rows:
+                    lines.append(
+                        f"R{prefix}v_{column}_{row} {here} "
+                        f"{prefix}_{column}_{row + 1} {ohms:.6e}"
+                    )
+        return lines
+
+    def loads(self, led_amps: float, host_amps: float) -> list[Load]:
+        """The LED and Pi-header current sinks, placed at their own supply and ground pads."""
+        found: list[Load] = []
+        for footprint in self.board.GetFootprints():
+            if not footprint.HasFieldByName("PartKey"):
+                continue
+            pads = {pad.GetNumber(): pad for pad in footprint.Pads()}
+            key = footprint.GetFieldText("PartKey")
+            if key == "SK9822":
+                found.append(
+                    Load(
+                        footprint.GetFieldText("Square").lower(),
+                        pads["4"].GetPosition(),
+                        pads["3"].GetPosition(),
+                        led_amps,
+                    )
+                )
+            elif key == "PI_ZERO_HEADER":
+                found.append(
+                    Load(
+                        "host",
+                        pads["2"].GetPosition(),
+                        pads["6"].GetPosition(),
+                        host_amps,
+                    )
+                )
+        return found
+
+    def circuit(
+        self,
+        title: str,
+        *,
+        led_amps: float,
+        host_amps: float,
+        supply_volts: float = 5.0,
+        positive_ohms: float = 0.0,
+        ground_ohms: float = 0.0,
+        switch_ohms: float = 0.0,
+    ) -> SpiceCircuit:
+        """DC operating point at the planes, fed through an optional series path.
+
+        result_drop_<square> is the plane copper loss to that LED (Q1's own drop
+        excluded, reported as result_switch_drop), result_vdd_<square> its supply
+        voltage and result_pi_header the Pi's 5 V-to-GND voltage at J1.
+        """
+        circuit = SpiceCircuit(title)
+        circuit.rows.extend(self.rows_for("p", self.zones[0]))
+        circuit.rows.extend(self.rows_for("g", self.zones[1]))
+        circuit.rows.extend(self.rows_for("l", self.zones[2]))
+        circuit.rows.extend(
+            (
+                f"VSUP psu 0 {supply_volts}",
+                f"RPATHP psu src_p {max(positive_ohms, 1e-9):.6e}",
+                f"RPATHG src_g 0 {max(ground_ohms, 1e-9):.6e}",
+            )
+        )
