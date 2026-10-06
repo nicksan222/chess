@@ -136,7 +136,97 @@ def pi_header_pin_xy(pin: int) -> tuple[float, float]:
     )
 
 
-# Rear wall apertures for the power input.
-CASE_JACK_APERTURE_DIAMETER_MM = 8.0
-CASE_ROCKER_APERTURE_MM = (19.0, 13.0)
+# Pi board centre in board coordinates, derived from the header anchor.
+PI_CENTER_MM = pi_on_board_xy((PI_BOARD_SIZE_MM[0] / 2.0, PI_BOARD_SIZE_MM[1] / 2.0))
+# The Pi's floor vents run along its long axis, under it.
+# Slot size (length along the Pi's long axis, width) of each floor vent.
+CASE_VENT_SLOT_MM = (40.0, 3.0)
+# microSD socket centre in the drawing frame, measured from the rendered
+# RP-008358-DS-1 view (the drawing does not dimension it); the card enters from
+# the Pi's left edge, on its top face, which faces the PCB here.
+PI_SD_SOCKET_ON_PI_MM = (7.4, 16.85)
+PI_SD_SOCKET_HEIGHT_MM = 1.4
+PI_TOP_FACE_Z_MM = PCB_UNDERSIDE_Z_MM - PI_BOARD_TO_BOARD_MM
+# Wall slot size for the card: width along the wall, height.
+CASE_SD_SLOT_MM = (14.0, 3.5)
+CASE_SD_SLOT_CENTER_Y_MM = pi_on_board_xy(PI_SD_SOCKET_ON_PI_MM)[1]
+CASE_SD_SLOT_CENTER_Z_MM = PI_TOP_FACE_Z_MM + PI_SD_SOCKET_HEIGHT_MM / 2.0
+# The right wall is pocketed from inside around the slot so a card standing
+# proud of the Pi clears it and tweezers can reach the card edge.
+CASE_SD_PANEL_THICKNESS_MM = 2.0
+CASE_SD_POCKET_WIDTH_MM = CASE_SD_SLOT_MM[0] + 4.0
+
+# Wall pockets below the PCB run from the floor up to a printable roof that
+# keeps the PCB ledge continuous above them.
+CASE_WALL_POCKET_ROOF_MM = 1.0
+CASE_WALL_POCKET_Z_MM = (CASE_FLOOR_MM, PCB_UNDERSIDE_Z_MM - CASE_WALL_POCKET_ROOF_MM)
+
+# Rear wall apertures for the panel-mounted power input, wired to J4.
 CASE_REAR_APERTURE_CENTER_Z_MM = CASE_FLOOR_MM + PI_BAY_HEIGHT_MM / 2.0
+# Switchcraft 722A (customer drawing 712A 722A 732A rev J): 5/16-32 NEF bushing
+# (7.94), threaded 0.215 in (5.46) ahead of the Ø11.0 flange that bears on the
+# inside of the panel; washer and hex nut go on the outside. The panel may take
+# up to 0.125 in (plf6); the wall is pocketed to 2.0.
+CASE_JACK_BUSHING_DIAMETER_MM = 7.94
+CASE_JACK_PRINT_ALLOWANCE_MM = 0.13
+CASE_JACK_APERTURE_DIAMETER_MM = (
+    CASE_JACK_BUSHING_DIAMETER_MM + 2.0 * CASE_JACK_PRINT_ALLOWANCE_MM
+)
+CASE_JACK_APERTURE_CENTER_X_MM = -141.0
+CASE_JACK_THREAD_LENGTH_MM = 5.46
+# Switchcraft plf6: "mounts in .313 inch diameter hole in panels up to .125 inches".
+CASE_JACK_MAX_PANEL_MM = 0.125 * 25.4
+CASE_JACK_PANEL_THICKNESS_MM = 2.0
+CASE_JACK_FLANGE_DIAMETER_MM = 11.0
+# Clears the Ø11.0 flange and the solder lugs behind the panel.
+CASE_JACK_POCKET_WIDTH_MM = 16.0
+# 20.8 overall less the 5.46 thread leaves 15.3 behind the panel to the lug
+# ends; the rest is room for the soldered wires.
+CASE_JACK_BAY_DEPTH_MM = 30.0
+# E-Switch RA11131100 snap-in rocker, RA1 series sheet (11.3.2022) p2, 2-position
+# non-illuminated: recommended cutout 13.00 high and 19.4 wide for a 1.25-2.00 mm
+# panel. A printed hole closes up, so each side gets a small allowance.
+CASE_ROCKER_CUTOUT_MM = (19.4, 13.0)
+CASE_ROCKER_PANEL_RANGE_MM = (1.25, 2.00)
+CASE_ROCKER_PRINT_ALLOWANCE_MM = 0.1
+CASE_ROCKER_APERTURE_MM = (
+    CASE_ROCKER_CUTOUT_MM[0] + 2.0 * CASE_ROCKER_PRINT_ALLOWANCE_MM,
+    CASE_ROCKER_CUTOUT_MM[1] + 2.0 * CASE_ROCKER_PRINT_ALLOWANCE_MM,
+)
+CASE_ROCKER_APERTURE_CENTER_X_MM = -20.0
+# Inside the sheet's 1.25-2.00 mm row, with print tolerance either way.
+CASE_ROCKER_PANEL_THICKNESS_MM = 1.5
+# The rear wall is pocketed from inside down to the panel thickness, with room
+# around the cutout for the snap-in latches.
+CASE_ROCKER_POCKET_MARGIN_MM = 2.5
+CASE_ROCKER_LATCH_MARGIN_MM = 1.5
+CASE_ROCKER_POCKET_ROOF_MM = CASE_WALL_POCKET_ROOF_MM
+CASE_ROCKER_POCKET_WIDTH_MM = (
+    CASE_ROCKER_APERTURE_MM[0] + 2.0 * CASE_ROCKER_POCKET_MARGIN_MM
+)
+CASE_ROCKER_POCKET_Z_MM = CASE_WALL_POCKET_Z_MM
+# Rocker body and tabs reach 18.5 +/- 1.0 mm behind the panel (RA1 sheet p2);
+# the rest is the two insulated FASTON receptacles and their wire exit.
+CASE_ROCKER_BAY_DEPTH_MM = 50.5
+
+# Bottom-side PCB keepouts in the bay (x0, x1, y0, y1): the panel parts and
+# their wiring hang there, below the board. The PCB tests (`test_bottom_side.py`) keep
+# bottom-side parts out of these rectangles; the Y extent runs from the rear wall's
+# inner panel face forward by the part's bay depth.
+_REAR_WALL_OUTER_Y_MM = CASE_CENTER_OFFSET_Y_MM + CASE_DEPTH_MM / 2.0
+BOTTOM_SIDE_KEEPOUTS_MM = {
+    "rocker": (
+        CASE_ROCKER_APERTURE_CENTER_X_MM - CASE_ROCKER_POCKET_WIDTH_MM / 2.0,
+        CASE_ROCKER_APERTURE_CENTER_X_MM + CASE_ROCKER_POCKET_WIDTH_MM / 2.0,
+        _REAR_WALL_OUTER_Y_MM
+        - CASE_ROCKER_PANEL_THICKNESS_MM
+        - CASE_ROCKER_BAY_DEPTH_MM,
+        _REAR_WALL_OUTER_Y_MM - CASE_ROCKER_PANEL_THICKNESS_MM,
+    ),
+    "jack": (
+        CASE_JACK_APERTURE_CENTER_X_MM - CASE_JACK_POCKET_WIDTH_MM / 2.0,
+        CASE_JACK_APERTURE_CENTER_X_MM + CASE_JACK_POCKET_WIDTH_MM / 2.0,
+        _REAR_WALL_OUTER_Y_MM - CASE_JACK_PANEL_THICKNESS_MM - CASE_JACK_BAY_DEPTH_MM,
+        _REAR_WALL_OUTER_Y_MM - CASE_JACK_PANEL_THICKNESS_MM,
+    ),
+}
