@@ -756,3 +756,34 @@ class LandPatternTest(unittest.TestCase):
                     self.assertAlmostEqual(
                         pcbnew.ToMM(pad.GetDrillSize().y), drill[1], delta=TOLERANCE_MM
                     )
+
+    def test_template_pad_attributes_layers_and_pin_one_shape(self) -> None:
+        for key, part in PCB_PARTS.items():
+            for pad in part.template.Pads():
+                with self.subTest(part=key, pad=pad.GetNumber()):
+                    self.assertEqual(pad.GetOrientationDegrees() % 360, 0)
+                    self.assertTrue(pad.IsOnLayer(pcbnew.F_Cu))
+                    if pad.GetAttribute() == pcbnew.PAD_ATTRIB_SMD:
+                        self.assertFalse(pad.IsOnLayer(pcbnew.B_Cu))
+                        self.assertTrue(pad.IsOnLayer(pcbnew.F_Mask))
+                    else:
+                        self.assertEqual(pad.GetAttribute(), pcbnew.PAD_ATTRIB_PTH)
+                        self.assertTrue(pad.IsOnLayer(pcbnew.B_Cu))
+        for golden in GOLDEN:
+            if golden.polarity_pad is None:
+                continue
+            pads = {
+                pad.GetNumber(): pad
+                for pad in PCB_PARTS[golden.part_key].template.Pads()
+            }
+            with self.subTest(part=golden.part_key, check="pin-1 shape"):
+                self.assertEqual(
+                    pads[golden.polarity_pad].GetShape(), pcbnew.PAD_SHAPE_RECT
+                )
+                others = [
+                    number
+                    for number, pad in pads.items()
+                    if number != golden.polarity_pad
+                    and pad.GetShape() == pcbnew.PAD_SHAPE_RECT
+                ]
+                self.assertEqual(others, [])
