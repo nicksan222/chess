@@ -171,5 +171,81 @@ class CaseFitTest(unittest.TestCase):
         self.assertLess(d.CASE_ROCKER_PANEL_THICKNESS_MM, rear_wall)
 
 
+class PiTransformTest(unittest.TestCase):
+    """J1 is placed from these points, so they are pinned to the RP drawing.
+
+    Negative-ish by design: pin 1 at the microSD end and the odd row nearer the Pi centre
+    fail if the transform were mirrored in X or Y, the mistake that would put 5 V on a
+    3.3 V pin.
+    """
+
+    def test_header_pins_follow_the_agreed_transform(self):
+        expected = {
+            1: (147.13, -73.73),
+            2: (147.13, -76.27),
+            39: (98.87, -73.73),
+            40: (98.87, -76.27),
+        }
+        for pin, (x, y) in expected.items():
+            with self.subTest(pin=pin):
+                actual = dimensions.pi_header_pin_xy(pin)
+                self.assertAlmostEqual(actual[0], x)
+                self.assertAlmostEqual(actual[1], y)
+
+    def test_pin_numbering_is_the_unmirrored_drawing_view(self):
+        """From the PCB top, odd pins form the row nearer the Pi centre."""
+        centre_y = dimensions.PI_CENTER_MM[1]
+        pitch = dimensions.PI_HEADER_PITCH_MM
+        for column in range(20):
+            odd = dimensions.pi_header_pin_xy(2 * column + 1)
+            even = dimensions.pi_header_pin_xy(2 * column + 2)
+            with self.subTest(column=column):
+                self.assertAlmostEqual(odd[0], even[0])
+                self.assertAlmostEqual(abs(odd[1] - even[1]), pitch)
+                self.assertLess(abs(odd[1] - centre_y), abs(even[1] - centre_y))
+        # Pin 1 is at the microSD end, which faces the right-wall slot.
+        sd_x = dimensions.pi_on_board_xy(dimensions.PI_SD_SOCKET_ON_PI_MM)[0]
+        far_x = dimensions.pi_header_pin_xy(39)[0]
+        pin1_x = dimensions.pi_header_pin_xy(1)[0]
+        self.assertLess(abs(pin1_x - sd_x), abs(far_x - sd_x))
+
+    def test_board_to_board_stack_is_socket_plus_male_header(self):
+        # 8.5 mm socket plus 2.54 mm male-header insulator, and the Pi centre derived from
+        # the one header anchor.
+        self.assertAlmostEqual(dimensions.PI_BOARD_TO_BOARD_MM, 11.04)
+        self.assertEqual(dimensions.PI_CENTER_MM, (123.0, -63.5))
+
+    def test_pins_outside_one_to_forty_are_rejected(self):
+        for pin in (0, 41):
+            with self.subTest(pin=pin), self.assertRaises(ValueError):
+                dimensions.pi_header_pin_xy(pin)
+
+
+class UnverifiedDimensionsTest(unittest.TestCase):
+    """The unverified list feeds the PCB release gate, so it must stay truthful."""
+
+    def test_every_flagged_name_is_a_real_shared_dimension(self):
+        for name, reason in dimensions.UNVERIFIED_DIMENSIONS.items():
+            with self.subTest(name=name):
+                self.assertTrue(hasattr(dimensions, name))
+                self.assertTrue(reason)
+
+    def test_the_cited_rocker_and_jack_panels_are_no_longer_flagged(self):
+        for cleared in (
+            "CASE_ROCKER_PANEL_THICKNESS_MM",
+            "CASE_ROCKER_CUTOUT_MM",
+            "CASE_JACK_NUT_AND_WASHER_MM",
+        ):
+            with self.subTest(name=cleared):
+                self.assertNotIn(cleared, dimensions.UNVERIFIED_DIMENSIONS)
+        low, high = dimensions.CASE_ROCKER_PANEL_RANGE_MM
+        self.assertLessEqual(low, dimensions.CASE_ROCKER_PANEL_THICKNESS_MM)
+        self.assertLessEqual(dimensions.CASE_ROCKER_PANEL_THICKNESS_MM, high)
+        self.assertEqual(dimensions.CASE_ROCKER_CUTOUT_MM, (19.4, 13.0))
+        self.assertLessEqual(
+            dimensions.CASE_JACK_PANEL_THICKNESS_MM, dimensions.CASE_JACK_MAX_PANEL_MM
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
