@@ -156,41 +156,50 @@ class DimensionsTest(unittest.TestCase):
             with self.subTest(reference=ref):
                 f = self.by_ref[ref]
                 self.assertEqual(f.GetPosition(), native.point(*placement.centre_mm))
-                self.assertEqual(
-                    f.GetOrientationDegrees() % 360,
-                    placement.rotation_degrees % 360,
-                )
+                # A back-side part is flipped: KiCad reports 180 - rotation.
+                rotation = placement.rotation_degrees
+                expected = (180 - rotation if placement.bottom else rotation) % 360
+                self.assertEqual(f.GetOrientationDegrees() % 360, expected)
+                self.assertEqual(f.IsFlipped(), placement.bottom)
+        # J1 hangs the Pi from the bottom side at the shared Pi transform; its 40
+        # pads are checked against pi_header_pin_xy in test_pi_header.py.
+        header = self.by_ref["J1"]
         self.assertEqual(
-            self.by_ref["J1"].GetPosition(), native.point(*dimensions.PI_BAY_CENTER_MM)
+            header.GetPosition(), native.point(*dimensions.PI_HEADER_CENTER_MM)
         )
-        self.assertEqual(
-            self.by_ref["J1"].GetOrientationDegrees() % 360,
-            dimensions.PI_HEADER_ROTATION_DEG % 360,
-        )
-        jack = self.by_ref["J3"]
-        self.assertEqual(
-            {
-                (pcbnew.ToMM(p.GetDrillSize().x), pcbnew.ToMM(p.GetDrillSize().y))
-                for p in jack.Pads()
-            },
-            {(1.6, 1.0)},
-        )
+        self.assertTrue(header.IsFlipped())
+        # JST VH catalogue p4: J4 holes Ø1.65 at 3.96 mm, row at (-105, +128), the
+        # body (origin) 4.45 mm past the row toward the +Y opening. The drawing is
+        # the mounting-side view, so from the top circuit 1 is at -X (S3c B1).
+        entry = self.by_ref["J4"]
         self.assertEqual(
             {
                 p.GetNumber(): (
-                    pcbnew.ToMM(p.GetPosition().x - jack.GetPosition().x),
-                    pcbnew.ToMM(jack.GetPosition().y - p.GetPosition().y),
+                    round(pcbnew.ToMM(p.GetPosition().x) - native.ORIGIN_X_MM, 2),
+                    round(native.ORIGIN_Y_MM - pcbnew.ToMM(p.GetPosition().y), 2),
+                    pcbnew.ToMM(p.GetDrillSize().x),
                 )
-                for p in jack.Pads()
+                for p in entry.Pads()
             },
-            {"1": (-3.0, 0.0), "2": (3.0, 0.0), "3": (0.0, 4.7)},
+            {
+                "1": (-110.94, 128.0, 1.65),
+                "2": (-106.98, 128.0, 1.65),
+                "3": (-103.02, 128.0, 1.65),
+                "4": (-99.06, 128.0, 1.65),
+            },
+        )
+        self.assertGreater(
+            native.ORIGIN_Y_MM - pcbnew.ToMM(entry.GetPosition().y), 128.0
         )
 
     def test_courtyards_pads_and_leads_fit_without_overlap(self):
         left, top = native.point(-160, 160).x, native.point(-160, 160).y
         right, bottom = native.point(160, -200).x, native.point(160, -200).y
         boxes = {f.GetReference(): bounds(f) for f in self.parts}
+        side = {f.GetReference(): f.IsFlipped() for f in self.parts}
         for a, b in combinations(boxes, 2):
+            if side[a] != side[b]:
+                continue  # opposite sides; plated holes are checked by DRC
             x0, y0, x1, y1 = boxes[a]
             u0, v0, u1, v1 = boxes[b]
             self.assertFalse(
