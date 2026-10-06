@@ -108,3 +108,31 @@ def crowded_joints(board: pcbnew.BOARD, keepout_mm: float) -> list[str]:
                         f"from {reference}-{pad.GetNumber()}"
                     )
     return findings
+
+
+class SelectiveSolderTest(unittest.TestCase):
+    """Bottom-mounted through-hole joints can be selectively soldered from the top."""
+
+    board: pcbnew.BOARD
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        """Load the published routed board once."""
+        output = Path(os.environ.get("PCB_OUTPUT", PCB_ROOT / "generated"))
+        cls.board = pcbnew.LoadBoard(str(output / "chess-board.kicad_pcb"))
+
+    def test_bottom_tht_joints_keep_the_nozzle_keepout(self) -> None:
+        bottom = {
+            module.GetReference()
+            for module in self.board.GetFootprints()
+            if module.IsFlipped()
+            and any(p.GetAttribute() == pcbnew.PAD_ATTRIB_PTH for p in module.Pads())
+        }
+        self.assertTrue({"J1", "J4", "C1", "C140"} <= bottom)
+        self.assertEqual(crowded_joints(self.board, NOZZLE_KEEPOUT_MM), [])
+        self.assertEqual(crowded_courtyards(self.board, NOZZLE_KEEPOUT_MM), [])
+
+    def test_a_larger_keepout_finds_the_nearest_joint(self) -> None:
+        # Mutation of the threshold: 6 mm must flag something (C140 sits 4.4 mm
+        # from C118), so the check is measuring real gaps.
+        self.assertTrue(crowded_joints(self.board, 6.0))
