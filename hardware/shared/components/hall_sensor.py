@@ -1,4 +1,4 @@
-"""Approved hall sensor product."""
+"""Approved product: DRV5032FCDBZR omnipolar Hall sensor (one per square)."""
 
 from .spec import part
 
