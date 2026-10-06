@@ -659,3 +659,100 @@ class LandPatternTest(unittest.TestCase):
                         f"{golden.source}: pad {expected.number} is "
                         f"{expected.datasheet_name}",
                     )
+
+    def test_internally_connected_pins_share_a_net_on_the_board(self) -> None:
+        for golden in GOLDEN:
+            pad_of = {pad.datasheet_name: pad.number for pad in golden.pads}
+            for reference in self.references.get(golden.part_key, []):
+                for group in golden.internal_groups:
+                    with self.subTest(reference=reference, group=group):
+                        nets = {self.rails[(reference, pad_of[n])] for n in group}
+                        self.assertEqual(len(nets), 1)
+
+    def test_each_binding_declares_the_view_its_datasheet_is_drawn_from(self) -> None:
+        for golden in GOLDEN:
+            with self.subTest(part=golden.part_key):
+                view = PCB_PARTS[golden.part_key].drawing_view
+                self.assertEqual(
+                    view is DrawingView.BOARD_TOP, golden.drawn_from_board_top
+                )
+
+    def test_placed_pads_land_where_the_datasheet_says_in_board_frame(self) -> None:
+        for golden in GOLDEN:
+            for footprint in self.placed.get(golden.part_key, []):
+                turn = footprint.GetOrientationDegrees()
+                # A part moved underneath is seen mirrored from the top, unless its
+                # land is defined from the board top. KiCad reports 180 - placement.
+                mirrored = footprint.IsFlipped() and not golden.drawn_from_board_top
+                if footprint.IsFlipped():
+                    turn = 180 - turn
+                origin = footprint.GetPosition()
+                pads = {pad.GetNumber(): pad for pad in footprint.Pads()}
+                for expected in golden.pads:
+                    if expected.centre_mm is None:
+                        continue
+                    local = _rotate(expected.centre_mm, golden.frame_rotation_deg)
+                    dx, dy = _rotate(local, round(turn))
+                    dx = -dx if mirrored else dx
+                    pad = pads[expected.number]
+                    at = pad.GetPosition()
+                    with self.subTest(
+                        reference=footprint.GetReference(), pad=expected.number
+                    ):
+                        self.assertAlmostEqual(
+                            pcbnew.ToMM(at.x - origin.x), dx, delta=TOLERANCE_MM
+                        )
+                        self.assertAlmostEqual(
+                            pcbnew.ToMM(origin.y - at.y), dy, delta=TOLERANCE_MM
+                        )
+                        if expected.size_mm is not None:
+                            size = _rotate_size(
+                                expected.size_mm,
+                                golden.frame_rotation_deg + round(turn),
+                            )
+                            self.assertAlmostEqual(
+                                pcbnew.ToMM(pad.GetSize().x),
+                                size[0],
+                                delta=TOLERANCE_MM,
+                            )
+                            self.assertAlmostEqual(
+                                pcbnew.ToMM(pad.GetSize().y),
+                                size[1],
+                                delta=TOLERANCE_MM,
+                            )
+
+    def test_pad_geometry_matches_the_datasheet_land_pattern(self) -> None:
+        for golden in GOLDEN:
+            pads = {
+                pad.GetNumber(): pad
+                for pad in PCB_PARTS[golden.part_key].template.Pads()
+            }
+            turn = golden.frame_rotation_deg
+            for expected in golden.pads:
+                if expected.centre_mm is None:
+                    continue
+                with self.subTest(part=golden.part_key, pad=expected.number):
+                    pad = pads[expected.number]
+                    x, y = _datasheet_view(pad.GetPosition())
+                    centre = _rotate(expected.centre_mm, turn)
+                    self.assertAlmostEqual(x, centre[0], delta=TOLERANCE_MM)
+                    self.assertAlmostEqual(y, centre[1], delta=TOLERANCE_MM)
+                    if expected.size_mm is not None:
+                        size = _rotate_size(expected.size_mm, turn)
+                        self.assertAlmostEqual(
+                            pcbnew.ToMM(pad.GetSize().x), size[0], delta=TOLERANCE_MM
+                        )
+                        self.assertAlmostEqual(
+                            pcbnew.ToMM(pad.GetSize().y), size[1], delta=TOLERANCE_MM
+                        )
+                    if expected.drill_mm is None:
+                        self.assertEqual(pad.GetAttribute(), pcbnew.PAD_ATTRIB_SMD)
+                        continue
+                    drill = _rotate_size(expected.drill_mm, turn)
+                    self.assertEqual(pad.GetAttribute(), pcbnew.PAD_ATTRIB_PTH)
+                    self.assertAlmostEqual(
+                        pcbnew.ToMM(pad.GetDrillSize().x), drill[0], delta=TOLERANCE_MM
+                    )
+                    self.assertAlmostEqual(
+                        pcbnew.ToMM(pad.GetDrillSize().y), drill[1], delta=TOLERANCE_MM
+                    )
