@@ -283,3 +283,72 @@ class PlaneMesh:
                 f"RPATHG src_g 0 {max(ground_ohms, 1e-9):.6e}",
             )
         )
+        thickness_m = _inner_copper_mm() / 1000
+        barrel = (
+            COPPER_RESISTIVITY_OHM_M
+            * (BOARD_THICKNESS_MM / 1000)
+            / (math.pi * (0.4 / 1000) * (VIA_WALL_MM / 1000))
+        )
+        entry = 0
+        for pad in power_entry_pads(self.board):
+            net = pad.GetNetname()
+            prefix, source = ("p", "src_p") if net == "+5V" else ("g", "src_g")
+            if pad.GetAttribute() != pcbnew.PAD_ATTRIB_PTH:
+                # Via-fed (the eFuse OUT): each reached via is a plane entry.
+                for via in connected_vias(self.board, pad):
+                    node = self.node(prefix, via.GetPosition())
+                    circuit.rows.append(f"RENTRY{entry} {source} {node} {barrel:.6e}")
+                    entry += 1
+                continue
+            layer = PLANE_LAYERS[net]
+            width = spoke_width_mm(self.board, pad, layer)
+            gap = thermal_gap_mm(self.board, layer, pad.GetNetCode())
+            # Series spokes: R = rho * gap / (total spoke width * copper thickness).
+            ohms = (
+                COPPER_RESISTIVITY_OHM_M
+                * (gap / 1000)
+                / (max(width, 1e-6) / 1000 * thickness_m)
+            )
+            node = self.node(prefix, pad.GetPosition())
+            circuit.rows.append(f"RENTRY{entry} {source} {node} {ohms:.6e}")
+            entry += 1
+        # Q1: +5V plane -> source vias -> RDS(on) -> drain vias -> LED_5V plane.
+        switch = self.board.FindFootprintByReference(LED_SWITCH)
+        if switch is None:
+            raise ValueError("the LED_5V plane is fed only through Q1")
+        for pads, prefix, side in (
+            (SWITCH_SOURCE_PADS, "p", "q1s"),
+            (SWITCH_DRAIN_PADS, "l", "q1d"),
+        ):
+            for pad in switch.Pads():
+                if pad.GetNumber() not in pads:
+                    continue
+                for via in connected_vias(self.board, pad):
+                    node = self.node(prefix, via.GetPosition())
+                    circuit.rows.append(f"RQ{entry} {side} {node} {barrel:.6e}")
+                    entry += 1
+        circuit.rows.append(f"RQ1 q1s q1d {max(switch_ohms, 1e-9):.6e}")
+        loads = self.loads(led_amps, host_amps)
+        for load in loads:
+            rail = "p" if load.name == "host" else "l"
+            circuit.rows.append(
+                f"I{load.name} {self.node(rail, load.supply)} "
+                f"{self.node('g', load.ground)} {load.amps}"
+            )
+        circuit.rows.append(".op")
+        circuit.controls.append("let result_switch_drop = v(q1s) - v(q1d)")
+        for load in loads:
+            rail = "p" if load.name == "host" else "l"
+            supply = (
+                f"v({self.node(rail, load.supply)}) - v({self.node('g', load.ground)})"
+            )
+            if load.name == "host":
+                circuit.controls.append(f"let result_pi_header = {supply}")
+                continue
+            circuit.controls.append(
+                f"let result_drop_{load.name} = "
+                f"(v(src_p) - v({self.node(rail, load.supply)}) - (v(q1s) - v(q1d))) + "
+                f"(v({self.node('g', load.ground)}) - v(src_g))"
+            )
+            circuit.controls.append(f"let result_vdd_{load.name} = {supply}")
+        return circuit
