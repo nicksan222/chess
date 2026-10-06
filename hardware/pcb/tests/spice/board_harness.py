@@ -384,31 +384,94 @@ class BoardHarness:
             self._required_endpoints(
                 input_net, {("J1", str(host_pin)), ("U5", str(input_pin))}
             )
+            # S5: the data channel reaches the LED through R9 (source termination).
+            series = ComponentReference.LED_DATA_TERMINATION
+            driven = ("U5", str(output_pin))
+            led_net, series_rows = output_net, []
+            if (series, str(ResistorPin.TERMINAL_B)) in self.endpoints_by_net[
+                output_net
+            ]:
+                self._required_endpoints(
+                    output_net, {driven, (series, str(ResistorPin.TERMINAL_B))}
+                )
+                led_net = self.net_by_endpoint[(series, str(ResistorPin.TERMINAL_A))]
+                driven = (series, str(ResistorPin.TERMINAL_A))
+                ohms_series = self.resistor_ohms(series)[0]
+                series_rows = [
+                    f"RSER_{_node(output_net)} {_node(output_net)} {_node(led_net)} {ohms_series}"
+                ]
+            # S6d: a 10 kOhm pull-down holds the LED input low while U5 is Hi-Z;
+            # it loads the driver here.
+            pull_downs = self.pull_downs(led_net)
             self._required_endpoints(
-                output_net,
+                led_net,
                 {
-                    ("U5", str(output_pin)),
+                    driven,
                     ("U6", str(led_pin)),
                     (test_point, str(TestPointPin.PROBE)),
+                    *((reference, pin) for reference, pin, _ in pull_downs),
                 },
             )
-            enable_node = "0" if enable_net == ground_net else _node(enable_net)
-            input_node = _node(input_net)
-            output_node = _node(output_net)
-            output_expression = (
-                f"BOUT{index} {output_node} 0 "
-                f"V={{V({supply_node})>{AHCT125.minimum_supply_volts} "
-                f"&& V({enable_node})<{AHCT125.enable_low_max_volts} ? "
-                f"(V({input_node})>{AHCT125.input_high_threshold_volts} ? "
-                f"V({supply_node})-{AHCT125.output_headroom_volts} : "
-                f"{AHCT125.output_headroom_volts}) : 0}}"
+            circuit.rows.extend(series_rows)
+            circuit.rows.extend(
+                f"RPD_{reference} {_node(led_net)} 0 {ohms}"
+                for reference, _, ohms in pull_downs
             )
-            lines.extend(
+            name, node_in, node_out = (
+                _node(led_net),
+                _node(input_net),
+                _node(led_net),
+            )
+            buffer_node = _node(output_net)
+            host = (
+                datasheets.PI_GPIO_VOH_AT_2MA if high else datasheets.PI_GPIO_VOL_AT_2MA
+            )
+            circuit.rows.extend(
                 (
-                    f"VIN{index} {input_node} 0 {LOGIC_3V3.supply_volts if high else 0}",
-                    output_expression,
+                    f"VHOST_{name} {node_in} 0 {host}",
+                    f"VBUF_{name} open_{name} 0 {open_volts}",
+                    f"RBUF_{name} open_{name} {buffer_node} {ohms}",
                 )
             )
+            if high:
+                circuit.controls.extend(
+                    (
+                        f"let result_{name}_input = v({node_in}) - {datasheets.AHCT125_VIH}",
+                        (
+                            f"let result_{name}_led = v({node_out}) - "
+                            f"{datasheets.SK9822_VIH_FRACTION * vcc}"
+                        ),
+                    )
+                )
+            else:
+                circuit.controls.extend(
+                    (
+                        f"let result_{name}_input = {datasheets.AHCT125_VIL} - v({node_in})",
+                        (
+                            f"let result_{name}_led = "
+                            f"{datasheets.SK9822_VIL_FRACTION * vcc} - v({node_out})"
+                        ),
+                    )
+                )
+            circuit.expect(f"{name}_input", 0.0, vcc)
+            circuit.expect(f"{name}_led", 0.0, vcc)
+        circuit.rows.append(".op")
+        return circuit
+
+    def pull_downs(self, net: str) -> list[tuple[str, str, float]]:
+        """Resistors from `net` to GND: (reference, pin on `net`, nominal ohms)."""
+        found: list[tuple[str, str, float]] = []
+        for reference, pin in sorted(self.endpoints_by_net.get(net, ())):
+            if (
+                not self.components[reference]
+                .GetFieldText("PartKey")
+                .startswith("RES_")
+            ):
+                continue
+            other = "2" if pin == "1" else "1"
+            if self.net_by_endpoint.get((reference, other)) == "GND":
+                found.append((reference, pin, self.resistor_ohms(reference)[0]))
+        return found
         output_1 = _node(self.net_by_endpoint[("U5", str(Ahct125Pin.BUFFER_1_OUTPUT))])
         output_2 = _node(self.net_by_endpoint[("U5", str(Ahct125Pin.BUFFER_2_OUTPUT))])
         lines.extend(
