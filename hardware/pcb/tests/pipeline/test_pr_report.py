@@ -46,6 +46,12 @@ class PullRequestReportTest(unittest.TestCase):
         )
 
     def _report(self, components: Mapping[str, object]) -> str:
+        """Run `build_report` end to end with the given current components.
+
+        The base side is an empty design and every other input is "no change".
+        Git lookups and KiCad board loading are patched out; the rest (reading the
+        current files from a temp directory, rendering Markdown) is real.
+        """
         document: dict[str, object] = {
             "projects": {
                 "board": {
@@ -72,6 +78,7 @@ class PullRequestReportTest(unittest.TestCase):
             board_sha256="same",
         )
 
+        # Stand-in for reading the base ref's committed files with `git show`.
         def base_json(_ref: str, name: str) -> dict[str, object]:
             return base_document if name == "netlist.json" else layout
 
@@ -104,12 +111,14 @@ class PullRequestReportTest(unittest.TestCase):
                 )
 
     def test_marks_unchanged_board_for_comment_suppression(self):
+        # Base and current both empty: the hidden marker must say "false".
         report = self._report({})
 
         self.assertIn("<!-- pcb-design-changed: false -->", report)
         self.assertNotIn("Changed files", report)
 
     def test_marks_semantic_board_change_for_comment_publication(self):
+        # A new component is a semantic change: marker "true" and an "Added" line.
         report = self._report(
             {"TP1": {"description": "test point", "value": "", "package": "SMD"}}
         )
@@ -118,6 +127,8 @@ class PullRequestReportTest(unittest.TestCase):
         self.assertIn("Added `TP1`", report)
 
     def test_reports_component_and_wiring_changes(self):
+        # R1's value changes (modified), TP1 is new (added), and net SDA loses U1.2
+        # and gains U1.3 and TP1.1 (rewired); check counts and detail text.
         before = {
             "components": {
                 "R1": {"description": "pull-up", "value": "10k", "package": "0603"}
@@ -143,6 +154,8 @@ class PullRequestReportTest(unittest.TestCase):
         self.assertEqual(nets, ["Rewired `SDA`: +TP1.1, +U1.3, −U1.2"])
 
     def test_reports_placement_and_nested_rule_changes(self):
+        # A moved footprint ([x, y, rotation]) and a design rule nested two levels
+        # deep must both be reported, the latter under its dotted key.
         before = {
             "placements": {"U1": [1.0, 2.0, 0.0]},
             "rules": {"defaults": {"clearance": 0.2}},
@@ -161,6 +174,9 @@ class PullRequestReportTest(unittest.TestCase):
         self.assertEqual(rules, ["`defaults.clearance`: `0.2` → `0.3`"])
 
     def test_groups_added_and_removed_copper_by_net_and_layer(self):
+        # Old board: one GND track. New board: one +5V track, a via and a GND zone.
+        # Expect per-net/layer grouping, a net-zero segment count (1 removed, 1
+        # added) and four geometry changes in total.
         old_track = CopperTrack(
             "GND", "B.Cu", CopperPoint(0.0, 0.0), CopperPoint(1.0, 0.0), 0.2
         )
