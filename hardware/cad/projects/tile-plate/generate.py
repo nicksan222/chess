@@ -335,27 +335,38 @@ def _cut_bezel(plate: bpy.types.Object, construction: bpy.types.Collection) -> N
         ],
         "Cutter_All_Bezel_Reliefs",
     )
-def _cut_orientation_notch(
-    plate: bpy.types.Object, construction: bpy.types.Collection
-) -> None:
-    """Clip the A1 corner so the plate cannot be fitted the wrong way round."""
-    size = shared.TILE_PLATE_ORIENTATION_NOTCH_MM
-    corner = shared.TILE_PLATE_SPAN_MM / 2.0
-    notch = modeling.rounded_box(
-        "Cutter_Orientation_Notch",
-        (size[0], size[1], size[2] + 2.0 * shared.BOOLEAN_THROUGH_OVERLAP_MM),
-        (
-            -corner,
-            -corner,
-            UNDERSIDE_Z_MM + shared.TILE_PLATE_THICKNESS_MM / 2.0,
-        ),
-        0.0,
-        construction,
+    modeling.cut_batch(
+        plate,
+        [
+            modeling.cylinder_between(
+                f"Cutter_Button_{index:02d}",
+                shared.PANEL_BUTTON_HOLE_DIAMETER_MM,
+                button.position_mm,
+                *through,
+                construction,
+                vertices=32,
+            )
+            for index, button in enumerate(shared.PANEL_BUTTONS)
+        ]
+        + [
+            modeling.box_between(
+                "Cutter_Display_Window",
+                (
+                    oled_x - window_x,
+                    oled_x + window_x,
+                    oled_y - window_y,
+                    oled_y + window_y,
+                    *through,
+                ),
+                construction,
+            )
+        ],
+        "Cutter_All_Bezel_Openings",
     )
-    modeling.cut_batch(plate, [notch], "Cutter_Orientation_Notch_Combined")
 
 
 def build(output_directory: Path = GENERATED) -> None:
+    """Generate `tile-plate.blend` and `tile-plate.png` into `output_directory`."""
     workspace = project.setup_printable(
         "Printable Tile Plate",
         shared.BLENDER_SCALE_LENGTH,
@@ -370,6 +381,9 @@ def build(output_directory: Path = GENERATED) -> None:
             square_count=shared.GRID_COUNT * shared.GRID_COUNT,
             dark_square_count=len(shared.BOARD_SQUARES.dark_squares),
             diffuser_skin_mm=shared.TILE_PLATE_DIFFUSER_SKIN_MM,
+            panel_button_count=shared.PANEL_BUTTON_COUNT,
+            # Recorded for reviewers: the plate exceeds a desktop printer bed, so it is
+            # quoted from a print service (see the CAD README).
             reference_build_volume_mm="420 x 420 x 420 print service",
         ),
     )
@@ -380,12 +394,14 @@ def build(output_directory: Path = GENERATED) -> None:
     floor_material = materials.solid("Studio floor", (0.025, 0.028, 0.03, 1.0), 0.48)
 
     plate = add_plate(workspace.printable, workspace.construction, plate_material)
+    # Cutter helpers must not appear in the render.
     workspace.construction.hide_render = True
     workspace.construction.hide_viewport = True
     presentation.add_studio(
         workspace.studio,
         floor_material,
         (1500.0, 1500.0),
+        # Camera position and look-at point: aim at the plate's top face.
         (300.0, -360.0, 320.0),
         (0.0, 0.0, shared.CASE_HEIGHT_MM),
         56,
