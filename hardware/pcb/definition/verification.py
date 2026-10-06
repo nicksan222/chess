@@ -126,5 +126,97 @@ ASSUMPTIONS = MappingProxyType(
             "unplugged and replugged after an over-voltage event; bench: "
             "trip/restart points, plug-in with the real adapter"
         ),
+        "LED supply window": (
+            "SK9822-A Rev 01 lists the chip supply at 5.0 V typical, 5.3 V maximum "
+            "(VDD range to 5.5 V): the PSU's +5 % (5.25 V) is inside it, but the OVLO "
+            "trip (5.34-5.66 V) sits above 5.3 V and up to 0.16 V above the 5.5 V "
+            "maximum at its latest corner; a supply between 5.3 V and the trip runs "
+            "the LEDs beyond their recommended supply; bench: LED behaviour at 5.3-5.5 V"
+        ),
+        "OVLO filter": (
+            "C144 delays OVLO: a running supply stepping to 6 V / 7 V trips after "
+            "1.72 / 0.65 ms; the rail peaks at 5.99 / 6.03 V and stays above 5.5 V "
+            "for 10.5 / 10.0 ms with only the LEDs' static load (bulk capacitors "
+            "hold it) [BEH]; D1 (VBR >= 13.3 V) does not clamp 6-7 V; bench: step "
+            "a lab supply 5 -> 6 V under the idle board"
+        ),
+        "Fuse resistance": (
+            "Littelfuse 451/453 gives F1's nominal cold resistance only (0.0367 ohm "
+            "at 10 % of rated current, 25 C): the supply corner allows 1.5 x for "
+            "tolerance and self-heating; bench: F1 voltage drop at 1 A"
+        ),
+        "Reversed 12 V adapter": (
+            "D1 SMBJ12CA (user decision D2): a reversed 12 V adapter keeps the rail "
+            "off (U74 IN -15 V rating, D1 off below 13.3 V) but pushes about 12 V / "
+            "604k = 20 uA into EN and OVLO with an ideal clamp, above TI's 10 uA "
+            "(SLVSFC9C 8.2); surges clamp at VC 19.9 V (IN max 28 V); bench: "
+            "reversed 12 V adapter, U74 still works afterwards"
+        ),
+        "EN at the surge clamp": (
+            "at D1's 19.9 V clamp (SMBJ12CA VC at IPP) R6/R7 put U74 EN at "
+            "19.9 x 261k / 865k = 6.0 V, 0.5 V under its 6.5 V absolute maximum "
+            "(SLVSFC9C 6.1); a clamp above about 21.5 V (a part swap, or a surge "
+            "past IPP) would exceed it; bench: none, a part-change check"
+        ),
+        "LED moisture sensitivity": (
+            "SK9822-A Rev 01 p1: MSL 5a (24 h floor life after opening the dry "
+            "pack, then bake per J-STD-033); 64 LEDs on one panel make floor life "
+            "an assembly constraint; U74 TPS259474ARPWR is MSL 2; the assembler "
+            "confirms dry-pack handling and bake"
+        ),
+        "Cord inductance": (
+            "supply cord and harness loop 0.5-1.5 uH (parallel-wire estimate about "
+            "0.8 uH for the 1 m UL2468 16 AWG cord; no cord drawing on file); bench: "
+            "scope DC_FUSED at plug-in"
+        ),
+        "Rocker dry circuit": (
+            "E-Switch RA1 (11.3.2022) rates RA11131100 at 10 A 125 VAC with 30 mOhm "
+            "contact resistance max but gives no minimum switching current or "
+            "dry-circuit rating: the rocker switches DC_FUSED onto RUN with a "
+            "1 kOhm wetting load (about 5 mA, 28 mW at 5.25 V); bench: RUN "
+            "voltage and contact resistance over repeated switching"
+        ),
+        "U74 fine-pitch DRC": (
+            "Lead-approved scoped rule (generated chess-board.kicad_dru): 0.16 mm "
+            "clearance and 0.20 mm tracks only for U74 pads and escape copper inside "
+            "its courtyard (RPW0010A 0.2 mm pad gaps), board 0.30/0.31 elsewhere; "
+            "above PCBWay's 1 oz outer 5/6 mil (rules.PCBWAY_MIN_*); fab confirms "
+            "at order"
+        ),
+        "Pi low voltage": (
+            "Worst corner (PSU -5 %, end-of-life contacts, 70 C, fuse 1.5 x, Q1 hot) "
+            "gives 4.525 V at the Pi header and 4.518 V at the farthest LED (Q1 "
+            "drops 6.5 mV) [BEH]: SK9822/AHCT125 4.5 V met, the 4.63 V Pi warning "
+            "level (not detected on the Zero range) not; bench: vcgencmd "
+            "get_throttled with a low supply at the approved LED cap"
+        ),
+        "SK9822 input levels": (
+            "Opsco SK9822-A Rev 01 gives no VIH/VIL: SPICE uses CMOS 0.7/0.3 x VDD for "
+            "the AHCT125-driven data and clock; bench: chain test at the SPI clock"
+        ),
+        "Stackup": (
+            "PCBWay 8-layer regular 1.6 mm (1 oz, 2116/7628 prepreg, Dk 4.45-4.74) "
+            "from the fab's published table, +10 % capacitance: I2C load and LED "
+            "line impedance (spice/bus_lines.py); fab confirms the stackup at order"
+        ),
+        "OLED pull-ups": (
+            "the I2C pull-ups are the Pi's 1.8 kOhm (R1/R2 removed, S5); the OLED "
+            "module's own pull-ups must be >= 4.7 kOhm or absent (3 mA at 0.4 V); "
+            "module input 10 pF, harness 50 pF/m; assembly: measure SDA/SCL to VCC "
+            "on the module before fitting"
+        ),
+        "LED line drivers": (
+            "AHCT125 output 75/43 Ohm (SCLS264R VOH/VOL slopes) and 1-3 ns edges "
+            "(not specified); SK9822 input 5 pF, output 25-100 Ohm with 1-3 ns edges "
+            "(not in the Opsco sheet; R10-R12 terminate the In4 rank-turn data hops "
+            "for that range); bench: scope U6 CKI/SDI and LED_D16 at the SPI clock"
+        ),
+        "Via plating": (
+            "0.018 mm hole-wall copper (PCBWay standard 18-25 um, per the "
+            "manufacturing review) for via ampacity; the fab's plating certificate "
+            "confirms at order"
+        ),
     }
+    # Case/CAD dimensions still unread or unmeasured (mechanical's single list).
+    | {f"CAD {name}": why for name, why in UNVERIFIED_DIMENSIONS.items()}
 )
