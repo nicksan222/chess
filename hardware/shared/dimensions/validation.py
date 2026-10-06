@@ -255,17 +255,8 @@ def validate() -> None:
     if TILE_PLATE_SCREW_HEAD_DEPTH_MM >= TILE_PLATE_THICKNESS_MM:
         raise ValueError("Screw head recess must leave a bearing shoulder")
 
-    # Every plate screw has to land on the case ledge. Anywhere inboard of it is
-    # over the PCB, and a boss there would collide with the board.
-    ledge_inner = PLAYING_SPAN_MM / 2.0 - CASE_PLATE_LEDGE_MM
-    ledge_outer = PLAYING_SPAN_MM / 2.0
-    screw_radius = TILE_PLATE_SCREW_HEAD_DIAMETER_MM / 2.0
-    for screw_x, screw_y in TILE_PLATE_SCREW_POSITIONS_MM:
-        reach = max(abs(screw_x), abs(screw_y))
-        if not ledge_inner + screw_radius <= reach <= ledge_outer - screw_radius:
-            raise ValueError("A tile plate screw does not land on the case ledge")
-    if len(set(TILE_PLATE_SCREW_POSITIONS_MM)) != len(TILE_PLATE_SCREW_POSITIONS_MM):
-        raise ValueError("Tile plate screw positions must be unique")
+    validate_board_pocket()
+    validate_plate_rim()
     if CASE_PLATE_LEDGE_MM <= TILE_PLATE_CLEARANCE_MM:
         raise ValueError("The plate ledge must be wider than the plate's own clearance")
 
@@ -340,6 +331,21 @@ def validate() -> None:
     ):
         raise ValueError("Display window must be smaller than the module behind it")
 
+    validate_buttons()
+    validate_rocker()
+    validate_jack()
+    validate_pi_bay()
+    validate_bottom_keepouts()
+    validate_sd_slot()
+    module_bottom_z = (
+        CASE_HEIGHT_MM
+        - TILE_PLATE_THICKNESS_MM
+        + PANEL_OLED_RECESS_DEPTH_MM
+        - PANEL_OLED_MODULE_MM[2]
+    )
+    if module_bottom_z < PCB_TOP_Z_MM:
+        raise ValueError("Display module in the plate recess would land on the PCB")
+
     if len(EXPANDER_POSITIONS_BY_BANK_MM) != 8:
         raise ValueError("Board composition must place eight GPIO expanders")
     if len(set(EXPANDER_POSITIONS_BY_BANK_MM.values())) != 8:
@@ -357,6 +363,54 @@ def validate() -> None:
             raise ValueError(
                 "A printed part exceeds the print-service reference volume"
             )
+
+
+Point = tuple[float, float]
+
+
+# Axis-aligned rectangle test used by the bay and keep-out checks.
+def _outside(point: Point, centre: Point, size: tuple[float, float]) -> float:
+    """Distance outside an axis-aligned rectangle; negative means inside."""
+    return max(
+        abs(point[0] - centre[0]) - size[0] / 2.0,
+        abs(point[1] - centre[1]) - size[1] / 2.0,
+    )
+
+
+def validate_board_pocket() -> None:
+    """The board drops into its pocket and rests on a ledge on all four sides."""
+    if (
+        not FDM_MIN_FIT_CLEARANCE_MM
+        <= PCB_POCKET_CLEARANCE_MM
+        <= FDM_MAX_FIT_CLEARANCE_MM
+    ):
+        raise ValueError("PCB pocket clearance is outside the prototype fit range")
+    if not isclose(PCB_CENTER_OFFSET_Y_MM, CASE_CENTER_OFFSET_Y_MM):
+        raise ValueError("The PCB pocket must be centred on the board")
+    for axis, outer in enumerate((CASE_WIDTH_MM, CASE_DEPTH_MM)):
+        if not isclose(
+            PCB_POCKET_SIZE_MM[axis], PCB_SIZE_MM[axis] + 2.0 * PCB_POCKET_CLEARANCE_MM
+        ):
+            raise ValueError("PCB pocket must be the board outline plus clearance")
+        if not meets((outer - PCB_POCKET_SIZE_MM[axis]) / 2.0, CASE_WALL_MM):
+            raise ValueError("Case wall outboard of the PCB pocket is too thin")
+        # The board can float by the clearance; with it pushed fully away from a
+        # side, the ledge on that side must still carry it.
+        for side in (-1.0, 1.0):
+            board_edge = side * PCB_SIZE_MM[axis] / 2.0
+            cavity_edge = side * CASE_CAVITY_SIZE_MM[axis] / 2.0
+            bearing = side * (board_edge - cavity_edge) - PCB_POCKET_CLEARANCE_MM
+            if not meets(bearing, FDM_MIN_FEATURE_MM):
+                raise ValueError("The PCB ledge does not support every board edge")
+    if not meets(
+        PCB_BOTTOM_EDGE_KEEPOUT_MM, CASE_PCB_LEDGE_OVERLAP_MM + PCB_POCKET_CLEARANCE_MM
+    ):
+        raise ValueError("The PCB ledge reaches past the bottom-side edge keepout")
+    cavity_centre = (0.0, CASE_CENTER_OFFSET_Y_MM)
+    boss_radius = PCB_SUPPORT_BOSS_DIAMETER_MM / 2.0
+    for boss in PCB_SUPPORT_POSITIONS_MM:
+        if _outside(boss, cavity_centre, CASE_CAVITY_SIZE_MM) > -boss_radius:
+            raise ValueError("A support boss is not inside the cavity under the board")
 
 
 def describe(domain: str = "Shared hardware") -> str:
