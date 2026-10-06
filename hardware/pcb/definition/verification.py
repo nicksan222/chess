@@ -57,5 +57,74 @@ ASSUMPTIONS = MappingProxyType(
             "copper window (the rank-3 LED chain crosses that area); bench: hotspot "
             "RSSI/throughput at 1/3/10 m, case closed vs open"
         ),
+        "MLCC lands": (
+            "the 0603 MLCCs (100 nF, 10 nF, 1 nF, 1 uF) are Yageo class DA, 1.6 +-0.1 x "
+            "0.8 +-0.1 (CC X7R V.18 Table 3), matching the Murata ±0.10 lands; "
+            "CAP_10U (0805 X5R) uses the 2.0x1.25 ±0.20 land, its Yageo X5R "
+            "thickness class not read (sheet not obtained)"
+        ),
+        "Pi GPIO pull-ups": (
+            "panel buttons rely on the Pi's internal pull-up, requested by firmware "
+            "(apps/firmware/src/hardware/linux_gpio.rs Bias::PullUp); no board resistor"
+        ),
+        "GST12A05 output": (
+            "GST12A-SPEC.PDF returns 404: SPICE corners use the GST25B family sheet "
+            "(5 V +-5 %, overload 110-150 % hiccup, OVP 110-140 %, 16 AWG 1 m cord); "
+            "bench: no-load and 2 A output voltage of the supplied unit"
+        ),
+        "eFuse model": (
+            "U74 (TPS259474ARPWR) is simulated from SLVSFC9C tables, no vendor "
+            "model [BEH], with OVLO hysteresis and separate EN/OVLO thresholds, "
+            "start-up limiting at ILIM, the ITIMER breaker (C143 1 nF: 1.286-1.741 V "
+            "x 0.9-1.1 nF / 1.2-2.5 uA = 0.46-1.6 ms), the fast trip at ISC (2.01 x "
+            "ILIM, typical only: no limits published) into limiting, and the 110 ms "
+            "auto-retry; which branch a 4 A overload takes (fast trip, or the "
+            "breaker) depends on that unpublished ISC spread and tSC is specified "
+            "only above 3 x ILIM, so both branches are tested and bounded; thermal "
+            "shutdown is not simulated (no transient thermal "
+            "impedance published), so how long U74 limits before TSD is a bench "
+            "item; reversed plug: 5.25 V / 604k = 8.7 uA per pin with an ideal "
+            "clamp (< 10 uA, 8.2), the simulated figure uses a generic pin clamp; "
+            "bench: scope inrush at hot plug and switch-on, OVLO trip with a lab "
+            "supply, reversed plug, breaker trip at full white"
+        ),
+        "LED power-up state": (
+            "SK9822-A Rev 01 p3 says 'default on electric lights'; distributors say "
+            "no illumination at power-on. LED_5V stays off until LED_EN (S6), but "
+            "if the chain wakes lit, enabling it pulls about 4 A: U74 either "
+            "fast-trips and limits at 1.8 A (+5V about 3 V) or passes it until its "
+            "breaker opens about 1.6 ms later (+5V then decays) [BEH], both "
+            "before U5 can clock a blank frame (U75 holds U5 off until LED_5V is up, "
+            "S6b H6): the Pi resets, R14 turns the rail off, the Pi reboots and "
+            "enables again, a boot loop. PRE-ORDER bench test, before any LED "
+            "purchase for assembly: a loose SK9822-A on a current-limited lab "
+            "supply, DI and CI held low through 10 kOhm as on the board (S6d; the "
+            "SK9822-A gives no input leakage, and 10 kOhm keeps DI/CI under 0.3 V "
+            "for up to 30 uA of U5 plus U6 leakage, U5's IOZ being 2.5 uA max), VDD "
+            "ramped 0 -> 5 V twenty times with no clock or data; pass = "
+            "no LED lights and each LED draws < 5 mA before its first frame; then, "
+            "on the board, enable an uninitialised chain and scope +5V, LED_5V and "
+            "U74 current"
+        ),
+        "Host and logic current": (
+            "+5V carries the Pi plus logic as 0.45 A: the Pi Zero 2 W's 'typical "
+            "bare-board active' 350 mA (Raspberry Pi power-supplies documentation; "
+            "no maximum is published) plus a 100 mA allowance for the OLED, U5, "
+            "U75, the eight TCA9554 and the 64 DRV5032, not a datasheet sum; Pi "
+            "peaks above typical (CPU load, Wi-Fi) are not covered; bench: board "
+            "input current with LEDs off, idle and at full CPU load with Wi-Fi"
+        ),
+        "OVLO window": (
+            "OVLO trips at 5.34-5.66 V (604k/169k 0.1 %, VOV(R) 1.183-1.223 V, "
+            "+-0.1 uA) and restarts below 4.85-5.17 V (VOV(F)); C144 10 nF stops "
+            "plug-in rings tripping it (without it a +5 % supply locks out at the "
+            "low corner [BEH]); an overshoot above 5.34 V for about 1 ms or more "
+            "that settles above 4.85 V still locks out until replugged; a supply "
+            "failing into 5.5-5.66 V stays on and stresses the LEDs (VDD abs max "
+            "5.5 V); after any trip a supply at +5 % never restarts and 5.0 V "
+            "restarts only at the high VOV(F) corner [BEH], so the product must be "
+            "unplugged and replugged after an over-voltage event; bench: "
+            "trip/restart points, plug-in with the real adapter"
+        ),
     }
 )
