@@ -413,6 +413,66 @@ def validate_board_pocket() -> None:
             raise ValueError("A support boss is not inside the cavity under the board")
 
 
+def validate_plate_rim() -> None:
+    """The plate rests on a rim outboard of the PCB pocket, held by screws there."""
+    if not isclose(TILE_PLATE_CENTER_Y_MM, CASE_CENTER_OFFSET_Y_MM):
+        raise ValueError("The plate must be centred on the case")
+    for axis, outer in enumerate((CASE_WIDTH_MM, CASE_DEPTH_MM)):
+        if not isclose(
+            CASE_PLATE_REBATE_MM[axis],
+            TILE_PLATE_SIZE_MM[axis] + TILE_PLATE_CLEARANCE_MM,
+        ):
+            raise ValueError("The plate rebate must be the plate plus its clearance")
+        if not isclose(
+            (TILE_PLATE_SIZE_MM[axis] - PCB_POCKET_SIZE_MM[axis]) / 2.0,
+            CASE_PLATE_LEDGE_MM,
+        ):
+            raise ValueError("The plate rim must be the same width on every side")
+        if not meets((outer - CASE_PLATE_REBATE_MM[axis]) / 2.0, CASE_WALL_MM):
+            raise ValueError("Case wall outboard of the plate rebate is too thin")
+    centre = (0.0, TILE_PLATE_CENTER_Y_MM)
+    pilot_margin = PCB_SUPPORT_PILOT_DIAMETER_MM / 2.0 + FDM_MIN_FEATURE_MM
+    head_margin = TILE_PLATE_SCREW_HEAD_DIAMETER_MM / 2.0 + FDM_MIN_FEATURE_MM
+    for screw in TILE_PLATE_SCREW_POSITIONS_MM:
+        if not meets(_outside(screw, centre, PCB_POCKET_SIZE_MM), pilot_margin):
+            raise ValueError("A tile plate screw pilot breaks into the PCB pocket")
+        if not meets(-_outside(screw, centre, TILE_PLATE_SIZE_MM[:2]), head_margin):
+            raise ValueError("A tile plate screw head is too close to the plate edge")
+    if len(set(TILE_PLATE_SCREW_POSITIONS_MM)) != len(TILE_PLATE_SCREW_POSITIONS_MM):
+        raise ValueError("Tile plate screw positions must be unique")
+
+
+def validate_buttons() -> None:
+    """Button stems stand proud of the bezel; housings clear the plate."""
+    protrusion = PCB_TOP_Z_MM + PANEL_BUTTON_HEIGHT_MM - CASE_HEIGHT_MM
+    if (
+        not PANEL_BUTTON_MIN_PROTRUSION_MM
+        <= protrusion
+        <= PANEL_BUTTON_MAX_PROTRUSION_MM
+    ):
+        raise ValueError(f"Button stems stand {protrusion:g} mm proud of the bezel")
+    if not meets(
+        PCB_TO_PLATE_GAP_MM + PANEL_BUTTON_RELIEF_DEPTH_MM - PANEL_BUTTON_BODY_MM[2],
+        FDM_MIN_FIT_CLEARANCE_MM,
+    ):
+        raise ValueError("A button housing would touch the plate")
+    if not meets(
+        TILE_PLATE_THICKNESS_MM - PANEL_BUTTON_RELIEF_DEPTH_MM, FDM_MIN_FLOOR_MM
+    ):
+        raise ValueError("Button relief leaves too thin a bezel")
+    if not meets(
+        (PANEL_BUTTON_HOLE_DIAMETER_MM - PANEL_BUTTON_ACTUATOR_DIAMETER_MM) / 2.0,
+        FDM_MIN_FIT_CLEARANCE_MM,
+    ):
+        raise ValueError("Button hole does not clear the stem")
+    relief = max(PANEL_BUTTON_BODY_MM[:2]) + 2.0 * PANEL_BUTTON_RELIEF_CLEARANCE_MM
+    positions = [button.position_mm for button in PANEL_BUTTONS]
+    for index, (x0, y0) in enumerate(positions):
+        for x1, y1 in positions[index + 1 :]:
+            if not meets(max(abs(x0 - x1), abs(y0 - y1)) - relief, FDM_MIN_FEATURE_MM):
+                raise ValueError("Neighbouring button reliefs merge")
+
+
 def describe(domain: str = "Shared hardware") -> str:
     """Return a compact summary suitable for domain validation commands."""
     return (
