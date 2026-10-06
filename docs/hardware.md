@@ -1,7 +1,8 @@
 # Hardware design
 
 D-PROTOTYPE is a fixed-function sensor-and-light PCB connected directly to a Raspberry
-Pi Zero 2 W. There is no microcontroller and no separate schematic source tree.
+Pi Zero 2 W, which hangs under the board and plugs into a socket (J1) on the board's
+bottom side. There is no microcontroller and no separate schematic source tree.
 
 ## Sources of truth
 
@@ -14,8 +15,11 @@ Pi Zero 2 W. There is no microcontroller and no separate schematic source tree.
   modules own their physical measurements.
 - [`hardware/pcb/definition/board.py`](../hardware/pcb/definition/board.py) composes
   the reviewed typed component assemblies and connectivity.
+- [`hardware/shared/electronics/harness.py`](../hardware/shared/electronics/harness.py)
+  defines the off-board wiring harnesses (power entry, OLED) cavity by cavity.
 - [`hardware/pcb/generated/bom.md`](../hardware/pcb/generated/bom.md) is the
-  generated assembly manifest.
+  generated assembly manifest and
+  [`harness.md`](../hardware/pcb/generated/harness.md) the generated harness table.
 
 The PCB implementation supplies footprints, placement, routing, and fabrication
 output for those shared definitions. This avoids maintaining a drawing that can
@@ -24,9 +28,14 @@ drift from the board actually sent to fabrication.
 ## Architecture
 
 Eight TI TCA9554DWR expanders read all 64 DRV5032FC active-low omnipolar Hall
-sensors. Each owns a compact 2-rank × 4-file bank and all eight P0–P7 inputs. Sixty-four SK9822 LEDs form a serpentine SPI chain beginning at
-A1. Twelve panel buttons connect to dedicated Pi GPIO lines, and an SSD1306 OLED
-uses the shared I²C bus.
+sensors. Each owns a compact 2-rank × 4-file bank and all eight P0–P7 inputs. Sixty-four Opsco SK9822-A LEDs (GRB colour order, budgeted at 18 mA per channel) form a serpentine
+SPI chain beginning at A1, powered from a switchable `LED_5V` rail that is off at boot (see
+[power](power.md#led-rail-switch)); the Pi's 3.3 V SPI clock and data reach the 5 V
+chain through a 74AHCT125 buffer (U5, held off by a SN74LVC1G97 gate, U75, until the LED rail is up) and a 56 Ω series resistor (R9) that damps the
+first link. Later LED links run over a plane reference, and the three left rank-turn
+data links carry their own 56 Ω series resistors (R10-R12). Twelve E-Switch TL1105CF100Q panel buttons
+connect to dedicated Pi GPIO lines, and an SSD1306 OLED module on the shared I²C
+bus is wired to a JST SH header (J2) and sits in the tile plate's bezel.
 
 `hardware/shared/hall_banks.py` defines bank membership, input order, address
 straps, and labels once. Shared dimensions derive placement from bank geometry
@@ -38,6 +47,35 @@ and GPIO4 explicitly no-connect. See [host acquisition](host.md#reading-the-boar
 for register setup, non-atomic scans, pull-up assumptions, and required testing.
 The SOIC-16W land pattern follows TI DW0016A (SCPS233E pp. 39–40): 1.27 mm pitch,
 9.3 mm pad-row spacing, 2.0 × 0.6 mm lands. This is not a scaled old package.
+
+## Power entry and bottom side
+
+The 5 V supply enters through a panel jack and a panel rocker in the case's rear
+wall, wired to a JST VH header (J4) on the board; see [power](power.md) for the eFuse protection (the rocker
+switches the eFuse's enable signal, not the load). Only
+through-hole parts sit on the bottom side: J1 (the Pi socket), J4 and the two bulk
+capacitors. Everything else is top side.
+
+## Buses and LED lines (S5)
+
+- **I²C:** the only pull-ups are the Pi's own 1.8 kΩ (the board's R1/R2 were removed).
+  SPICE and a capacitance estimate give a rise time of 374 ns on SDA (243 pF) and
+  355 ns on SCL (230-243 pF), so the bus is good at the Pi's default **100 kHz only**
+  (1000 ns limit); 400 kHz fails on SDA against its 300 ns limit. The firmware image
+  sets no baud rate, so it runs at 100 kHz. The OLED module's own pull-ups must be
+  4.7 kΩ or higher, or absent (measure before fitting; see [assembly](assembly.md)).
+- **LED lines:** the LED rail is an inner plane, so the outer-layer links are
+  referenced to it. The first data link (through R9) and the clock stay within the
+  SK9822's input range at 4.5 V and 5.25 V in simulation (lossless-line model, assumed
+  25-100 Ω driver, 1-3 ns edges). Rank-turn links are plane-referenced. The three left
+  rank-turn data links (LED_D16/D32/D48, on an inner layer) were out of range without
+  a terminator and pass with R10-R12 (56 Ω, 3 mm after each LED's data output). Edges
+  settle in at most about 6 ns, well inside the SK9822-A's 30 MHz serial limit.
+  The SK9822-A's driver strength is not in its datasheet, so a bench scope of LED_D16 at
+  the SPI clock remains. Test points TP3/TP4 sit next to U5/R9. The datasheet's
+  optional 500 Ω series resistors are not fitted. R9 is kept as margin; R17/R18 (10 kΩ) hold LED_DATA_5V and LED_CLK_5V low while the buffer is off. The SPI clock
+  is limited to 10 MHz, which leaves a worst-case data setup margin of about 33 ns
+  against the SK9822-A (about 1.5 ns would remain at 30 MHz).
 
 The single PCB retains its validated eight-layer, 1.6 mm stackup. No compatible
 layer reduction or physical operation has been established. Hall routes are
@@ -53,7 +91,15 @@ just --justfile hardware/shared/justfile check
 just --justfile hardware/pcb/justfile review
 ```
 
-PCB tests verify package coverage, pad numbering, placement, fabrication rules,
-and connectivity, including native-board/schematic parity. `just pcb-release`
-also requires real prototype evidence before fabrication export; a review pass
-is not physical approval.
+PCB tests verify package coverage, pad geometry against hand-typed datasheet
+tables, silkscreen and solder-mask spacing, decoupling distance, pin electrical
+types, copper ampacity, the Pi header geometry and bottom-side placement, the
+harness wiring, placement, fabrication rules, and connectivity including
+native-board/schematic parity; SPICE covers the buttons, Hall banks, power planes
+and movement scenarios. They are described in the
+[PCB README](../hardware/pcb/README.md#verification-layers).
+
+`just pcb-release` additionally requires real prototype evidence and an empty
+`ASSUMPTIONS` list (`hardware/pcb/definition/verification.py`) before fabrication
+export; a review pass is not physical approval, and every open item there still
+needs a bench measurement or a datasheet.
