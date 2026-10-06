@@ -156,3 +156,40 @@ class SilkscreenAndMaskTest(unittest.TestCase):
                     )
                     self.assertGreaterEqual(worst, dam - 1e-6)
         self.assertGreater(placed, 0)
+
+    def test_every_via_keeps_a_mask_dam_from_every_pad_opening(self) -> None:
+        output = Path(os.environ.get("PCB_OUTPUT", PCB_ROOT / "generated"))
+        routed = pcbnew.LoadBoard(str(output / "chess-board.kicad_pcb"))
+        margin = routed.GetDesignSettings().m_SolderMaskExpansion
+        apertures: defaultdict[tuple[int, int], list[tuple[str, Shape]]] = defaultdict(
+            list
+        )
+        for footprint in routed.GetFootprints():
+            for pad in footprint.Pads():
+                if not (pad.IsOnLayer(pcbnew.F_Mask) or pad.IsOnLayer(pcbnew.B_Mask)):
+                    continue
+                opening = _mask_opening(pad, margin)
+                label = f"{footprint.GetReference()}-{pad.GetNumber()}"
+                for cell in _cells(opening, 0.0):
+                    apertures[cell].append((label, opening))
+        dam = rules.PCBWAY_MIN_MASK_DAM_MM
+        failures: list[str] = []
+        vias = [t for t in routed.GetTracks() if isinstance(t, pcbnew.PCB_VIA)]
+        self.assertTrue(vias)
+        for via in vias:
+            at = via.GetPosition()
+            x, y = pcbnew.ToMM(at.x), pcbnew.ToMM(at.y)
+            radius = pcbnew.ToMM(via.GetWidth(pcbnew.F_Cu)) / 2
+            for cell in _cells((x, y, x, y), radius + dam):
+                for label, opening in apertures[cell]:
+                    gap = _circle_to_box(x, y, radius, opening)
+                    if gap < dam - 1e-6:
+                        failures.append(
+                            f"{via.GetNetname()} via ({x:.2f}, {y:.2f}) {gap:.3f} mm "
+                            f"from {label}"
+                        )
+        self.assertEqual(sorted(set(failures)), [])
+
+
+if __name__ == "__main__":
+    unittest.main()

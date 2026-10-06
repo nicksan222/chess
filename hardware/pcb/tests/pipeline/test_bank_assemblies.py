@@ -1,4 +1,10 @@
-"""Golden tests for PCB-owned Hall-bank identities and placement."""
+"""Golden tests for PCB-owned Hall-bank identities and placement.
+
+Why golden values: reference designators, I2C addresses and positions are published
+identities (BOM, schematic). They must change only on purpose, so any
+edit to `bank_assemblies.py` or the shared dimensions that moves them fails here
+and forces the change to be reviewed and the expected table updated deliberately.
+"""
 
 import unittest
 
@@ -7,6 +13,8 @@ from pcb.definition.bank_assemblies import BANK_ASSEMBLIES
 
 class HallBankAssemblyTest(unittest.TestCase):
     def test_all_published_bank_records_are_stable(self) -> None:
+        # Columns: label, I2C address, expander ref, bypass-cap ref, expander
+        # position (mm), bypass-cap position (mm; expander + the common offset).
         expected = (
             ("A1-D2", 0x20, "U1", "C3", (-80.0, -118.0), (-72.0, -112.0)),
             ("E1-H2", 0x21, "U2", "C4", (80.0, -118.0), (88.0, -112.0)),
