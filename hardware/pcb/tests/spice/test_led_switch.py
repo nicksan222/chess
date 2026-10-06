@@ -53,3 +53,86 @@ def _corner(*, ilim_high: bool) -> Corner:
 
 class LedSwitchSpiceTest(unittest.TestCase):
     """LED rail switch behaviour: stays off until enabled, enable ramp, lit-chain residual and output-enable timing."""
+
+    stage: EfuseBoard
+    path_ohms: float
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        """Build the eFuse front end and the series-path resistance once."""
+        cls.stage = EfuseBoard(board_circuits())
+        fuse = cls.stage.board.components["F1"].GetValue()
+        cls.path_ohms = series_path(routed_board(), fuse, "low").total_ohms
+
+    def _bulk(self) -> list[str]:
+        """SPICE rows for every capacitor fitted between +5V and GND (the bulk and bypass capacitance the eFuse charges)."""
+        rows: list[str] = []
+        board = self.stage.board
+        for reference, component in board.components.items():
+            nets = {board.net_by_endpoint.get((reference, pin)) for pin in ("1", "2")}
+            if component.GetFieldText("PartKey").startswith("CAP_") and nets == {
+                "+5V",
+                "GND",
+            }:
+                key = component.GetFieldText("PartKey")
+                value = {"CAP_560U": "560u", "CAP_10U": "10u", "CAP_100N": "100n"}[key]
+                rows.append(f"C{reference} out 0 {value}")
+        return rows
+
+    def _circuit(
+        self,
+        name: str,
+        *,
+        lit: bool,
+        enable: bool,
+        ilim_high: bool,
+        q1_vto: float = Q1_THRESHOLD_CORNERS[0],
+        full_white_ms: float | None = None,
+        timer: TimerCorner = "slow",
+    ) -> SpiceCircuit:
+        """The power-up/enable circuit: `lit` models a chain that powers up lit, `enable` raises LED_EN, `ilim_high` and `q1_vto` pick corners.
+
+        `full_white_ms` steps the chain to full white at that time (S6d); `timer`
+        picks U74's ITIMER blanking corner.
+        """
+        supply = datasheets.PSU_VOLTS.high
+        circuit = self.stage.front_end(
+            f"Generated chess-board LED switch, {name} [BEH]",
+            _corner(ilim_high=ilim_high),
+            f"PULSE(0 {supply} 0 1u 1u 1 2)",
+            path_ohms=self.path_ohms,
+            run_on=True,
+            timer=timer,
+        )
+        circuit.rows.extend(self._bulk())
+        circuit.rows.append(
+            f"RHOST out 0 {datasheets.PSU_RATED_VOLTS / datasheets.HOST_AND_LOGIC_AMPS}"
+        )
+        circuit.rows.extend(
+            switch_rows(
+                self.stage.board,
+                lit=lit,
+                rds_ohms=datasheets.LED_SWITCH_OHMS.high,
+                q1_vto=q1_vto,
+            )
+        )
+        drive = (
+            f"PWL(0 0 {ENABLE_AT_MS}m 0 {ENABLE_AT_MS + 0.001}m 3.3)" if enable else "0"
+        )
+        circuit.rows.append(f"VEN en_pi 0 {drive}")
+        end_ms = ENABLE_AT_MS + 20
+        if full_white_ms is not None:
+            # The chain's channels on at 18 mA once VDD clears the LEDs' 3 V.
+            channels = LED_COUNT * 3 * datasheets.SK9822_CHANNEL_AMPS_MAX
+            circuit.rows.extend(
+                (
+                    f"VWHITE white 0 PWL(0 0 {full_white_ms}m 0 {full_white_ms + 0.01}m 1)",
+                    (
+                        f"BWHITE led 0 I={{V(white) * {channels}"
+                        " * 0.5 * (1 + tanh((V(led) - 3.0) / 0.1))}"
+                    ),
+                )
+            )
+            end_ms = full_white_ms + OVERLOAD_WINDOW_MS + 1
+        circuit.rows.append(f".tran 10u {end_ms}m 0 10u uic")
+        return circuit
