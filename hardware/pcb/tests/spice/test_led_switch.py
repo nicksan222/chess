@@ -253,3 +253,40 @@ class LedSwitchSpiceTest(unittest.TestCase):
                 )
             with self.subTest(case=case, branch=branch):
                 run_circuit(f"test_led_switch_overload_{case}_{branch}.py", circuit)
+
+    @residual("LED power-up state")
+    def test_enable_into_a_lit_chain_is_the_recorded_residual(self) -> None:
+        # ASSUMPTION "LED power-up state": if the chain powers up lit, the enable
+        # pulls about 4 A. Low ILIM: U74 fast-trips and limits at ILIM, +5V sits
+        # near 3 V; high ILIM: the breaker opens about 1.6 ms after LED_5V passes
+        # 3 V and +5V decays. Either way the Pi browns out before any blank frame
+        # can land. Recorded bounds, not a pass criterion.
+        for ilim_high in (False, True):
+            circuit = self._circuit(
+                "enable, lit", lit=True, enable=True, ilim_high=ilim_high
+            )
+            start = f"{ENABLE_AT_MS}m"
+            circuit.controls.extend(
+                (
+                    f"meas tran result_rail_at_1ms FIND v(out) AT={ENABLE_AT_MS + 1}m",
+                    f"meas tran result_rail_at_5ms FIND v(out) AT={ENABLE_AT_MS + 5}m",
+                    f"meas tran result_rail_min MIN v(out) FROM={start}",
+                    "print result_rail_at_1ms result_rail_at_5ms result_rail_min",
+                )
+            )
+            circuit.expect("rail_at_1ms", *LIT_ENABLE_RAIL_1MS)
+            circuit.expect("rail_at_5ms", *LIT_ENABLE_RAIL_5MS)
+            branch = "breaker" if ilim_high else "fast_trip"
+            with self.subTest(branch=branch):
+                run_circuit(f"test_led_switch_enable_lit_{branch}.py", circuit)
+
+    def test_u75_wiring_is_an_or_by_the_datasheet_table(self) -> None:
+        # Reviewer-s6b B1: U5 must be off (LED_OE_N high) while Q1's gate is high
+        # (rail off or ramping) or LED_EN_N is high (disabled), and on only when
+        # both are low. Evaluated from SCES416N Table 1 at the placed pins.
+        for gate, enable_n in itertools.product((0, 1), repeat=2):
+            with self.subTest(gate=gate, enable_n=enable_n):
+                self.assertEqual(
+                    u75_output(self.stage.board, gate=gate, enable_n=enable_n),
+                    gate | enable_n,
+                )
