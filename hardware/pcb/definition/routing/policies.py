@@ -683,15 +683,16 @@ def _power_escape_position(
         escape_mm, horizontal = escape_policy.power_escape_policy(
             module.GetValue(), pad.GetNumber()
         )
-    distance = pcbnew.FromMM(escape_mm)
-    if horizontal:
-        escaped = pcbnew.VECTOR2I(at.x + (distance if dx >= 0 else -distance), at.y)
-    else:
-        length = max(1, round(math.hypot(dx, dy)))
-        escaped = pcbnew.VECTOR2I(
-            at.x + dx * distance // length, at.y + dy * distance // length
-        )
-    return escaped
+    vertical = escape_policy.uses_vertical_power_escape(module.GetValue())
+    # Escape along one axis, far enough that the via never enters the pad's mask.
+    if horizontal or (not vertical and abs(dx) >= abs(dy)):
+        half = pcbnew.ToMM(pad.GetSize().x) / 2
+        reach = max(escape_mm, half + escape_policy.VIA_MASK_WEB_REACH_MM)
+        distance = pcbnew.FromMM(reach)
+        return pcbnew.VECTOR2I(at.x + (distance if dx >= 0 else -distance), at.y)
+    half = pcbnew.ToMM(pad.GetSize().y) / 2
+    distance = pcbnew.FromMM(max(escape_mm, half + escape_policy.VIA_MASK_WEB_REACH_MM))
+    return pcbnew.VECTOR2I(at.x, at.y + (distance if dy >= 0 else -distance))
 
 
 BANK_ROUTE_INSET_MM = 1.0
@@ -763,13 +764,24 @@ def route(board: pcbnew.BOARD) -> None:
         nodes,
         _host_header_via_keepouts(board),
     )
+    # Deferred: the eFuse stage builds on this module's routing helpers.
+    from pcb.definition.routing import efuse, led_switch
+
     fanout_power(ctx)
+    # Fixed wide input-power copper first, so every grid-routed net avoids it.
+    route_input_power(ctx)
+    efuse.route_efuse_power(ctx)
+    led_switch.route_led_switch(ctx)
+    route_led_data_termination(ctx)
     route_led_chain(ctx)
-    route_control_signals(ctx)
+    # Hall escapes are fixed geometry; reserve them before any grid-routed net.
     pending = reserve_hall(ctx)
+    route_control_signals(ctx)
     route_buttons(ctx)
     route_internal_buses(ctx)
     route_hall(ctx, pending)
+    # After the Hall copper is fixed, so the bias nets route around its vias.
+    efuse.route_efuse_bias(ctx)
     route_led_chain(ctx, obstructed_only=True)
-    route_input_power(ctx)
     prune_unused_signal_vias(ctx.board)
+    efuse.split_fine_pitch_escapes(ctx.board)
