@@ -1,4 +1,9 @@
-"""Shared setup for Python-defined SPICE test cases."""
+"""Shared setup for Python-defined SPICE test cases.
+
+Role: `board_circuits()` gives tests the board-aware circuit factory, and `run_circuit()`
+runs a circuit, staging its `.cir` file in `PCB_SPICE_OUTPUT` (the review output set) when
+that is set and in a temporary directory otherwise.
+"""
 
 from __future__ import annotations
 
@@ -18,6 +23,8 @@ PCB_ROOT = Path(__file__).resolve().parents[2]
 
 @dataclass(frozen=True, slots=True)
 class ManufacturingSettings:
+    """The manufacturing settings the SPICE tests read (currently the LED brightness cap)."""
+
     led_global_brightness_max: Fraction
 
     @classmethod
@@ -42,14 +49,16 @@ def board_circuits() -> BoardHarness:
     return BoardHarness(definition.load(), settings.led_global_brightness_max)
 
 
-def run_circuit(test_file: str, circuit: SpiceCircuit) -> None:
-    """Render into the review output set, or use a temporary standalone circuit."""
+def run_circuit(test_file: str, circuit: SpiceCircuit) -> dict[str, float]:
+    """Render into the review output set, or use a temporary standalone circuit.
+
+    Returns the `result_*` values the deck printed.
+    """
     output = os.environ.get("PCB_SPICE_OUTPUT")
     if output:
         path = Path(output)
         path.mkdir(parents=True, exist_ok=True)
-        SpiceRunner().run(
+        return SpiceRunner().run(
             circuit.write(path / Path(test_file).with_suffix(".cir").name)
         )
-    else:
-        SpiceRunner().run(circuit)
+    return SpiceRunner().run(circuit)
