@@ -10,6 +10,16 @@
 *.tmp
 *.kicad_prl
 *.filled.kicad_pro
+# PCB harness outputs are regenerated from Python circuit declarations.
+# Already tracked legacy files are unaffected by ignore rules.
+*.kicad_pcb
+*.kicad_pro
+*.cir
+# Any newly produced review files in these output trees stay local, regardless
+# of extension (including schematics, DRC reports, renders and CAD previews).
+/hardware/pcb/generated/
+/hardware/pcb/definition/output/
+/hardware/cad/generated/
 *.blend1
 *.blend2
 __pycache__/
@@ -20,6 +30,3 @@ __pycache__/
 .claude/settings.local.json
 /.codex/
 /dist/firmware/
-
-# Generated next to their Python SPICE test cases.
-/hardware/pcb/tests/spice/*.cir
