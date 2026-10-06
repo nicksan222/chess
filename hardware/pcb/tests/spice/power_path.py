@@ -64,3 +64,102 @@ def _outer_copper_m() -> float:
         json.loads((PCB_ROOT / "definition/manufacturing.json").read_text()),
     )
     return OZ_MM * record["fabrication"]["outer_copper_oz_min"] / 1000
+
+
+def track_ohms(
+    board: pcbnew.BOARD,
+    net: str,
+    corner: Corner,
+    *,
+    near: pcbnew.VECTOR2I | None = None,
+    min_width_mm: float = 0.0,
+) -> float:
+    """Sum of a net's track resistances (optionally only within 8 mm of `near`).
+
+    An upper bound for the high corner: parallel branches are counted in series.
+    Tracks narrower than `min_width_mm` (bias stubs) carry no load and are skipped.
+    """
+    thickness = _outer_copper_m()
+    total = 0.0
+    for track in board.GetTracks():
+        if track.GetNetname() != net or isinstance(track, pcbnew.PCB_VIA):
+            continue
+        if pcbnew.ToMM(track.GetWidth()) < min_width_mm:
+            continue
+        start, end = track.GetStart(), track.GetEnd()
+        if near is not None and max(
+            math.hypot(point.x - near.x, point.y - near.y) for point in (start, end)
+        ) > pcbnew.FromMM(8.0):
+            continue
+        length = pcbnew.ToMM(round(math.hypot(end.x - start.x, end.y - start.y)))
+        width = pcbnew.ToMM(track.GetWidth())
+        total += copper_ohm_m(corner) * length / 1000 / (width / 1000 * thickness)
+    return total
+
+
+@dataclass(frozen=True)
+class SeriesPath:
+    """Supply-side resistance split into the + and return legs (ohms)."""
+
+    positive: dict[str, float]
+    ground: dict[str, float]
+
+    @property
+    def positive_ohms(self) -> float:
+        """Total resistance of the positive leg."""
+        return sum(self.positive.values())
+
+    @property
+    def ground_ohms(self) -> float:
+        """Total resistance of the return leg."""
+        return sum(self.ground.values())
+
+    @property
+    def total_ohms(self) -> float:
+        """Positive plus return leg."""
+        return self.positive_ohms + self.ground_ohms
+
+
+def series_path(board: pcbnew.BOARD, fuse_mpn: str, corner: Corner) -> SeriesPath:
+    """Supply-side resistance at `corner`: cord, jack and J4 contacts, harness wires, fuse, DC
+    copper and the eFuse, split into the positive and return legs.
+    """
+    cord = wire_ohms(
+        datasheets.PSU_CORD_AWG, pick(datasheets.PSU_CORD_METRES, corner), corner
+    )
+    contact = pick(datasheets.VH_CONTACT_OHMS, corner)
+    jack = pick(datasheets.JACK_CONTACT_OHMS, corner)
+    harness = {
+        wire.net: wire_ohms(wire.gauge_awg, wire.length_mm / 1000, corner)
+        for wire in POWER_HARNESS
+    }
+    efuse = board.FindFootprintByReference("U74")
+    if efuse is None:
+        raise ValueError("the S4b supply path needs U74")
+    copper = corner == "high"
+    positive = {
+        "supply cord": cord,
+        "jack centre contact": jack,
+        "harness DC_IN": harness["DC_IN"],
+        "J4 contact 1": contact,
+        "DC_IN track": track_ohms(board, "DC_IN", corner),
+        "fuse (cold x hot/tolerance allowance)": FUSES[fuse_mpn][0]
+        * pick(datasheets.FUSE_RESISTANCE_FACTOR, corner),
+        # The loop's branches are in parallel; the high corner counts all of it.
+        "DC_FUSED copper": (
+            track_ohms(board, "DC_FUSED", corner, min_width_mm=0.35) if copper else 0.0
+        ),
+        "eFuse RON [BEH]": pick(datasheets.EFUSE_RON_OHMS, corner),
+        "U74 OUT copper": (
+            track_ohms(board, "+5V", corner, near=efuse.GetPosition())
+            if copper
+            else 0.0
+        ),
+    }
+    ground = {
+        "supply cord": cord,
+        "jack sleeve contact": jack,
+        "harness GND": harness["GND"],
+        "J4 contact 2": contact,
+    }
+    return SeriesPath(positive, ground)
