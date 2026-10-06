@@ -81,3 +81,78 @@ def _square(centre: tuple[float, float], side: float) -> Rect:
     """A square over the larger body side covers any rotation of the body."""
     half = side / 2.0
     return (centre[0] - half, centre[0] + half, centre[1] - half, centre[1] + half)
+
+
+def _overlaps(a: Rect, b: Rect) -> bool:
+    """True if two (x0, x1, y0, y1) rectangles share area (touching edges do not)."""
+    return a[0] < b[1] and b[0] < a[1] and a[2] < b[3] and b[2] < a[3]
+
+
+def _gap_to(rect: Rect, point: tuple[float, float]) -> float:
+    """Chebyshev distance from a point to a rectangle (0 if inside), as used for bosses."""
+    dx = max(rect[0] - point[0], point[0] - rect[1], 0.0)
+    dy = max(rect[2] - point[1], point[1] - rect[3], 0.0)
+    return max(dx, dy)
+
+
+def mated_zones(reference: str, mpn: str) -> list[tuple[Rect, float]]:
+    """Board-frame rectangles and heights of a connector's mated envelope."""
+    zones = MATED_ENVELOPES.get(mpn, ())
+    if not zones:
+        return []
+    placement = cad.PCB_STRIP_PLACEMENTS[reference]
+    # The opening runs along local -Y, which a bottom-side X mirror leaves alone.
+    dx, dy = _QUARTER_TURNS[int(placement.rotation_degrees) % 360]
+    x, y = placement.centre_mm
+    rects: list[tuple[Rect, float]] = []
+    for zone in zones:
+        mid = (zone.start_mm + zone.end_mm) / 2.0
+        along = (zone.end_mm - zone.start_mm) / 2.0
+        across = zone.width_mm / 2.0
+        half_x = abs(dx) * along + abs(dy) * across
+        half_y = abs(dy) * along + abs(dx) * across
+        cx, cy = x + dx * mid, y + dy * mid
+        rects.append(
+            ((cx - half_x, cx + half_x, cy - half_y, cy + half_y), zone.height_mm)
+        )
+    return rects
+
+
+def _rows() -> list[dict[str, str]]:
+    """Rows of the generated position file."""
+    with POSITIONS.open(newline="") as handle:
+        return list(csv.DictReader(handle))
+
+
+def _board_offset(rows: list[dict[str, str]]) -> tuple[float, float]:
+    """Position-file origin, anchored on the shared panel button positions."""
+    by_ref = {row["Ref"]: row for row in rows}
+    offsets = {
+        (
+            round(float(by_ref[button.switch_reference]["PosX"]) - button.x_mm, 3),
+            round(float(by_ref[button.switch_reference]["PosY"]) - button.y_mm, 3),
+        )
+        for button in cad.PANEL_BUTTONS
+    }
+    if len(offsets) != 1:
+        raise AssertionError(f"Buttons disagree on the board origin: {offsets}")
+    return offsets.pop()
+
+
+def _local_gap(rect: Rect) -> float:
+    """Space between the PCB top and whatever hangs from the plate above it."""
+    module = _square(cad.PANEL_OLED_CENTER_MM, 0.0)
+    half_x, half_y = (axis / 2.0 for axis in cad.PANEL_OLED_MODULE_MM[:2])
+    module = (
+        module[0] - half_x,
+        module[1] + half_x,
+        module[2] - half_y,
+        module[3] + half_y,
+    )
+    if _overlaps(rect, module):
+        return (
+            cad.PCB_TO_PLATE_GAP_MM
+            + cad.PANEL_OLED_RECESS_DEPTH_MM
+            - cad.PANEL_OLED_MODULE_MM[2]
+        )
+    return cad.PCB_TO_PLATE_GAP_MM
