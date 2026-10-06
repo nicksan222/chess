@@ -431,6 +431,92 @@ class EfuseSpiceTest(unittest.TestCase):
             with self.subTest(back=back, corner=corner):
                 run_circuit(f"test_efuse_ovlo_return_{back:g}_{corner}.py", circuit)
 
+    def test_reversed_plug_is_blocked(self) -> None:
+        circuit = self._op(
+            "Generated chess-board reversed plug [BEH]", -datasheets.PSU_VOLTS.high
+        )
+        limit = datasheets.EFUSE_REVERSE_PIN_AMPS_MAX
+        stage = self.stage
+        top, bottom = stage.ohms("ovlo_top"), stage.ohms("ovlo_bottom")
+        en_top, en_bottom = stage.ohms("enable_top"), stage.ohms("enable_bottom")
+        # Pin (clamp) current = current in the top resistor minus the bottom's.
+        circuit.controls.extend(
+            (
+                "let result_rail = v(out)",
+                f"let result_ovlo_pin = abs((v(in) - v(ovlo)) / {top} - v(ovlo) / {bottom})",
+                f"let result_en_pin = abs((v(run) - v(en)) / {en_top} - v(en) / {en_bottom})",
+            )
+        )
+        circuit.expect("rail", -0.01, 0.01)
+        circuit.expect("ovlo_pin", 0.0, limit)
+        circuit.expect("en_pin", 0.0, limit)
+        run_circuit("test_efuse_reversed.py", circuit)
+
+    @residual("Reversed 12 V adapter")
+    def test_reversed_wrong_adapter_exceeds_the_bias_pin_limit(self) -> None:
+        # User decision D2: a reversed 12 V adapter keeps the rail off (IN within
+        # its -15 V rating, D1 off below 13.3 V) but drives about 12 V / 604k into
+        # the EN and OVLO pins, above TI's 10 uA (SLVSFC9C 8.2): recorded in
+        # ASSUMPTION "Reversed 12 V adapter"; the bound here is that residual.
+        circuit = self._op("Generated chess-board reversed 12 V [BEH]", -12.0)
+        stage = self.stage
+        top = stage.ohms("ovlo_top", -1)
+        self.assertGreater(-12.0, datasheets.EFUSE_IN_MIN_VOLTS)
+        self.assertGreater(12.0 / top, datasheets.EFUSE_REVERSE_PIN_AMPS_MAX)
+        circuit.controls.extend(
+            (
+                "let result_rail = v(out)",
+                f"let result_ovlo_pin = abs((v(in) - v(ovlo)) / {top})",
+            )
+        )
+        circuit.expect("rail", -0.01, 0.01)
+        circuit.expect("ovlo_pin", 0.0, 1.05 * 12.0 / top)
+        run_circuit("test_efuse_reversed_12v.py", circuit)
+
+    def test_rocker_off_removes_the_rail(self) -> None:
+        circuit = self._op(
+            "Generated chess-board rocker off [BEH]",
+            datasheets.PSU_VOLTS.high,
+            run_on=False,
+        )
+        circuit.controls.append("let result_rail = v(out)")
+        circuit.expect("rail", -0.01, 0.01)
+        run_circuit("test_efuse_rocker_off.py", circuit)
+
+    def test_approved_cap_runs_and_full_white_overloads_the_efuse(self) -> None:
+        # ILIM (RILM 1.65 kOhm) 1.80-2.20 A: full white must exceed its maximum and
+        # the approved cap must stay under its minimum, which the operating point
+        # checks. What full white then does (fast trip into limiting, or the
+        # ITIMER breaker) is the transient in test_led_switch (S6d).
+        board = board_circuits()
+        white = board.power_current(full_white=True)
+        approved = board.power_current()
+        ilim = datasheets.EFUSE_ILIM_AMPS_AT_1K65
+        self.assertGreater(white, ilim.high)
+        self.assertLess(approved, ilim.low)
+        nominal = datasheets.PSU_RATED_VOLTS
+        circuit = self._op(
+            "Generated chess-board approved load [BEH]",
+            nominal,
+            load_ohms=nominal / approved,
+            ilim_high=False,
+        )
+        circuit.controls.extend(
+            ("let result_rail = v(out)", "let result_input = -i(vpsu)")
+        )
+        circuit.expect("rail", datasheets.SK9822_VDD.low, nominal)
+        circuit.expect("input", 0.0, ilim.low)
+        run_circuit("test_efuse_approved.py", circuit)
+
+    def test_full_white_exceeds_the_supply_overload_and_the_fuse(self) -> None:
+        # Budget, not a sag model: a 2 A supply hiccups (110-150 % overload) and
+        # the fuse is rated 2 A, so full white must be refused by firmware.
+        amps = board_circuits().power_current(full_white=True)
+        overload = datasheets.PSU_RATED_AMPS * datasheets.PSU_OVERLOAD_FRACTION.high
+        self.assertGreater(amps, overload)
+        self.assertGreater(amps, datasheets.PSU_RATED_AMPS)
+
+
     def test_rail_settles_after_switch_on_with_every_fitted_capacitor(self) -> None:
         circuit = board_circuits().power_startup().clear_expectations()
         circuit.expect("5v_at_1ms", *BOARD_POWER.healthy_rail.tuple())
