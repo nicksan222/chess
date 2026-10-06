@@ -147,3 +147,63 @@ class DesignRulesTest(unittest.TestCase):
                 )
         self.assertEqual(long_tracks, [])
         self.assertEqual(exports.render_design_rules().count('(layer "F.Cu")'), 2)
+
+    @unittest.skipIf(shutil.which("kicad-cli") is None, "kicad-cli is required")
+    def test_routed_board_needs_the_exception_only_at_u74(self) -> None:
+        # DRC with the board-wide rules only: every violation must LIE (its
+        # closest point between the two items, or the narrow track itself) inside
+        # U74's courtyard plus the escape margin; an item merely starting there
+        # does not count (S4c r-m2).
+        output = Path(os.environ.get("PCB_OUTPUT", PCB_ROOT / "generated"))
+        board = _routed_board()
+        box = _escape_box(board, rules.FINE_PITCH_ESCAPE_MARGIN_MM + 0.01)
+        # Keep only the board-wide rules (drop the two U74 rules at the end).
+        strict = "(rule ".join(exports.render_design_rules().split("(rule ")[:3])
+        with tempfile.TemporaryDirectory() as directory:
+            work = Path(directory)
+            for name in ("chess-board.kicad_pcb", "chess-board.kicad_pro"):
+                shutil.copy(output / name, work / name)
+            (work / "chess-board.kicad_dru").write_text(strict + "\n")
+            report = work / "drc.json"
+            subprocess.run(
+                (
+                    "kicad-cli",
+                    "pcb",
+                    "drc",
+                    "--severity-all",
+                    "--format",
+                    "json",
+                    "-o",
+                    str(report),
+                    str(work / "chess-board.kicad_pcb"),
+                ),
+                check=True,
+                capture_output=True,
+            )
+            violations = cast(DrcReport, json.loads(report.read_text()))["violations"]
+        relevant = [v for v in violations if v["type"] in {"clearance", "track_width"}]
+        self.assertTrue(relevant, "without the exception, U74's own lands must flag")
+        shapes = _shapes_by_uuid(board)
+        stray = [
+            v["description"]
+            for v in relevant
+            if not all(_inside(p, box) for p in _location(v, shapes))
+        ]
+        self.assertEqual(stray, [])
+
+    def test_violation_location_is_the_gap_not_the_item_origin(self) -> None:
+        # Mutation of the locator: two tracks that start beside U74 but are
+        # closest far away must be located far away.
+        board = _routed_board()
+        box = _escape_box(board, rules.FINE_PITCH_ESCAPE_MARGIN_MM)
+        left, top, _right, _bottom = box
+        far = pcbnew.FromMM(20.0)
+        first = ((pcbnew.VECTOR2I(left, top), pcbnew.VECTOR2I(left - far, top)),)
+        second = (
+            (
+                pcbnew.VECTOR2I(left, top - far),
+                pcbnew.VECTOR2I(left - far, top - pcbnew.FromMM(0.2)),
+            ),
+        )
+        points = _closest(first, second)
+        self.assertFalse(all(_inside(p, box) for p in points))
