@@ -217,3 +217,67 @@ class AmpacityTest(unittest.TestCase):
             with self.subTest(net=net, flow=round(flow, 2), walls=round(walls, 2)):
                 self.assertGreaterEqual(flow, LED_SWITCH_AMPS)
                 self.assertGreaterEqual(walls, LED_SWITCH_AMPS)
+
+    def test_plane_fed_loads_carry_the_fuse_rating(self) -> None:
+        thickness = _copper_mm(outer=False)
+        for footprint in self._parts(LOAD_ENTRIES):
+            pads = [
+                self._pad(footprint, n)
+                for n in LOAD_ENTRIES[footprint.GetFieldText("PartKey")]
+            ]
+            width = sum(
+                spoke_width_mm(self.routed, pad, PLANE_LAYERS[pad.GetNetname()])
+                for pad in pads
+            )
+            with self.subTest(reference=footprint.GetReference(), spokes_mm=width):
+                self.assertGreaterEqual(
+                    ampacity(width * thickness, outer=False), FUSE_AMPS
+                )
+
+    def test_tvs_fault_path_carries_the_fuse_rating(self) -> None:
+        thickness = _copper_mm(outer=True)
+        wall = math.pi * VIA_WALL_MM
+        for footprint in self._parts(FAULT_PATH_KEYS):
+            for pad in footprint.Pads():
+                reference, number = footprint.GetReference(), pad.GetNumber()
+                stubs = self._tracks_touching(pad)
+                with self.subTest(pad=f"{reference}-{number}", check="stub"):
+                    self.assertTrue(stubs)
+                    for stub in stubs:
+                        width = pcbnew.ToMM(stub.GetWidth())
+                        self.assertGreaterEqual(
+                            ampacity(width * thickness, outer=True), FUSE_AMPS
+                        )
+                if pad.GetNetname() not in PLANE_LAYERS:
+                    continue  # The supply side returns through its wide stub.
+                vias = self._connected(pad)
+                capacity = sum(
+                    ampacity(wall * pcbnew.ToMM(via.GetDrillValue()), outer=False)
+                    for via in vias
+                )
+                with self.subTest(pad=f"{reference}-{number}", check="vias"):
+                    self.assertGreaterEqual(capacity, FUSE_AMPS)
+
+    def test_device_fanouts_carry_their_datasheet_maximum(self) -> None:
+        thickness = _copper_mm(outer=True)
+        checked = 0
+        for footprint in self.routed.GetFootprints():
+            if not footprint.HasFieldByName("PartKey"):
+                continue
+            limits = DEVICE_PIN_AMPS.get(footprint.GetFieldText("PartKey"), {})
+            for pad in footprint.Pads():
+                if pad.GetNumber() not in limits:
+                    continue
+                for track in self._tracks_touching(pad):
+                    checked += 1
+                    width = pcbnew.ToMM(track.GetWidth())
+                    self.assertGreaterEqual(
+                        ampacity(width * thickness, outer=True),
+                        limits[pad.GetNumber()],
+                        f"{footprint.GetReference()}-{pad.GetNumber()}",
+                    )
+        self.assertGreater(checked, 200)
+
+
+if __name__ == "__main__":
+    unittest.main()
