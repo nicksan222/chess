@@ -21,7 +21,11 @@ TCA9554_BYPASS_ROTATION_DEG = 180.0
 
 @dataclass(frozen=True, slots=True)
 class HallBankAssembly:
-    """One Hall bank's stable PCB references and physical placement."""
+    """One Hall bank's stable PCB references and physical placement.
+
+    References are stored, not derived, because they are published identities
+    (BOM, schematic) and must not change when placement order does.
+    """
 
     bank: HallBank
     expander_reference: str
@@ -30,24 +34,29 @@ class HallBankAssembly:
 
     @property
     def label(self) -> str:
+        """Block name such as "A1-D2" (from the shared bank)."""
         return self.bank.label
 
     @property
     def assembly_name(self) -> str:
+        """Assembly tag stored on the footprints; groups schematic/BOM rows."""
         return f"sensing/{self.label}"
 
     @property
     def address(self) -> int:
+        """I2C address, delegated so the shared bank stays the only definition."""
         return self.bank.address
 
     @property
     def bypass_position_mm(self) -> Point:
+        """Capacitor centre: expander centre plus the common bypass offset."""
         x, y = self.expander_position_mm
         offset_x, offset_y = TCA9554_BYPASS_OFFSET_MM
         return (x + offset_x, y + offset_y)
 
 
 def _assembly(label: str, expander: str, bypass: str) -> HallBankAssembly:
+    """Join a bank label to its shared dimensions-derived expander position."""
     bank = next(bank for bank in dimensions.HALL_BANKS if bank.label == label)
     x, y = dimensions.EXPANDER_POSITIONS_BY_BANK_MM[label]
     return HallBankAssembly(
@@ -59,6 +68,8 @@ def _assembly(label: str, expander: str, bypass: str) -> HallBankAssembly:
 
 
 # Published references are explicit identities, never allocated by traversal.
+# The skips in numbering (U1-U4 then U70-U73, C3-C6 then C136-C139) are kept as-is
+# because those designators are already published; renumbering would rename parts.
 BANK_ASSEMBLIES = (
     _assembly("A1-D2", "U1", "C3"),
     _assembly("E1-H2", "U2", "C4"),
