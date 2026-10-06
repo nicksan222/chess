@@ -402,4 +402,94 @@ GOLDEN = (
         ),
         polarity_pad="1",
     ),
+    LandPattern(
+        "CAP_100N",
+        "CC0603KRX7R9BB104",
+        "0603 (1608 metric)",
+        # Murata JEMCGC-2701X p25 Table 2 reflow lands for 1.6x0.8 (±0.10): gap a
+        # 0.6-0.8, land b 0.6-0.7, width c 0.6-0.8. Mid-range values; a cross-maker
+        # land for the same EIA package (no Yageo land on file). Body not checked.
+        "Murata JEMCGC-2701X p25 Table 2",
+        None,
+        (
+            LandPad(
+                "1", "1", "SUPPLY_OR_ELECTRODE_A", None, (-0.675, 0.0), (0.65, 0.7)
+            ),
+            LandPad("2", "2", "RETURN_OR_ELECTRODE_B", None, (0.675, 0.0), (0.65, 0.7)),
+        ),
+    ),
+    LandPattern(
+        "CAP_10U",
+        "CC0805KKX5R6BB106",
+        "0805 (2012 metric)",
+        # Murata JEMCGC-2701X p25 Table 2 reflow lands for 2.0x1.25 (±0.20): gap a
+        # 1.0-1.4, land b 0.6-0.8, width c 1.2-1.4. Mid-range values.
+        "Murata JEMCGC-2701X p25 Table 2",
+        None,
+        (
+            LandPad("1", "1", "SUPPLY_OR_ELECTRODE_A", None, (-0.95, 0.0), (0.7, 1.3)),
+            LandPad("2", "2", "RETURN_OR_ELECTRODE_B", None, (0.95, 0.0), (0.7, 1.3)),
+        ),
+    ),
+    LandPattern(
+        "RES_1K",
+        "RC0603FR-071KL",
+        "0603 (1608 metric)",
+        # Yageo "Chip Resistor Surface Mount — Mounting" (Feb 13, 2018 V.10) p4 Fig. 4
+        # / Table 1, size 0603: A 2.6, B 0.8 gap, C 0.9 land length, D 0.8 width.
+        "Yageo chip resistor mounting V.10 p4 Table 1",
+        None,
+        (
+            LandPad("1", "1", "TERMINAL_A", None, (-0.85, 0.0), (0.9, 0.8)),
+            LandPad("2", "2", "TERMINAL_B", None, (0.85, 0.0), (0.9, 0.8)),
+        ),
+    ),
+    LandPattern(
+        "TEST_POINT",
+        "S1751-46R",
+        "SMD test point",
+        # Harwin SMT Hardware p260, S1751-46R (2.00 mm high): body 3.25 x 1.65 x 2.00;
+        # recommended PC board pattern 3.45 x 1.85 (nominal; +/-0.05 rounding).
+        "Harwin SMT Hardware p260 (S1751-46R)",
+        ((3.20, 3.30), (1.60, 1.70), (1.95, 2.05)),
+        (LandPad("1", "1", "PROBE", None, (0.0, 0.0), (3.45, 1.85)),),
+    ),
+    LandPattern(
+        "PI_ZERO_HEADER",
+        "PPPC202LFBN-RC",
+        "2x20 2.54 mm THT",
+        # Sullins .100" female header catalogue p81 (recommended P.C. board hole
+        # layout Ø.040 [1.02], .100 [2.54] centres, two rows .100 apart) with the
+        # Raspberry Pi header numbering above, as the Pi's pins land seen from the
+        # board top (the socket is on the bottom; RP-008358-DS-1).
+        "Sullins catalogue p81 + Raspberry Pi 40-pin header",
+        None,
+        _pi_header_pads(),
+        polarity_pad="1",
+        drawn_from_board_top=True,
+    ),
+    LandPattern(
+        "OLED_HEADER",
+        "SM04B-SRSS-TB",
+        "SH 4P side entry SMD",
+        # JST SH catalogue p1 side-entry land (viewed from the mounting side): four
+        # 0.6 x 1.55 pads at 1.0 pitch, pin 1 left, row 4.0..5.55 above the tab row;
+        # reinforcement tabs 1.2 x 1.8, inner edge 0.7 beyond the last signal centre,
+        # row 0..1.8. Origin midway between rows (2.8375). p3: B 6.0, height 2.9 + 0.05.
+        # Pin functions are board-defined (harness soldered by module labels).
+        "JST SH catalogue p1, p3",
+        ((5.9, 6.1), (4.9, 5.0), (2.9, 3.0)),
+        (
+            LandPad("1", "1", "GROUND", "GND", (-1.5, 1.9375), (0.6, 1.55)),
+            LandPad("2", "2", "THREE_VOLTS_THREE", "+3V3", (-0.5, 1.9375), (0.6, 1.55)),
+            LandPad("3", "3", "I2C_CLOCK", None, (0.5, 1.9375), (0.6, 1.55)),
+            LandPad("4", "4", "I2C_DATA", None, (1.5, 1.9375), (0.6, 1.55)),
+            LandPad("5", "tab", "MOUNTING_TAB_A", "GND", (-2.8, -1.9375), (1.2, 1.8)),
+            LandPad("6", "tab", "MOUNTING_TAB_B", "GND", (2.8, -1.9375), (1.2, 1.8)),
+        ),
+        polarity_pad="1",
+    ),
+    LandPattern(
+        "POWER_HEADER",
+    )
 )
