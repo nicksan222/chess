@@ -200,3 +200,56 @@ STACKUP_DIELECTRICS = (
     (0.1195, 4.45),
 )
 STACKUP_COPPER_MM = 0.035
+STACKUP_TOLERANCE = 0.10  # +-10 % finished thickness: capacitance taken +10 %.
+# Raspberry Pi Zero 2 W reduced schematic: R23/R24 1.8 kOhm 1 % from GPIO2/GPIO3
+# to 3V3. RPi GPIO table (RP3A0): CIN 5 pF. Overlays README: i2c_arm_baudrate
+# default 100000.
+PI_I2C_PULLUP_OHMS = 1800.0
+PI_I2C_PULLUP_TOLERANCE = 0.01
+PI_GPIO_INPUT_FARADS = 5e-12
+PI_I2C_DEFAULT_HZ = 100_000
+# TI TCA9554 SCPS233E 6.5: Ci SCL 8 pF max, Cio SDA 9.5 pF max; SDA IOL 3 mA min at
+# VOL 0.4 V; 6.6: input rise time 1000 ns (standard) / 300 ns (fast), Cb 400 pF.
+TCA9554_SCL_FARADS = 8e-12
+TCA9554_SDA_FARADS = 9.5e-12
+I2C_SINK_AMPS_AT_VOL = 3e-3
+I2C_VOL_VOLTS = 0.4
+I2C_RISE_NS = {100_000: 1000.0, 400_000: 300.0}
+I2C_BUS_FARADS_MAX = 400e-12
+# OLED module input and its 90 mm harness: no SSD1306/module sheet on file (verification
+# ASSUMPTION "OLED harness"): 10 pF module, 50 pF/m wire pair, 1 pF connector.
+OLED_INPUT_FARADS = 10e-12
+HARNESS_FARADS_PER_M = 50e-12
+CONNECTOR_FARADS = 1e-12
+# Via capacitance, H. Johnson & M. Graham, High-Speed Digital Design (1993) 7.2:
+# C = 1.41 er T D1 / (D2 - D1) pF (inches); antipad = pad + 2 x pour clearance.
+VIA_DK = 4.6
+# LED line drivers (verification ASSUMPTION "LED line drivers"): SCLS264R gives no
+# AHCT125 edge time (tpd min 1 ns), so 1-3 ns; the Opsco SK9822 sheet gives no input
+# capacitance or output drive: 5 pF CMOS input, 25-100 Ohm output with 1-3 ns edges
+# (the left rank-turn data hops carry R10-R12 so the whole range passes).
+# §7 VIN -0.3..VDD+0.3 V bounds every received edge; the contract clock is 10 MHz
+# (shared/electronics/sk9822.py, derated from §3's 30 MHz): an edge must settle well
+# inside one clock phase, and data must settle TSETUP before the clock.
+LED_EDGE_NS = Span(1.0, 3.0)
+SK9822_INPUT_FARADS = 5e-12
+SK9822_OUTPUT_OHMS = Span(25.0, 100.0)
+SK9822_CLOCK_PHASE_NS = 1e9 / (2 * sk9822.CLOCK_HZ_MAX)
+SK9822_SETUP_NS = 10.0  # SK9822-A Rev 01 §10 TSETUP max.
+SK9822_INPUT_ABSOLUTE_MARGIN = 0.3
+# TI SN74LVC1G97 SCES416N 6.5 Schmitt thresholds over VCC 4.5-5.5 V (U75, S6b): VT+
+# 2.16-3.33 V, VT- 1.41-2.29 V.
+LVC1G97_RISING_VOLTS = Span(2.16, 3.33)
+LVC1G97_FALLING_VOLTS = Span(1.41, 2.29)
+# SCES416N §8.4 Table 1 (p8), typed in from the datasheet, not from the design:
+# (In2, In1, In0) -> Y, 1 = H. With In2 low Y follows In1; with In2 high, In0.
+LVC1G97_FUNCTION_TABLE = {
+    (0, 0, 0): 0,
+    (0, 0, 1): 0,
+    (0, 1, 0): 1,
+    (0, 1, 1): 1,
+    (1, 0, 0): 0,
+    (1, 0, 1): 1,
+    (1, 1, 0): 0,
+    (1, 1, 1): 1,
+}
