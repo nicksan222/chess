@@ -318,4 +318,88 @@ GOLDEN = (
             LandPad("2", "2", "FUSED_OUTPUT", None, (2.455, 0.0), (1.96, 3.15)),
         ),
     ),
+    LandPattern(
+        "TVS_12V0",
+        "SMBJ12CA",
+        "SMB (DO-214AA)",
+        # Littelfuse SMBJ Series (revised 06/03/20) p5 DO-214AA: B 4.06-4.75, C
+        # 3.30-3.94, D 1.99-2.61; solder pads I >= 2.26, J = L >= 2.16, K <= 2.74.
+        # 2.16 x 2.26 pads (the minimums) with a 2.30 gap (<= K): G 5.21-5.59 and
+        # E 0.76-1.52 put the foot within 0.065 mm of the pad's inner edge.
+        # Bidirectional (CA): no polarity band; pad 1 faces the eFuse input.
+        "Littelfuse SMBJ Series (2020-06-03) p5",
+        ((4.06, 4.75), (3.30, 3.94), (1.99, 2.61)),
+        (
+            LandPad(
+                "1", "1", "PROTECTED_INPUT", "DC_FUSED", (-2.23, 0.0), (2.16, 2.26)
+            ),
+            LandPad("2", "2", "GROUND", "GND", (2.23, 0.0), (2.16, 2.26)),
+        ),
+    ),
+    LandPattern(
+        "EFUSE",
+        "TPS259474ARPWR",
+        "VQFN-HR-10 RPW 2x2 mm",
+        # TI SLVSFC9C p73 RPW0010A example board layout (top view; vector drawing
+        # read at 85 units/mm and checked against its 2.4 / 1.8 / 1.45 / 0.6 / 0.3 /
+        # 0.25 dimensions); p72 body 1.9-2.1 square, 1 mm max. Pads 1, 4, 7, 10 are
+        # L-shaped: the 0.6 x 0.3 foot is the anchor here, the leg is checked below.
+        # Pin 1 is marked on silk (all pads are rectangles by the drawing).
+        "TI SLVSFC9C p72-73 (RPW0010A)",
+        ((1.9, 2.1), (1.9, 2.1), (0.9, 1.0)),
+        (
+            LandPad("1", "EN/UVLO", "ENABLE_UVLO", None, (-0.9, 0.7), (0.6, 0.3)),
+            LandPad(
+                "2", "OVLO", "OVERVOLTAGE_LOCKOUT", None, (-0.9, 0.225), (0.6, 0.25)
+            ),
+            LandPad("3", "PG", "POWER_GOOD", None, (-0.9, -0.225), (0.6, 0.25)),
+            LandPad(
+                "4", "PGTH", "POWER_GOOD_THRESHOLD", None, (-0.9, -0.7), (0.6, 0.3)
+            ),
+            LandPad("5", "IN", "INPUT", "DC_FUSED", (-0.25, 0.0), (0.3, 2.4)),
+            LandPad("6", "OUT", "OUTPUT", "+5V", (0.25, 0.0), (0.3, 2.4)),
+            LandPad("7", "DVDT", "SLEW_RATE", None, (0.9, -0.7), (0.6, 0.3)),
+            LandPad("8", "GND", "GROUND", "GND", (0.9, -0.225), (0.6, 0.25)),
+            LandPad("9", "ILM", "CURRENT_LIMIT", None, (0.9, 0.225), (0.6, 0.25)),
+            LandPad("10", "ITIMER", "OVERCURRENT_TIMER", None, (0.9, 0.7), (0.6, 0.3)),
+        ),
+    ),
+    LandPattern(
+        "BUTTON",
+        "TL1105CF100Q",
+        "6x6 mm THT",
+        # E-Switch TL1105 series (2.28.2018) p24 order code ("C" = 8.0 mm overall)
+        # and p25 TL1105 drawing: 6.00 square body, Ø3.50 stem; P.C. mounting 4 x
+        # Ø1.00 holes, 4.50 between 1-3, 6.50 between 1-2; schematic: 1-2 and 3-4
+        # are internally connected, the dome bridges the pairs. Nominal +/-0.05.
+        "E-Switch TL1105 (2018-02-28) p24-p25",
+        ((5.95, 6.05), (5.95, 6.05), (7.95, 8.05)),
+        (
+            LandPad("1b", "1", "SIGNAL", None, (-2.25, 3.25), None, TL1105_HOLE),
+            LandPad("1", "2", "SIGNAL", None, (-2.25, -3.25), None, TL1105_HOLE),
+            LandPad("2", "3", "GROUND", "GND", (2.25, 3.25), None, TL1105_HOLE),
+            LandPad("2b", "4", "GROUND", "GND", (2.25, -3.25), None, TL1105_HOLE),
+        ),
+        frame_rotation_deg=-90,
+        internal_groups=(("1", "2"), ("3", "4")),
+    ),
+    LandPattern(
+        "CAP_560U",
+        "10ZLJ560M8X11.5",
+        "radial 8 mm",
+        # Rubycon ZLJ catalogue p2: φD 8 => φd 0.6, F 3.5 +/-0.5; body φD+0.5 max,
+        # L + α (α = 1.5 for L <= 16). Drill = lead 0.6 + the repository's 0.3 mm THT
+        # allowance (ASSUMPTION "CAP_560U drill"). Pad 1 is "+".
+        "Rubycon ZLJ catalogue p2, p81",
+        ((8.0, 8.5), (8.0, 8.5), (11.5, 13.0)),
+        (
+            LandPad(
+                "1", "+", "SUPPLY_OR_ELECTRODE_A", "+5V", (-1.75, 0.0), None, (0.9, 0.9)
+            ),
+            LandPad(
+                "2", "-", "RETURN_OR_ELECTRODE_B", "GND", (1.75, 0.0), None, (0.9, 0.9)
+            ),
+        ),
+        polarity_pad="1",
+    ),
 )
