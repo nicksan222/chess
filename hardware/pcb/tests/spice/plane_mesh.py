@@ -53,3 +53,100 @@ class Load:
     supply: pcbnew.VECTOR2I
     ground: pcbnew.VECTOR2I
     amps: float
+
+
+def routed_board() -> pcbnew.BOARD:
+    """The published routed board (from `PCB_OUTPUT` when set, else `generated/`)."""
+    output = Path(os.environ.get("PCB_OUTPUT", PCB_ROOT / "generated"))
+    return pcbnew.LoadBoard(str(output / "chess-board.kicad_pcb"))
+
+
+def _inner_copper_mm() -> float:
+    """Inner-layer copper thickness (mm) from `manufacturing.json`: 1 oz thickness x the minimum ounces."""
+    record = cast(
+        dict[str, dict[str, float]],
+        json.loads((PCB_ROOT / "definition/manufacturing.json").read_text()),
+    )
+    return OZ_MM * record["fabrication"]["inner_copper_oz_min"]
+
+
+def power_entry_pads(board: pcbnew.BOARD) -> list[pcbnew.PAD]:
+    """Every pad (plated or via-fed) that hands the off-board supply to a plane.
+
+    Derived from nets: a part with a pad on DC_IN/DC_FUSED brings the supply on
+    board; its +5V and GND pads are where that current enters the planes, except
+    contacts that open when the supply is plugged in and bias-only pins. Two-pad
+    parts on a supply net are shunts (bypass caps, the TVS) and pass no supply
+    current. A connector or eFuse change therefore cannot drop an entry silently.
+    """
+    entries: list[pcbnew.PAD] = []
+    for footprint in board.GetFootprints():
+        pads = list(footprint.Pads())
+        if len(pads) <= 2 or not any(p.GetNetname() in SUPPLY_NETS for p in pads):
+            continue
+        key = (
+            footprint.GetFieldText("PartKey")
+            if footprint.HasFieldByName("PartKey")
+            else ""
+        )
+        entries.extend(
+            p
+            for p in pads
+            if p.GetNetname() in PLANE_LAYERS
+            and (key, p.GetNumber()) not in SWITCHED_CONTACTS | BIAS_ONLY
+        )
+    return entries
+
+
+def _on(point: pcbnew.VECTOR2I, track: pcbnew.PCB_TRACK) -> bool:
+    """True if `point` lies on the track segment (within 1 um)."""
+    a, b = track.GetStart(), track.GetEnd()
+    dx, dy = b.x - a.x, b.y - a.y
+    length = dx * dx + dy * dy
+    t = 0.0 if length == 0 else ((point.x - a.x) * dx + (point.y - a.y) * dy) / length
+    t = min(max(t, 0.0), 1.0)
+    return math.hypot(a.x + t * dx - point.x, a.y + t * dy - point.y) <= 1000
+
+
+def tracks_touching(board: pcbnew.BOARD, pad: pcbnew.PAD) -> list[pcbnew.PCB_TRACK]:
+    """Same-net tracks with an end inside the pad's bounding box: how a pad's copper joins the plane."""
+    box = pad.GetBoundingBox()
+    return [
+        track
+        for track in board.GetTracks()
+        if not isinstance(track, pcbnew.PCB_VIA)
+        and track.GetNetCode() == pad.GetNetCode()
+        and any(
+            box.GetLeft() <= end.x <= box.GetRight()
+            and box.GetTop() <= end.y <= box.GetBottom()
+            for end in (track.GetStart(), track.GetEnd())
+        )
+    ]
+
+
+def connected_vias(board: pcbnew.BOARD, pad: pcbnew.PAD) -> list[pcbnew.PCB_VIA]:
+    """Vias on the copper reached from the pad through touching segments."""
+    tracks = [
+        t
+        for t in board.GetTracks()
+        if not isinstance(t, pcbnew.PCB_VIA) and t.GetNetCode() == pad.GetNetCode()
+    ]
+    reached = tracks_touching(board, pad)
+    frontier = list(reached)
+    while frontier:
+        current = frontier.pop()
+        for other in tracks:
+            if other in reached:
+                continue
+            ends = (other.GetStart(), other.GetEnd())
+            mine = (current.GetStart(), current.GetEnd())
+            if any(_on(e, current) for e in ends) or any(_on(e, other) for e in mine):
+                reached.append(other)
+                frontier.append(other)
+    return [
+        v
+        for v in board.GetTracks()
+        if isinstance(v, pcbnew.PCB_VIA)
+        and v.GetNetCode() == pad.GetNetCode()
+        and any(_on(v.GetPosition(), t) for t in reached)
+    ]
