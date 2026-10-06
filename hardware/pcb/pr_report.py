@@ -542,12 +542,15 @@ def _copper_changes(
         f"({_signed(len(added_zones) - len(removed_zones))}); "
         f"{changed} geometry changes"
     )
+    # Safety net: if the file changed but none of the tracked facts did, say so
+    # rather than report "no changes" for a board that actually differs.
     if current.board_sha256 != base.board_sha256 and not details:
         details.append("Native board file changed outside tracked copper geometry")
     return summary, details
 
 
 def _violations(current: Path) -> str:
+    """One-line ERC/DRC/unconnected/parity counts from the current review reports."""
     erc = _load_json(current / "erc.json")
     sheets = _json_list(erc.get("sheets", []), "ERC sheets")
     erc_count = sum(
@@ -577,6 +580,14 @@ def build_report(
     repository: str | None,
     run_url: str | None,
 ) -> str:
+    """Assemble the full Markdown report.
+
+    `base_ref`/`head_ref` label the comparison; `current` is the generated directory
+    to describe; `repository` and `run_url` only add links. A missing base artifact
+    is treated as empty (everything shows as added), so a first report still works.
+    The `semantic_changes` flag feeds `CHANGE_MARKER` so CI can drop the comment when
+    nothing about the design changed.
+    """
     current_netlist = _project(_load_json(current / "netlist.json"))
     base_netlist_document = _base_json(base_ref, "netlist.json")
     base_netlist = _project(base_netlist_document) if base_netlist_document else {}
@@ -662,6 +673,11 @@ def build_report(
 
 
 def main() -> None:
+    """CLI: write the report to `--output` (default `pcb-pr-report.md`).
+
+    Defaults: compare against `main`, head is the current `HEAD`, repository comes
+    from the `origin` remote.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base-ref", default="main")
     parser.add_argument("--head-ref", default=None)
