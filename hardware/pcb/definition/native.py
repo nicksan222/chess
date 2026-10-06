@@ -288,6 +288,13 @@ def stable_uuid_map(board: pcbnew.BOARD) -> dict[str, str]:
 
 
 def new_board() -> pcbnew.BOARD:
+    """Create an empty board with title, stackup size and all design rules applied.
+
+    Rule values come from `rules.py`, so KiCad's own DRC enforces the same limits
+    the router and `validate()` assume.
+    """
+    # Fix the random generator so any UUIDs KiCad assigns are reproducible run to
+    # run (the seed spells "CHES").
     pcbnew.KIID.SeedGenerator(0x43484553)
     board = pcbnew.BOARD()
     title = board.GetTitleBlock()
@@ -297,8 +304,10 @@ def new_board() -> pcbnew.BOARD:
     board.SetCopperLayerCount(rules.COPPER_LAYERS)
     settings = board.GetDesignSettings()
     settings.SetBoardThickness(pcbnew.FromMM(dimensions.PCB_THICKNESS_MM))
-    settings.m_MinClearance = pcbnew.FromMM(rules.CLEARANCE_MM)
-    settings.m_TrackMinWidth = pcbnew.FromMM(rules.TRACE_WIDTH_MM)
+    # Board floors sit at the U74 exception; the generated .kicad_dru and the
+    # netclass keep CLEARANCE_MM / TRACE_WIDTH_MM everywhere else.
+    settings.m_MinClearance = pcbnew.FromMM(rules.FINE_PITCH_CLEARANCE_MM)
+    settings.m_TrackMinWidth = pcbnew.FromMM(rules.FINE_PITCH_TRACE_WIDTH_MM)
     settings.m_HoleClearance = pcbnew.FromMM(rules.HOLE_CLEARANCE_MM)
     settings.m_HoleToHoleMin = pcbnew.FromMM(rules.HOLE_TO_HOLE_MM)
     settings.m_CopperEdgeClearance = pcbnew.FromMM(rules.POUR_TO_OUTLINE_MM)
@@ -307,13 +316,18 @@ def new_board() -> pcbnew.BOARD:
         rules.annular_ring(rules.VIA_PAD_MM, rules.VIA_DRILL_MM)
     )
     settings.m_MinThroughDrill = pcbnew.FromMM(rules.PCBWAY_MIN_DRILL_MM)
+    # Mask dam and silk spacing use the fabricator minimum (deliberately set at the fab minimum).
     settings.m_SilkClearance = pcbnew.FromMM(rules.PCBWAY_MIN_MASK_DAM_MM)
     settings.m_SolderMaskMinWidth = pcbnew.FromMM(rules.PCBWAY_MIN_MASK_DAM_MM)
     return board
 
 
 def parts(board: pcbnew.BOARD) -> list[pcbnew.FOOTPRINT]:
-    """The purchased assemblies, excluding board-only mounting holes."""
+    """The purchased assemblies, excluding board-only mounting holes.
+
+    Identified by the `PartKey` field that `place()` sets; sorted by reference so
+    every output (BOM, netlist) lists parts in a stable order.
+    """
     return sorted(
         (f for f in board.GetFootprints() if f.HasFieldByName("PartKey")),
         key=lambda f: f.GetReference(),
@@ -331,13 +345,24 @@ def place[Part: EndpointResolver](
     purpose: str | None = None,
     nominal_value: str | None = None,
     extras: dict[str, str] | None = None,
+    bottom: bool = False,
 ) -> Part:
-    """Install an approved native template; return only its shared logical ports."""
+    """Install an approved native template; return only its shared logical ports.
+
+    `part` binds an approved product to its native footprint template; `reference`
+    is the explicit, stable designator; `at` is the centre in shared mm and `rotation`
+    degrees. The footprint records its product key, assembly, library label, nominal
+    value, purpose and any `extras` as hidden fields: BOM, netlist and schematic are
+    built from those, so this is where design intent enters the board. Pads start
+    unassigned; callers must `connect()` or `no_connect()` every pin. The returned
+    model exposes pins by datasheet role, not by pad number.
+    """
     if board.FindFootprintByReference(reference) is not None:
         raise ValueError(f"duplicate reference: {reference}")
     model = part.new_model(reference)
     spec = part.spec
     template = part.template
+    # Copy the shared template so each placement owns independent pads and fields.
     module = template.Duplicate()
     # KiCad's copy constructor normalizes non-square circular PTH land sizes.
     # Restore the approved native dimensions before placing the duplicate.
@@ -358,6 +383,9 @@ def place[Part: EndpointResolver](
         module.SetField(key, text)
     for field in module.GetFields():
         field.SetVisible(False)
+    # Link the footprint to its generated schematic symbol (by deterministic UUID
+    # path) so KiCad's schematic/PCB parity check sees them as the same part. Squares
+    # are drawn on their Hall bank's sheet, hence the bank lookup.
     sheet = assembly
     if assembly.startswith("square/"):
         channel = wiring.expander_of(wiring.parse_square(assembly.split("/")[1]))
@@ -396,11 +424,66 @@ def place[Part: EndpointResolver](
         shape.SetStart(located(shape.GetStart()))
         shape.SetEnd(located(shape.GetEnd()))
     board.Add(module)
+    if bottom:
+        _move_to_bottom(module, part.drawing_view)
     return model
 
 
+# Pad shapes that look the same mirrored or turned 180 degrees about their centre.
+MIRROR_SAFE_PAD_SHAPES = frozenset(
+    {pcbnew.PAD_SHAPE_CIRCLE, pcbnew.PAD_SHAPE_RECT, pcbnew.PAD_SHAPE_OVAL}
+)
+
+
+def _move_to_bottom(module: pcbnew.FOOTPRINT, view: DrawingView) -> None:
+    """Put a through-hole part on the back side as its drawing view requires.
+
+    A mounting-side drawing (the datasheet layout seen from the part) is mirrored by
+    KiCad's flip exactly as the physical part is when it moves underneath. A
+    board-top drawing (holes fixed by a mating part seen from the top) must keep its
+    positions, so every pad and drawing is moved back after the flip.
+    """
+    if any(pad.GetAttribute() != pcbnew.PAD_ATTRIB_PTH for pad in module.Pads()):
+        raise ValueError(
+            f"{module.GetReference()}: only through-hole parts go on the bottom"
+        )
+    if any(pad.GetShape() not in MIRROR_SAFE_PAD_SHAPES for pad in module.Pads()):
+        raise ValueError(f"{module.GetReference()}: pad shape is not mirror-safe")
+
+    # Copy the coordinates: SWIG returns live references that the flip rewrites.
+    def copied(point: pcbnew.VECTOR2I) -> pcbnew.VECTOR2I:
+        return pcbnew.VECTOR2I(point.x, point.y)
+
+    sizes = [
+        (pad, copied(pad.GetSize()), copied(pad.GetDrillSize()))
+        for pad in module.Pads()
+    ]
+    pads = [(pad, copied(pad.GetPosition())) for pad in module.Pads()]
+    shapes = [
+        (shape, copied(shape.GetStart()), copied(shape.GetEnd()))
+        for shape in module.GraphicalItems()
+    ]
+    module.Flip(module.GetPosition(), pcbnew.FLIP_DIRECTION_LEFT_RIGHT)
+    if view is DrawingView.BOARD_TOP:
+        for pad, at in pads:
+            pad.SetPosition(at)
+        for shape, start, end in shapes:
+            shape.SetStart(start)
+            shape.SetEnd(end)
+    # Pads keep their global axes (place() already swapped sizes for 90 degrees).
+    for pad, size, drill in sizes:
+        pad.SetOrientationDegrees(0)
+        if pad.GetSize() != size or pad.GetDrillSize() != drill:
+            raise ValueError(f"{module.GetReference()}: pad axes changed in the flip")
+
+
 def logical_pin(pad: pcbnew.PAD) -> str:
-    """Bind each duplicate four-leg switch contact to its logical pin."""
+    """Bind each duplicate four-leg switch contact to its logical pin.
+
+    The tactile switch footprint has two pads per contact ("1" and "1b"); both are
+    the same electrical pin, so "1b"/"2b" map back to "1"/"2" and are always
+    assigned to the same net together.
+    """
     return {"1b": "1", "2b": "2"}.get(pad.GetNumber(), pad.GetNumber())
 
 
