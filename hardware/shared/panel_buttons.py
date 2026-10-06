@@ -1,4 +1,11 @@
-"""Stable physical, electrical, and routing identities for panel buttons."""
+"""Stable physical, electrical, and routing identities for panel buttons.
+
+Role: the one table describing the twelve front-panel buttons: where each switch
+sits on the board, which Pi header pin/GPIO it is wired to, and the hints the
+router uses to escape each button's net. The PCB controls assembly, routing
+policies and `wiring.py` (GPIO list) read it; firmware button mapping is
+hand-maintained and must match the GPIO numbers derived here.
+"""
 
 from __future__ import annotations
 
@@ -7,6 +14,7 @@ from dataclasses import dataclass
 
 from shared.electronics.raspberry_pi_header import RaspberryPiHeaderPin
 
+# (x, y) in board millimetres, origin at the playing-area centre, Y up.
 Point = tuple[float, float]
 
 
