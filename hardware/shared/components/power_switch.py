@@ -1,11 +1,12 @@
-"""Approved power switch product."""
+"""Approved product: the rear-panel rocker switch (wired to J4, not on the PCB)."""
 
 from .spec import part
 
+# E-Switch RA11131100: snap-in panel rocker, SPST, 0.187 in quick-connect tabs.
 POWER_SWITCH = part(
     "POWER_SWITCH",
-    "PCB SPST rocker switch",
-    "SPST rocker THT",
+    "Panel snap-in SPST rocker switch, 0.187 in quick-connect tabs",
+    "panel snap-in rocker",
     "E-Switch",
     "RA11131100",
 )

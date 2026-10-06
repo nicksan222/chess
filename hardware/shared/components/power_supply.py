@@ -1,4 +1,7 @@
-"""Approved power supply product."""
+"""Approved product: Mean Well GST12A05-P1J 5 V 2 A supply (off-board, human BOM only).
+
+This external supply feeds the board's DC input.
+"""
 
 from .spec import part
 
