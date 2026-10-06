@@ -1,4 +1,11 @@
-"""Read this first: native KiCad board construction from typed subsystem ports."""
+"""Read this first: native KiCad board construction from typed subsystem ports.
+
+Role: the top of the PCB pipeline. `load()` composes the whole board by asking each
+assembly (power, controls, one per square, Hall banks, LED chain) to place its
+footprints and assign nets on a fresh `pcbnew.BOARD`, then validates it. `build.py`
+calls `load()` and then routes/exports the result; everything downstream (netlist,
+BOM, schematic) is derived from the board returned here, not from a second model.
+"""
 
 from __future__ import annotations
 
@@ -15,11 +22,21 @@ from shared import dimensions
 
 
 def load() -> pcbnew.BOARD:
+    """Build and validate the complete (unrouted) board from the shared contracts.
+
+    The order matters only where one assembly needs handles from another: squares
+    must exist before the Hall banks (`sensing`) can connect each square's sensor,
+    and before the LED chain can link neighbouring squares.
+    """
+    # Imported lazily so merely importing `board` (e.g. for `netlist`'s type)
+    # does not pull in every assembly and the pcbnew footprint templates.
     from pcb.definition.assemblies import controls, power, sensing, square
 
     board = new_board()
     power.add_power(board)
     controls.add_controls(board)
+    # One handle per square, keyed by name ("E4"), so later steps address squares
+    # through the shared layout instead of searching footprints.
     squares = {
         board_square.name: square.add_square(board, board_square=board_square)
         for board_square in dimensions.BOARD_SQUARES

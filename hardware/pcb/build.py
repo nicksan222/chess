@@ -566,14 +566,72 @@ def build(command: str, destination: Path = GENERATED_DIR) -> None:
         if command == "release":
             fabrication(out)
             checks += ["physical evidence", "manufacturing exports"]
+        # Guard: refuse to publish if any source file changed while building.
         if source_hashes() != before:
             raise RuntimeError(
                 "source changed during build; refusing to publish mixed-version artifacts"
             )
+        # Per-user KiCad state files; not part of the design.
         for transient in out.glob("*.kicad_prl"):
             transient.unlink()
         write_report(out, destination, design, tools, before, checks)
     print(f"{command}: published {destination}")
+
+
+def known_residuals(root: Path = PCB_ROOT / "tests") -> list[tuple[str, str]]:
+    """(test id, ASSUMPTION) for every test marked `@residual(...)`, from source.
+
+    Read with `ast` so listing them never imports the test modules (S6c).
+    """
+    found: list[tuple[str, str]] = []
+    for path in sorted(root.rglob("test_*.py")):
+        module = ".".join(path.relative_to(root).with_suffix("").parts)
+        for owner in ast.parse(path.read_text()).body:
+            if not isinstance(owner, ast.ClassDef):
+                continue
+            for test in owner.body:
+                if not isinstance(test, ast.FunctionDef):
+                    continue
+                for mark in test.decorator_list:
+                    if (
+                        isinstance(mark, ast.Call)
+                        and isinstance(mark.func, ast.Name)
+                        and mark.func.id == "residual"
+                        and len(mark.args) == 1
+                        and isinstance(mark.args[0], ast.Constant)
+                        and isinstance(mark.args[0].value, str)
+                    ):
+                        test_id = f"{module}.{owner.name}.{test.name}"
+                        found.append((test_id, mark.args[0].value))
+    return found
+
+
+def test_summary(log: str | None, checks: list[str]) -> list[str]:
+    """review.md check lines plus the "Known residuals" section.
+
+    A residual test passes while the board still fails in a recorded way, so the
+    test count is reported with how many of those tests are residuals.
+    """
+    residuals = known_residuals()
+    ran = re.search(r"^Ran (\d+) tests?", log or "", re.MULTILINE)
+    lines: list[str] = []
+    for check in checks:
+        if check == TESTS_CHECK and ran:
+            check = (
+                f"{check} ({ran.group(1)} tests; {len(residuals)} of them bound "
+                "known residuals, listed below)"
+            )
+        lines.append(f"- Passed: {check}")
+    lines += [
+        "",
+        "## Known residuals",
+        "",
+        "These tests pass while the board still fails in a recorded way: they bound",
+        "the residual so it cannot get worse; they do not show a correct behaviour.",
+        "",
+        *[f'- `{test}`: ASSUMPTION "{name}"' for test, name in residuals],
+    ]
+    return lines
 
 
 def write_report(
@@ -584,6 +642,14 @@ def write_report(
     sources: dict[str, str],
     checks: list[str],
 ) -> None:
+    """Write `layout.json`, `review.md` and `manifest.json` into `out`.
+
+    `previous` is the currently published directory, compared against to report
+    what changed (components, nets, placements, design rules). `manifest.json`
+    records revision, source hashes, tool versions, checks run, a hash of the
+    design netlist and a hash of every other artifact, tying a published set to
+    its exact inputs. Called last so the manifest covers all other files.
+    """
     projection = definition.netlist(design)
     old_path = previous / "netlist.json"
     old: Mapping[str, object] = (
@@ -595,6 +661,7 @@ def write_report(
         if old_path.exists()
         else {}
     )
+    # Changed-item lists are compared against the previously published netlist.
     changes: list[str] = []
     for key in ("components", "nets"):
         current = object_fields(projection[key])
@@ -603,6 +670,7 @@ def write_report(
             k for k in set(current) | set(prior) if current.get(k) != prior.get(k)
         )
         changes.append(f"- {key}: {', '.join(changed) if changed else 'unchanged'}")
+    # Placements in shared centre-origin mm (Y up), the inverse of `native.point`.
     placements = {
         c.GetReference(): [
             pcbnew.ToMM(c.GetPosition().x) - ORIGIN_X_MM,
@@ -630,6 +698,7 @@ def write_report(
     (out / "layout.json").write_text(
         json.dumps(snapshot, indent=2, sort_keys=True) + "\n"
     )
+    # Reported, not enforced here: only `release` requires the measurements.
     evidence = [
         name
         for name in ("hall-magnet.json",)
@@ -643,7 +712,10 @@ def write_report(
         *changes,
         "",
         "## Checks",
-        *[f"- Passed: {c}" for c in checks],
+        *test_summary(
+            (out / "tests.log").read_text() if (out / "tests.log").exists() else None,
+            checks,
+        ),
         "",
         f"Physical evidence missing: {', '.join(evidence) or 'none (release validates measurements)'}.",
         "",
@@ -672,18 +744,21 @@ def write_report(
 
 
 def string_mapping(value: object) -> TypeGuard[Mapping[str, object]]:
+    """True for a dict whose keys are all strings (JSON object shape)."""
     return isinstance(value, dict) and all(
         isinstance(key, str) for key in cast(Mapping[object, object], value)
     )
 
 
 def object_list(value: object) -> list[object]:
+    """Narrow decoded JSON to an array or raise ValueError."""
     if not isinstance(value, list):
         raise ValueError("expected JSON array")
     return cast(list[object], value)
 
 
 def object_fields(value: object) -> Mapping[str, object]:
+    """Narrow decoded JSON to an object or raise ValueError."""
     if not string_mapping(value):
         raise ValueError("expected JSON object with string keys")
     return value
