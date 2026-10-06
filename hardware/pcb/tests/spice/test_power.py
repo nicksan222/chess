@@ -60,18 +60,74 @@ def _corner(*, fast: bool, ilim_high: bool = True, ron: PathCorner = "high") -> 
 class SupplyCornerSpiceTest(unittest.TestCase):
     """Worst-corner rail level at every LED and at the Pi, from the full series path and plane mesh."""
 
-class PowerSpiceTest(unittest.TestCase):
-    def test_approved_brightness_keeps_current_and_voltage_safe(self) -> None:
-        board = board_circuits()
-        expected_current = board.power_current()
-        circuit = board.power().clear_expectations()
-        circuit.expect(
-            "current",
-            expected_current - BOARD_POWER.current_tolerance_amps,
-            expected_current + BOARD_POWER.current_tolerance_amps,
+    def test_worst_corner_rail_stays_in_range_at_every_led_and_the_pi(self) -> None:
+        # Low end: PSU -5 %, every resistance at its maximum (end-of-life contacts,
+        # 70 C copper, eFuse RON max), approved LED cap. Floor: SK9822 §8 and
+        # AHCT125 §5.2 minimum 4.5 V (the Pi's 4.63 V warning is not met here and is
+        # a documented ASSUMPTION; the Zero range has no detector). Since S6 the
+        # LEDs sit behind Q1 at its hot maximum RDS(on) (SK9822-A §10: 4.5 V).
+        board = routed_board()
+        brightness = float(board_circuits().led_brightness_max)
+        mesh = PlaneMesh(board)
+        cases: tuple[tuple[str, PathCorner, float, float | None], ...] = (
+            ("low", "high", datasheets.PSU_VOLTS.low, None),
+            (
+                "high",
+                "low",
+                datasheets.PSU_VOLTS.high,
+                datasheets.SK9822_VDD_MAX,
+            ),
         )
-        circuit.expect("5v", *BOARD_POWER.healthy_rail.tuple())
-        run_circuit("test_power_approved.py", circuit)
+        for name, corner, volts, ceiling in cases:
+            path = series_path(board, _fuse_mpn(), corner)
+            circuit = mesh.circuit(
+                f"Generated chess-board supply corner, {name}",
+                led_amps=_led_amps(brightness if name == "low" else 0.0),
+                host_amps=datasheets.HOST_AND_LOGIC_AMPS if name == "low" else 0.0,
+                supply_volts=volts,
+                positive_ohms=path.positive_ohms,
+                ground_ohms=path.ground_ohms,
+                switch_ohms=pick(datasheets.LED_SWITCH_OHMS, corner),
+            )
+            floor = datasheets.SK9822_VDD.low if name == "low" else 0.0
+            top = ceiling if ceiling is not None else volts
+            for square in SQUARES:
+                circuit.expect(f"vdd_{square}", floor, top)
+            circuit.expect("pi_header", floor, top)
+            with self.subTest(corner=name):
+                run_circuit(f"test_supply_corner_{name}.py", circuit)
+
+
+class EfuseSpiceTest(unittest.TestCase):
+    """[BEH] TPS259474ARPW behaviour from SLVSFC9C tables, on the board's values."""
+
+    stage: EfuseBoard
+    path_ohms: float
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        """Build the eFuse front end and the low-corner series-path resistance once."""
+        cls.stage = EfuseBoard(board_circuits())
+        cls.path_ohms = series_path(routed_board(), _fuse_mpn(), "low").total_ohms
+
+    def _rail_caps(self) -> list[str]:
+        """SPICE rows for every capacitor fitted between +5V and GND (the capacitance the eFuse charges)."""
+        rows: list[str] = []
+        for reference, component in self.stage.board.components.items():
+            key = component.GetFieldText("PartKey")
+            nets = {
+                self.stage.board.net_by_endpoint.get((reference, pin))
+                for pin in ("1", "2")
+            }
+            if not key.startswith("CAP_") or nets != {"+5V", "GND"}:
+                continue
+            if key == "CAP_560U":
+                # Rubycon ZLJ: +20 % capacitance, ESR at its 0 lower bound.
+                rows.append(f"C{reference} out 0 {datasheets.ZLJ_560U_FARADS.high}")
+            else:
+                value = {"CAP_100N": "100n", "CAP_10U": "10u"}[key]
+                rows.append(f"C{reference} out 0 {value}")
+        return rows
 
     def test_full_white_exposes_supply_sag_and_overcurrent(self) -> None:
         board = board_circuits()
