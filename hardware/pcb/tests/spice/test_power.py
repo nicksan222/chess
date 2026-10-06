@@ -398,6 +398,39 @@ class EfuseSpiceTest(unittest.TestCase):
             with self.subTest(step=step):
                 run_circuit(f"test_efuse_running_step_{step:g}.py", circuit)
 
+    @residual("OVLO window")
+    def test_ovlo_restart_is_a_latch_off_at_normal_supplies(self) -> None:
+        # Reviewer m1: after a trip U74 restarts only below VOV(F) x divider
+        # (4.854-5.173 V). A supply back at +5 % never restarts (unplug and replug);
+        # back at a nominal 5.0 V it restarts only at the highest-release corner.
+        stage = self.stage
+        self.assertGreater(datasheets.PSU_VOLTS.high, stage.ovlo_release(high=True))
+        self.assertLess(stage.ovlo_release(high=False), datasheets.PSU_RATED_VOLTS)
+        self.assertGreater(stage.ovlo_release(high=True), datasheets.PSU_RATED_VOLTS)
+        rated = datasheets.PSU_RATED_VOLTS
+        for back, high, latched in (
+            (datasheets.PSU_VOLTS.high, True, True),
+            (datasheets.PSU_VOLTS.high, False, True),
+            (rated, False, True),
+            (rated, True, False),
+        ):
+            circuit = self._plug(
+                f"Generated chess-board OVLO return to {back:g} V [BEH]",
+                f"PWL(0 0 1u {rated} 40m {rated} 40.001m 6.0 50m 6.0 50.001m {back})",
+                high=high,
+                end_ms=90.0,
+            )
+            circuit.controls.append(
+                "meas tran result_ovlo_state FIND v(xu74.ov) AT=89m"
+            )
+            if latched:
+                circuit.expect("ovlo_state", 0.9, 1.1)
+            else:
+                circuit.expect("ovlo_state", -0.1, 0.1)
+            corner = "late" if high else "early"
+            with self.subTest(back=back, corner=corner):
+                run_circuit(f"test_efuse_ovlo_return_{back:g}_{corner}.py", circuit)
+
     def test_rail_settles_after_switch_on_with_every_fitted_capacitor(self) -> None:
         circuit = board_circuits().power_startup().clear_expectations()
         circuit.expect("5v_at_1ms", *BOARD_POWER.healthy_rail.tuple())
