@@ -136,3 +136,49 @@ class LedSwitchSpiceTest(unittest.TestCase):
             end_ms = full_white_ms + OVERLOAD_WINDOW_MS + 1
         circuit.rows.append(f".tran 10u {end_ms}m 0 10u uic")
         return circuit
+
+    def test_lit_chain_stays_off_until_enabled(self) -> None:
+        # Worst case for a trip: the lowest ILIM, a chain that would light at once,
+        # U74's fastest dV/dt and Q1's lowest |VGS(th)| (reviewer-s6 m1), where
+        # C145/CGD coupling the +5V ramp onto Q1's gate comes closest to turning
+        # it on.
+        circuit = self._circuit(
+            "off, lit chain", lit=True, enable=False, ilim_high=False
+        )
+        circuit.controls.extend(
+            (
+                "meas tran result_led_rail_max MAX v(led)",
+                "meas tran result_input_max MAX i(vpsu) FROM=5m",
+                "let result_input_amps = -result_input_max",
+                "meas tran result_input_min MIN i(vpsu) FROM=5m",
+                "let result_input_peak = -result_input_min",
+                "meas tran result_rail_end FIND v(out) AT=79m",
+            )
+        )
+        circuit.expect("led_rail_max", -0.01, 0.5)
+        circuit.expect("input_peak", 0.0, datasheets.EFUSE_ILIM_AMPS_AT_1K65.low)
+        circuit.expect("rail_end", 4.9, datasheets.PSU_VOLTS.high)
+        run_circuit("test_led_switch_off_lit.py", circuit)
+
+    def test_enable_ramp_stays_under_the_current_limit(self) -> None:
+        circuit = self._circuit(
+            "enable, blanked", lit=False, enable=True, ilim_high=False
+        )
+        start = f"{ENABLE_AT_MS}m"
+        circuit.controls.extend(
+            (
+                f"meas tran result_input_min MIN i(vpsu) FROM={start}",
+                "let result_input_peak = -result_input_min",
+                f"meas tran result_rail_min MIN v(out) FROM={start}",
+                f"meas tran t10 WHEN v(led)=0.5 RISE=1 FROM={start}",
+                f"meas tran t90 WHEN v(led)=4.5 RISE=1 FROM={start}",
+                "let result_ramp_ms = (t90 - t10) * 1000",
+                "print result_ramp_ms",
+                f"meas tran result_led_end FIND v(led) AT={ENABLE_AT_MS + 19}m",
+            )
+        )
+        circuit.expect("input_peak", 0.0, LED_ENABLE_INPUT_AMPS_MAX)
+        circuit.expect("rail_min", datasheets.PSU_VOLTS.high - 0.05, 5.3)
+        circuit.expect("ramp_ms", 0.3, 5.0)
+        circuit.expect("led_end", 4.9, datasheets.PSU_VOLTS.high)
+        run_circuit("test_led_switch_enable.py", circuit)
