@@ -7,46 +7,50 @@ boilerplate and guarantees that test nodes correspond to the real PCB contract.
 
 from __future__ import annotations
 
+import math
 import re
 from fractions import Fraction
+from itertools import combinations
 
 import pcbnew
 
 from pcb.definition.native import connections, parts
-from pcb.definition.parts.barrel_jack import DC_INPUT_JACK
 from pcb.definition.parts.fuse import INPUT_FUSE
-from pcb.definition.parts.power_switch import MAIN_POWER_SWITCH
+from pcb.definition.parts.power_header import POWER_ENTRY_HEADER
 from shared import wiring
 from shared.electronics import (
     Ahct125Pin,
     BarrelJackPin,
-    CapacitorPin,
+    ComponentReference,
+    EfusePin,
     FusePin,
     HallSensorPin,
     PowerSwitchPin,
     RaspberryPiHeaderPin,
+    ResistorPin,
     Sk9822Pin,
-    TactileSwitchPin,
     Tca9554Pin,
     TestPointPin,
 )
+from shared.electronics.harness import POWER_HARNESS
 from shared.panel_buttons import PANEL_BUTTONS
+from spice import datasheets
 from spice.circuit import SpiceCircuit
-from spice.electrical import (
-    AHCT125,
-    BOARD_POWER,
-    HALL_SENSOR,
-    LOGIC_3V3,
-    PI_GPIO_PULLUP_OHMS,
-)
+from spice.electrical import CONTROL_SWITCH, LOGIC_3V3
 from spice.movement import MovementCase, SensorEvent
+
+BUTTON_WINDOW_MS = 1.0
 
 
 def _node(name: str) -> str:
+    """A SPICE-safe lowercase node name from a net name (non-alphanumerics become underscores)."""
     return re.sub(r"[^a-zA-Z0-9_]", "_", name).strip("_").lower()
 
 
 def _expect(name: str, occupied: bool) -> str:
+    """An `* EXPECT` marker comment that `_circuit` later turns into a real assertion: a Hall
+    output must be in the logic-low window when occupied and the logic-high window when empty.
+    """
     voltage = LOGIC_3V3.low if occupied else LOGIC_3V3.high
     return f"* EXPECT result_{name} {voltage.minimum} {voltage.maximum}"
 
@@ -75,6 +79,7 @@ class BoardHarness:
         net: str,
         expected: set[tuple[str, str]],
     ) -> None:
+        """Require that `net` connects exactly `expected` (reference, pin) endpoints, else raise."""
         actual = self.endpoints_by_net.get(net)
         if actual != expected:
             raise ValueError(
@@ -82,6 +87,7 @@ class BoardHarness:
             )
 
     def _validated_square_nets(self) -> dict[str, str]:
+        """Map each square to its sense net after checking the sensor, expander pin and net all agree with the shared mapping."""
         found: dict[str, str] = {}
         for reference, component in self.components.items():
             if component.GetFieldText("PartKey") != "HALL_SENSOR":
@@ -114,21 +120,23 @@ class BoardHarness:
 
     @staticmethod
     def _hall_model() -> list[str]:
+        """SPICE rows for the Hall output switch, with on-resistance from the DRV5032's guaranteed VOL at 1 mA."""
         switch = (
-            f"Ron={HALL_SENSOR.output_on_ohms} "
-            f"Roff={HALL_SENSOR.output_off_spice} "
-            f"Vt={HALL_SENSOR.magnetic_drive_threshold_volts} "
-            f"Vh={HALL_SENSOR.magnetic_drive_hysteresis_volts}"
+            f"Ron={datasheets.DRV5032_VOL_AT_1MA / 1e-3} "
+            f"Roff={CONTROL_SWITCH.off_spice} "
+            f"Vt={CONTROL_SWITCH.drive_threshold_volts} "
+            f"Vh={CONTROL_SWITCH.drive_hysteresis_volts}"
         )
         return [
             f".model HALLSW SW({switch})",
             ".subckt SQUARE_SENSOR OUT VDD MAG GND",
             "SOUTPUT OUT GND MAG GND HALLSW",
-            f"RPULL OUT VDD {HALL_SENSOR.input_pullup_ohms}",
+            f"RPULL OUT VDD {datasheets.TCA9554_PULLUP_OHMS_TYPICAL}",
             ".ends SQUARE_SENSOR",
         ]
 
     def _required_net(self, reference: str, pin: str, expected: str) -> str:
+        """Require pin `pin` of `reference` to be on net `expected`, else raise (so the circuit cannot be built from a mis-wired board)."""
         actual = self.net_by_endpoint.get((reference, pin))
         if actual is None or actual != expected:
             raise ValueError(
@@ -136,6 +144,62 @@ class BoardHarness:
                 f"found {actual}"
             )
         return actual
+
+    def power_topology(self) -> dict[str, str]:
+        """Check the S4b supply chain on the board and name each part by role.
+
+        Plug tip -> J4 (harness definition) -> F1 -> DC_FUSED -> U74 IN, U74 OUT on
+        +5V; the rocker's cavities feed RUN from DC_FUSED. Dividers and bias parts
+        are found by the nets they join, not by reference.
+        """
+        cavity = {
+            (wire.far_part, wire.far_terminal): wire.cavity for wire in POWER_HARNESS
+        }
+        header = POWER_ENTRY_HEADER.reference
+        tip = cavity[("BARREL_JACK", BarrelJackPin.CENTRE_POSITIVE)]
+        if (
+            self._pad_node(header, cavity[("BARREL_JACK", BarrelJackPin.SLEEVE_GROUND)])
+            != "0"
+        ):
+            raise ValueError("the plug sleeve must reach board ground through J4")
+        if self._pad_node(
+            INPUT_FUSE.reference, FusePin.UNFUSED_INPUT
+        ) != self._pad_node(header, tip):
+            raise ValueError("the fuse must follow the plug tip")
+        fused = self.net_by_endpoint[(INPUT_FUSE.reference, str(FusePin.FUSED_OUTPUT))]
+        efuse = ComponentReference.INPUT_EFUSE
+        self._required_net(efuse, EfusePin.INPUT, fused)
+        self._required_net(efuse, EfusePin.OUTPUT, "+5V")
+        to_rocker = cavity[("POWER_SWITCH", PowerSwitchPin.FUSED_INPUT)]
+        from_rocker = cavity[("POWER_SWITCH", PowerSwitchPin.RUN_OUTPUT)]
+        self._required_net(header, to_rocker, fused)
+        run = self.net_by_endpoint[(header, from_rocker)]
+        enable = self.net_by_endpoint[(efuse, str(EfusePin.ENABLE_UVLO))]
+        ovlo = self.net_by_endpoint[(efuse, str(EfusePin.OVERVOLTAGE_LOCKOUT))]
+        roles = {"fused": fused, "run": run, "enable": enable, "ovlo": ovlo}
+        found: dict[str, str] = {}
+        for reference, component in self.components.items():
+            if not component.GetFieldText("PartKey").startswith("RES_"):
+                continue
+            nets = frozenset(
+                self.net_by_endpoint.get((reference, pin), "") for pin in ("1", "2")
+            )
+            for role, pair in (
+                ("ovlo_top", {fused, ovlo}),
+                ("ovlo_bottom", {ovlo, "GND"}),
+                ("enable_top", {run, enable}),
+                ("enable_bottom", {enable, "GND"}),
+                ("wetting", {run, "GND"}),
+                (
+                    "limit",
+                    {self.net_by_endpoint[(efuse, str(EfusePin.CURRENT_LIMIT))], "GND"},
+                ),
+            ):
+                if nets == frozenset(pair):
+                    found[role] = reference
+        if len(found) != 6:
+            raise ValueError(f"eFuse bias network incomplete: {sorted(found)}")
+        return roles | found
 
     def _power_path_nets(self) -> tuple[str, str, str]:
         self._required_net(
