@@ -86,3 +86,74 @@ def _body(source: str, header: str) -> list[str]:
     if end < 0:
         raise AssertionError(f"pins.rs: {header!r} has no closing brace at column 0")
     return source[start + len(header) : end].split("\n")[1:]
+
+
+def _initializer(source: str, struct: str) -> list[str]:
+    """The lines of one `impl <struct>` `Self { ... }` initializer in pins.rs; fails loudly if its shape changes."""
+    start = source.find(f"impl {struct} {{")
+    if start < 0:
+        raise AssertionError(f"pins.rs no longer contains impl {struct}")
+    open_at = source.find("        Self {\n", start)
+    close_at = source.find("\n        }\n", open_at)
+    if open_at < 0 or close_at < 0:
+        raise AssertionError(f"pins.rs: {struct}::get() initializer changed shape")
+    return source[open_at:close_at].split("\n")[1:]
+
+
+def _bus(source: str, struct: str) -> dict[str, tuple[int, str]]:
+    """Parse a two-pin bus struct (data and clock) into {field: (GPIO number, name)}."""
+    found: dict[str, tuple[int, str]] = {}
+    for line in _body(source, f"pub struct {struct} {{"):
+        match = _BUS_FIELD.match(line)
+        if match is None:
+            raise AssertionError(f"{struct}: unrecognised field line {line!r}")
+        found[match.group(1)] = (int(match.group(2)), match.group(3))
+    if set(found) != {"data", "clock"}:
+        raise AssertionError(f"{struct}: expected data and clock, got {sorted(found)}")
+    return found
+
+
+def parse_led_enable(source: str) -> tuple[int, str, str]:
+    """BCM, capability and boot level of the LED rail enable pin."""
+    lines = [line for line in _body(source, "pub struct LEDPins {") if line]
+    match = _LED_FIELD.match(lines[0]) if len(lines) == 1 else None
+    if match is None:
+        raise AssertionError(f"LEDPins: unexpected fields {lines!r}")
+    level = re.search(
+        r"^pub const LED_ENABLE_BOOT_LEVEL: Level = Level::(\w+);$",
+        source,
+        re.MULTILINE,
+    )
+    if level is None:
+        raise AssertionError("pins.rs no longer declares LED_ENABLE_BOOT_LEVEL")
+    return int(match.group(1)), match.group(2), level.group(1)
+
+
+def parse_buttons(source: str) -> dict[str, int]:
+    """Map button name (upper case, as in panel_buttons) to BCM number."""
+    bcm_by_field: dict[str, int] = {}
+    for line in _body(source, "pub struct GPIOPins {"):
+        match = _BUTTON_FIELD.match(line)
+        if match is None:
+            raise AssertionError(f"GPIOPins: unrecognised field line {line!r}")
+        bcm_by_field[match.group(1)] = int(match.group(2))
+    variant_by_field: dict[str, str] = {}
+    for line in _initializer(source, "GPIOPins"):
+        match = _BUTTON_INIT.match(line)
+        if match is None:
+            raise AssertionError(f"GPIOPins::get: unrecognised line {line!r}")
+        variant_by_field[match.group(1)] = match.group(2)
+    if set(bcm_by_field) != set(variant_by_field):
+        raise AssertionError("GPIOPins fields and get() initializers disagree")
+    buttons = {variant_by_field[f].upper(): bcm for f, bcm in bcm_by_field.items()}
+    if len(buttons) != len(bcm_by_field):
+        raise AssertionError("GPIOPins maps two fields to one Button variant")
+    return buttons
+
+
+class FirmwarePinParityTest(unittest.TestCase):
+    """Firmware pin constants against the hardware contract (read-only parse of pins.rs)."""
+
+    buttons: ClassVar[dict[str, int]]
+    i2c: ClassVar[dict[str, tuple[int, str]]]
+    spi: ClassVar[dict[str, tuple[int, str]]]
