@@ -156,3 +156,71 @@ def _local_gap(rect: Rect) -> float:
             - cad.PANEL_OLED_MODULE_MM[2]
         )
     return cad.PCB_TO_PLATE_GAP_MM
+
+
+def top_side_violations() -> dict[str, str]:
+    """Reference -> reason for every top-side part that does not clear the plate."""
+    return _violations_in(_rows())
+
+
+def _violations_in(rows: list[dict[str, str]]) -> dict[str, str]:
+    """Top-side check over `rows`: each part's body, and its mated plug if any, must be
+    shorter than the local gap minus a 0.5 mm margin. Separate from `top_side_violations`
+    so a test can inject a fake row."""
+    origin_x, origin_y = _board_offset(rows)
+    violations: dict[str, str] = {}
+    for row in rows:
+        if row["Side"] != "top":
+            continue
+        reference = row["Ref"]
+        spec = SPECS_BY_MPN.get(row["Val"])
+        if spec is None or spec.body_mm is None:
+            violations[reference] = f"{row['Val']} has no catalogued height"
+            continue
+        centre = (float(row["PosX"]) - origin_x, float(row["PosY"]) - origin_y)
+        body = _square(centre, max(spec.body_mm[:2]))
+        gap = _local_gap(body)
+        height = spec.body_mm[2]
+        if reference in BUTTON_REFERENCES:
+            # The stem passes through the bezel; only the housing must clear.
+            gap += cad.PANEL_BUTTON_RELIEF_DEPTH_MM
+            height = cad.PANEL_BUTTON_BODY_MM[2]
+        envelope = [(body, height), *mated_zones(reference, row["Val"])]
+        for rect, slab_height in envelope:
+            slab_gap = gap if rect == body else _local_gap(rect)
+            if slab_height > slab_gap - TOP_SIDE_MARGIN_MM:
+                violations[reference] = (
+                    f"{slab_height:g} mm under a {slab_gap:g} mm gap at {rect}"
+                )
+    return violations
+
+
+def _bottom_side_problem(rect: Rect, height: float) -> str | None:
+    """Why a bottom-side slab does not fit the bay, or None."""
+    limit = cad.PI_BAY_HEIGHT_MM - BOTTOM_SIDE_FLOOR_CLEARANCE_MM
+    if height > limit:
+        return f"{height:g} mm hangs below the {limit:g} mm bay limit"
+    boss_reach = cad.PCB_SUPPORT_BOSS_DIAMETER_MM / 2.0 + 1.0
+    for boss in cad.PCB_SUPPORT_POSITIONS_MM:
+        gap = _gap_to(rect, boss)
+        if gap < boss_reach:
+            return f"{gap:.1f} mm from the support boss at {boss}"
+    turned = int(cad.PI_ROTATION_DEG) % 180 == 90
+    pi_x, pi_y = cad.PI_BOARD_SIZE_MM[:2]
+    pi = _square(cad.PI_CENTER_MM, 0.0)
+    reach_x = (pi_y if turned else pi_x) / 2.0 + cad.PI_CLEARANCE_MM
+    reach_y = (pi_x if turned else pi_y) / 2.0 + cad.PI_CLEARANCE_MM
+    if _overlaps(
+        rect, (pi[0] - reach_x, pi[1] + reach_x, pi[2] - reach_y, pi[3] + reach_y)
+    ):
+        return "inside the Pi envelope"
+    for name, keepout in cad.BOTTOM_SIDE_KEEPOUTS_MM.items():
+        if _overlaps(rect, keepout):
+            return f"inside the {name} bay keepout"
+    wall = BOTTOM_SIDE_WALL_CLEARANCE_MM
+    half_x = cad.CASE_CAVITY_SIZE_MM[0] / 2.0 - wall
+    low_y = cad.CASE_CENTER_OFFSET_Y_MM - cad.CASE_CAVITY_SIZE_MM[1] / 2.0 + wall
+    high_y = cad.CASE_CENTER_OFFSET_Y_MM + cad.CASE_CAVITY_SIZE_MM[1] / 2.0 - wall
+    if rect[0] < -half_x or rect[1] > half_x or rect[2] < low_y or rect[3] > high_y:
+        return "too close to the cavity wall"
+    return None
