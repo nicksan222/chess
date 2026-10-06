@@ -164,3 +164,65 @@ def _add_net(link: Link, board: pcbnew.BOARD, net: str) -> None:
         )
     for point, farads in [*lumped, *((via, via_farads()) for via in vias)]:
         link.rows.append(f"C{link.tag}_{len(link.rows)} {link.node(point)} 0 {farads}")
+
+
+def board_links(board: pcbnew.BOARD, harness: BoardHarness) -> list[Link]:
+    """Every SK9822 clock/data input with its driver, through any series resistor."""
+    pads_by_net: dict[str, list[tuple[str, str, str]]] = {}
+    for footprint in board.GetFootprints():
+        has_key = footprint.HasFieldByName("PartKey")
+        part = footprint.GetFieldText("PartKey") if has_key else ""
+        for pad in footprint.Pads():
+            pads_by_net.setdefault(pad.GetNetname(), []).append(
+                (footprint.GetReference(), str(pad.GetNumber()), part)
+            )
+    # S6d: a resistor with one terminal on GND is a pull-down (shunt), not a series
+    # element of the link.
+    shunts = {r for r, _, p in pads_by_net.get("GND", ()) if p.startswith("RES_")}
+    links: list[Link] = []
+    for net, pads in pads_by_net.items():
+        receivers = [
+            (r, n) for r, n, part in pads if part == "SK9822" and n in INPUT_PINS
+        ]
+        if not receivers:
+            continue
+        nets = [net]
+        drivers = [(r, n, p) for r, n, p in pads if n in OUTPUT_PINS.get(p, ())]
+        if not drivers:
+            series = [r for r, _, p in pads if p.startswith("RES_") and r not in shunts]
+            if len(series) != 1:
+                raise ValueError(f"{net}: no driver and no single series resistor")
+            other = next(
+                n
+                for n, ps in pads_by_net.items()
+                if n != net and any(r == series[0] for r, _, _ in ps)
+            )
+            nets.append(other)
+            drivers = [
+                (r, n, p)
+                for r, n, p in pads_by_net[other]
+                if n in OUTPUT_PINS.get(p, ())
+            ]
+        if len(receivers) != 1 or len(drivers) != 1:
+            raise ValueError(f"{net}: expected one driver and one SK9822 input")
+        reference, number, part = drivers[0]
+        tag = "l" + "".join(c if c.isalnum() else "_" for c in net).lower()
+        link = Link(tag, (reference, number), part, receivers[0], tuple(nets))
+        for name in nets:
+            _add_net(link, board, name)
+        for name in nets:
+            for reference, number, part in pads_by_net[name]:
+                if not part.startswith("RES_"):
+                    continue
+                nominal, tolerance = harness.resistor_ohms(reference)
+                if reference in shunts:
+                    node = link.node(link.pads[(reference, number)])
+                    link.rows.append(f"Rpd_{reference} {node} 0 {nominal}")
+                elif name == net:
+                    ends = [
+                        link.node(link.pads[(reference, pin)]) for pin in ("1", "2")
+                    ]
+                    ohms = nominal * (1 - tolerance)  # low end: least damping
+                    link.rows.append(f"Rser_{link.tag} {ends[0]} {ends[1]} {ohms}")
+        links.append(link)
+    return links
