@@ -300,3 +300,78 @@ def _shapes_by_uuid(board: pcbnew.BOARD) -> dict[str, Shape]:
                 break
         shapes[zone.m_Uuid.AsString()] = (_edges(polygon), 0)
     return shapes
+
+
+def _edges(polygon: pcbnew.SHAPE_POLY_SET) -> tuple[Segment, ...]:
+    """The edges of every outline of a polygon set, copying each point (KiCad returns live references)."""
+    edges: list[Segment] = []
+    for index in range(polygon.OutlineCount()):
+        chain = polygon.Outline(index)
+        # Copy each point: CPoint returns a reference into the polygon.
+        points = [
+            pcbnew.VECTOR2I(chain.CPoint(k).x, chain.CPoint(k).y)
+            for k in range(chain.PointCount())
+        ]
+        edges.extend(zip(points, points[1:] + points[:1], strict=True))
+    return tuple(edges)
+
+
+def _closest_on(point: pcbnew.VECTOR2I, segment: Segment) -> pcbnew.VECTOR2I:
+    """The point on a segment closest to `point`."""
+    start, end = segment
+    dx, dy = end.x - start.x, end.y - start.y
+    length2 = dx * dx + dy * dy
+    t = (
+        0.0
+        if length2 == 0
+        else ((point.x - start.x) * dx + (point.y - start.y) * dy) / length2
+    )
+    t = min(1.0, max(0.0, t))
+    return pcbnew.VECTOR2I(round(start.x + t * dx), round(start.y + t * dy))
+
+
+def _closest(
+    first: Sequence[Segment], second: Sequence[Segment]
+) -> tuple[pcbnew.VECTOR2I, pcbnew.VECTOR2I]:
+    """The closest pair of points between two segment sets (the violation's gap)."""
+    best: tuple[float, pcbnew.VECTOR2I, pcbnew.VECTOR2I] | None = None
+    for a in first:
+        for b in second:
+            for p, q in (
+                (a[0], _closest_on(a[0], b)),
+                (a[1], _closest_on(a[1], b)),
+                (_closest_on(b[0], a), b[0]),
+                (_closest_on(b[1], a), b[1]),
+            ):
+                distance = math.hypot(p.x - q.x, p.y - q.y)
+                if best is None or distance < best[0]:
+                    best = (distance, p, q)
+    assert best is not None
+    return best[1], best[2]
+
+
+def _location(
+    violation: Violation, shapes: Mapping[str, Shape]
+) -> tuple[pcbnew.VECTOR2I, ...]:
+    """Where a violation is: a narrow track's ends, or the two copper edges facing
+    each other in a clearance violation (closest centre-line points moved toward
+    each other by each item's half width)."""
+    items = [shapes[item["uuid"]] for item in violation["items"]]
+    if len(items) == 1:
+        return tuple(point for segment in items[0][0] for point in segment)
+    (first, first_half), (second, second_half) = items
+    p, q = _closest(first, second)
+    distance = math.hypot(q.x - p.x, q.y - p.y)
+    if distance == 0:
+        return p, q
+
+    def toward(
+        start: pcbnew.VECTOR2I, end: pcbnew.VECTOR2I, by: int
+    ) -> pcbnew.VECTOR2I:
+        k = min(1.0, by / distance)
+        return pcbnew.VECTOR2I(
+            round(start.x + (end.x - start.x) * k),
+            round(start.y + (end.y - start.y) * k),
+        )
+
+    return toward(p, q, first_half), toward(q, p, second_half)

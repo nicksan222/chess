@@ -1,4 +1,10 @@
-"""Mechanical fit against shared CAD dimensions and approved native land patterns."""
+"""Mechanical fit against shared CAD dimensions and approved native land patterns.
+
+Role: checks the built board against `shared.dimensions`: the outline and mounting holes,
+every square, LED and Hall position, the bank/expander alignment, panel parts, and that
+courtyards, pads and leads do not overlap. These are the geometric promises the case and
+plate rely on. Evidence type: software test of the native board, not of a printed fit.
+"""
 
 import unittest
 from itertools import combinations
@@ -12,10 +18,11 @@ from shared import dimensions
 
 
 def bounds(footprint: pcbnew.FOOTPRINT) -> tuple[int, int, int, int]:
+    """A footprint's courtyard bounds (left, top, right, bottom) in native units."""
     points = [
         p
         for shape in footprint.GraphicalItems()
-        if shape.GetLayer() == pcbnew.F_CrtYd
+        if shape.GetLayer() in (pcbnew.F_CrtYd, pcbnew.B_CrtYd)
         for p in (shape.GetStart(), shape.GetEnd())
     ]
     return (
@@ -27,8 +34,11 @@ def bounds(footprint: pcbnew.FOOTPRINT) -> tuple[int, int, int, int]:
 
 
 class DimensionsTest(unittest.TestCase):
+    """Board envelope, squares, banks, panel parts, courtyards and pads against the shared dimensions."""
+
     @classmethod
     def setUpClass(cls):
+        """Build the board once and index its footprints."""
         cls.board = board.load()
         cls.parts = native.parts(cls.board)
         cls.by_ref = {f.GetReference(): f for f in cls.board.GetFootprints()}
@@ -95,13 +105,17 @@ class DimensionsTest(unittest.TestCase):
                 )
                 self.assertEqual(sensor.GetPosition(), native.point(x, y))
                 self.assertEqual(led.GetPosition(), native.point(lx, ly))
+                # SK9822 datasheet top view has inputs (pins 1-2) on +X.
                 self.assertEqual(
                     led.GetOrientationDegrees() % 360,
-                    180 if int(name[1]) % 2 == 0 else 0,
+                    0 if int(name[1]) % 2 == 0 else 180,
                 )
+                # Bypass caps on the supply-pin side (tests/board/test_decoupling.py):
+                # the LED cap turns with the LED, the Hall cap sits 2.4 mm below.
+                side = 4 if int(name[1]) % 2 == 0 else -4
                 expected = {
-                    (native.point(lx, ly - 8).x, native.point(lx, ly - 8).y),
-                    (native.point(x, y - 3).x, native.point(x, y - 3).y),
+                    (native.point(lx, ly + side).x, native.point(lx, ly + side).y),
+                    (native.point(x, y - 2.4).x, native.point(x, y - 2.4).y),
                 }
                 self.assertEqual(
                     {
