@@ -156,7 +156,55 @@ class RoutingTest(unittest.TestCase):
         _, via_forbidden = self.blocked()
         self.assertIn((40, 40), via_forbidden)
 
+    def test_every_step_between_free_cells_keeps_track_clearance(self):
+        # Reviewer m2: free cells alone are not enough; the step between two free
+        # cells (axis or diagonal, as the search takes it) must also keep the
+        # track's clearance from foreign copper. Obstacles sit off the grid.
+        layer = self.layers[0]
+        need = rules.CLEARANCE_MM + paths.TRACK_MM / 2
+        obstacles: list[tuple[tuple[float, float], tuple[float, float], float]] = []
+        # Point-like stubs at 8 x 8 sub-grid offsets, 2 mm apart: some sit where a
+        # step's middle is nearer than both of its cells.
+        for index in range(64):
+            fx, fy = index % 8, index // 8
+            start = (
+                3 + 2 * fx + fx * paths.GRID_MM / 8,
+                3 + 2 * fy + fy * paths.GRID_MM / 8,
+            )
+            end = (start[0] + 0.01, start[1])
+            track = pcbnew.PCB_TRACK(self.board)
+            track.SetStart(self.point(*start))
+            track.SetEnd(self.point(*end))
+            track.SetWidth(pcbnew.FromMM(0.2))
+            track.SetLayer(layer)
+            track.SetNet(self.foreign)
+            self.board.Add(track)
+            obstacles.append((start, end, 0.1))
+        blocked = self.blocked()[0][layer]
+
+        def gap(x: float, y: float) -> float:
+            def to_segment(a: tuple[float, float], b: tuple[float, float]) -> float:
+                dx, dy = b[0] - a[0], b[1] - a[1]
+                t = ((x - a[0]) * dx + (y - a[1]) * dy) / (dx * dx + dy * dy)
+                t = min(max(t, 0.0), 1.0)
+                return math.hypot(a[0] + t * dx - x, a[1] + t * dy - y)
+
+            return min(to_segment(a, b) - half for a, b, half in obstacles)
+
+        for ix in range(8, 80):
+            for iy in range(8, 80):
+                for dx, dy in ((1, 0), (0, 1), (1, 1), (1, -1)):
+                    cells = {(ix, iy), (ix + dx, iy + dy), (ix + dx, iy), (ix, iy + dy)}
+                    if cells & blocked:
+                        continue
+                    for k in range(11):
+                        x = (ix + dx * k / 10) * paths.GRID_MM
+                        y = (iy + dy * k / 10) * paths.GRID_MM
+                        self.assertGreaterEqual(gap(x, y), need, (ix, iy, dx, dy))
+
     def test_route_and_exact_stubs_stay_inside_bank_corridor(self):
+        # Endpoints are off-grid (y = 15.01); after applying the route, even the
+        # short stubs to the exact points must lie inside the 10-20 mm corridor.
         start, end = (10, 15.01), (20, 15.01)
         corridor = (10.0, 10.0, 20.0, 20.0)
         route = self.route(start, end, routing_bounds_mm=corridor)
@@ -176,6 +224,9 @@ class RoutingTest(unittest.TestCase):
                 self.assertTrue(10 <= pcbnew.ToMM(point.y) <= 20)
 
     def test_apply_route_omits_zero_length_stubs_and_uses_native_dimensions(self):
+        # Hand-built route: one segment, a layer change (via), one more segment.
+        # Expect exactly two tracks and one via, on the two layers, with the width,
+        # via pad and drill from `rules`, and no zero-length stub tracks.
         route = paths.Route(
             (
                 paths.GridNode(40, 40, 0),
@@ -208,6 +259,8 @@ class RoutingTest(unittest.TestCase):
         self.assertEqual(vias[0].GetDrillValue(), pcbnew.FromMM(rules.VIA_DRILL_MM))
 
     def test_equal_cost_routes_use_stable_neighbour_order(self):
+        # A diagonal move has several equal-cost paths; repeated runs must pick the
+        # same one, so generated boards are reproducible.
         expected = (
             paths.GridNode(40, 40, 0),
             paths.GridNode(48, 40, 0),
