@@ -1,10 +1,17 @@
-"""Reusable scene configuration and studio presentation helpers."""
+"""Reusable scene configuration and studio presentation helpers.
+
+Role: render settings and a simple studio (floor, camera, area lights) shared by every
+CAD project so all review renders look alike. Presentation only: nothing here affects
+printable geometry.
+"""
 
 import bpy
 from mathutils import Vector
 
 from core import modeling
 
+# Three-point lighting for board renders. Each entry: name, location (mm), energy,
+# disk size, RGB colour. Key is warm, fill cool, rim warm from behind.
 BOARD_STUDIO_LIGHTS = (
     ("Key_Light", (180.0, -220.0, 360.0), 1_150_000.0, 180.0, (1.0, 0.78, 0.58)),
     ("Fill_Light", (-260.0, 120.0, 220.0), 850_000.0, 160.0, (0.62, 0.78, 1.0)),
@@ -19,7 +26,13 @@ def configure_scene(
     background_color: tuple[float, float, float, float],
     background_strength: float,
 ) -> bpy.types.Scene:
+    """Set units, EEVEE render settings and the world background on the current scene.
+
+    Millimetre units with `scale_length` so Blender distances match the shared
+    dimensions. Output is opaque 8-bit RGBA PNG.
+    """
     scene = bpy.context.scene
+    # Do not leave a `.blend1` backup beside every saved model.
     bpy.context.preferences.filepaths.save_version = 0
     scene.name = name
     scene.unit_settings.system = "METRIC"
@@ -59,6 +72,11 @@ def add_studio(
         ...,
     ],
 ) -> None:
+    """Add a rounded floor, a camera aimed at `camera_target` and the given lights.
+
+    Everything goes into `collection` (the PRESENTATION collection) so it can be told
+    apart from the printable part. Each light entry follows `BOARD_STUDIO_LIGHTS`.
+    """
     floor = modeling.rounded_box(
         "Studio_Floor",
         (*floor_size, 3.0),

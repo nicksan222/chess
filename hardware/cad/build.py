@@ -97,7 +97,12 @@ def generate(
     destination: Path = GENERATED,
     runner: Callable[..., object] = subprocess.run,
 ) -> None:
-    """Build every project into one stage, then publish the whole set."""
+    """Build every project into one stage, then publish the whole set.
+
+    `runner` is injectable (defaults to `subprocess.run`) so tests can check the
+    sequence without launching Blender. `check=True` aborts on the first failure,
+    which leaves the previously published set untouched.
+    """
     with staged_output(destination) as stage:
         if GENERATED_README.is_file():
             shutil.copyfile(GENERATED_README, stage / GENERATED_README.name)
@@ -112,6 +117,7 @@ def generate(
 
 
 def main() -> None:
+    """CLI entry: the only argument is the Blender executable to use."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("blender", type=Path)
     args = parser.parse_args()

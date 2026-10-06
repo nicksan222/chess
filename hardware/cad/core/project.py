@@ -1,4 +1,10 @@
-"""Small lifecycle helpers shared by code-authored Blender projects."""
+"""Small lifecycle helpers shared by code-authored Blender projects.
+
+Role: the steps every printable project's generator repeats: parse the output
+directory Blender was given, create a clean scene with the standard collections,
+record metadata on the scene, and finally validate, save and render. Keeping them here
+means each `generate.py` only describes its own geometry.
+"""
 
 import sys
 from dataclasses import dataclass
@@ -9,7 +15,9 @@ import bpy
 
 from core import modeling, presentation, validation
 
+# Value types Blender can store as custom (ID) properties on a scene.
 SceneProperty = bool | int | float | str
+# Scene properties that record a printed part's mesh volume.
 VolumeProperty = Literal["case_volume_mm3", "plate_volume_mm3"]
 
 
@@ -21,7 +29,11 @@ class SceneMetadata(Protocol):
 
 @dataclass(frozen=True, slots=True)
 class PrintableScene:
-    """Named scene resources; unlike a tuple, collection roles cannot be swapped."""
+    """Named scene resources; unlike a tuple, collection roles cannot be swapped.
+
+    `printable` holds the part that will be printed, `construction` the cutters and
+    helpers used to make it (hidden from render), `studio` the floor, camera and lights.
+    """
 
     scene: bpy.types.Scene
     printable: bpy.types.Collection
@@ -35,11 +47,16 @@ def set_scene_property(scene: bpy.types.Scene, name: str, value: SceneProperty) 
 
 
 def apply_metadata(scene: bpy.types.Scene, metadata: SceneMetadata) -> None:
+    """Write a project's typed metadata onto the scene so it is saved in the .blend."""
     metadata.apply_to(scene)
 
 
 def output_directory(default: Path) -> Path:
-    """Read the optional output directory passed after Blender's `--` marker."""
+    """Read the optional output directory passed after Blender's `--` marker.
+
+    Blender ignores arguments after `--`, so `build.py` passes the staging directory
+    there. Without one (running a generator by hand) `default` is used.
+    """
     if "--" not in sys.argv:
         return default
     arguments = sys.argv[sys.argv.index("--") + 1 :]

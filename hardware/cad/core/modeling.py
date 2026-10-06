@@ -1,4 +1,11 @@
-"""Reusable Blender mesh, collection, boolean, and library helpers."""
+"""Reusable Blender mesh, collection, boolean, and library helpers.
+
+Role: the typed wrapper around Blender's operator API that every generator uses to
+build parts: boxes and cylinders defined by their physical extents, batched boolean
+cuts/unions, collections, and loading objects from another generated .blend. Several
+helpers exist to guard silent Blender failure modes (see `rounded_box` and
+`cut_batch`); the project README describes the two boolean traps.
+"""
 
 from collections.abc import Sequence
 from contextlib import AbstractContextManager
@@ -8,9 +15,12 @@ from typing import Protocol, TypeVar, cast
 import bpy
 from mathutils import Vector
 
+# Generic over the kind of object data (Mesh, Camera, ...) a caller expects.
 ObjectData = TypeVar("ObjectData")
 
 
+# Minimal typed views of what `bpy.data.libraries.load` yields (Blender's stubs do
+# not model them).
 class _LibrarySource(Protocol):
     objects: Sequence[str]
 
@@ -47,6 +57,7 @@ def require_object_data(  # noqa: UP047
 
 
 def clear_scene() -> None:
+    """Delete every object and collection so a generator starts from nothing."""
     bpy.ops.object.select_all(action="SELECT")
     bpy.ops.object.delete(use_global=False)
     for collection in list(bpy.data.collections):
@@ -54,12 +65,14 @@ def clear_scene() -> None:
 
 
 def new_collection(name: str) -> bpy.types.Collection:
+    """Create a collection linked under the scene root."""
     collection = bpy.data.collections.new(name)
     bpy.context.scene.collection.children.link(collection)
     return collection
 
 
 def move_to_collection(obj: bpy.types.Object, collection: bpy.types.Collection) -> None:
+    """Make `collection` the object's only collection (unlink it from the others)."""
     for source in list(obj.users_collection):
         source.objects.unlink(obj)
     collection.objects.link(obj)
@@ -73,6 +86,7 @@ def rounded_box(
     collection: bpy.types.Collection,
     bevel_segments: int = 4,
 ) -> bpy.types.Object:
+    """A box of `dimensions` centred at `location`, edges rounded by `radius` (0 = sharp)."""
     # A bevel wider than half the thinnest dimension folds through itself. The
     # result is not an error in Blender, it is a silently invalid mesh that only
     # surfaces later as a failed manifold check, so refuse it here instead.
@@ -85,6 +99,7 @@ def rounded_box(
     obj = active_object(f"creating box {name}")
     obj.name = name
     obj.dimensions = dimensions
+    # Bake the scale into the mesh so later booleans and bevels see real dimensions.
     bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
     if radius > 0.0:
         bevel = obj.modifiers.new(name="Rounded edges", type="BEVEL")
@@ -152,6 +167,7 @@ def _boolean_batch(
     name: str,
     operation: str,
 ) -> None:
+    """Join `operands`, apply them to `body` as one boolean, then discard them."""
     if not operands:
         return
     bpy.ops.object.select_all(action="DESELECT")
@@ -174,6 +190,7 @@ def cylinder(
     collection: bpy.types.Collection,
     vertices: int = 64,
 ) -> bpy.types.Object:
+    """A vertical cylinder of `diameter` and `height` centred at `location`."""
     bpy.ops.mesh.primitive_cylinder_add(
         vertices=vertices,
         radius=diameter / 2.0,
@@ -209,6 +226,12 @@ def cylinder_between(
 def boolean_apply(
     body: bpy.types.Object, operand: bpy.types.Object, operation: str
 ) -> None:
+    """Apply one boolean (`DIFFERENCE`/`UNION`) of `operand` to `body`.
+
+    Uses the EXACT solver, which is robust for these parts but slow and fails badly
+    on self-intersecting operands (overlapping batch members) or faces coplanar with
+    the body (hence the batching rules above).
+    """
     modifier = body.modifiers.new(
         name=f"{operation.title()} {operand.name}", type="BOOLEAN"
     )
@@ -222,6 +245,7 @@ def boolean_apply(
 
 
 def point_at(obj: bpy.types.Object, target: Vector) -> None:
+    """Rotate a camera or light so its local -Z points at `target`, local Y as up."""
     obj.rotation_euler = (
         (target - obj.location)
         .to_track_quat("-Z", "Y")
