@@ -122,3 +122,84 @@ class DecouplingTest(unittest.TestCase):
             if footprint.HasFieldByName("PartKey")
             and footprint.GetFieldText("PartKey") == key
         }
+
+    @staticmethod
+    def _close(
+        supply: pcbnew.PAD, ground: pcbnew.PAD, rail: str, pads: dict[str, pcbnew.PAD]
+    ) -> bool:
+        """Rail pad near the supply pin and GND pad closing the loop to ground.
+
+        For packages whose supply and ground pins sit at opposite corners (SOIC
+        TCA9554/AHCT125) the return closes through the GND plane: both the cap GND
+        pad and the device ground pin must reach In1 by a via within
+        FANOUT_VIA_REACH_MM (checked in the test), and no distance term is applied.
+        """
+        if set(pads) != {rail, "GND"}:
+            return False
+        near = _edge_gap(_box(supply), _box(pads[rail])) <= BYPASS_EDGE_MAX_MM
+        part = supply.GetParentFootprint().GetFieldText("PartKey")
+        if part in DIAGONAL_RAIL_KEYS:
+            return near
+        loop_limit = _edge_gap(_box(supply), _box(ground)) + BYPASS_EDGE_MAX_MM
+        return near and _edge_gap(_box(ground), _box(pads["GND"])) <= loop_limit
+
+    def _match(
+        self,
+        devices: list[tuple[str, pcbnew.PAD, pcbnew.PAD, str]],
+        capacitors: dict[str, dict[str, pcbnew.PAD]],
+        assigned: dict[str, str],
+    ) -> None:
+        """Augmenting-path bipartite matching: every device its own capacitor."""
+        owner = {cap: device for device, cap in assigned.items()}
+
+        def augment(device: int, seen: set[str]) -> bool:
+            """Try to give `device` a capacitor, moving an earlier owner to another one if needed (augmenting path)."""
+            reference, supply, ground, rail = devices[device]
+            for cap, pads in capacitors.items():
+                if cap in seen or not self._close(supply, ground, rail, pads):
+                    continue
+                seen.add(cap)
+                holder = owner.get(cap)
+                if holder is None or augment(
+                    next(i for i, d in enumerate(devices) if d[0] == holder), seen
+                ):
+                    owner[cap] = reference
+                    assigned[reference] = cap
+                    return True
+            return False
+
+        for index, device in enumerate(devices):
+            if device[0] not in assigned:
+                augment(index, set())
+
+    def test_every_supply_pin_has_its_own_close_bypass_capacitor(self) -> None:
+        devices = self._devices()
+        # Banks, U5, U75 (S6b), LEDs, Hall sensors.
+        self.assertEqual(len(devices), 8 + 1 + 1 + 64 + 64)
+        assigned: dict[str, str] = {}
+        # 100 nF parts are the intended high-frequency bypass; 10 uF only as fallback.
+        for key in BYPASS_PREFERENCE:
+            self._match(devices, self._capacitors(key), assigned)
+        for reference, supply, ground, rail in devices:
+            with self.subTest(reference=reference, check="rails"):
+                self.assertEqual(supply.GetNetname(), rail)
+                self.assertEqual(ground.GetNetname(), "GND")
+            with self.subTest(reference=reference, check="bypass loop"):
+                self.assertIn(reference, assigned, "no capacitor closes the loop")
+            if reference not in assigned:
+                continue
+            capacitor = self.routed.FindFootprintByReference(assigned[reference])
+            assert capacitor is not None
+            for pad in (supply, ground, *capacitor.Pads()):
+                with self.subTest(reference=reference, pad=pad.GetNumber()):
+                    self.assertTrue(pad.IsOnLayer(pcbnew.F_Cu))
+                    self.assertTrue(
+                        self._has_fanout_via(pad),
+                        f"{pad.GetParentFootprint().GetReference()}-"
+                        f"{pad.GetNumber()} has no {pad.GetNetname()} via within "
+                        f"{FANOUT_VIA_REACH_MM} mm",
+                    )
+
+
+if __name__ == "__main__":
+    unittest.main()
