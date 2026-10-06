@@ -10,6 +10,7 @@ import unittest
 from math import isclose
 from pathlib import Path
 
+# Blender-free: dimensions load without bpy, so these run in the normal unit suite.
 CAD_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(CAD_ROOT))
 
@@ -72,17 +73,23 @@ class TwoPrintedPartsTest(unittest.TestCase):
         ):
             self.assertFalse(hasattr(cad, gone), gone)
 
-    def test_the_plate_covers_the_playing_area_with_a_fit_clearance(self) -> None:
-        self.assertTrue(
-            isclose(
-                cad.TILE_PLATE_SPAN_MM,
-                cad.PLAYING_SPAN_MM - cad.TILE_PLATE_CLEARANCE_MM,
-            )
-        )
-        self.assertLess(cad.TILE_PLATE_SPAN_MM, cad.PLAYING_SPAN_MM)
+    def test_the_plate_covers_the_whole_board_with_a_fit_clearance(self) -> None:
+        for axis in (0, 1):
+            with self.subTest(axis=axis):
+                self.assertTrue(
+                    isclose(
+                        cad.CASE_PLATE_REBATE_MM[axis] - cad.TILE_PLATE_SIZE_MM[axis],
+                        cad.TILE_PLATE_CLEARANCE_MM,
+                    )
+                )
+                self.assertGreater(
+                    cad.TILE_PLATE_SIZE_MM[axis], cad.PCB_POCKET_SIZE_MM[axis]
+                )
 
 
 class PrintEnvelopeTest(unittest.TestCase):
+    """Both parts are quoted from a print service; see the CAD README."""
+
     def test_both_parts_fit_a_print_service(self) -> None:
         for part in cad.PRINTED_PART_SIZES_MM:
             self.assertTrue(
@@ -312,16 +319,18 @@ class ControlPanelTest(unittest.TestCase):
 
 
 class PlateFixingTest(unittest.TestCase):
-    def test_every_plate_screw_lands_on_the_case_ledge(self) -> None:
-        """Anywhere further inboard is over the PCB."""
-        inner = cad.PLAYING_SPAN_MM / 2.0 - cad.CASE_PLATE_LEDGE_MM
-        outer = cad.PLAYING_SPAN_MM / 2.0
-        radius = cad.TILE_PLATE_SCREW_HEAD_DIAMETER_MM / 2.0
+    def test_every_plate_screw_lands_on_the_case_rim(self) -> None:
+        """Between the PCB pocket and the plate edge; inboard is over the PCB."""
+        pocket = (cad.PCB_POCKET_SIZE_MM[0] / 2.0, cad.PCB_POCKET_SIZE_MM[1] / 2.0)
+        plate = (cad.TILE_PLATE_SIZE_MM[0] / 2.0, cad.TILE_PLATE_SIZE_MM[1] / 2.0)
+        pilot = cad.PCB_SUPPORT_PILOT_DIAMETER_MM / 2.0
+        head = cad.TILE_PLATE_SCREW_HEAD_DIAMETER_MM / 2.0
         for x, y in cad.TILE_PLATE_SCREW_POSITIONS_MM:
-            reach = max(abs(x), abs(y))
+            dx, dy = abs(x), abs(y - cad.TILE_PLATE_CENTER_Y_MM)
             with self.subTest(screw=(x, y)):
-                self.assertGreaterEqual(reach - radius, inner)
-                self.assertLessEqual(reach + radius, outer)
+                self.assertGreater(max(dx - pocket[0], dy - pocket[1]), pilot)
+                self.assertLessEqual(dx + head, plate[0])
+                self.assertLessEqual(dy + head, plate[1])
 
     def test_screws_are_spread_around_the_perimeter(self) -> None:
         self.assertEqual(len(cad.TILE_PLATE_SCREW_POSITIONS_MM), 8)

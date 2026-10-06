@@ -1,15 +1,25 @@
-"""Failure isolation and dependency handling for CAD publication."""
+"""Failure isolation and dependency handling for CAD publication.
 
+Role: tests of `cad/build.py` with a fake runner instead of Blender: generation order
+follows the `generation-order` files, the Xvfb wrapper is always used when available, and a
+failed generator leaves the previously published set untouched while success replaces it
+whole. No geometry is built here.
+"""
+
+import os
 import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from cad import build
 
 
 class CadBuildTest(unittest.TestCase):
     def _runner(self, *, fail_on: str | None = None):
+        # A stand-in for `subprocess.run` that records the order generators run in and
+        # writes the files each one would, so a dependent project's input check is real.
         calls: list[str] = []
 
         def run(command: list[str], **_options: object) -> None:
@@ -36,11 +46,30 @@ class CadBuildTest(unittest.TestCase):
             Path("blender"),
             Path("project/generate.py"),
             Path("stage"),
-            environment={},
             find_executable=lambda name: f"/usr/bin/{name}",
         )
         self.assertEqual(command[:2], ["xvfb-run", "--auto-servernum"])
         self.assertEqual(command[-2:], ["--", "stage"])
+
+    def test_xvfb_is_used_even_when_a_display_is_inherited(self) -> None:
+        """A forwarded host DISPLAY hangs EEVEE, so it must not bypass Xvfb."""
+        with mock.patch.dict(os.environ, {"DISPLAY": ":0"}):
+            command = build.generator_command(
+                Path("blender"),
+                Path("project/generate.py"),
+                Path("stage"),
+                find_executable=lambda name: f"/usr/bin/{name}",
+            )
+        self.assertEqual(command[0], "xvfb-run")
+
+    def test_without_xvfb_blender_runs_directly(self) -> None:
+        command = build.generator_command(
+            Path("blender"),
+            Path("project/generate.py"),
+            Path("stage"),
+            find_executable=lambda _name: None,
+        )
+        self.assertEqual(command[0], "blender")
 
     def test_empty_generation_order_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
