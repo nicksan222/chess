@@ -229,4 +229,93 @@ GOLDEN = (
         ),
         polarity_pad="1",
     ),
+    LandPattern(
+        "LED_ENABLE_GATE",
+        "SN74LVC1G97DBVR",
+        "SOT-23-6 (DBV)",
+        # TI SCES416N: p3 pin functions (DBV: 1 In1, 2 GND, 3 In0, 4 Y, 5 VCC, 6 In2);
+        # p35 DBV0006A outline (D 2.75-3.05, lead span 2.6-3.0, 1.45 max); p36
+        # example board layout: 6X (1.1) x 6X (0.6), 2X (0.95), (2.6) columns.
+        "TI SCES416N p3, p35-p36 (DBV0006A)",
+        ((2.75, 3.05), (2.6, 3.0), (0.0, 1.45)),
+        tuple(
+            LandPad(number, name, semantic, net, (x, y), (1.1, 0.6))
+            for number, name, semantic, net, x, y in (
+                ("1", "In1", "INPUT_1", None, -1.3, 0.95),
+                ("2", "GND", "GROUND", "GND", -1.3, 0.0),
+                ("3", "In0", "INPUT_0", "+5V", -1.3, -0.95),
+                ("4", "Y", "OUTPUT", None, 1.3, -0.95),
+                ("5", "VCC", "SUPPLY", "+5V", 1.3, 0.0),
+                ("6", "In2", "INPUT_2", None, 1.3, 0.95),
+            )
+        ),
+        polarity_pad="1",
+    ),
+    LandPattern(
+        "AHCT125",
+        "SN74AHCT125DR",
+        "SOIC-14 1.27 mm",
+        # TI SCLS264R: p4 Table 4-1 pin functions (D); p20 D0014A outline (D
+        # 8.55-8.75, E 5.8-6.2 lead span, 1.75 max); p21 example board layout
+        # ((5.4) row, 14X (1.55) x 14X (0.6), 12X (1.27)).
+        "TI SCLS264R p4, p20-p21 (D0014A)",
+        ((8.55, 8.75), (5.8, 6.2), (0.0, 1.75)),
+        (
+            LandPad(
+                "1", "1OE", "BUFFER_1_OUTPUT_ENABLE", None, (-2.7, 3.81), SOIC14_PAD
+            ),
+            LandPad("2", "1A", "BUFFER_1_INPUT", None, (-2.7, 2.54), SOIC14_PAD),
+            LandPad("3", "1Y", "BUFFER_1_OUTPUT", None, (-2.7, 1.27), SOIC14_PAD),
+            LandPad(
+                "4", "2OE", "BUFFER_2_OUTPUT_ENABLE", None, (-2.7, 0.0), SOIC14_PAD
+            ),
+            LandPad("5", "2A", "BUFFER_2_INPUT", None, (-2.7, -1.27), SOIC14_PAD),
+            LandPad("6", "2Y", "BUFFER_2_OUTPUT", None, (-2.7, -2.54), SOIC14_PAD),
+            LandPad("7", "GND", "GROUND", "GND", (-2.7, -3.81), SOIC14_PAD),
+            LandPad("8", "3Y", "BUFFER_3_OUTPUT", None, (2.7, -3.81), SOIC14_PAD),
+            LandPad("9", "3A", "BUFFER_3_INPUT", None, (2.7, -2.54), SOIC14_PAD),
+            LandPad(
+                "10", "3OE", "BUFFER_3_OUTPUT_ENABLE", None, (2.7, -1.27), SOIC14_PAD
+            ),
+            LandPad("11", "4Y", "BUFFER_4_OUTPUT", None, (2.7, 0.0), SOIC14_PAD),
+            LandPad("12", "4A", "BUFFER_4_INPUT", None, (2.7, 1.27), SOIC14_PAD),
+            LandPad(
+                "13", "4OE", "BUFFER_4_OUTPUT_ENABLE", None, (2.7, 2.54), SOIC14_PAD
+            ),
+            LandPad("14", "VCC", "SUPPLY", "+5V", (2.7, 3.81), SOIC14_PAD),
+        ),
+        polarity_pad="1",
+    ),
+    LandPattern(
+        "HALL_SENSOR",
+        "DRV5032FCDBZR",
+        "SOT-23-3",
+        # TI SLVSDC7H: p3 Figure 5-1 / Table 5-1 (FC, DBZ); p31 DBZ0003A outline
+        # (D 2.80-3.04, E1 1.2-1.4, 1.12 max); p32 land pattern example (3X (1.3)
+        # x 3X (0.6), (2.1) between rows, 2X (0.95); pin 1 top-left, 3 right).
+        # TI land-pattern dimensions run between pad centrelines (the leader lines
+        # meet the centre marks), so (2.1) is centre-to-centre: x = +/-1.05.
+        "TI SLVSDC7H p3, p31-p32 (DBZ0003A)",
+        ((2.80, 3.04), (1.2, 1.4), (0.0, 1.12)),
+        (
+            LandPad("1", "VCC", "SUPPLY", "+3V3", (-1.05, 0.95), SOT23_PAD),
+            LandPad("2", "OUT", "ACTIVE_LOW_OUTPUT", None, (-1.05, -0.95), SOT23_PAD),
+            LandPad("3", "GND", "GROUND", "GND", (1.05, 0.0), SOT23_PAD),
+        ),
+        polarity_pad="1",
+    ),
+    LandPattern(
+        "FUSE_2A",
+        "0453002.MR",
+        "2410 fuse",
+        # Littelfuse 451/453 Series NANO2 (revised January 7, 2009) sheet 60:
+        # recommended pad layout 6.86 overall, 3.15 pad height, 1.96 pad width,
+        # 2.95 gap; body 6.10 x 2.69 x 2.69 (nominal only; +/-0.05 rounding allowed).
+        "Littelfuse 451/453 Series (2009-01-07) p60",
+        ((6.05, 6.15), (2.64, 2.74), (2.64, 2.74)),
+        (
+            LandPad("1", "1", "UNFUSED_INPUT", None, (-2.455, 0.0), (1.96, 3.15)),
+            LandPad("2", "2", "FUSED_OUTPUT", None, (2.455, 0.0), (1.96, 3.15)),
+        ),
+    ),
 )
