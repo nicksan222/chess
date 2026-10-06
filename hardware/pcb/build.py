@@ -1,11 +1,30 @@
-"""One build pipeline; reviewed outputs are published only as complete sets."""
+"""One build pipeline; reviewed outputs are published only as complete sets.
+
+Role: orchestrates everything that turns the Python board definition into reviewed
+artifacts under `generated/`. Commands (see `build()`):
+
+- `generate`: load the board, write schematic/BOM/netlist, route, write the
+  native board and DSN.
+- `review`: generate, then ERC, DRC with schematic parity, the unit/SPICE tests,
+  and preview renders, after the source checks.
+- `release`: review, plus the physical Hall/magnet evidence gate, then
+  fabrication exports (Gerbers, drills).
+
+Everything is built in a staging directory (`build_support.staged_output`) and
+swapped into place only on success, so a failed run never leaves a mixed set. The
+manifest records source and tool hashes so a reviewer can tie output to its inputs.
+A passing run is evidence about the design files only, not about a physical board.
+"""
 
 from __future__ import annotations
 
+import ast
+import csv
 import hashlib
 import json
 import math
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -22,7 +41,11 @@ from shared.json_values import parse_json
 
 PCB_ROOT = Path(__file__).resolve().parent
 REPOSITORY_ROOT = PCB_ROOT.parents[1]
+# `PCB_OUTPUT` redirects all output (tests and the review step use it so they do
+# not touch the checked-in `generated/` directory).
 GENERATED_DIR = Path(os.environ.get("PCB_OUTPUT", PCB_ROOT / "generated"))
+TESTS_CHECK = "unit and SPICE tests"
+# Names of the published files inside GENERATED_DIR (or a staging copy of it).
 BOARD = GENERATED_DIR / "chess-board.kicad_pcb"
 DSN = GENERATED_DIR / "chess-board.dsn"
 PROJECT = GENERATED_DIR / "chess-board.kicad_pro"
@@ -31,6 +54,8 @@ SYMBOL_LIBRARY = GENERATED_DIR / "generated-symbols.kicad_sym"
 SYMBOL_TABLE = GENERATED_DIR / "sym-lib-table"
 BOM = GENERATED_DIR / "bom.md"
 ASSEMBLY_BOM = GENERATED_DIR / "assembly-bom.csv"
+HARNESS = GENERATED_DIR / "harness.md"
+DESIGN_RULES = GENERATED_DIR / "chess-board.kicad_dru"
 BOARD_TOP_SVG = GENERATED_DIR / "board-top.svg"
 BOARD_BOTTOM_SVG = GENERATED_DIR / "board-bottom.svg"
 
@@ -38,6 +63,12 @@ BOARD_BOTTOM_SVG = GENERATED_DIR / "board-bottom.svg"
 def run(
     *args: str, output: Path | None = None, env: dict[str, str] | None = None
 ) -> str:
+    """Run a tool from the repo root; return its output or raise RuntimeError.
+
+    stdout and stderr are combined. If `output` is given the full text is saved
+    there (e.g. a test log) even on failure; the error message keeps only the last
+    12000 characters so a noisy failure stays readable.
+    """
     result = subprocess.run(
         args, cwd=REPOSITORY_ROOT, env=env, capture_output=True, text=True, check=False
     )
@@ -52,6 +83,12 @@ def run(
 
 
 def doctor(*, simulation: bool) -> dict[str, str]:
+    """Check the toolchain and return its versions for the manifest.
+
+    `kicad-cli` is always required; `ngspice` only when `simulation` is true
+    (review/release run the SPICE scenarios). KiCad 9 is required because the
+    file formats and `pcbnew` API this code writes are version specific.
+    """
     for executable in ("kicad-cli", "ngspice") if simulation else ("kicad-cli",):
         if shutil.which(executable) is None:
             raise RuntimeError(f"{executable} is required")
@@ -75,6 +112,12 @@ def digest(path: Path) -> str:
 
 
 def source_hashes() -> dict[str, str]:
+    """Hash every input that can change the output, keyed by repo-relative path.
+
+    Covers the PCB and shared Python/JSON sources plus build config, but not
+    `generated/` or caches. Taken before and after a build: if they differ, a
+    source changed mid-build and publishing would mix versions (see `build()`).
+    """
     roots = (PCB_ROOT, PCB_ROOT.parent / "shared")
     files = [
         p
@@ -95,13 +138,23 @@ def source_hashes() -> dict[str, str]:
 
 
 def generate(design: pcbnew.BOARD, out: Path) -> None:
+    """Write all derived files and the routed native board into `out`.
+
+    Order matters: project/BOM/netlist/schematic are taken from the *unrouted*
+    board (connectivity does not depend on routing); then tracks and power planes
+    are added, and the board is written, filled and exported to DSN.
+    """
+    # Deferred imports: only generation needs the output and routing modules.
     from pcb.definition import native
     from pcb.definition.output import exports, schematic
     from pcb.definition.routing import policies as routing
+    from shared.electronics.harness import render_harness_table
 
     (out / PROJECT.name).write_text(exports.render_project())
+    (out / DESIGN_RULES.name).write_text(exports.render_design_rules())
     (out / BOM.name).write_text(exports.render_bom(design))
     (out / ASSEMBLY_BOM.name).write_text(exports.render_assembly_csv(design))
+    (out / HARNESS.name).write_text(render_harness_table())
     (out / "netlist.json").write_text(
         json.dumps(
             {"schema": 1, "projects": {"board": definition.netlist(design)}},
@@ -111,6 +164,7 @@ def generate(design: pcbnew.BOARD, out: Path) -> None:
         + "\n"
     )
     schematic.write(design, out)
+    # Mutates `design`: adds tracks, vias, then the three rail zones.
     routing.route(design)
     native.add_power_planes(design)
     native.write_board(design, out / BOARD.name, out / DSN.name)
@@ -119,6 +173,13 @@ def generate(design: pcbnew.BOARD, out: Path) -> None:
 
 
 def native_checks(out: Path) -> None:
+    """KiCad's own ERC and DRC (with schematic parity) must report nothing.
+
+    Reports are saved in `out` (`erc.json`, `drc.json`, human-readable `drc.rpt`).
+    The JSON reports are inspected rather than relying on exit status: any ERC
+    violation, DRC violation, unconnected item, or schematic/PCB mismatch fails the
+    build. Also exports `positions.csv` for assembly, in mm for both sides.
+    """
     run(
         "kicad-cli",
         "sch",
