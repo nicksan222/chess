@@ -42,8 +42,24 @@ CLOCK_HZ_MAX = 10_000_000
 # firmware). The board keeps the SPI buffer's LED outputs Hi-Z until LED_5V is up
 # (about 2-3 ms after LED_EN rises) and turns them off at once when LED_EN falls,
 # so no sequence can drive the chain's inputs above its supply. Firmware must:
+#   1. raise LED_EN and stream blank frames (start frame, 64 x BLANK_LED_FRAME,
+#      end frame) for at least LED_ENABLE_BLANKING_S; frames sent before the
+#      outputs enable are dropped, so only then send real frames;
+#   2. to switch off: send a blank frame, then drop LED_EN.
+# On exit or crash the kernel releases the line and the pull-down turns the rail
+# off. A chain that powers up lit cannot be blanked in time (ASSUMPTION "LED
+# power-up state").
+LED_ENABLE_BLANKING_S = 0.010
+
+
+def end_frame_bits(led_count: int) -> int:
+    """End-frame length: at least 32 bits and at least N/2 clocks (reviewer m6)."""
+    return max(32, -(-led_count // 2))
+
 
 class Sk9822Pin(StrEnum):
+    """5050 package pins, Opsco SPC/SK9822-A Rev 01 §5 (SDI CKI GND VCC CKO SDO)."""
+
     DATA_IN = "1"
     CLOCK_IN = "2"
     GROUND = "3"
@@ -58,8 +74,10 @@ class Sk9822Component(ElectronicComponent[Sk9822Pin]):
 
     @classmethod
     def input_pins(cls) -> frozenset[Sk9822Pin]:
+        """Pins that receive data/clock from the previous LED (or the buffer)."""
         return frozenset((Sk9822Pin.DATA_IN, Sk9822Pin.CLOCK_IN))
 
     @classmethod
     def output_pins(cls) -> frozenset[Sk9822Pin]:
+        """Pins that forward data/clock to the next LED (unused on the last one)."""
         return frozenset((Sk9822Pin.DATA_OUT, Sk9822Pin.CLOCK_OUT))
