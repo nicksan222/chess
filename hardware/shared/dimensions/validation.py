@@ -544,6 +544,50 @@ def validate_bottom_keepouts() -> None:
             raise ValueError(f"The {name} bay keepout reaches the Pi")
 
 
+def validate_sd_slot() -> None:
+    """The right-wall slot lines up with the Pi's microSD socket."""
+    socket_x, socket_y = pi_on_board_xy(PI_SD_SOCKET_ON_PI_MM)
+    if socket_x <= PI_CENTER_MM[0]:
+        raise ValueError("The Pi's microSD end must face the right-wall slot")
+    if abs(CASE_SD_SLOT_CENTER_Y_MM - socket_y) > 1e-9:
+        raise ValueError("The microSD slot is not on the socket")
+    reach = CASE_CAVITY_SIZE_MM[0] / 2.0 - (PI_CENTER_MM[0] + PI_BOARD_SIZE_MM[0] / 2.0)
+    if not 0.0 < reach <= PI_CLEARANCE_MM + 1e-9:
+        raise ValueError("The Pi's microSD end must sit just inside the right wall")
+    slot_z = (
+        CASE_SD_SLOT_CENTER_Z_MM - CASE_SD_SLOT_MM[1] / 2.0,
+        CASE_SD_SLOT_CENTER_Z_MM + CASE_SD_SLOT_MM[1] / 2.0,
+    )
+    bottom, top = CASE_WALL_POCKET_Z_MM
+    if not bottom <= slot_z[0] and slot_z[1] <= top:
+        raise ValueError("The microSD slot is outside the wall pocket")
+    if not FDM_MIN_FEATURE_MM <= CASE_SD_PANEL_THICKNESS_MM:
+        raise ValueError("The microSD wall pocket leaves too thin a panel")
+
+
+def validate_pi_bay() -> None:
+    """The hanging Pi stays inside the cavity, clear of every support boss."""
+    if int(PI_ROTATION_DEG) % 90:
+        raise ValueError("The Pi placement must be a quarter-turn rotation")
+    turned = int(PI_ROTATION_DEG) % 180 == 90
+    size = (
+        (PI_BOARD_SIZE_MM[1], PI_BOARD_SIZE_MM[0]) if turned else PI_BOARD_SIZE_MM[:2]
+    )
+    envelope = (size[0] + 2.0 * PI_CLEARANCE_MM, size[1] + 2.0 * PI_CLEARANCE_MM)
+    cavity_centre = (0.0, CASE_CENTER_OFFSET_Y_MM)
+    for axis in (0, 1):
+        reach = abs(PI_CENTER_MM[axis] - cavity_centre[axis]) + envelope[axis] / 2.0
+        if reach > CASE_CAVITY_SIZE_MM[axis] / 2.0:
+            raise ValueError("The Pi and its clearance run into the cavity wall")
+    boss_radius = PCB_SUPPORT_BOSS_DIAMETER_MM / 2.0
+    for boss in PCB_SUPPORT_POSITIONS_MM:
+        if _outside(boss, PI_CENTER_MM, envelope) < boss_radius:
+            raise ValueError("A support boss stands inside the Pi envelope")
+    pins = [pi_header_pin_xy(pin) for pin in range(1, PI_HEADER_PIN_COUNT + 1)]
+    if any(_outside(pin, PI_CENTER_MM, size) > 0.0 for pin in pins):
+        raise ValueError("A Pi header pin lands outside the Pi")
+
+
 def describe(domain: str = "Shared hardware") -> str:
     """Return a compact summary suitable for domain validation commands."""
     return (
@@ -551,6 +595,6 @@ def describe(domain: str = "Shared hardware") -> str:
         f"{GRID_COUNT} x {SQUARE_SIZE_MM:g} mm = {PLAYING_SPAN_MM:g} mm playing span; "
         f"case {CASE_WIDTH_MM:g} x {CASE_DEPTH_MM:g} x {CASE_HEIGHT_MM:g} mm "
         f"({CASE_DEPTH_MM / MILLIMETRES_PER_INCH:.1f} in deep); "
-        f"plate {TILE_PLATE_SPAN_MM:g} mm; "
+        f"plate {TILE_PLATE_SIZE_MM[0]:g} x {TILE_PLATE_SIZE_MM[1]:g} mm; "
         f"board {PCB_SIZE_MM[0]:g} x {PCB_SIZE_MM[1]:g} mm"
     )
