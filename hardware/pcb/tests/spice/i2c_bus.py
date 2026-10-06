@@ -100,3 +100,73 @@ class I2cBus:
                 + datasheets.CONNECTOR_FARADS
             )
             self.buses[net] = Bus(net, farads, len(on_bus))
+
+    @staticmethod
+    def pullup_ohms(*, strongest: bool, oled_ohms: float | None) -> float:
+        """Effective pull-up: the Pi's 1.8 kohm (lowest if `strongest`, else highest by its
+        tolerance), in parallel with the OLED module's own pull-up when `oled_ohms` is given.
+        """
+        tolerance = datasheets.PI_I2C_PULLUP_TOLERANCE
+        pi = datasheets.PI_I2C_PULLUP_OHMS * (
+            1 - tolerance if strongest else 1 + tolerance
+        )
+        if oled_ohms is None:
+            return pi
+        return 1 / (1 / pi + 1 / oled_ohms)
+
+    def rise_ns(self, net: str, *, oled_ohms: float | None) -> float:
+        """Calculation cross-check: 30-70 % of an RC charge is 0.8473 R C."""
+        ohms = self.pullup_ohms(strongest=False, oled_ohms=oled_ohms)
+        return 0.8473 * ohms * self.buses[net].farads * 1e9
+
+    def fastest_passing_hz(self) -> int:
+        """Highest standard rate whose rise-time limit every corner meets."""
+        worst = max(
+            self.rise_ns(net, oled_ohms=oled)
+            for net in self.buses
+            for oled in OLED_CORNERS
+        )
+        passing = [hz for hz, limit in datasheets.I2C_RISE_NS.items() if worst <= limit]
+        return max(passing, default=0)
+
+    def edge(self, net: str, *, oled_ohms: float | None) -> SpiceCircuit:
+        """Release from low (weakest pull-up) then sink at the guaranteed VOL point.
+
+        The expander holds the line through 0.4 V / 3 mA (its datasheet VOL point as
+        a resistance); `result_rise` is the 30-70 % time after release and
+        `result_low` the held-low level with the strongest pull-up and VDD max.
+        """
+        rail = datasheets.RAIL_3V3_VOLTS
+        weak = self.pullup_ohms(strongest=False, oled_ohms=oled_ohms)
+        strong = self.pullup_ohms(strongest=True, oled_ohms=oled_ohms)
+        sink = datasheets.I2C_VOL_VOLTS / datasheets.I2C_SINK_AMPS_AT_VOL
+        farads = self.buses[net].farads
+        circuit = SpiceCircuit(f"I2C {net} edge, OLED pull-up {oled_ohms}")
+        circuit.rows.extend(
+            (
+                ".model SINK SW(Ron=1e-3 Roff=1e12 Vt=0.5 Vh=0.1)",
+                f"VLO lo 0 {rail.low}",
+                f"RW lo bus {weak}",
+                f"CB bus 0 {farads}",
+                "VREL rel 0 PULSE(1 0 1u 1n 1n 1 2)",
+                "SREL bus 0 rel 0 SINK",
+                f"VHI hi 0 {rail.high}",
+                f"RS hi held {strong}",
+                f"RSINK held 0 {sink}",
+                ".tran 1n 12u",
+            )
+        )
+        circuit.controls.extend(
+            (
+                f"meas tran t30 WHEN v(bus)={0.3 * rail.low} RISE=1",
+                f"meas tran t70 WHEN v(bus)={0.7 * rail.low} RISE=1",
+                "let result_rise = (t70 - t30) * 1e9",
+                "meas tran result_low FIND v(held) AT=6u",
+                "print result_rise result_low",
+            )
+        )
+        return circuit
+
+
+OLED_CORNERS: tuple[float | None, ...] = (None, OLED_PULLUP_MIN_OHMS)
+"""OLED-module pull-up range (ASSUMPTION "OLED pull-ups"): absent, or >= 4.7 kOhm."""
