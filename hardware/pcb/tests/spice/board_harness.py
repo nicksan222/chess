@@ -303,66 +303,86 @@ class BoardHarness:
             datasheets.DRV5032_LEAKAGE_AMPS + datasheets.TCA9554_INPUT_LEAKAGE_AMPS
         )
         for square, net in sorted(self.square_nets.items()):
-            lines.append(f"X{_node(square)} {_node(net)} vdd mag 0 SQUARE_SENSOR")
-        lines.append(".tran 1u 10u")
-        for square, net in sorted(self.square_nets.items()):
-            lines.append(
-                f".meas tran result_{_node(square)} FIND v({_node(net)}) AT=5u"
-            )
-        lines.append(".end")
-        return "\n".join(lines) + "\n"
+            node = _node(net)
+            if occupied:
+                circuit.rows.extend(
+                    (
+                        f"RPU_{node} {node} vdd {strongest}",
+                        f"RON_{node} {node} 0 {on_ohms}",
+                    )
+                )
+                margin = f"{datasheets.TCA9554_VIL_FRACTION * vcc} - v({node})"
+            else:
+                circuit.rows.extend(
+                    (
+                        f"RPU_{node} {node} vdd {datasheets.TCA9554_PULLUP_OHMS_TYPICAL}",
+                        f"ILEAK_{node} {node} 0 {leakage}",
+                    )
+                )
+                margin = f"v({node}) - {datasheets.TCA9554_VIH_FRACTION * vcc}"
+            circuit.controls.append(f"let result_{_node(square)} = {margin}")
+            circuit.expect(_node(square), 0.0, vcc)
+        circuit.rows.append(".op")
+        return circuit
 
-    def _level_shifter(self) -> str:
-        supply_net = self._required_net("U5", Ahct125Pin.SUPPLY, "+5V")
-        ground_net = self._required_net("U5", Ahct125Pin.GROUND, "GND")
-        supply_node = _node(supply_net)
+    def level_shifter(self, *, vcc: float, high: bool) -> SpiceCircuit:
+        """Pi GPIO -> AHCT125 -> first SK9822, as datasheet Thevenin sources (DC).
+
+        The Pi output is its guaranteed VOH/VOL at 2 mA (the real load is microamps).
+        The AHCT125 output is the line through its two datasheet VOH (VOL) points at
+        VCC 4.5 V, moved with VCC. result_<channel>_input is the margin to the AHCT
+        VIH/VIL; result_<channel>_led the margin to SK9822 0.7/0.3 x VDD (LED_5V
+        switched on from +5V, so VDD = VCC). The enable pins must be on LED_OE_N,
+        which U75 holds low only once the LED rail is up (S6b).
+        """
+        self._required_net("U5", Ahct125Pin.SUPPLY, "+5V")
+        self._required_net("U5", Ahct125Pin.GROUND, "GND")
+        # S6: the LEDs run from the switched LED_5V; these DC cases are the enabled
+        # state (Q1 on, LED_5V = +5V less milliohms; U5 enabled by LED_EN_N low).
+        self._required_net("U6", Sk9822Pin.FIVE_VOLTS, wiring.LED_SUPPLY_NET)
+        (i_small, v_small), (i_large, v_large) = (
+            datasheets.AHCT125_VOH_POINTS if high else datasheets.AHCT125_VOL_POINTS
+        )
+        ohms = abs(v_small - v_large) / (i_large - i_small)
+        shift = vcc - datasheets.AHCT125_VOH_TEST_VCC if high else 0.0
+        open_volts = (
+            v_small + i_small * ohms if high else v_small - i_small * ohms
+        ) + shift
+        level = "high" if high else "low"
+        circuit = SpiceCircuit(
+            f"Generated chess-board LED level shift, {level}, {vcc:g} V"
+        )
         channels = (
             (
                 Ahct125Pin.BUFFER_1_OUTPUT_ENABLE,
                 Ahct125Pin.BUFFER_1_INPUT,
                 Ahct125Pin.BUFFER_1_OUTPUT,
-                "SPI_DATA_3V3",
                 RaspberryPiHeaderPin.SPI_DATA_GPIO10,
-                "LED_DATA_5V",
                 "TP3",
                 Sk9822Pin.DATA_IN,
-                False,
             ),
             (
                 Ahct125Pin.BUFFER_2_OUTPUT_ENABLE,
                 Ahct125Pin.BUFFER_2_INPUT,
                 Ahct125Pin.BUFFER_2_OUTPUT,
-                "SPI_CLK_3V3",
                 RaspberryPiHeaderPin.SPI_CLOCK_GPIO11,
-                "LED_CLK_5V",
                 "TP4",
                 Sk9822Pin.CLOCK_IN,
-                True,
             ),
         )
-        lines = [
-            "Generated chess-board AHCT125 level-shifter channels",
-            f"* EXPECT result_channel_1 {AHCT125.low.minimum} {AHCT125.low.maximum}",
-            f"* EXPECT result_channel_2 {AHCT125.high.minimum} {AHCT125.high.maximum}",
-            f"V5 {supply_node} 0 {AHCT125.supply_volts}",
-        ]
-        for index, (
+        for (
             enable_pin,
             input_pin,
             output_pin,
-            expected_input_net,
             host_pin,
-            expected_output_net,
             test_point,
             led_pin,
-            high,
-        ) in enumerate(channels, start=1):
-            enable_net = self._required_net("U5", enable_pin, ground_net)
-            input_net = self._required_net("U5", input_pin, expected_input_net)
-            output_net = self._required_net("U5", output_pin, expected_output_net)
+        ) in channels:
+            self._required_net("U5", enable_pin, wiring.LED_OUTPUT_ENABLE_N_NET)
+            input_net = self.net_by_endpoint[("U5", str(input_pin))]
+            output_net = self.net_by_endpoint[("U5", str(output_pin))]
             self._required_endpoints(
-                input_net,
-                {("J1", str(host_pin)), ("U5", str(input_pin))},
+                input_net, {("J1", str(host_pin)), ("U5", str(input_pin))}
             )
             self._required_endpoints(
                 output_net,
