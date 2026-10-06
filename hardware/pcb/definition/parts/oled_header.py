@@ -1,7 +1,20 @@
-"""KiCad footprint and approved PCB binding for oled header."""
+"""KiCad footprint and approved PCB binding for the OLED harness header (J2).
 
-from pcb.definition.parts.land_patterns import pin_header
-from pcb.definition.parts.part import PcbPart
+Role: J2 (JST SM04B-SRSS-TB, SMD side entry) takes the four-wire harness to the OLED
+module that sits in the tile plate. The plug enters from the tab side, which is why the
+placement opens toward the module (`shared/dimensions/panel.py`). Pin identities:
+`shared/electronics/connectors.py`.
+"""
+
+import pcbnew
+
+from pcb.definition.parts.land_patterns import (
+    add_polarity_marker,
+    courtyard_for,
+    footprint,
+    pad,
+)
+from pcb.definition.parts.part import DrawingView, PcbPart
 from shared.components import OLED_HEADER
 from shared.electronics.connectors import OledHeaderComponent as OledHeader
 from shared.electronics.connectors import OledHeaderPin

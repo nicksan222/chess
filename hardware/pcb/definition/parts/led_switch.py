@@ -34,3 +34,65 @@ LED_SWITCH_FOOTPRINT = soic(
     tuple(PowerMosfetPin),
     pad_size_mm=(1.194, 0.559),
 )
+add_polarity_marker(LED_SWITCH_FOOTPRINT, "1")
+
+# onsemi BSS138LT1/D Rev 15 (Sept 2026), case 318 Issue AU (98ASB42226B) p7
+# recommended mounting footprint: three 0.56 wide x 0.95 long pads, 0.95 pitch,
+# 2.90 overall, so pad centres +/-0.975 (S6b, manufacturing review; replaces the
+# superseded 318-08 0.80 x 0.90 land). Top view: pins 1 (gate) and 2 (source) on
+# one side, 3 (drain) opposite.
+LED_SWITCH_DRIVER_PADS = (
+    pad(SmallMosfetPin.GATE, -0.95, -0.975, 0.56, 0.95, pcbnew.PAD_SHAPE_RECT),
+    pad(SmallMosfetPin.SOURCE, 0.95, -0.975, 0.56, 0.95, pcbnew.PAD_SHAPE_OVAL),
+    pad(SmallMosfetPin.DRAIN, 0.0, 0.975, 0.56, 0.95, pcbnew.PAD_SHAPE_OVAL),
+)
+LED_SWITCH_DRIVER_FOOTPRINT = footprint(
+    "SOT-23 (TO-236)",
+    "BSS138LT1G N-channel MOSFET",
+    LED_SWITCH_DRIVER_PADS,
+    courtyard_for(LED_SWITCH_DRIVER_PADS, (2.9, 2.4)),
+)
+add_polarity_marker(LED_SWITCH_DRIVER_FOOTPRINT, "1")
+
+# TI SN74LVC1G97 DBV0006A example board layout (4214840/G, SCES416N p36): six
+# 1.1 x 0.6 pads at 0.95 pitch, columns 2.6 apart; pins 1-3 down one side, 4-6 up
+# the other (counter-clockwise from pin 1).
+LED_ENABLE_GATE_FOOTPRINT = soic(
+    "SOT-23-6 (DBV)",
+    "SN74LVC1G97 configurable gate",
+    6,
+    2.6,
+    (3.0, 3.05),
+    tuple(LogicGatePin),
+    pin_pitch_mm=0.95,
+    pad_size_mm=(1.1, 0.6),
+)
+add_polarity_marker(LED_ENABLE_GATE_FOOTPRINT, "1")
+
+LED_SWITCH_PART = PcbPart(
+    LED_SWITCH,
+    PowerMosfet,
+    LED_SWITCH_FOOTPRINT,
+    "Q_PMOS",
+    "Si4403DDY",
+    "LED rail switch, +5V to LED_5V",
+    DrawingView.MOUNTING_SIDE,
+)
+LED_SWITCH_DRIVER_PART = PcbPart(
+    LED_SWITCH_DRIVER,
+    SmallMosfet,
+    LED_SWITCH_DRIVER_FOOTPRINT,
+    "Q_NMOS",
+    "BSS138LT1G",
+    "LED_EN inverter driving the LED switch gate and buffer enables",
+    DrawingView.MOUNTING_SIDE,
+)
+LED_ENABLE_GATE_PART = PcbPart(
+    LED_ENABLE_GATE,
+    LogicGate,
+    LED_ENABLE_GATE_FOOTPRINT,
+    "LVC1G97",
+    "SN74LVC1G97",
+    "LED_OE_N = Schmitt(Q1 gate) OR LED_EN_N: buffer on only once LED_5V is up",
+    DrawingView.MOUNTING_SIDE,
+)
