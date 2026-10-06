@@ -116,3 +116,87 @@ HOST_AND_LOGIC_AMPS = round(PI_ZERO_2_W_TYPICAL_AMPS + LOGIC_ALLOWANCE_AMPS, 6)
 AHCT125_VCC = Span(4.5, 5.5)
 AHCT125_VCC_ABSOLUTE = Span(-0.5, 7.0)
 AHCT125_VIH = 2.0
+AHCT125_VIL = 0.8
+AHCT125_IOZ_AMPS = 2.5e-6  # SCLS264R 6.5 off-state output leakage, max.
+AHCT125_VOH_POINTS = ((50e-6, 4.4), (8e-3, 3.8))  # (|IOH| A, VOH V) at VCC 4.5
+AHCT125_VOL_POINTS = ((50e-6, 0.1), (8e-3, 0.44))
+AHCT125_VOH_TEST_VCC = 4.5
+# The SK9822 sheet gives no input threshold: CMOS 0.7 x VDD / 0.3 x VDD is used
+# (verification ASSUMPTION "SK9822 input levels").
+SK9822_VIH_FRACTION = 0.7
+SK9822_VIL_FRACTION = 0.3
+
+# Raspberry Pi documentation (gpio-on-raspberry-pi.adoc, RP3A0 table): VIL <= 0.9 V,
+# VIH >= 1.6 V, VOL <= 0.14 V and VOH >= 3.0 V at 2 mA (default 8 mA drive),
+# pull-up 50-65 kOhm. The 3.3 V rail itself is taken as +-5 % (no Pi figure).
+PI_GPIO_VIL = 0.9
+PI_GPIO_VIH = 1.6
+PI_GPIO_VOL_AT_2MA = 0.14
+PI_GPIO_VOH_AT_2MA = 3.0
+PI_GPIO_PULLUP_OHMS = Span(50e3, 65e3)
+RAIL_3V3_VOLTS = Span(3.3 * 0.95, 3.3 * 1.05)
+
+# TI TCA9554 SCPS233E §6.3 (VCC 3-5.5 V): P-port VIH 0.8 x VCC, VIL 0.2 x VCC;
+# §6.5 IIL -100 uA max at VI = GND (sets the strongest pull-up), IIH 1 uA; the
+# pull-up is 100 kOhm typical (§8.3), no maximum stated.
+TCA9554_VIH_FRACTION = 0.8
+TCA9554_VIL_FRACTION = 0.2
+TCA9554_PULLUP_AMPS_MAX = 100e-6
+TCA9554_PULLUP_OHMS_TYPICAL = 100e3
+TCA9554_INPUT_LEAKAGE_AMPS = 1e-6
+# TI DRV5032 SLVSDC7H: FC is open drain (Table 4-1); §6.5 VOL 0.3 V max at 1 mA,
+# off-state leakage IOZ 100 nA max.
+DRV5032_VOL_AT_1MA = 0.3
+DRV5032_LEAKAGE_AMPS = 100e-9
+
+# --- S4b input protection. TI TPS25947 SLVSFC9C (rev May 2026), TPS259474ARPW:
+# 6.5 RON 28.2 mOhm typ (25 C), 45 mOhm max (-40..125 C); OVLO and EN/UVLO rising
+# 1.183-1.223 V, falling 1.076-1.116 V; OVLO pin leakage +-0.1 uA; dVdt charging
+# current 0.81-3.82 uA (2.21 typ) with CdVdt(pF) = 2000 / SR(V/ms) at typ (7.3.5.1);
+# ILIM at RILM 1.65 kOhm 1.800-2.200 A; ITIMER discharge 1.2-2.5 uA through
+# dV 1.286-1.741 V; OVLO response 1.2 us typ. 6.1: IN down to -15 V; 7.3.1/8.2:
+# IN-referred pins need >= 350 kOhm so reverse-polarity pin current stays < 10 uA.
+EFUSE_RON_OHMS = Span(0.0, 0.045)
+EFUSE_RON_TYPICAL_OHMS = 0.0282
+EFUSE_THRESHOLD_RISING_VOLTS = Span(1.183, 1.223)
+EFUSE_THRESHOLD_FALLING_VOLTS = Span(1.076, 1.116)
+EFUSE_OVLO_LEAKAGE_AMPS = 0.1e-6
+EFUSE_DVDT_AMPS = Span(0.81e-6, 3.82e-6)
+EFUSE_DVDT_TYPICAL_AMPS = 2.21e-6
+EFUSE_DVDT_PF_VOLTS_PER_MS = 2000.0
+EFUSE_ILIM_AMPS_AT_1K65 = Span(1.800, 2.200)
+EFUSE_ITIMER_AMPS = Span(1.2e-6, 2.5e-6)
+EFUSE_ITIMER_DELTA_VOLTS = Span(1.286, 1.741)
+# TPS259474A overcurrent (SLVSFC9C §6.5/§6.6, §7.3.5.2-4): fast-trip ISC = ISCGain
+# x ILIM, 201 % typical (no limits published); ITIMER pull-up 15 kOhm; auto-retry
+# tRST 110 ms typical after a breaker or thermal fault.
+EFUSE_ISC_RATIO = 2.01
+EFUSE_ITIMER_PULLUP_OHMS = 15e3
+EFUSE_RETRY_S = 0.110
+EFUSE_IN_MIN_VOLTS = -15.0
+EFUSE_REVERSE_PIN_AMPS_MAX = 10e-6
+# Littelfuse SMBJ (rev 06/03/20) p2 row SMBJ12CA (user decision D2): VR 12.0 V, VBR
+# 13.30-14.70 V at IT 1 mA, VC 19.9 V at IPP 30.2 A (bidirectional: same both ways).
+TVS_STANDOFF_VOLTS = 12.0
+TVS_BREAKDOWN_VOLTS = Span(13.30, 14.70)
+TVS_TEST_AMPS = 1e-3
+TVS_CLAMP_VOLTS = 19.9
+# Resistor tolerances: Yageo RC 1 % (F), RT 0.1 % (B).
+RESISTOR_TOLERANCE = {"RC": 0.01, "RT": 0.001}
+# Yageo CC...K X7R MLCC: K = +-10 % capacitance.
+MLCC_X7R_TOLERANCE = 0.10
+
+# --- S5 buses. PCBWay "8-layers PCB, Regular, 1.6MM, 1 oz, 70 % residual copper"
+# (pcbway.com/multi-layer-laminated-structure.html), thickness after lamination
+# (mm, Dk), F.Cu to B.Cu; the repo records no stackup (verification ASSUMPTION
+# "Stackup"). Planes: In1 GND, In2 +5V, In3 +3V3, In6 LED_5V (native.add_power_planes).
+STACKUP_DIELECTRICS = (
+    (0.1195, 4.45),
+    (0.23, 4.6),
+    (0.175, 4.74),
+    (0.23, 4.6),
+    (0.175, 4.74),
+    (0.23, 4.6),
+    (0.1195, 4.45),
+)
+STACKUP_COPPER_MM = 0.035
