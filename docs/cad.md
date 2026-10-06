@@ -21,13 +21,21 @@ from the repository root to regenerate all of them locally, or the PCB package's
 Revision A needed 129 prints to cover a board: 64 tile lids, 64 tile trays and a
 tray to hold them. Revision B needs two.
 
-- **`projects/board-case`** produces `Printable_Board_Case`, 340 x 380 x 30 mm.
-  It carries the single PCB on 20 bosses, hangs the Raspberry Pi underneath it,
-  and presents twelve buttons and a display through a face-up bezel across the
-  front.
-- **`projects/tile-plate`** produces `Printable_Tile_Plate`, 319.6 mm square and
-  3 mm thick, with the checkerboard engraved into it and a diffuser pocket over
-  each LED. It drops into a rebate in the case.
+- **`projects/board-case`** produces `Printable_Board_Case`, 344 x 384 x 30 mm,
+  an open tub. The PCB drops straight into a pocket (outline plus 0.5 mm per
+  side), rests on a ledge under its edge and on 20 bosses, and the Raspberry Pi
+  hangs underneath it, component side up, at the shared Pi transform
+  (`pi_header_pin_xy`) that also places J1. The power jack and rocker are
+  panel-mounted in the back wall and wired to J4 on the board's underside.
+- **`projects/tile-plate`** produces `Printable_Tile_Plate`, 335 x 375 x 3 mm,
+  covering the whole board: the checkerboard engraved over the playing area with
+  a diffuser pocket over each LED, and the control bezel (twelve button holes,
+  the display window and its recess) over the strip. It rests on the case rim
+  outboard of the PCB pocket.
+
+The bezel belongs to the plate rather than the case so that the board can be
+lowered in from above: with a fixed bezel, the button stems that pass through it
+would stop the board going in.
 
 `projects/board-assembly` is the only presentation project. It imports both of
 those exact generated objects and adds a non-printed proxy for the populated
@@ -55,7 +63,9 @@ the render shows it.
 Shared CAD measurements live in `hardware/shared/dimensions/`, grouped by
 board, case, panel, and tile plate. The package validates itself on import. Among other things it checks that the internal stack
 — floor, Pi cavity, board, gap, plate — sums exactly to the case height, that
-every plate screw lands on the case ledge rather than over the PCB, that no
+the board fits its pocket and the ledge carries every edge however the board
+floats, that every plate screw lands on the rim rather than over the PCB, that
+button stems stand 0.5-2.0 mm proud of the bezel, that no
 support boss collides with an LED or a Hall sensor, and that every control-panel feature
 stays on the control strip.
 
@@ -80,7 +90,7 @@ ordinary club sets. Measure before buying magnets.
 ## Printing
 
 Both parts are larger than a desktop printer bed, so they are quoted from an FDM
-print service; 380 mm also exceeds typical MJF and resin build volumes.
+print service; 384 mm also exceeds typical MJF and resin build volumes.
 `REFERENCE_DESKTOP_BUILD_VOLUME_MM` exists to state that rather than to gate
 anything, and the tests assert that neither part fits it. An edge margin is
 reserved before testing whether a part fits.

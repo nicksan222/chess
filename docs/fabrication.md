@@ -10,8 +10,10 @@ Run:
 just --justfile hardware/pcb/justfile release
 ```
 
-The runner regenerates the board, executes KiCad DRC, and exports Gerber,
-Excellon, and preview files under `hardware/pcb/generated`.
+The runner regenerates the board, runs ERC, DRC with schematic parity and the test
+suite (including SPICE), and only then exports Gerber files and separate plated and
+non-plated Excellon drills under `hardware/pcb/generated`, next to the previews and
+the generated BOM and harness table.
 
 ## Release gate
 

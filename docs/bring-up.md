@@ -87,3 +87,60 @@ Keep the two SPI grounds through steps 4-6 and the `LED_EN` jumper through steps
 | 4.1 | Rocker off | `+5V` < 0.1 V; supply current < 0.1 mA | — |
 | 4.2 | Rocker on | `+5V` is 4.95-5.00 V and rises without overshoot. Idle input, read 2 min after rocker-on: **4.9-6.5 mA**. The budget is about 5.4 mA typical and ≤ 5.82 mA worst: R8 4.95-5.05 mA, U74 IQ ≤ 0.61 mA, C1/C140 leakage ≤ 0.11 mA, other ICs < 0.05 mA [DS/CALC]. Without the J1.19/J1.23 grounds the limit is ≤ 10 mA; record the reading either way | — |
 | 4.3 | **LED rail off proof.** Check this with the jumper fitted and again with J1.37 open (R14 alone) | `LED_EN_N` = `+5V` ±50 mV; `LED_SW_GATE` = `+5V` ±50 mV; **`LED_5V` < 0.1 V**; **`LED_OE_N` = `+5V` ±50 mV** (U5 disabled); **TP3/TP4 ≤ 0.1 V** (held by R17/R18; 25 mV at U5's maximum off-state leakage, IOZ 2.5 µA x 10 kΩ) | — (required before step 5) |
+
+Run every over-voltage and current-limit test below only after 4.3 passes. Keep the
+`LED_EN` jumper to GND fitted through step 5, so the LEDs sit behind an open Q1. **Do not
+fit the Pi for steps 4-6.**
+
+## Step 5: eFuse (no Pi, lab supply ≥ 3 A, scope on `DC_FUSED`, `+5V`, `LED_5V`)
+
+| # | Do | Pass | Closes |
+|---|---|---|---|
+| 5.1 | **OVLO trip.** Ramp 5.00→5.70 V in 10 mV steps of about 1 s each. Never exceed 5.70 V | `+5V` goes to 0 at **5.342-5.663 V**; `LED_5V` stays < 0.1 V | `OVLO window` (trip) |
+| 5.2 | **OVLO latch.** After the trip, ramp down to 5.25 V, then on down to 4.80 V. Then turn the supply off and on at 5.00 V | Stays off at 5.25 V. Any restart on the way down falls within **4.854-5.173 V** (record it). Power-cycling at 5.00 V restarts the rail | `OVLO window` (restart and latch; the user manual must say "unplug and replug") |
+| 5.3 | **Running step.** Load `+5V` with 78 Ω (≥ 1 W) or a 64 mA CC e-load at TP1/TP2, matching the model's 64-LED static load. Rail on at 5.00 V, then step to 6.0 V in **≤ 50 µs** (a MOSFET between two supplies, or a programmable supply with that slew). Record the `DC_FUSED` edge | Trip delay (`DC_FUSED` crossing 5.9 V to `+5V` falling) **≤ 2.0 ms**; `+5V` above 5.5 V for **≤ 12 ms**; `LED_5V` < 0.1 V. Results of 2.0-3.5 ms or 12-21 ms are recorded and sent to hardware as a model discrepancy, not an automatic reject | `OVLO filter` |
+| 5.4 | Cold-plug 6.0 V and 7.0 V | `+5V` stays 0 V; D1 cold | `OVLO window` (wrong adapter) |
+| 5.5 | **Circuit breaker, one trip.** Supply 5.00 V / ≥ 3 A. Step a CC e-load on `+5V` (C1/C140 leads) 0→**2.5 A**, then off after the first retry. 2.5 A exceeds ILIM (1.80-2.20 A) at every corner and stays below the 3.6 A fast trip. Its I²t per trip is ≤ 0.010 A²s, 1.9 % of F1's 0.530 A²s (ITIMER C143 1 nF). Optional, to find ILIM: a CC staircase from 1.70 to 2.30 A in 50 mA steps, each held ≥ 5 ms | `+5V` stays up while the load draws the full 2.5 A (the TPS259474A passes the full load until the timer expires; it does not limit at ILIM). It turns off **0.46-1.6 ms** after the step; auto-retry after about **110 ms** (tRST). Staircase: the first step that trips is within **1.80-2.20 A** | `eFuse model` (breaker) |
+| 5.6 | **Hot plug.** Plug the real GST12A05 in 20 times, then switch on with the rocker 20 times | `+5V` comes up 40/40 with no OVLO latch; `+5V` peak ≤ 5.5 V; `DC_FUSED` ring and inrush recorded | `Cord inductance`, `eFuse model` (inrush), `OVLO window` (plug-in) |
+| 5.7 | F1 drop at 1.0 A (e-load), cold | ≤ 55 mV (1.5 x 36.7 mΩ) | `Fuse resistance` |
+| 5.8 | Rocker on/off 100 times. Before and after, measure the closed contact 4-wire at its tabs, harness unplugged, by the low-level method (EIA-364-23: ≤ 20 mV open circuit, ≤ 100 mA) | Contact **≤ 30 mΩ** before and after (E-Switch RA1 catalogue: 30 mΩ max, 10,000-cycle life). `+5V` comes up 100/100. At 5 mA wetting, 30 mΩ is 0.15 mV, so `RUN` follows `DC_FUSED` | `Rocker dry circuit` |
+
+## Step 6: LED rail enable (no Pi; `LED_EN` from a lab source)
+
+Use a lab supply at 5.00 V / 3 A. Remove only the J1.37 jumper (keep the J1.19/J1.23 grounds, so no clock reaches the chain) and drive J1 pin 37 to 3.3 V from a
+lab supply or a lab GPIO (R13 is the series 1 kΩ). If anything below fails, **stop**:
+it is a redesign item. Do not fit the Pi.
+
+| # | Do | Pass | Closes |
+|---|---|---|---|
+| 6.1 | Raise `LED_EN`, 20 times, with no SPI | No LED lights; supply current rises < 0.32 A (64 x 5 mA); no eFuse trip; `+5V` ≥ 4.5 V. `LED_5V` 10-90 % rise about 0.95 ms. `LED_OE_N` falls only after `LED_5V` ≥ 4.605 V (simulated 1.78-3.05 ms after `LED_EN`), **then stays low while `LED_5V` is up** | `LED power-up state` |
+| 6.2 | Lower `LED_EN` | `LED_OE_N` goes high within 0.61-0.83 µs [simulated]; `LED_5V` decays | — |
+
+## Step 7: with the Pi (real GST12A05, firmware with the blank-frame contract)
+
+| # | Do | Pass | Closes |
+|---|---|---|---|
+| 7.1 | Boot 10 times | No reset loop; `vcgencmd get_throttled` recorded | — |
+| 7.1a | Board input current at 5.00 V with `LED_EN` low (LEDs off): Pi idle, then full CPU load (`stress-ng --cpu 4`) with `iperf3` Wi-Fi traffic, 2 min each. DC meter plus a scope current probe for peaks | Average ≤ **0.45 A** in both states (the model's host-and-logic budget). Peaks recorded. A higher average goes to hardware: the 4.5 V margins in 7.3 assume 0.45 A | `Host and logic current` |
+| 7.2 | Walking LED and a 10 min animation at the cap (3/31), at the firmware SPI clock and at 10 MHz | 64/64 correct, no glitch. Scope TP3/TP4, U6 CKI/SDI and `LED_D16` (rank turn): edges cross 0.7/0.3 x VDD cleanly; ringing recorded | `SK9822 input levels`, `LED line drivers` |
+| 7.3 | Lab supply at 4.75 V at the jack, Wi-Fi traffic, full white at the cap, 30 min | `+5V` (TP1) and `LED_5V` at the chain-end LED ≥ **4.5 V**; no reboot; `get_throttled` recorded (the Zero may not flag) | `Pi low voltage`, `GST12A05 output` (low corner) |
+| 7.4 | Lab supply at 5.30 V, LEDs at the cap, 10 min | No flicker or colour error. 5.34-5.5 V cannot be held below the OVLO low corner and stays a residual | `LED supply window` (to 5.30 V only) |
+| 7.5 | `i2cdetect`: 8 expanders at the `test_contract` addresses, plus the OLED. 1000-read soak. Scope TP6/TP7 at the farthest expander | 0 NACK; rise ≤ 1000 ns at 100 kHz (≤ 300 ns at 400 kHz, UM10204); VOL ≤ 0.4 V; OLED shows | `OLED pull-ups`, `OLED harness`, `J2 circuit 1` |
+| 7.6 | 12 buttons, press and release | Idle high, one event per press | `Pi GPIO pull-ups` |
+| 7.7 | Piece walk over all 64 squares, full start position plus one move | 64/64 detect and release; no neighbour false trigger; the `hall-magnet.json` record is written | (physical-evidence gate) |
+| 7.8 | Closed case, 30 min at the cap (3/31 full white) with Wi-Fi traffic (can combine with 7.3/7.9); ambient logged. K-type thermocouples, Kapton-taped; IR only with tape or paint dots, because the print is IR-opaque and copper and mask emissivity differ. Points: (1) plate top and LED-pocket ceiling over a centre LED and over the LED nearest J4/U74; (2) PCB top at U74 and Q1, PCB bottom near J4; (3) the case boss nearest the Pi and the ledge by J4; (4) Pi SoC (`vcgencmd measure_temp`) and the Pi bay air. After cooling, check plate flatness with a straightedge and re-check screw torque. Record the filament make, type and TDS | Points 1 and 3, and the PCB wherever it touches the print: **≤ 45 °C and ≤ ambient + 20 K**. Points 2 and 4 recorded. No measurable change in flatness. The basis is PLA, HDT about 55 °C at 0.45 MPa (generic value; confirm from the filament TDS), less 10 K for creep under load. PETG or ASA may raise the limit once its TDS is cited | — (mechanical) |
+| 7.9 | Pi in client mode to a fixed access point (or its hotspot to a fixed laptop), same room, line of sight, at 1/3/10 m, case closed vs open. Three runs each: RSSI (`iw dev wlan0 link`) and TCP throughput (`iperf3`, 30 s, both directions) | **TBD: the user sets the pass level.** Record the closed-minus-open loss | `Pi Wi-Fi` |
+
+## Step 8: destructive (last, on a board declared sacrificial, or skipped)
+
+| # | Do | Pass | Closes |
+|---|---|---|---|
+| 8.1 | Reversed 5.25 V plug, 10 s | `+5V` 0 V; D1 off; step 5.1 still passes afterwards | `eFuse model` (reverse) |
+| 8.2 | Reversed 12 V adapter, 10 s | `+5V` 0 V; D1 off; steps 4.2, 5.1 and 5.5 still pass afterwards | `Reversed 12 V adapter` |
+| 8.3 | Repeated current-limit retries: 2.5 A CC e-load for 60 s with `LED_EN` low, supply ≥ 3 A | Retry pulses about 110 ms apart, each ≤ 1.6 ms (record both); U74 case ≤ **100 °C**, steady after 60 s (thermocouple or IR; 25 °C margin to the 125 °C recommended TJ); afterwards 4.2, 5.1 and 5.5 still pass | `eFuse model` (heating) |
+| 8.4 | Optional. Pi fitted with a **sacrificial SD card**, test firmware that overrides the cap and commands one full-white frame about 30 s after boot. Scope `+5V`, `LED_EN` and F1's voltage | Record which happens: `+5V` sags to about 3 V while U74 limits, or U74 opens within 1.6 ms and retries after 110 ms (the Pi browns out either way). Expect ≤ 0.025 A²s per event in F1 (4.7 %) [simulated]. The board recovers to a normal boot, and 5.7 still passes | `eFuse model` (system overload) |
+
+## Not closed by bench
+
+`EN at the surge clamp` is a part-change check: re-run the calculation if D1 changes. It
+has no bench step.
