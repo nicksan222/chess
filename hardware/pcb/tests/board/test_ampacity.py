@@ -98,3 +98,74 @@ class AmpacityTest(unittest.TestCase):
         ]
         self.assertTrue(found, f"no placed part for {keys}")
         return found
+
+    @staticmethod
+    def _pad(footprint: pcbnew.FOOTPRINT, number: str) -> pcbnew.PAD:
+        """The pad of `footprint` with the given number."""
+        return next(p for p in footprint.Pads() if p.GetNumber() == number)
+
+    def _tracks_touching(self, pad: pcbnew.PAD) -> list[pcbnew.PCB_TRACK]:
+        """Same-net tracks that end inside the pad."""
+        return tracks_touching(self.routed, pad)
+
+    def _connected(self, pad: pcbnew.PAD) -> list[pcbnew.PCB_VIA]:
+        """Vias on the pad's net reached by copper from the pad."""
+        return connected_vias(self.routed, pad)
+
+    def _flow(
+        self,
+        net: str,
+        sources: Sequence[pcbnew.PAD],
+        sinks: Sequence[pcbnew.PAD | pcbnew.PCB_VIA],
+    ) -> float:
+        """Maximum current (amps) the routed copper of `net` can pass from `sources` to `sinks`, vias limited by their barrel."""
+        thickness = _copper_mm(outer=True)
+        wall = math.pi * VIA_WALL_MM * 0.4
+        return max_flow(
+            self.routed,
+            net,
+            sources,
+            sinks,
+            lambda width: ampacity(width * thickness, outer=True),
+            ampacity(wall, outer=False),
+        )
+
+    def test_supply_path_copper_carries_the_fuse_rating(self) -> None:
+        j4 = self.routed.FindFootprintByReference("J4")
+        fuse = self.routed.FindFootprintByReference("F1")
+        efuse = self.routed.FindFootprintByReference("U74")
+        assert j4 is not None and fuse is not None and efuse is not None
+        out = self._pad(efuse, "6")
+        paths: dict[str, tuple[list[pcbnew.PAD], list[pcbnew.PAD | pcbnew.PCB_VIA]]] = {
+            "DC_IN": ([self._pad(j4, "1")], [self._pad(fuse, "1")]),
+            "DC_FUSED": ([self._pad(fuse, "2")], [self._pad(efuse, "5")]),
+            "+5V": ([out], list(connected_vias(self.routed, out))),
+        }
+        for net, (sources, sinks) in paths.items():
+            amps = self._flow(net, sources, sinks)
+            with self.subTest(net=net, amps=round(amps, 2)):
+                self.assertGreaterEqual(amps, FUSE_AMPS)
+
+    def test_one_efuse_neck_alone_is_reported(self) -> None:
+        # Mutation: with only one end of the IN bar fed, its 0.35 mm neck caps the
+        # path near 1.1 A, below the rating.
+        efuse = self.routed.FindFootprintByReference("U74")
+        assert efuse is not None
+        bar = self._pad(efuse, "5")
+        north = [
+            t
+            for t in self._tracks_touching(bar)
+            if t.GetStart().y < bar.GetPosition().y
+            or t.GetEnd().y < bar.GetPosition().y
+        ]
+        self.assertTrue(north)
+        for track in north:
+            self.routed.Remove(track)
+        try:
+            fuse = self.routed.FindFootprintByReference("F1")
+            assert fuse is not None
+            amps = self._flow("DC_FUSED", [self._pad(fuse, "2")], [bar])
+            self.assertLess(amps, FUSE_AMPS)
+        finally:
+            for track in north:
+                self.routed.Add(track)
