@@ -196,3 +196,35 @@ def route_efuse_power(ctx: RoutingContext) -> None:
     pad = next(p for p in tvs.Pads() if p.GetNetname() == "DC_FUSED")
     _, y = _shared(pad.GetPosition())
     _path(ctx, "DC_FUSED", [pad.GetPosition(), native.point(jx, y)], FAULT_STUB_MM)
+
+
+def _ovlo_via(board: pcbnew.BOARD) -> pcbnew.VECTOR2I:
+    """A via on the U74-to-R4 OVLO run, halfway along it."""
+    r4 = footprint(board, "R4")
+    pad = next(p for p in r4.Pads() if p.GetNetname() == "EFUSE_OVLO")
+    start, end = _at((-2.0, 0.225)), pad.GetPosition()
+    return pcbnew.VECTOR2I((start.x + end.x) // 2, (start.y + end.y) // 2)
+
+
+def _r5_escape(ctx: RoutingContext) -> pcbnew.VECTOR2I:
+    """R5's OVLO pad leaves by a fixed via above it, between R5 and R6 (C144 takes
+    the side where a router escape would go, S4c)."""
+    pad = next(
+        p for p in footprint(ctx.board, "R5").Pads() if p.GetNetname() == "EFUSE_OVLO"
+    )
+    x, y = _shared(pad.GetPosition())
+    via = native.point(x, y + R5_ESCAPE_MM)
+    _path(ctx, "EFUSE_OVLO", [pad.GetPosition(), via], STUB_MM)
+    native.add_via(ctx.board, ctx.nets_by_name["EFUSE_OVLO"], via)
+    return via
+
+
+def route_efuse_bias(ctx: RoutingContext) -> None:
+    """Grid-route EN, OVLO and RUN (B.Cu preferred) between vias, never into a pad.
+
+    Every escape via of all three nets is placed before any of them is routed,
+    so no route can pass where another net's via will stand.
+    """
+    plans: list[
+        tuple[str, list[Endpoint[str]], dict[Endpoint[str], pcbnew.VECTOR2I]]
+    ] = []
