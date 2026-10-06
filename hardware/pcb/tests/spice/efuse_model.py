@@ -94,3 +94,54 @@ class Corner:
     def enable_threshold(self) -> float:
         """EN rising threshold; falls back to the OVLO threshold when no separate EN corner is set."""
         return self.threshold if self.enable is None else self.enable
+
+
+def _soft(expr: str, width: float) -> str:
+    """Smooth 0->1 step of an expression around 0."""
+    return f"0.5 * (1 + tanh(({expr}) / {width}))"
+
+
+def _step(node: str, threshold: float) -> str:
+    """Smooth 0->1 comparator: a tanh step 2 mV wide (far inside the datasheet
+    threshold spread) so Newton iterations converge."""
+    return f"0.5 * (1 + tanh((V({node},gnd) - {threshold}) / {EDGE}))"
+
+
+def _latch(name: str, set_expr: str, hold_expr: str) -> list[str]:
+    """A 0/1 state node `name`: set by `set_expr`, kept while `hold_expr` (1 us)."""
+    return [
+        f"B{name} {name}s gnd V={{max({set_expr}, {hold_expr})}}",
+        f"R{name} {name}s {name} 1k",
+        f"C{name} {name} gnd 1n",
+    ]
+
+
+def _on(state: str) -> str:
+    """A latch read as a sharp 0/1, so a partly set state never leaks."""
+    return f"0.5 * (1 + tanh((V({state},gnd) - 0.5) / {STATE_EDGE}))"
+
+
+def _static_rows(name: str, corner: Corner) -> list[str]:
+    """Operating point: no ramp, no OVLO memory, OUT follows IN through RON.
+
+    A static approximation for loads under ILIM only (approved load, OVLO and
+    reversed-plug operating points): it saturates at ILIM like an active limit,
+    which the TPS259474A is not in steady state (reviewer-s6d m3). `front_end`
+    asserts the input current stays under ILIM min, so an overload operating
+    point fails instead of silently using it; overloads are transients.
+    """
+    ron = max(corner.ron, 1e-4)
+    return [
+        f".subckt {name} in out en ovlo gnd",
+        f"Bov ov gnd V={{{_step('ovlo', corner.threshold)}}}",
+        (
+            f"Bon on gnd V={{{_step('en', corner.enable_threshold)}"
+            f" * {_step('in', UVP_VOLTS)} * (1 - V(ov,gnd))}}"
+        ),
+        "Vramp ramp gnd 1e3",
+        (
+            f"Bpass in out I={{V(on,gnd) * {corner.ilim} * tanh(max(0, "
+            f"min(V(in,gnd), V(ramp,gnd)) - V(out,gnd)) / ({corner.ilim} * {ron}))}}"
+        ),
+        ".ends",
+    ]
