@@ -152,11 +152,45 @@ impl SPIPins {
     }
 }
 
-/// The three host interfaces connected by the board hardware.
+/// Pins for the LED power rail.
+///
+/// `enable` is net `LED_EN` (header pin 37), active high. The board holds it
+/// low with a 100 kΩ pull-down and the SoC resets it to pull-low, so the LED
+/// rail is off while the Pi boots, resets, or after this process exits; the
+/// kernel releases the line then, so safety never depends on firmware driving
+/// it low.
+///
+/// Enable sequence (the SK9822 chain only latches a blank frame while powered;
+/// `LED_ENABLE_BLANKING_S` in the shared SK9822 contract is 10 ms):
+/// 1. Boot with `enable` at `LED_ENABLE_BOOT_LEVEL` (low): rail and buffer off.
+/// 2. Set `enable` high, then stream blank frames for at least 10 ms; only
+///    then send normal frames. The board holds the buffer outputs Hi-Z until
+///    `LED_5V` is up (2-3 ms after `enable`), so frames may start right away.
+/// 3. To disable: stream a blank frame first, then set `enable` low; the board
+///    drops the buffer outputs at once.
+///
+/// The future LED driver must request GPIO26 as an output with initial value
+/// Inactive/low (gpiocdev `as_output(Value::Inactive)`); a request that
+/// defaults high would glitch the LED rail on.
+pub struct LEDPins {
+    pub enable: Pin<26, Output>,
+}
+
+/// Level of `LEDPins::enable` at boot and whenever the LED rail must be off.
+pub const LED_ENABLE_BOOT_LEVEL: Level = Level::Low;
+
+impl LEDPins {
+    const fn get() -> Self {
+        Self { enable: Pin::new() }
+    }
+}
+
+/// The host interfaces connected by the board hardware.
 pub struct BoardPins {
     pub gpio: GPIOPins,
     pub i2c: I2CPins,
     pub spi: SPIPins,
+    pub led: LEDPins,
 }
 
 impl BoardPins {
@@ -165,6 +199,7 @@ impl BoardPins {
             gpio: GPIOPins::get(),
             i2c: I2CPins::get(),
             spi: SPIPins::get(),
+            led: LEDPins::get(),
         }
     }
 }
@@ -205,6 +240,8 @@ mod tests {
             [pins.spi.data.bcm_number(), pins.spi.clock.bcm_number()],
             [10, 11]
         );
+        assert_eq!(pins.led.enable.bcm_number(), 26);
+        assert_eq!(LED_ENABLE_BOOT_LEVEL, Level::Low);
         let gpio = pins.gpio;
         assert_eq!(
             [
@@ -260,6 +297,7 @@ mod tests {
         fn button(_: &ButtonPin<5>) {}
         fn i2c(_: &Pin<2, InputOutput>) {}
         fn spi(_: &Pin<10, Output>) {}
+        fn led(_: &Pin<26, Output>) {}
 
         let pins = BoardPins::get();
         read(&pins.i2c.data);
@@ -268,6 +306,8 @@ mod tests {
         button(&pins.gpio.up_button);
         i2c(&pins.i2c.data);
         spi(&pins.spi.data);
+        write(&pins.led.enable);
+        led(&pins.led.enable);
     }
 
     #[test]
