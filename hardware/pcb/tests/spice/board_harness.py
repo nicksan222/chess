@@ -201,51 +201,23 @@ class BoardHarness:
             raise ValueError(f"eFuse bias network incomplete: {sorted(found)}")
         return roles | found
 
-    def _power_path_nets(self) -> tuple[str, str, str]:
-        self._required_net(
-            DC_INPUT_JACK.reference,
-            BarrelJackPin.SLEEVE_GROUND,
-            "GND",
-        )
-        self._required_net(
-            DC_INPUT_JACK.reference,
-            BarrelJackPin.SWITCHED_SLEEVE_GROUND,
-            "GND",
-        )
-        dc_input = self._required_net(
-            DC_INPUT_JACK.reference,
-            BarrelJackPin.CENTRE_POSITIVE,
-            "DC_IN",
-        )
-        self._required_net(
-            INPUT_FUSE.reference,
-            FusePin.UNFUSED_INPUT,
-            dc_input,
-        )
-        dc_fused = self._required_net(
-            INPUT_FUSE.reference,
-            FusePin.FUSED_OUTPUT,
-            "DC_FUSED",
-        )
-        self._required_net(
-            MAIN_POWER_SWITCH.reference,
-            PowerSwitchPin.FUSED_INPUT,
-            dc_fused,
-        )
-        five_volts = self._required_net(
-            MAIN_POWER_SWITCH.reference,
-            PowerSwitchPin.SWITCHED_FIVE_VOLTS,
-            "+5V",
-        )
-        return dc_input, dc_fused, five_volts
+    def resistor_ohms(self, reference: str) -> tuple[float, float]:
+        """Nominal ohms and tolerance of a placed resistor (value field, MPN series)."""
+        component = self.components[reference]
+        value = component.GetFieldText("NominalValue").split()[0]
+        ohms = float(value.rstrip("kR")) * (1000.0 if value.endswith("k") else 1.0)
+        series = component.GetValue()[:2]
+        return ohms, datasheets.RESISTOR_TOLERANCE[series]
 
     def _component_count(self, part_key: str) -> int:
+        """How many placed footprints have `part_key`."""
         return sum(
             component.GetFieldText("PartKey") == part_key
             for component in self.components.values()
         )
 
     def _component_value(self, part_key: str) -> str:
+        """The nominal value of the single footprint with `part_key`; raises unless there is exactly one."""
         values = [
             component.GetFieldText("NominalValue")
             for component in self.components.values()
@@ -256,6 +228,7 @@ class BoardHarness:
         return values[0]
 
     def _movement(self, scenario: MovementCase) -> str:
+        """Circuit text for a movement case: the touched squares' sensors, their expander inputs, timed events and checks."""
         if not scenario.checks:
             raise ValueError(f"{scenario.name}: movement case has no registered checks")
         touched = sorted(
@@ -312,16 +285,22 @@ class BoardHarness:
         lines.append(".end")
         return "\n".join(lines) + "\n"
 
-    def _all_squares(self) -> str:
-        lines = ["Generated chess-board exhaustive Hall sensor matrix"]
-        for square in sorted(self.square_nets):
-            lines.append(_expect(_node(square), True))
-        lines.extend(self._hall_model())
-        lines.extend(
-            (
-                f"VDD vdd 0 {LOGIC_3V3.supply_volts}",
-                f"VMAG mag 0 {LOGIC_3V3.supply_volts}",
-            )
+    def hall_levels(self, *, occupied: bool, vcc: float) -> SpiceCircuit:
+        """Every square's DRV5032 open drain against its TCA9554 pull-up (DC).
+
+        Occupied: the output sinks through its worst on-resistance (VOL 0.3 V at
+        1 mA) against the strongest pull-up the TCA9554's IIL limit allows. Empty:
+        the off output's leakage plus the expander's input leakage load the typical
+        pull-up (no maximum is stated). result_<square> is the margin in volts to
+        the TCA9554 VIL (occupied) or VIH (empty) at this VCC.
+        """
+        state = "occupied" if occupied else "empty"
+        circuit = SpiceCircuit(f"Generated chess-board Hall levels, {state}, {vcc:g} V")
+        circuit.rows.append(f"VDD vdd 0 {vcc}")
+        on_ohms = datasheets.DRV5032_VOL_AT_1MA / 1e-3
+        strongest = vcc / datasheets.TCA9554_PULLUP_AMPS_MAX
+        leakage = (
+            datasheets.DRV5032_LEAKAGE_AMPS + datasheets.TCA9554_INPUT_LEAKAGE_AMPS
         )
         for square, net in sorted(self.square_nets.items()):
             lines.append(f"X{_node(square)} {_node(net)} vdd mag 0 SQUARE_SENSOR")
