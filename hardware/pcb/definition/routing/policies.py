@@ -555,10 +555,43 @@ def route_led_chain(ctx: RoutingContext, *, obstructed_only: bool = False) -> No
         else:
             native.add_via(board, net, first)
             native.add_via(board, net, second)
-            native.add_trace(board, net, first, second, pcbnew.B_Cu)
+            native.add_trace(board, net, first, second, pcbnew.In4_Cu)
+
+
+def route_led_data_termination(ctx: RoutingContext) -> None:
+    """Each LED driver straight into its series terminator on F.Cu: U5 -> R9 and
+    the left rank-turn DO pads -> R10-R12 (source termination at the driver)."""
+    terminators = {ComponentReference.LED_DATA_TERMINATION, *TURN_TERMINATORS}
+    by_net: defaultdict[str, list[pcbnew.PAD]] = defaultdict(list)
+    for module in ctx.board.GetFootprints():
+        if module.GetReference() not in terminators:
+            continue
+        for pad in module.Pads():
+            if pad.GetNumber() == str(ResistorPin.TERMINAL_B):
+                by_net[pad.GetNetname()].append(pad)
+    if len(by_net) != len(terminators):
+        raise RuntimeError("each LED terminator needs its own driver net")
+    for name in by_net:
+        pads = [
+            pad
+            for module in ctx.board.GetFootprints()
+            for pad in module.Pads()
+            if pad.GetNetname() == name
+        ]
+        if len(pads) != 2:
+            raise RuntimeError(
+                f"{name} must join exactly one driver and its terminator"
+            )
+        native.add_trace(
+            ctx.board,
+            ctx.nets_by_name[name],
+            pads[0].GetPosition(),
+            pads[1].GetPosition(),
+        )
 
 
 def route_input_power(ctx: RoutingContext) -> None:
+    """Wide top-side L-routes between the power-entry header and the fuse."""
     board, net_by_name, pads = (
         ctx.board,
         ctx.nets_by_name,
@@ -567,32 +600,36 @@ def route_input_power(ctx: RoutingContext) -> None:
     routes = (
         (
             Net.DC_INPUT,
-            DC_INPUT_JACK.endpoint(BarrelJackPin.CENTRE_POSITIVE),
+            POWER_ENTRY_HEADER.endpoint(PowerHeaderPin.DC_INPUT),
             INPUT_FUSE.endpoint(FusePin.UNFUSED_INPUT),
-            -183.0,
         ),
         (
             Net.DC_FUSED,
             INPUT_FUSE.endpoint(FusePin.FUSED_OUTPUT),
-            MAIN_POWER_SWITCH.endpoint(PowerSwitchPin.FUSED_INPUT),
-            -194.0,
+            POWER_ENTRY_HEADER.endpoint(PowerHeaderPin.FUSED_TO_SWITCH),
         ),
     )
-    for name, left, right, lane_y in routes:
+    for name, left, right in routes:
         net = net_by_name[name]
         start, end = (pads[left].GetPosition(), pads[right].GetPosition())
-        native_y = native.point(0.0, lane_y).y
-        first = pcbnew.VECTOR2I(start.x, native_y)
-        second = pcbnew.VECTOR2I(end.x, native_y)
-        native.add_trace(board, net, start, first, width=rules.POWER_TRACE_WIDTH_MM)
-        native.add_trace(board, net, first, second, width=rules.POWER_TRACE_WIDTH_MM)
-        native.add_trace(board, net, second, end, width=rules.POWER_TRACE_WIDTH_MM)
+        header, fuse = (
+            (start, end)
+            if left.reference == POWER_ENTRY_HEADER.reference
+            else (end, start)
+        )
+        corner = pcbnew.VECTOR2I(header.x, fuse.y)
+        native.add_trace(board, net, header, corner, width=rules.POWER_TRACE_WIDTH_MM)
+        native.add_trace(board, net, corner, fuse, width=rules.POWER_TRACE_WIDTH_MM)
 
 
 def fanout_power(ctx: RoutingContext) -> None:
     board, net_by_name = (ctx.board, ctx.nets_by_name)
-    rail_names = {Net.GROUND, Net.FIVE_VOLTS, Net.THREE_VOLTS_THREE}
+    rail_names = {Net.GROUND, Net.FIVE_VOLTS, Net.THREE_VOLTS_THREE, Net.LED_FIVE_VOLTS}
     for module in board.GetFootprints():
+        # The U74 cluster's and Q1's rails get explicit copper (routing/efuse.py,
+        # routing/led_switch.py).
+        if module.GetReference() in EFUSE_EXPLICIT_PARTS | {"Q1"}:
+            continue
         for pad in module.Pads():
             name = pad.GetNetname()
             if pad.GetAttribute() != pcbnew.PAD_ATTRIB_SMD or name not in rail_names:
@@ -600,8 +637,35 @@ def fanout_power(ctx: RoutingContext) -> None:
             at = pad.GetPosition()
             escaped = _power_escape_position(module, pad)
             net = net_by_name[name]
+            if escape_policy.carries_fault_current(module.GetValue()):
+                _fault_fanout(board, net, at, escaped)
+                continue
             native.add_trace(board, net, at, escaped)
             native.add_via(board, net, escaped)
+
+
+def _fault_fanout(
+    board: pcbnew.BOARD,
+    net: pcbnew.NETINFO_ITEM,
+    at: pcbnew.VECTOR2I,
+    escaped: pcbnew.VECTOR2I,
+) -> None:
+    """A wide stub into a row of vias across the escape direction."""
+    width = escape_policy.FAULT_STUB_WIDTH_MM
+    pitch = pcbnew.FromMM(escape_policy.FAULT_VIA_PITCH_MM)
+    across_x = escaped.y != at.y
+    span = (escape_policy.FAULT_VIA_COUNT - 1) // 2
+    row = [
+        pcbnew.VECTOR2I(
+            escaped.x + (step * pitch if across_x else 0),
+            escaped.y + (0 if across_x else step * pitch),
+        )
+        for step in range(-span, span + 1)
+    ]
+    native.add_trace(board, net, at, escaped, width=width)
+    native.add_trace(board, net, row[0], row[-1], width=width)
+    for point in row:
+        native.add_via(board, net, point)
 
 
 def _power_escape_position(
