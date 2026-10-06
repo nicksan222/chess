@@ -240,9 +240,38 @@ def native_checks(out: Path) -> None:
         str(out / "positions.csv"),
         str(out / BOARD.name),
     )
+    fill_position_packages(out / "positions.csv", out / BOARD.name)
+
+
+def fill_position_packages(positions: Path, board_path: Path) -> None:
+    """Write each part's approved package label into positions.csv (S4c).
+
+    KiCad fills the Package column from the footprint library ID, which the
+    generated footprints do not carry; the assembler needs the package.
+    """
+    design = pcbnew.LoadBoard(str(board_path))
+    packages = {f.GetReference(): f.GetFieldText("Package") for f in parts(design)}
+    rows = list(csv.reader(positions.read_text().splitlines()))
+    header, body = rows[0], rows[1:]
+    column = header.index("Package")
+    for row in body:
+        row[column] = packages[row[0]]
+    # KiCad's own layout: bare header and numbers, quoted text columns.
+    text = {header.index(name) for name in ("Ref", "Val", "Package", "Side")}
+    lines = [",".join(header)]
+    lines.extend(
+        ",".join(f'"{v}"' if i in text else v for i, v in enumerate(row))
+        for row in body
+    )
+    positions.write_text("\n".join(lines) + "\n")
 
 
 def tests(out: Path) -> None:
+    """Run the whole unit/SPICE suite against the freshly built output in `out`.
+
+    Environment variables point the tests at the staging directory so they check
+    the exact files about to be published. Log goes to `tests.log`.
+    """
     env = dict(
         os.environ,
         PYTHONPATH=str(PCB_ROOT.parent),
@@ -264,6 +293,11 @@ def tests(out: Path) -> None:
 
 
 def previews(out: Path) -> None:
+    """Export review images: schematic SVGs, top/bottom board SVGs, 3D renders.
+
+    For human review only; no check consumes them. The bottom view is mirrored so
+    text reads correctly as if the board were flipped over.
+    """
     from pcb.definition.output.exports import polish
 
     run(
@@ -352,12 +386,14 @@ def previews(out: Path) -> None:
 
 
 def _measurement_list(value: object) -> TypeGuard[list[float | int]]:
+    """True for a list whose every element is a finite positive number."""
     return isinstance(value, list) and all(
         _positive_number(v) for v in cast(list[object], value)
     )
 
 
 def _positive_number(value: object) -> TypeGuard[int | float]:
+    """Finite number > 0; rejects bool (a Python `int` subclass), NaN and inf."""
     return (
         isinstance(value, (int, float))
         and not isinstance(value, bool)
@@ -367,7 +403,18 @@ def _positive_number(value: object) -> TypeGuard[int | float]:
 
 
 def physical_evidence(path: Path | None = None) -> None:
-    """Human Hall/magnet measurements are a production release gate, not a test skip."""
+    """Human Hall/magnet measurements are a production release gate, not a test skip.
+
+    Validates the measurement record (default
+    `definition/evidence/hall-magnet.json`) that a person produces on the real
+    sensor and magnet. It must name the expected schema, board revision and sensor
+    part, explicitly say `pass`, give the final assembled gap, and for each magnet
+    pole list at least five positive operate and release distances (mm) plus notes.
+    The smallest operate distance must be at least 0.5 mm more than the assembled gap, i.e. the
+    sensor is measured to trigger with that much margin to spare. Only `release`
+    calls it, before any fabrication file is written. A missing or failing record
+    blocks fabrication on purpose; it cannot be replaced by software checks.
+    """
     path = path or PCB_ROOT / "definition/evidence/hall-magnet.json"
     if not path.is_file():
         raise RuntimeError(f"missing physical evidence: {path}")
@@ -399,7 +446,37 @@ def physical_evidence(path: Path | None = None) -> None:
         raise RuntimeError("Hall evidence requires measurement notes")
 
 
+def verification_gate() -> None:
+    """Refuse release while a land is unverified or a design value is assumed."""
+    from pcb.definition.verification import verification_blockers
+
+    blockers = verification_blockers()
+    if blockers:
+        raise RuntimeError(
+            "release blocked by open verification items:\n  " + "\n  ".join(blockers)
+        )
+
+
+def release_gates() -> None:
+    """Run every release gate, then refuse once with all of their reasons."""
+    failures: list[str] = []
+    for gate in (physical_evidence, verification_gate):
+        try:
+            gate()
+        except RuntimeError as error:
+            failures.append(str(error))
+    if failures:
+        raise RuntimeError("release refused:\n" + "\n".join(failures))
+
+
 def fabrication(out: Path) -> None:
+    """Export Gerbers and Excellon drill files into `out/gerber`.
+
+    All eight copper layers plus paste, silkscreen, mask and board outline. Drills
+    are split plated/non-plated with slots as routed ovals, and a drill report is
+    written. Runs only for `release`, after the physical evidence gate; producing
+    these files does not mean they were sent to or accepted by a manufacturer.
+    """
     folder = out / "gerber"
     folder.mkdir()
     layers = "F.Cu,In1.Cu,In2.Cu,In3.Cu,In4.Cu,In5.Cu,In6.Cu,B.Cu,F.Paste,B.Paste,F.Silkscreen,B.Silkscreen,F.Mask,B.Mask,Edge.Cuts"
@@ -432,7 +509,12 @@ def fabrication(out: Path) -> None:
 
 
 def check() -> None:
-    """Non-publishing native-definition/dimensions checks; review also checks copper."""
+    """Non-publishing native-definition/dimensions checks; review also checks copper.
+
+    Loads (and thereby validates) the board, runs Ruff lint and format checks, the
+    strict type checker, and the dimensions unit tests. No generated files change.
+    `BASEDPYRIGHT` can name another analyzer executable.
+    """
     definition.load()
     run("ruff", "check", str(PCB_ROOT))
     run("ruff", "format", "--check", str(PCB_ROOT))
@@ -453,6 +535,13 @@ def check() -> None:
 
 
 def build(command: str, destination: Path = GENERATED_DIR) -> None:
+    """Run `generate`, `review` or `release` and publish the result atomically.
+
+    `destination` is replaced only if every step succeeds. Source hashes are taken
+    before and after; a change in between aborts rather than publish artifacts built
+    from two different versions of the source. Checks that actually ran are listed
+    in the report, so it never claims more than was verified.
+    """
     reviewing = command in {"review", "release"}
     if reviewing:
         check()
@@ -466,11 +555,11 @@ def build(command: str, destination: Path = GENERATED_DIR) -> None:
             native_checks(out)
             tests(out)
             if command == "release":
-                physical_evidence()
+                release_gates()
             checks += [
                 "ERC",
                 "DRC and schematic parity",
-                "unit and SPICE tests",
+                TESTS_CHECK,
             ]
             previews(out)
             checks.append("previews")
