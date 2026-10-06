@@ -132,3 +132,54 @@ _CONNECTOR_PARTS = {
     },
     "OLED": {"OLED_HARNESS_HOUSING": 1, "OLED_HARNESS_CONTACT": 4},
 }
+HARNESS_PARTS = {
+    name: _CONNECTOR_PARTS[name]
+    | {
+        key: sum(w.wire.key == key for w in wires)
+        for key in dict.fromkeys(w.wire.key for w in wires)
+    }
+    for name, wires in HARNESSES.items()
+}
+
+# The SPST rocker's two tabs are interchangeable; say so on the assembly table.
+TERMINAL_LABELS: dict[tuple[str, str], str] = {
+    ("POWER_SWITCH", PowerSwitchPin.FUSED_INPUT): "either tab",
+    ("POWER_SWITCH", PowerSwitchPin.RUN_OUTPUT): "other tab",
+}
+
+
+def render_harness_table() -> str:
+    """Markdown assembly table (written to generated/harness.md by the build)."""
+    lines = [
+        "# Harness wiring",
+        "",
+        "Generated from `hardware/shared/electronics/harness.py`; do not edit.",
+        "Cavity numbers are JST's: cavity k mates header circuit k.",
+        "",
+    ]
+    for name, wires in HARNESSES.items():
+        lines.extend(
+            (
+                f"## {name}",
+                "",
+                "| Header | Cavity | Net | Wire | Far end | Terminal | Attach |",
+                "|---|---|---|---|---|---|---|",
+            )
+        )
+        for w in wires:
+            spec = COMPONENTS[w.far_part]
+            terminal = TERMINAL_LABELS.get((w.far_part, w.far_terminal), w.far_terminal)
+            lines.append(
+                f"| {w.connector} | {w.cavity} | {w.net} | {w.colour} {w.gauge_awg} "
+                f"AWG {w.length_mm:g} mm | {spec.manufacturer} {spec.mpn} | "
+                f"{terminal} | {w.far_termination} |"
+            )
+        lines.append("")
+        lines.extend(
+            f"- {COMPONENTS[key].kit_quantity(quantity)} {COMPONENTS[key].manufacturer} "
+            f"{COMPONENTS[key].mpn}: {COMPONENTS[key].description} "
+            f"(bought: {COMPONENTS[key].purchase_unit})"
+            for key, quantity in HARNESS_PARTS[name].items()
+        )
+        lines.append("")
+    return "\n".join(lines)
