@@ -1,4 +1,10 @@
-"""The four-part square: explicit membership, local wiring, and placement."""
+"""The four-part square: explicit membership, local wiring, and placement.
+
+Role: each of the 64 squares is a repeated assembly of an SK9822-A LED, a DRV5032 Hall sensor
+and a decoupling capacitor for each, placed from the shared square layout. This module also
+links the LEDs into their daisy chain. Reference numbering is fixed by the chain index and
+sensor number so published designators never depend on build order.
+"""
 
 from __future__ import annotations
 
@@ -8,12 +14,14 @@ from itertools import pairwise
 
 import pcbnew
 
+from pcb.definition import native
 from pcb.definition.assemblies import led_link_names
 from pcb.definition.native import connect, no_connect, place
 from pcb.definition.parts import catalog as parts
 from shared import dimensions, wiring
-from shared.electronics import CapacitorPin, HallSensorPin, Sk9822Pin
+from shared.electronics import CapacitorPin, HallSensorPin, ResistorPin, Sk9822Pin
 from shared.electronics import HallSensorComponent as HallSensor
+from shared.electronics import ResistorComponent as Resistor
 from shared.electronics import Sk9822Component as Sk9822
 from shared.squares import BoardSquare
 
@@ -22,6 +30,10 @@ ASSEMBLY_PART_COUNT = 4
 
 @dataclass(frozen=True)
 class Square:
+    """Handles to the parts of one placed square (its LED and Hall sensor), so later steps
+    wire them by reference without searching footprints.
+    """
+
     name: str
     led: Sk9822
     hall_sensor: HallSensor

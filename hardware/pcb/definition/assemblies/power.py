@@ -127,20 +127,58 @@ def add_power(board: pcbnew.BOARD) -> None:
     )
     connect(
         board,
+        "RUN",
+        header.pin(p.PowerHeaderPin.RUN),
+        enable_top.pin(a),
+        wetting.pin(a),
+    )
+    connect(
+        board,
+        "EFUSE_EN",
+        efuse.pin(p.EfusePin.ENABLE_UVLO),
+        enable_top.pin(b),
+        enable_bottom.pin(a),
+    )
+    # PG is unused; PGTH shares the OVLO node so it never floats (SLVSFC9C 7.3.11).
+    connect(
+        board,
+        "EFUSE_OVLO",
+        efuse.pin(p.EfusePin.OVERVOLTAGE_LOCKOUT),
+        efuse.pin(p.EfusePin.POWER_GOOD_THRESHOLD),
+        ovlo_top.pin(a),
+        ovlo_bottom.pin(a),
+        ovlo_filter.pin(supply),
+    )
+    connect(board, "EFUSE_ILM", efuse.pin(p.EfusePin.CURRENT_LIMIT), limit.pin(a))
+    connect(board, "EFUSE_DVDT", efuse.pin(p.EfusePin.SLEW_RATE), slew.pin(supply))
+    connect(
+        board,
+        "EFUSE_ITIMER",
+        efuse.pin(p.EfusePin.OVERCURRENT_TIMER),
+        timer.pin(supply),
+    )
+    no_connect(board, efuse.pin(p.EfusePin.POWER_GOOD))
+    connect(
+        board,
         "+5V",
-        switch.pin(p.PowerSwitchPin.SWITCHED_FIVE_VOLTS),
-        tvs.pin(p.TvsDiodePin.CATHODE_FIVE_VOLTS),
-        bulk.pin(p.CapacitorPin.SUPPLY_OR_ELECTRODE_A),
-        bypass.pin(p.CapacitorPin.SUPPLY_OR_ELECTRODE_A),
+        efuse.pin(p.EfusePin.OUTPUT),
+        *(cap.pin(supply) for cap in bulk),
+        bypass.pin(supply),
     )
     connect(
         board,
         "GND",
-        jack.pin(p.BarrelJackPin.SLEEVE_GROUND),
-        jack.pin(p.BarrelJackPin.SWITCHED_SLEEVE_GROUND),
-        tvs.pin(p.TvsDiodePin.ANODE_GROUND),
-        bulk.pin(p.CapacitorPin.RETURN_OR_ELECTRODE_B),
-        bypass.pin(p.CapacitorPin.RETURN_OR_ELECTRODE_B),
+        header.pin(p.PowerHeaderPin.GROUND),
+        tvs.pin(p.TvsDiodePin.GROUND),
+        efuse.pin(p.EfusePin.GROUND),
+        *(
+            cap.pin(ground)
+            for cap in (*bulk, bypass, efuse_input, slew, timer, ovlo_filter)
+        ),
+        limit.pin(b),
+        ovlo_bottom.pin(b),
+        enable_bottom.pin(b),
+        wetting.pin(b),
     )
     for reference, net, description in (
         ("TP1", "+5V", "5 V test point"),
