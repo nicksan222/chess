@@ -1,4 +1,10 @@
-"""Tests for tool-independent component contracts."""
+"""Tests for tool-independent component contracts.
+
+Role: the approved-product catalogue is the one place that decides what may be bought, so
+these tests check its invariants: unique canonical keys, a purchasing identity (maker,
+MPN, package) on every part, and body envelopes that fail at definition time rather than
+produce a wrong footprint later.
+"""
 
 import unittest
 
@@ -38,7 +44,10 @@ class ComponentsTest(unittest.TestCase):
             ComponentSpec("X", "invalid", "pkg", "maker", "mpn", (1.0, 0.0, 1.0))
 
     def test_required_body_dimensions_fail_clearly_when_absent(self) -> None:
-        self.assertEqual(SK9822.require_body_mm(), (5.4, 5.0, 1.57))
+        # The LED body size is a datasheet fact other domains depend on (courtyard, plate
+        # pocket); pinned here so a catalogue edit is noticed.
+        # Opsco SPC/SK9822-A Rev 01 p3 §4: 5.4 over leads x 5.0 x 1.6 mm.
+        self.assertEqual(SK9822.require_body_mm(), (5.4, 5.0, 1.6))
         with self.assertRaisesRegex(ValueError, "POWER_SUPPLY has no body dimensions"):
             POWER_SUPPLY.require_body_mm()
 
