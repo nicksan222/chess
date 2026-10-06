@@ -533,6 +533,16 @@ def check() -> None:
         env=env,
     )
 
+    run(
+        sys.executable,
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        str(PCB_ROOT / "harness"),
+        env=env,
+    )
+
 
 def build(command: str, destination: Path = GENERATED_DIR) -> None:
     """Run `generate`, `review` or `release` and publish the result atomically.

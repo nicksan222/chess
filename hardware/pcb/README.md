@@ -184,3 +184,16 @@ mechanical's unmeasured dimensions). Both reasons are reported together. Missing
 evidence deliberately blocks Gerbers and separate plated/non-plated Excellon
 drills/slots, and `release` is expected to refuse today. No test skip or software
 check substitutes for those measurements. See [`definition/evidence/`](definition/evidence/).
+
+## Experimental circuit harness
+
+`harness/` provides typed circuit declarations, reusable passive component kinds,
+SPICE checks, and a KiCad board-only renderer. It is separate from the production
+board in `definition/board.py`; shared hardware contracts remain authoritative.
+`components/` reserves a home for board-specific products using the harness.
+
+Run the colocated harness tests with `PYTHONPATH=hardware python3 -m unittest
+discover -s hardware/pcb/harness`, or use `python3 -m unittest discover` from the
+repository root. The PCB `check` recipe also runs these tests. The tiny divider in
+`harness/examples/tiny_project.py` demonstrates simulation and project creation;
+its example products are fixtures, not purchasing recommendations.

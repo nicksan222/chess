@@ -2,6 +2,8 @@
   "include": [
     "*.py",
     "definition",
+    "harness",
+    "components",
     "tests",
     "../shared/components",
     "../shared/electronics"
