@@ -290,3 +290,90 @@ class LedSwitchSpiceTest(unittest.TestCase):
                     u75_output(self.stage.board, gate=gate, enable_n=enable_n),
                     gate | enable_n,
                 )
+
+    def test_led_outputs_stay_off_until_the_rail_is_up(self) -> None:
+        # Reviewer-s6 M1 / H6: 32 corners of +5V, Q1 and Q2 thresholds, chain
+        # state and U75 thresholds; LED_EN rises at 1 ms and falls at 15 ms.
+        board = self.stage.board
+        corners = itertools.product(
+            (datasheets.PSU_VOLTS.low, datasheets.PSU_VOLTS.high),
+            Q1_THRESHOLD_CORNERS,
+            Q2_THRESHOLD_CORNERS,
+            (False, True),
+            (
+                (
+                    datasheets.LVC1G97_FALLING_VOLTS.low,
+                    datasheets.LVC1G97_RISING_VOLTS.low,
+                ),
+                (
+                    datasheets.LVC1G97_FALLING_VOLTS.high,
+                    datasheets.LVC1G97_RISING_VOLTS.high,
+                ),
+            ),
+        )
+        for supply, q1_vto, q2_vto, lit, thresholds in corners:
+            with self.subTest(
+                supply=supply, q1=q1_vto, q2=q2_vto, lit=lit, schmitt=thresholds
+            ):
+                circuit = SpiceCircuit(
+                    "Generated chess-board LED outputs at enable/disable [BEH]",
+                    rows=[
+                        f"VOUT out 0 {supply}",
+                        *switch_rows(
+                            board,
+                            lit=lit,
+                            rds_ohms=datasheets.LED_SWITCH_OHMS.high,
+                            q1_vto=q1_vto,
+                            q2_vto=q2_vto,
+                        ),
+                        *buffer_rows(board, thresholds=thresholds),
+                        "VEN en_pi 0 PWL(0 0 1m 0 1.001m 3.3 15m 3.3 15.001m 0)",
+                        ".tran 2u 30m 0 2u",
+                    ],
+                )
+                circuit.controls.extend(
+                    (
+                        "let over_di = v(di) - v(led)",
+                        "let over_ci = v(ci) - v(led)",
+                        "meas tran result_data_over MAX over_di",
+                        "meas tran result_clock_over MAX over_ci",
+                        "meas tran t_on WHEN v(oe)=2.0 FALL=1 FROM=1m",
+                        "meas tran result_oe_while_on FIND v(oe) AT=14m",
+                        "let result_enable_ms = (t_on - 1m) * 1000",
+                        "meas tran result_rail_at_enable FIND v(led) AT=t_on",
+                        "meas tran t_off WHEN v(oe)=2.0 RISE=1 FROM=15m",
+                        "let result_disable_us = (t_off - 15m) * 1e6",
+                        "print result_data_over result_clock_over result_enable_ms",
+                        "print result_rail_at_enable result_disable_us result_oe_while_on",
+                        # S6d (reviewer-s6c m2): while U5 is Hi-Z, before the
+                        # enable and after the disable, DI/CI are held low.
+                        "let off_until = t_on - 10u",
+                        "let off_from = t_off + 50u",
+                        "meas tran di_before MAX v(di) FROM=0 TO=$&off_until",
+                        "meas tran ci_before MAX v(ci) FROM=0 TO=$&off_until",
+                        "meas tran di_after MAX v(di) FROM=$&off_from TO=30m",
+                        "meas tran ci_after MAX v(ci) FROM=$&off_from TO=30m",
+                        (
+                            "let result_off_high = max(max(di_before, ci_before),"
+                            " max(di_after, ci_after))"
+                        ),
+                        "print result_off_high",
+                    )
+                )
+                circuit.expect(
+                    "data_over", -1.0, datasheets.SK9822_INPUT_ABSOLUTE_MARGIN
+                )
+                circuit.expect(
+                    "clock_over", -1.0, datasheets.SK9822_INPUT_ABSOLUTE_MARGIN
+                )
+                # The contract's blanking time covers the enable with 2x margin.
+                blanking_ms = sk9822.LED_ENABLE_BLANKING_S * 1000
+                # U5 enables only after the ramp, and stays enabled while the
+                # rail is on (OE at or below the AHCT125's VIL).
+                circuit.expect("enable_ms", 0.5, blanking_ms / 2)
+                circuit.expect("oe_while_on", -0.1, datasheets.AHCT125_VIL)
+                circuit.expect("disable_us", 0.0, 10.0)
+                circuit.expect(
+                    "off_high", -0.1, datasheets.SK9822_INPUT_ABSOLUTE_MARGIN
+                )
+                run_circuit("test_led_switch_outputs.py", circuit)
