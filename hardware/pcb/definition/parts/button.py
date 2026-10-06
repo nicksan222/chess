@@ -39,15 +39,6 @@ TACTILESWITCH_PADS = (
     ),
     pad(
         TactileSwitchPad.SIGNAL_DUPLICATE,
-        -3.25,
-        -2.25,
-        TACTILESWITCH_PAD,
-        TACTILESWITCH_PAD,
-        pcbnew.PAD_SHAPE_CIRCLE,
-        TACTILESWITCH_DRILL,
-    ),
-    pad(
-        TactileSwitchPad.GROUND_PRIMARY,
         3.25,
         2.25,
         TACTILESWITCH_PAD,
@@ -56,8 +47,17 @@ TACTILESWITCH_PADS = (
         TACTILESWITCH_DRILL,
     ),
     pad(
-        TactileSwitchPad.GROUND_DUPLICATE,
+        TactileSwitchPad.GROUND_PRIMARY,
         3.25,
+        -2.25,
+        TACTILESWITCH_PAD,
+        TACTILESWITCH_PAD,
+        pcbnew.PAD_SHAPE_CIRCLE,
+        TACTILESWITCH_DRILL,
+    ),
+    pad(
+        TactileSwitchPad.GROUND_DUPLICATE,
+        -3.25,
         -2.25,
         TACTILESWITCH_PAD,
         TACTILESWITCH_PAD,
@@ -68,11 +68,12 @@ TACTILESWITCH_PADS = (
 
 TACTILESWITCH_FOOTPRINT = footprint(
     "6x6 mm THT",
-    "6 mm tactile panel switch, 9.5 mm actuator",
+    "6 mm tactile panel switch, 8.0 mm round stem",
     TACTILESWITCH_PADS,
     courtyard_for(TACTILESWITCH_PADS, (6.2, 6.2)),
 )
 
+# Distance of a button's silkscreen label from its centre; used by `output/markings.py`.
 TACTILESWITCH_LABEL_OFFSET_MM = 6.5
 
 BUTTON_PART = PcbPart(
@@ -81,5 +82,6 @@ BUTTON_PART = PcbPart(
     TACTILESWITCH_FOOTPRINT,
     "BUTTON",
     "TACT 6mm",
-    "Momentary panel button, 9.5 mm actuator",
+    "Momentary panel button, 8.0 mm round stem",
+    DrawingView.MOUNTING_SIDE,
 )
