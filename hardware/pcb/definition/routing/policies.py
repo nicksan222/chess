@@ -313,6 +313,11 @@ def route_tree(
 
 
 def route_control_signals(ctx: RoutingContext) -> None:
+    """Route the SPI/LED data, clock and switch-gate nets, outer layers by default.
+
+    LED_EN and LED_OE_N may also use the inner signal layers (they cross the LED field or leave a
+    crowded corner). Escape stubs and vias for every net are reserved before any net is routed.
+    """
     selected = sorted(
         (
             connection
@@ -328,6 +333,14 @@ def route_control_signals(ctx: RoutingContext) -> None:
         for connection in selected
     }
     for connection in selected:
+        # S6: LED_EN crosses the LED field from the Pi header to the front strip;
+        # S6b: LED_OE_N leaves U75 through U5's crowded corner. Both may use the
+        # inner signal layers too.
+        layers = (
+            SENSOR_ROUTING_LAYERS
+            if connection in (wiring.LED_ENABLE_NET, wiring.LED_OUTPUT_ENABLE_N_NET)
+            else grid_router.LAYERS
+        )
         route_tree(
             ctx,
             connection,
@@ -335,10 +348,15 @@ def route_control_signals(ctx: RoutingContext) -> None:
             reserved_points[connection],
             allow_vias=True,
             label_errors=True,
+            layers=layers,
         )
 
 
 def route_internal_buses(ctx: RoutingContext) -> None:
+    """Route I2C SDA and SCL on the inner signal layers, one layer each (In4/In5).
+
+    SDA prefers the first layer and SCL the second so the two long buses do not fight for space.
+    """
     for layer_index, name in enumerate((wiring.SDA_NET, wiring.SCL_NET)):
         connection = name
         nodes = ordered_endpoints(ctx, connection)
@@ -354,6 +372,13 @@ def route_internal_buses(ctx: RoutingContext) -> None:
 
 
 def route_buttons(ctx: RoutingContext) -> None:
+    """Route the twelve button nets from the Pi header to each switch's primary pad.
+
+    First a short F.Cu strap joins the two signal pads (datasheet pins 1-2 are connected inside the
+    switch, but KiCad needs both on the net). Routing order follows `routing_priority`, alternating
+    the preferred layer. If the normal route fails, a fallback launches from the header pad along
+    an inner layer chosen by `fallback_layer_index`, with diagonals and no vias.
+    """
     board, net_by_name, pads = (
         ctx.board,
         ctx.nets_by_name,
@@ -380,8 +405,10 @@ def route_buttons(ctx: RoutingContext) -> None:
             if pad.GetNumber() == TactileSwitchPad.SIGNAL_DUPLICATE
         )
         net = net_by_name[name]
+        # Datasheet pins 1-2 are also strapped inside the switch; this top-side
+        # strap under the body keeps both leads on the net for KiCad.
         native.add_trace(
-            board, net, primary.GetPosition(), duplicate.GetPosition(), pcbnew.B_Cu
+            board, net, primary.GetPosition(), duplicate.GetPosition(), pcbnew.F_Cu
         )
         try:
             route = find_route(
@@ -392,7 +419,9 @@ def route_buttons(ctx: RoutingContext) -> None:
                 preferred_layer_index=1 - index % 2,
             )
         except RuntimeError:
-            preferred = BUTTON_FALLBACK_SIGNAL_LAYERS[button.fallback_layer_index]
+            preferred = BUTTON_FALLBACK_SIGNAL_LAYERS[
+                button.fallback_layer_index % len(BUTTON_FALLBACK_SIGNAL_LAYERS)
+            ]
             candidates = (preferred,) + tuple(
                 layer for layer in BUTTON_FALLBACK_SIGNAL_LAYERS if layer != preferred
             )
@@ -429,6 +458,11 @@ def route_buttons(ctx: RoutingContext) -> None:
 
 
 def route_led_chain(ctx: RoutingContext, *, obstructed_only: bool = False) -> None:
+    """Route each LED-to-LED link (and the terminated rank-turn hops) on its own.
+
+    Only two-pin nets between LED outputs and the next LED's inputs are handled; `obstructed_only`
+    re-runs for the links a first pass could not complete.
+    """
     board, net_by_name, pads = (
         ctx.board,
         ctx.nets_by_name,
@@ -437,13 +471,19 @@ def route_led_chain(ctx: RoutingContext, *, obstructed_only: bool = False) -> No
     origin = native.point(0.0, 0.0).x
     for connection in ctx.endpoints_by_net:
         nodes = list(ctx.endpoints_by_net[connection])
-        if len(nodes) != 2 or not all(
-            node in pads and node.reference.startswith("U") for node in nodes
-        ):
+        if len(nodes) != 2 or not all(node in pads for node in nodes):
+            continue
+        # A rank-turn terminator's line-side pad stands in for the LED's DO.
+        terminated = any(node.reference in TURN_TERMINATORS for node in nodes)
+        if terminated:
+            nodes.sort(key=lambda node: node.reference not in TURN_TERMINATORS)
+            if nodes[1].pin not in Sk9822.input_pins():
+                continue
+        elif not all(node.reference.startswith("U") for node in nodes):
             continue
         if nodes[0].pin in Sk9822.input_pins() and nodes[1].pin in Sk9822.output_pins():
             nodes.reverse()
-        if (
+        if not terminated and (
             nodes[0].pin not in Sk9822.output_pins()
             or nodes[1].pin not in Sk9822.input_pins()
         ):
@@ -489,19 +529,30 @@ def route_led_chain(ctx: RoutingContext, *, obstructed_only: bool = False) -> No
         right_side = start.x > origin
         direction = 1 if right_side else -1
         is_clock = nodes[0].pin == Sk9822Pin.CLOCK_OUT
+        via_reach = (
+            pcbnew.ToMM(pads[nodes[0]].GetSize().x) / 2
+            + escape_policy.VIA_MASK_WEB_REACH_MM
+        )
+        # S5: keep data plane-referenced. On the right its pads sit inside the
+        # clock's span, so an inner F.Cu U (over GND, 33 ohm) fits; on the left the
+        # Hall GND vias leave no outer lane, so data drops to In4 (0.23 mm under
+        # the +3V3 plane, about 56 ohm) instead of the unreferenced B.Cu.
         distance_mm = (
-            (3.0 if right_side else 8.0) if is_clock else 1.0 if right_side else 6.0
+            (3.0 if right_side else 7.0)
+            if is_clock
+            else 1.75
+            if right_side
+            else max(6.0, via_reach)
         )
         distance = pcbnew.FromMM(distance_mm)
-        first = pcbnew.VECTOR2I(start.x + direction * distance, start.y)
+        # Turns run from the column's pad line (a terminator sits inside the stub).
+        first = pcbnew.VECTOR2I(end.x + direction * distance, start.y)
         second = pcbnew.VECTOR2I(end.x + direction * distance, end.y)
-        if is_clock:
-            native.add_trace(board, net, start, first)
+        native.add_trace(board, net, start, first)
+        native.add_trace(board, net, second, end)
+        if is_clock or right_side:
             native.add_trace(board, net, first, second)
-            native.add_trace(board, net, second, end)
         else:
-            native.add_trace(board, net, start, first)
-            native.add_trace(board, net, second, end)
             native.add_via(board, net, first)
             native.add_via(board, net, second)
             native.add_trace(board, net, first, second, pcbnew.B_Cu)
