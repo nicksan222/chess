@@ -14,11 +14,14 @@ import bpy
 from core import dimensions as shared
 from core import materials, modeling
 
+# Same body size and positions the PCB placement uses, so the proxy shows the real
+# obstruction the plate and case must clear.
 EXPANDER_BODY_MM = shared.EXPANDER_BODY_MM
 EXPANDER_POSITIONS_MM = tuple(shared.EXPANDER_POSITIONS_BY_BANK_MM.values())
 
 
 def create_materials() -> dict[str, bpy.types.Material]:
+    """Flat presentation colours keyed by role; they are not specified finishes."""
     return {
         "pcb": materials.solid("Circuit board", (0.02, 0.16, 0.07, 1.0), 0.38),
         "body": materials.solid("Component body", (0.10, 0.10, 0.11, 1.0), 0.34),
@@ -29,9 +32,17 @@ def create_materials() -> dict[str, bpy.types.Material]:
 
 
 def add_board(collection: bpy.types.Collection) -> bpy.types.Object:
-    """The board itself, plus everything standing on it."""
+    """The board itself, plus everything standing on it.
+
+    Returns the board slab. The named `Proxy_*` objects (board, Pi, header, display,
+    buttons and actuators) are what `board-assembly`'s `check_fit` tests against the
+    printed parts; LEDs, Hall sensors and expanders are shown but covered by the shared stack
+    validation instead.
+    """
     palette = create_materials()
 
+    # Board slab at its place in the stack: top face PCB_TOP_Z, thickness PCB_THICKNESS,
+    # centred on the board (not the playing area), so the control strip is included.
     board = modeling.rounded_box(
         "Proxy_Circuit_Board",
         shared.PCB_SIZE_MM,
@@ -57,6 +68,8 @@ def add_board(collection: bpy.types.Collection) -> bpy.types.Object:
 def _add_leds(
     collection: bpy.types.Collection, palette: dict[str, bpy.types.Material]
 ) -> None:
+    # LED body on the board top plus a thin emitter window on its top face, at the
+    # shared LED offset, so the diffuser pockets in the plate can be seen to line up.
     height = shared.LED_PACKAGE_NOMINAL_SIZE_MM[2]
     for square in shared.BOARD_SQUARES:
         x, y = square.led_position_mm
@@ -82,6 +95,7 @@ def _add_leds(
 def _add_hall_sensors(
     collection: bpy.types.Collection, palette: dict[str, bpy.types.Material]
 ) -> None:
+    # One sensor body per square at the Hall position (square centre).
     height = shared.HALL_SENSOR_HEIGHT_MM
     for square in shared.BOARD_SQUARES:
         x, y = square.hall_position_mm
@@ -98,6 +112,7 @@ def _add_hall_sensors(
 def _add_expanders(
     collection: bpy.types.Collection, palette: dict[str, bpy.types.Material]
 ) -> None:
+    # One TCA9554 per Hall bank, at the shared expander positions.
     for index, (x, y) in enumerate(EXPANDER_POSITIONS_MM):
         chip = modeling.rounded_box(
             f"Proxy_Expander_{index}",
@@ -113,28 +128,34 @@ def _add_expanders(
 def _add_host(
     collection: bpy.types.Collection, palette: dict[str, bpy.types.Material]
 ) -> None:
-    """The Pi hangs under the board on its header, in the cavity."""
-    top = shared.PCB_UNDERSIDE_Z_MM - shared.PI_HEADER_HEIGHT_MM
+    """The Pi hangs under the board on its header, in the cavity.
+
+    It sits at the shared Pi transform, the same one J1 is placed from, so a
+    header pin here lands on the J1 pad above it.
+    """
+    top = shared.PI_TOP_FACE_Z_MM
+    # A quarter-turn placement swaps the X and Y extents of the Pi and its header body.
+    turned = int(shared.PI_ROTATION_DEG) % 180 == 90
+    length, width, thickness = shared.PI_BOARD_SIZE_MM
     pi_board = modeling.rounded_box(
         "Proxy_Raspberry_Pi",
-        shared.PI_BOARD_SIZE_MM,
-        (
-            *shared.PI_BAY_CENTER_MM,
-            top - shared.PI_BOARD_SIZE_MM[2] / 2.0,
-        ),
+        (width, length, thickness) if turned else (length, width, thickness),
+        (*shared.PI_CENTER_MM, top - thickness / 2.0),
         0.5,
         collection,
     )
     pi_board.data.materials.append(palette["host"])
     pi_board["purpose"] = "Raspberry Pi Zero 2 W; the only processor on the board"
 
+    header_x, header_y, _ = shared.PI_HEADER_BODY_MM
     header = modeling.rounded_box(
         "Proxy_Pi_Header",
-        shared.PI_HEADER_BODY_MM,
         (
-            *shared.PI_BAY_CENTER_MM,
-            top + shared.PI_HEADER_HEIGHT_MM / 2.0,
+            header_y if turned else header_x,
+            header_x if turned else header_y,
+            shared.PI_BOARD_TO_BOARD_MM,
         ),
+        (*shared.PI_HEADER_CENTER_MM, top + shared.PI_BOARD_TO_BOARD_MM / 2.0),
         0.4,
         collection,
     )
@@ -144,6 +165,8 @@ def _add_host(
 def _add_panel(
     collection: bpy.types.Collection, palette: dict[str, bpy.types.Material]
 ) -> None:
+    # Buttons: housing (body) plus the round stem (actuator) up to the switch's overall
+    # height. `check_fit` tests both against the plate, which has a hole and relief.
     for index, button in enumerate(shared.PANEL_BUTTONS):
         x, y = button.position_mm
         body = modeling.rounded_box(
@@ -158,18 +181,21 @@ def _add_panel(
             collection,
         )
         body.data.materials.append(palette["body"])
-        # The actuator has to reach the bezel, which is what sets its length.
-        reach = shared.CASE_HEIGHT_MM - shared.PCB_TOP_Z_MM
-        actuator = modeling.cylinder(
+        # The approved switch's overall height sets where the stem ends; the
+        # shared validation keeps that just proud of the bezel.
+        actuator = modeling.cylinder_between(
             f"Proxy_Button_Actuator_{index:02d}",
             shared.PANEL_BUTTON_ACTUATOR_DIAMETER_MM,
-            reach,
-            (x, y, shared.PCB_TOP_Z_MM + reach / 2.0),
+            (x, y),
+            shared.PCB_TOP_Z_MM + shared.PANEL_BUTTON_BODY_MM[2],
+            shared.PCB_TOP_Z_MM + shared.PANEL_BUTTON_HEIGHT_MM,
             collection,
             vertices=16,
         )
         actuator.data.materials.append(palette["body"])
 
+    # The OLED module hangs from the plate underside in its recess, not on the PCB; its
+    # top is raised by the recess depth so it sits inside the plate recess.
     module = modeling.rounded_box(
         "Proxy_Display_Module",
         shared.PANEL_OLED_MODULE_MM,

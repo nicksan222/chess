@@ -1,26 +1,41 @@
-"""Generate and atomically publish the complete CAD artifact set."""
+"""Generate and atomically publish the complete CAD artifact set.
+
+Role: the driver behind `just --justfile hardware/cad/justfile generate`. It finds
+every `projects/*/generate.py`, runs each in its own Blender process in dependency
+order, and publishes all outputs together. Each generator writes into one shared
+staging directory (via `build_support.staged_output`), which replaces `generated/`
+only if every project succeeded, so a failed model or render never leaves a mixed
+set. Usage (as the recipe runs it): `PYTHONPATH=hardware python3 -m cad.build <path-to-blender>`.
+"""
 
 from __future__ import annotations
 
 import argparse
-import os
 import shutil
 import subprocess
-from collections.abc import Callable, Mapping
+from collections.abc import Callable
 from pathlib import Path
 from typing import cast
 
 from build_support import staged_output
 
+# Paths are derived from this file so the build works from any working directory.
 CAD_ROOT = Path(__file__).resolve().parent
 REPOSITORY_ROOT = CAD_ROOT.parents[1]
 PROJECTS = CAD_ROOT / "projects"
 GENERATED = CAD_ROOT / "generated"
+# Hand-written note kept in `generated/`; copied into each new stage because the stage
+# replaces the whole directory (and would otherwise delete it).
 GENERATED_README = GENERATED / "README.md"
 
 
 def ordered_generators(projects: Path = PROJECTS) -> list[Path]:
-    """Discover generators in their declared dependency order."""
+    """Discover generators in their declared dependency order.
+
+    A project may contain a `generation-order` file holding a non-negative integer
+    (default 100); lower numbers run first. This is how `board-assembly` runs after
+    the parts it imports. Ties sort by path so the order is deterministic.
+    """
     ranked: list[tuple[int, str, Path]] = []
     for generator in projects.glob("*/generate.py"):
         order_file = generator.parent / "generation-order"
@@ -49,9 +64,16 @@ def generator_command(
     blender: Path,
     generator: Path,
     output_directory: Path,
-    environment: Mapping[str, str] = os.environ,
     find_executable: Callable[[str], str | None] = shutil.which,
 ) -> list[str]:
+    """Blender command for one generator (`find_executable` is injectable for tests).
+
+    Renders always go through a private Xvfb server when one is available. An
+    inherited DISPLAY is not trusted: a devcontainer forwards the host's X
+    server, and EEVEE rendering through it hangs without reporting an error.
+    """
+    # `--python-exit-code 1` makes a script exception fail the build; `--gpu-backend
+    # opengl` selects the backend EEVEE renders with in the background.
     command = [
         str(blender),
         "--background",
@@ -65,7 +87,7 @@ def generator_command(
         "--",
         str(output_directory),
     ]
-    if not environment.get("DISPLAY") and find_executable("xvfb-run"):
+    if find_executable("xvfb-run"):
         command = ["xvfb-run", "--auto-servernum", *command]
     return command
 
