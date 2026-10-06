@@ -1,5 +1,14 @@
-"""Focused native-board checks for deterministic routing boundaries."""
+"""Focused native-board checks for deterministic routing boundaries.
 
+Role: unit tests for `routing/paths.py` on a tiny synthetic 30 mm board with two
+internal layers (In4/In5) and nets SIGNAL (the one being routed) and FOREIGN
+(obstacles). They pin down the router's guarantees: it stays inside the allowed
+corridor, validates layer arguments, keeps pad clearance and via keepout distinct,
+turns routes into tracks of the configured width, and breaks ties the same way
+every run. Grid cells are 0.25 mm, so mm x 4 = cell index (10 mm -> cell 40).
+"""
+
+import math
 import unittest
 from itertools import pairwise
 from typing import TypedDict, Unpack, cast
@@ -10,6 +19,8 @@ from pcb.definition import rules
 from pcb.definition.routing import paths
 
 
+# Keyword options forwarded to `paths.find_route`, typed so the strict type
+# checker accepts `**options`.
 class RouteOptions(TypedDict, total=False):
     margin_mm: float
     preferred_layer_index: int | None
@@ -22,6 +33,8 @@ class RouteOptions(TypedDict, total=False):
 
 class RoutingTest(unittest.TestCase):
     def setUp(self):
+        # Fresh 8-layer board with a 30 mm square outline for every test; routing
+        # runs on two inner layers; an outer-layer pad blocks vias but not inner tracks.
         self.board = pcbnew.BOARD()
         self.board.SetCopperLayerCount(8)
         self.layers = (pcbnew.In4_Cu, pcbnew.In5_Cu)
@@ -41,6 +54,7 @@ class RoutingTest(unittest.TestCase):
 
     @staticmethod
     def point(x: float, y: float) -> pcbnew.VECTOR2I:
+        """mm -> KiCad point on this test board (no origin shift)."""
         return pcbnew.VECTOR2I(pcbnew.FromMM(x), pcbnew.FromMM(y))
 
     def route(
@@ -49,6 +63,7 @@ class RoutingTest(unittest.TestCase):
         end: tuple[float, float] = (12, 10),
         **options: Unpack[RouteOptions],
     ) -> paths.Route:
+        """Route SIGNAL between two mm points on the test layers."""
         return paths.find_route(
             self.board,
             self.net,
@@ -61,6 +76,11 @@ class RoutingTest(unittest.TestCase):
     def add_pad(
         self, *, through_hole: bool = False, same_net: bool = False
     ) -> pcbnew.PAD:
+        """Put a small round pad at (10, 10) mm: foreign net unless `same_net`.
+
+        `through_hole` makes it a drilled pad that exists on every layer (so it
+        forbids vias everywhere); otherwise it is a surface-mount outer-layer pad.
+        """
         footprint = pcbnew.FOOTPRINT(self.board)
         self.board.Add(footprint)
         pad = pcbnew.PAD(footprint)
@@ -81,6 +101,7 @@ class RoutingTest(unittest.TestCase):
     def blocked(
         self, extra: frozenset[tuple[int, int]] = frozenset()
     ) -> tuple[dict[int, set[tuple[int, int]]], set[tuple[int, int]]]:
+        """Rasterize obstacles over a 120x120-cell window (30 mm)."""
         return paths.blocked_cells(
             self.board,
             self.net.GetNetCode(),
@@ -90,6 +111,8 @@ class RoutingTest(unittest.TestCase):
         )
 
     def test_exact_and_snapped_endpoints_must_stay_inside_bounds(self):
+        # First case: the exact start is 0.01 mm outside the corridor. Second: the
+        # exact start is inside but snapping to the grid would move it outside.
         with self.assertRaisesRegex(ValueError, "start endpoint is outside"):
             self.route(start=(9.99, 15), routing_bounds_mm=(10, 10, 20, 20))
         with self.assertRaisesRegex(ValueError, "snapped start endpoint is outside"):
@@ -100,6 +123,8 @@ class RoutingTest(unittest.TestCase):
             )
 
     def test_start_and_end_layer_indices_are_validated(self):
+        # An index past the last layer must raise; valid indices are honoured at
+        # the route's first and last points.
         for option in ("preferred_layer_index", "required_end_layer_index"):
             with (
                 self.subTest(option=option),
@@ -116,6 +141,9 @@ class RoutingTest(unittest.TestCase):
         self.assertEqual(route.points[-1].layer_index, 1)
 
     def test_pad_clearance_and_via_keepouts_are_distinct(self):
+        # A foreign outer-layer pad blocks vias at its cell, but not inner-layer
+        # tracks there; caller-supplied keepouts join the via ban; a cell 5 cells
+        # away is still allowed. A same-net drilled pad still bans vias (its hole).
         outer_pad = self.add_pad()
         blocked, via_forbidden = self.blocked(frozenset({(60, 60)}))
         self.assertTrue(all((40, 40) not in cells for cells in blocked.values()))
