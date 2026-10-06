@@ -47,53 +47,13 @@ SK9822_PAD_CENTRES_MM = {
 # Pin 1 (data in) is RECT as the polarity cue; the others are oval.
 SK9822_PADS = tuple(
     pad(
-        Sk9822Pin.DATA_IN,
-        -SK9822_PAD_EDGE_MM,
-        SK9822_SIGNAL_PITCH_MM / 2.0,
-        SK9822_PAD_LONG_MM,
-        SK9822_PAD_SHORT_MM,
-        pcbnew.PAD_SHAPE_RECT,
-    ),
-    pad(
-        Sk9822Pin.CLOCK_IN,
-        -SK9822_PAD_EDGE_MM,
-        -SK9822_SIGNAL_PITCH_MM / 2.0,
-        SK9822_PAD_LONG_MM,
-        SK9822_PAD_SHORT_MM,
-        pcbnew.PAD_SHAPE_OVAL,
-    ),
-    pad(
-        Sk9822Pin.DATA_OUT,
-        SK9822_PAD_EDGE_MM,
-        SK9822_SIGNAL_PITCH_MM / 2.0,
-        SK9822_PAD_LONG_MM,
-        SK9822_PAD_SHORT_MM,
-        pcbnew.PAD_SHAPE_OVAL,
-    ),
-    pad(
-        Sk9822Pin.CLOCK_OUT,
-        SK9822_PAD_EDGE_MM,
-        -SK9822_SIGNAL_PITCH_MM / 2.0,
-        SK9822_PAD_LONG_MM,
-        SK9822_PAD_SHORT_MM,
-        pcbnew.PAD_SHAPE_OVAL,
-    ),
-    pad(
-        Sk9822Pin.FIVE_VOLTS,
-        0.0,
-        SK9822_PAD_EDGE_MM,
-        SK9822_PAD_SHORT_MM,
-        SK9822_PAD_LONG_MM,
-        pcbnew.PAD_SHAPE_OVAL,
-    ),
-    pad(
-        Sk9822Pin.GROUND,
-        0.0,
-        -SK9822_PAD_EDGE_MM,
-        SK9822_PAD_SHORT_MM,
-        SK9822_PAD_LONG_MM,
-        pcbnew.PAD_SHAPE_OVAL,
-    ),
+        number,
+        x,
+        y,
+        *SK9822_PAD_SIZE_MM,
+        pcbnew.PAD_SHAPE_RECT if number == Sk9822Pin.DATA_IN else pcbnew.PAD_SHAPE_OVAL,
+    )
+    for number, (x, y) in SK9822_PAD_CENTRES_MM.items()
 )
 
 SK9822_FOOTPRINT = footprint(
@@ -103,6 +63,8 @@ SK9822_FOOTPRINT = footprint(
     courtyard_for(SK9822_PADS, SK9822_BODY_MM),
 )
 
+add_polarity_marker(SK9822_FOOTPRINT, "1")
+
 SK9822_PART = PcbPart(
     SK9822,
     Sk9822,
@@ -110,4 +72,5 @@ SK9822_PART = PcbPart(
     "SK9822",
     "SK9822",
     SK9822.description,
+    DrawingView.MOUNTING_SIDE,
 )
