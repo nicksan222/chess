@@ -1,6 +1,8 @@
 # SPICE tests
 
-Tests are grouped into power, signal and movement scenarios. Each scenario:
+Tests are grouped into power, signal and movement scenarios (plus a plane-drop
+group). They are SPICE simulations of the generated design, not measurements of a
+built board. Each scenario:
 
 1. asks `BoardHarness` for circuit topology derived from the validated PCB;
 2. declares actions and named voltage/current checks in Python;
