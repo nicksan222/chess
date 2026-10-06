@@ -115,3 +115,16 @@ class NetCopper:
 
 def net_copper(board: pcbnew.BOARD, net: str) -> NetCopper:
     """Sum a net's routed track length per layer and count its vias, from the board."""
+    lengths: defaultdict[str, float] = defaultdict(float)
+    vias = 0
+    for track in board.GetTracks():
+        if track.GetNetname() != net:
+            continue
+        if isinstance(track, pcbnew.PCB_VIA):
+            vias += 1
+            continue
+        start, end = track.GetStart(), track.GetEnd()
+        lengths[board.GetLayerName(track.GetLayer())] += pcbnew.ToMM(
+            round(math.hypot(end.x - start.x, end.y - start.y))
+        )
+    return NetCopper(dict(lengths), vias)

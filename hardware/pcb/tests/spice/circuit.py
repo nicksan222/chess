@@ -1,7 +1,14 @@
-"""Python circuit builder and CI-safe ngspice runner."""
+"""Python circuit builder and CI-safe ngspice runner.
+
+Role: `SpiceCircuit` holds a title, netlist rows, control lines and named result windows,
+and renders them into a circuit that asserts for itself (a failed bound makes ngspice
+exit non-zero). `SpiceRunner` executes it with the system ngspice and returns the printed
+`result_*` values; a missing ngspice is an error, not a skip.
+"""
 
 from __future__ import annotations
 
+import re
 import shutil
 import subprocess
 import tempfile
@@ -29,6 +36,10 @@ class SpiceCircuit:
         return self
 
     def expect(self, name: str, minimum: float, maximum: float) -> SpiceCircuit:
+        """Add a named assertion that a printed result lies in [minimum, maximum].
+
+        Duplicate names are rejected so one result cannot be checked against two windows by mistake.
+        """
         key = f"result_{name}"
         if key in self.expectations:
             raise ValueError(f"duplicate SPICE expectation {name}")
@@ -36,6 +47,9 @@ class SpiceCircuit:
         return self
 
     def render(self) -> str:
+        """The full netlist: components, then a `.control` block that runs the analysis and exits
+        non-zero (`quit 1`) when any expectation fails, so ngspice itself reports the failure.
+        """
         controls = [".control", "run", *self.controls]
         for name, (minimum, maximum) in self.expectations.items():
             controls.extend(
@@ -54,6 +68,7 @@ class SpiceCircuit:
         return "\n".join((self.title, *self.rows, *controls))
 
     def write(self, path: Path) -> Path:
+        """Write the rendered circuit to `path` and return it."""
         path.write_text(self.render())
         return path
 
@@ -67,8 +82,11 @@ class SpiceRunner:
             raise RuntimeError(f"{executable} is required for PCB electrical tests")
         self._executable = resolved
 
-    def run(self, circuit: Path | SpiceCircuit) -> None:
-        """Run one circuit; assertion failures are reported by ngspice itself."""
+    def run(self, circuit: Path | SpiceCircuit) -> dict[str, float]:
+        """Run one circuit; assertion failures are reported by ngspice itself.
+
+        Returns every `result_*` value the deck printed (`print result_x`).
+        """
         if isinstance(circuit, SpiceCircuit):
             with tempfile.TemporaryDirectory(
                 prefix="chess-spice-circuit-"
@@ -83,5 +101,10 @@ class SpiceRunner:
             timeout=30,
         )
         output = process.stdout + process.stderr
-        if process.returncode != 0 or "Error:" in output or "failed!" in output:
+        failed = ("Error:", "failed!", "simulation(s) aborted")
+        if process.returncode != 0 or any(text in output for text in failed):
             raise AssertionError(f"{circuit}: ngspice failed\n{output}")
+        found: list[tuple[str, str]] = re.findall(
+            r"^(result_\w+) = (\S+)$", output, re.MULTILINE
+        )
+        return {name: float(value) for name, value in found}
