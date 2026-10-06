@@ -114,3 +114,85 @@ def route_efuse_power(ctx: RoutingContext) -> None:
     vias, and the DC_FUSED stubs for R4, C141 and D1. Positions are fixed offsets from U74 because
     the pad gaps are too tight for the grid router.
     """
+    board = ctx.board
+    _, cy = _centre()
+    j4 = footprint(board, ComponentReference.POWER_ENTRY_HEADER)
+    fused = next(
+        p for p in j4.Pads() if p.GetNumber() == PowerHeaderPin.FUSED_TO_SWITCH
+    )
+    jx, jy = _shared(fused.GetPosition())
+    # IN: two necks, then the DC_FUSED loop north and south back to J4.3.
+    for path in _bar_paths(-BAR_X, -1, NORTH_IN_Y, SOUTH_IN_Y):
+        _path(ctx, "DC_FUSED", [_at(p) for p in path], NECK_MM)
+    for bus_y in (NORTH_IN_Y, SOUTH_IN_Y):
+        start = (-BAR_X - 0.7, bus_y)
+        _path(ctx, "DC_FUSED", [_at(start), native.point(jx, cy + bus_y)], BUS_MM)
+    _path(
+        ctx,
+        "DC_FUSED",
+        [native.point(jx, jy), native.point(jx, cy + NORTH_IN_Y)],
+        BUS_MM,
+    )
+    # OUT: two necks, each into a row of +5V plane vias.
+    for path in _bar_paths(BAR_X, 1, NORTH_OUT_Y, SOUTH_OUT_Y):
+        _path(ctx, "+5V", [_at(p) for p in path], NECK_MM)
+        row_y = path[-1][1]
+        _path(ctx, "+5V", [_at(path[-1]), _at((OUT_VIA_X[-1], row_y))], BUS_MM)
+        for x in OUT_VIA_X:
+            native.add_via(board, ctx.nets_by_name["+5V"], _at((x, row_y)))
+
+    # Bias escapes: 0.20 mm while crossing the courtyard, then to their parts.
+    def pad_of(reference: str, net: str) -> pcbnew.VECTOR2I:
+        part = footprint(board, reference)
+        return next(p for p in part.Pads() if p.GetNetname() == net).GetPosition()
+
+    _path(ctx, "EFUSE_EN", [_at((-PIN_X, 0.7)), _at((-1.6, 0.7))], ESCAPE_MM)
+    _path(ctx, "EFUSE_EN", [_at((-1.6, 0.7)), _at(EN_ESCAPE_END)], STUB_MM)
+    native.add_via(board, ctx.nets_by_name["EFUSE_EN"], _at(EN_ESCAPE_END))
+    _path(ctx, "EFUSE_ITIMER", [_at((PIN_X, 0.7)), _at((TURN_X, 0.7))], ESCAPE_MM)
+    _path(
+        ctx,
+        "EFUSE_ITIMER",
+        [_at((TURN_X, 0.7)), pad_of("C143", "EFUSE_ITIMER")],
+        STUB_MM,
+    )
+    # ILM and GND turn toward R3's pads while still inside the courtyard (0.20 mm).
+    for net, y in (("EFUSE_ILM", 0.225), ("GND", -0.225)):
+        path = [_at((PIN_X, y)), _at((TURN_X, y)), pad_of("R3", net)]
+        _path(ctx, net, path, ESCAPE_MM)
+    _path(ctx, "EFUSE_DVDT", [_at((PIN_X, -0.7)), _at((TURN_X, -0.7))], ESCAPE_MM)
+    _path(
+        ctx, "EFUSE_DVDT", [_at((TURN_X, -0.7)), pad_of("C142", "EFUSE_DVDT")], STUB_MM
+    )
+    # R3's, C142's and C144's GND pads share one via; C143 has its own.
+    shared_via, timer_via = (_at(v) for v in GROUND_VIAS)
+    _path(ctx, "GND", [pad_of("R3", "GND"), pad_of("C142", "GND"), shared_via], STUB_MM)
+    _path(ctx, "GND", [pad_of("C143", "GND"), timer_via], STUB_MM)
+    # C144's GND pad (S4c) sits beside C142's and shares its via.
+    _path(ctx, "GND", [pad_of(OVLO_FILTER, "GND"), pad_of("C142", "GND")], STUB_MM)
+    for via in (shared_via, timer_via):
+        native.add_via(board, ctx.nets_by_name["GND"], via)
+    # OVLO to R4 (its east pad); PGTH joins the OVLO escape.
+    r4 = footprint(board, "R4")
+    ovlo_pad = next(p for p in r4.Pads() if p.GetNet().GetNetname() == "EFUSE_OVLO")
+    junction = (-2.0, 0.225)
+    _path(ctx, "EFUSE_OVLO", [_at((-PIN_X, 0.225)), _at(junction)], ESCAPE_MM)
+    # R5 is reached from a via on this run (the router finishes it).
+    via = _ovlo_via(board)
+    _path(ctx, "EFUSE_OVLO", [_at(junction), via, ovlo_pad.GetPosition()], STUB_MM)
+    native.add_via(board, ctx.nets_by_name["EFUSE_OVLO"], via)
+    _path(ctx, "EFUSE_OVLO", [_at((-PIN_X, -0.7)), _at((-1.5, -0.7))], ESCAPE_MM)
+    _path(ctx, "EFUSE_OVLO", [_at((-1.5, -0.7)), _at(junction)], STUB_MM)
+    # DC_FUSED stubs: R4 and C141 to the loop, D1 to J4.3's column.
+    for reference, bus_y, width in (
+        ("R4", SOUTH_IN_Y, STUB_MM),
+        ("C141", NORTH_IN_Y, STUB_MM),
+    ):
+        part = footprint(board, reference)
+        pad = next(p for p in part.Pads() if p.GetNetname() == "DC_FUSED")
+        x, _ = _shared(pad.GetPosition())
+        _path(ctx, "DC_FUSED", [pad.GetPosition(), native.point(x, cy + bus_y)], width)
+    tvs = footprint(board, ComponentReference.INPUT_TVS)
+    pad = next(p for p in tvs.Pads() if p.GetNetname() == "DC_FUSED")
+    _, y = _shared(pad.GetPosition())
+    _path(ctx, "DC_FUSED", [pad.GetPosition(), native.point(jx, y)], FAULT_STUB_MM)
