@@ -184,3 +184,99 @@ def electrical_findings(
             for reference, pin in nets[name]
         )
     }
+    for name, endpoints in nets.items():
+        series_driven = any(
+            net_of.get((reference, "2" if pin == "1" else "1")) in driven
+            for reference, pin in endpoints
+            if part_keys.get(reference) in SERIES_KEYS
+        )
+        typed = [
+            (reference, pin, PIN_TYPES[part_keys[reference]][pin])
+            for reference, pin in endpoints
+            if part_keys.get(reference) in PIN_TYPES
+        ]
+        kinds = {kind for _, _, kind in typed}
+        label = ", ".join(f"{r}-{p}" for r, p, _ in typed)
+        for reference, pin, kind in typed:
+            expected = POWER_RAILS.get((part_keys[reference], pin))
+            if kind in {POWER, POWER_OUT} and name != expected:
+                findings.append(
+                    f"{reference}-{pin} power pin on {name}, not {expected}"
+                )
+            if kind == GROUND and name != "GND":
+                findings.append(f"{reference}-{pin} ground pin on {name}")
+        if name.startswith("unconnected-"):
+            findings.extend(
+                f"{reference}-{pin} {kind} left unconnected"
+                for reference, pin, kind in typed
+                if kind not in MAY_FLOAT
+            )
+            continue
+        if name in RAILS or name == "GND":
+            continue
+        drivers = [
+            f"{r}-{p}"
+            for r, p, kind in typed
+            if kind in PUSH_PULL or (kind == HOST_GPIO and p in HOST_PUSH_PULL_PINS)
+        ]
+        if len(drivers) > 1:
+            findings.append(f"{name}: contention between {', '.join(drivers)}")
+        host_pulled = any(
+            kind == HOST_GPIO and pin in HOST_PULLED_PINS for _, pin, kind in typed
+        )
+        pulled = IO_PULLUP in kinds or host_pulled or name in resistor_pulled
+        if INPUT in kinds and not (
+            kinds & DRIVERS or series_driven or (OPEN_DRAIN in kinds and pulled)
+        ):
+            findings.append(f"{name}: input without a driver ({label})")
+        if ANALOG in kinds and not any(
+            part_keys.get(reference, "").startswith(SETTING_PREFIXES)
+            for reference, _ in endpoints
+        ):
+            findings.append(f"{name}: analog pin without its setting part ({label})")
+        if OPEN_DRAIN in kinds and not pulled:
+            findings.append(f"{name}: open-drain without a pull-up ({label})")
+        switched = any(
+            part_keys.get(reference) == "BUTTON" for reference, _ in endpoints
+        )
+        if (
+            switched
+            and HOST_GPIO in kinds
+            and not pulled
+            and "Pi GPIO pull-ups" not in assumptions
+        ):
+            findings.append(
+                f"{name}: switch input relies on an unrecorded firmware bias"
+            )
+    return sorted(findings)
+
+
+class PinTypeTest(unittest.TestCase):
+    """Electrical pin types against the board's nets (see the module docstring for the rules)."""
+
+    nets: ClassVar[dict[str, tuple[Endpoint, ...]]]
+    part_keys: ClassVar[dict[str, str]]
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        """Build the board once and index its parts and nets."""
+        native_board = board.load()
+        cls.part_keys = {
+            footprint.GetReference(): footprint.GetFieldText("PartKey")
+            for footprint in native.parts(native_board)
+        }
+        cls.nets = {
+            name: tuple((str(ref), str(pin)) for ref, pin in endpoints)
+            for name, endpoints in native.connections(native_board).items()
+        }
+
+    def test_every_typed_pin_is_known_to_its_datasheet_table(self) -> None:
+        for name, endpoints in self.nets.items():
+            for reference, pin in endpoints:
+                key = self.part_keys[reference]
+                if key in PIN_TYPES:
+                    with self.subTest(net=name, pin=f"{reference}-{pin}"):
+                        self.assertIn(pin, PIN_TYPES[key])
+
+    def test_board_has_no_floating_input_or_undriven_open_drain(self) -> None:
+        self.assertEqual(electrical_findings(self.nets, self.part_keys), [])
