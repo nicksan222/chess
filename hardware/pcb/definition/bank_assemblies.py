@@ -1,4 +1,9 @@
-"""PCB identities and placements for the eight logical Hall banks."""
+"""PCB identities and placements for the eight logical Hall banks.
+
+Role: ties each logical `HallBank` (shared contract) to its physical expander and
+bypass-capacitor reference designators and board positions. `assemblies/sensing.py`
+places from it; routing and validation read it so all agree on where each expander is.
+"""
 
 from dataclasses import dataclass
 
@@ -6,7 +11,12 @@ from shared import dimensions
 from shared.hall_banks import HallBank
 
 Point = tuple[float, float]
-TCA9554_BYPASS_OFFSET_MM: Point = (8.0, 6.0)
+# Where each expander's 100 nF decoupling capacitor sits relative to the expander
+# (mm). Identical for all banks so every bank is a repeat of the same layout.
+# Above the package, turned 180 deg: "+" by VCC pin 16, GND toward pin 8, so both
+# the supply and the return close the loop (tests/board/test_decoupling.py).
+TCA9554_BYPASS_OFFSET_MM: Point = (3.5, 6.3)
+TCA9554_BYPASS_ROTATION_DEG = 180.0
 
 
 @dataclass(frozen=True, slots=True)
