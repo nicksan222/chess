@@ -228,3 +228,76 @@ def route_efuse_bias(ctx: RoutingContext) -> None:
     plans: list[
         tuple[str, list[Endpoint[str]], dict[Endpoint[str], pcbnew.VECTOR2I]]
     ] = []
+    for net in ("EFUSE_EN", "EFUSE_OVLO", "RUN"):
+        nodes: list[Endpoint[str]] = []
+        points: dict[Endpoint[str], pcbnew.VECTOR2I] = {}
+        for node in ctx.endpoints_by_net[net]:
+            reference = node.reference
+            if net == "EFUSE_OVLO" and reference == EFUSE:
+                continue  # Joined to R4 by fixed copper.
+            if net == "RUN" and reference == "R8":
+                continue  # Joined to R6 by fixed copper.
+            if net == "EFUSE_OVLO" and reference == OVLO_FILTER:
+                continue  # Joined to R5 by fixed copper.
+            nodes.append(node)
+            if reference == EFUSE:
+                points[node] = _at(EN_ESCAPE_END)
+            elif net == "EFUSE_OVLO" and reference == "R4":
+                points[node] = _ovlo_via(ctx.board)
+            elif net == "EFUSE_OVLO" and reference == "R5":
+                points[node] = _r5_escape(ctx)
+            elif reference == ComponentReference.POWER_ENTRY_HEADER:
+                points[node] = ctx.pads_by_endpoint[node].GetPosition()
+            else:
+                points[node] = escape_endpoint(ctx, net, node, add_via=True)
+        # Start from the escape via (B.Cu preferred); J4's plated pad, which
+        # takes either layer, is reached last.
+        nodes.sort(
+            key=lambda node: node.reference == ComponentReference.POWER_ENTRY_HEADER
+        )
+        plans.append((net, nodes, points))
+    # R8 (wetting load) sits under R6: one short F.Cu run joins their RUN pads.
+    run = [
+        next(p for p in footprint(ctx.board, ref).Pads() if p.GetNetname() == "RUN")
+        for ref in ("R6", "R8")
+    ]
+    _path(ctx, "RUN", [pad.GetPosition() for pad in run], STUB_MM)
+    # C144 (OVLO filter, S4c) sits beside R5: one short F.Cu run joins their pads.
+    ovlo = [
+        next(
+            p
+            for p in footprint(ctx.board, ref).Pads()
+            if p.GetNetname() == "EFUSE_OVLO"
+        )
+        for ref in ("R5", OVLO_FILTER)
+    ]
+    _path(ctx, "EFUSE_OVLO", [pad.GetPosition() for pad in ovlo], STUB_MM)
+    # No router via within 1.2 mm of a bias pad or escape via: a via that close
+    # breaks the hole spacing or the pad's mask dam.
+    keep: set[tuple[int, int]] = set()
+    reach = 1.2
+    for _net, nodes, points in plans:
+        spots = [
+            *points.values(),
+            *(ctx.pads_by_endpoint[n].GetPosition() for n in nodes),
+        ]
+        for spot in spots:
+            x, y = pcbnew.ToMM(spot.x), pcbnew.ToMM(spot.y)
+            span = range(-math.ceil(reach / GRID_MM), math.ceil(reach / GRID_MM) + 1)
+            keep.update(
+                (round(x / GRID_MM) + i, round(y / GRID_MM) + j)
+                for i in span
+                for j in span
+                if math.hypot(i * GRID_MM, j * GRID_MM) <= reach
+            )
+    ctx = replace(ctx, host_header_via_keepouts=ctx.host_header_via_keepouts | keep)
+    for net, nodes, points in plans:
+        route_tree(
+            ctx,
+            net,
+            nodes,
+            points,
+            allow_vias=True,
+            preferred_layer_index=1,
+            label_errors=True,
+        )
