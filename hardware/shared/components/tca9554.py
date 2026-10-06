@@ -1,4 +1,4 @@
-"""Approved tca9554 product."""
+"""Approved product: TCA9554DWR I2C GPIO expander (one per Hall bank)."""
 
 from .spec import part
 

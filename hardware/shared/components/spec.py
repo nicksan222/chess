@@ -58,6 +58,9 @@ def part(
     mpn: str,
     body_mm: tuple[float, float, float] | None = None,
     datasheet: str = "",
+    *,
+    purchase_unit: str = "each",
+    cut_length_mm: float | None = None,
 ) -> ComponentSpec:
     """Define one exact, purchasable component."""
     return ComponentSpec(
@@ -68,4 +71,6 @@ def part(
         mpn,
         body_mm,
         datasheet,
+        purchase_unit,
+        cut_length_mm,
     )
