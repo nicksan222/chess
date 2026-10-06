@@ -1,4 +1,8 @@
-"""Approved micro sd product."""
+"""Approved product: SanDisk microSD card for the Pi.
+
+Off-board: listed in the human BOM only (`output/exports.EXTRA_ASSEMBLY_PARTS`).
+No body size or datasheet is recorded.
+"""
 
 from .spec import part
 

@@ -1,4 +1,7 @@
-"""Approved pi zero 2 w product."""
+"""Approved product: Raspberry Pi Zero 2 W host (off-board, human BOM only).
+
+It plugs onto header J1; the single Linux process in `apps/firmware` runs on it.
+"""
 
 from .spec import part
 

@@ -85,3 +85,22 @@ def _alpha_wire(
         purchase_unit="100 ft spool",
         cut_length_mm=length_mm,
     )
+
+
+# 18 AWG stranded UL1007 (Alpha 3055 series); JST rates the VH contact 7 A with
+# AWG #18. Four colours so a cavity 1 <-> 4 swap is visible (reviewer-s3c M-a).
+POWER_HARNESS_WIRES = {
+    colour: _alpha_wire(
+        "POWER_HARNESS_WIRE", "3055", "18 AWG UL1007 wire", colour, POWER_WIRE_LENGTH_MM
+    )
+    for colour in ("red", "black", "orange", "white")
+}
+# 28 AWG 7/36 PTFE (Alpha 2842/7, MIL-W-16878 type ET), OD 0.027 in (0.69 mm):
+# inside the SSH contact's 0.4-0.8 mm insulation range (UL1007 28 AWG, 1.19 mm,
+# is not).
+OLED_HARNESS_WIRES = {
+    colour: _alpha_wire(
+        "OLED_HARNESS_WIRE", "2842/7", "28 AWG PTFE wire", colour, OLED_WIRE_LENGTH_MM
+    )
+    for colour in ("black", "red", "yellow", "blue")
+}

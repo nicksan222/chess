@@ -1,4 +1,8 @@
-"""Approved oled module product."""
+"""Approved product: AZ-Delivery 0.96 in SSD1306 I2C OLED module.
+
+Off-board: connected through header J2 and listed in the human BOM only. The
+module's pin order is not asserted: no module datasheet was obtained.
+"""
 
 from .spec import part
 
