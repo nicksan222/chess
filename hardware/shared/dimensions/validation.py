@@ -1,4 +1,13 @@
-"""Cross-part physical validation and dimension summaries."""
+"""Cross-part physical validation and dimension summaries.
+
+Role: checks that the separately defined dimensions fit one another: the stack sums to the
+case height, the board fits its pocket with ledge bearing on every side, screws land on
+the rim, button stems protrude within limits, panel parts and the Pi stay inside their bay
+and away from bosses. `validate()` runs on import of `shared.dimensions`; the
+`validate_*` helpers are focused checks it calls. A failure is a real dimension error, so
+fix the source values rather than weaken a check. `describe()` gives the one-line summary
+printed by the shared and CAD check recipes.
+"""
 
 from math import isclose
 
@@ -24,35 +33,82 @@ from .board import (
     LED_PACKAGE_TOLERANCE_MM,
     LED_POSITION_MM,
     PANEL_STRIP_DEPTH_MM,
+    PCB_BOTTOM_EDGE_KEEPOUT_MM,
+    PCB_CENTER_OFFSET_Y_MM,
     PCB_SIZE_MM,
     PCB_THICKNESS_MM,
     PLAYING_SPAN_MM,
     SQUARE_SIZE_MM,
 )
 from .case import (
+    BOTTOM_SIDE_KEEPOUTS_MM,
+    CASE_CAVITY_SIZE_MM,
+    CASE_CENTER_OFFSET_Y_MM,
     CASE_DEPTH_MM,
     CASE_FLOOR_MM,
     CASE_FRAME_WIDTH_MM,
     CASE_HEIGHT_MM,
+    CASE_JACK_APERTURE_CENTER_X_MM,
+    CASE_JACK_APERTURE_DIAMETER_MM,
+    CASE_JACK_BUSHING_DIAMETER_MM,
+    CASE_JACK_FLANGE_DIAMETER_MM,
+    CASE_JACK_MAX_PANEL_MM,
+    CASE_JACK_PANEL_THICKNESS_MM,
+    CASE_JACK_POCKET_WIDTH_MM,
+    CASE_PCB_LEDGE_OVERLAP_MM,
     CASE_PLATE_LEDGE_MM,
+    CASE_PLATE_REBATE_MM,
+    CASE_REAR_APERTURE_CENTER_Z_MM,
+    CASE_ROCKER_APERTURE_CENTER_X_MM,
+    CASE_ROCKER_APERTURE_MM,
+    CASE_ROCKER_CUTOUT_MM,
+    CASE_ROCKER_LATCH_MARGIN_MM,
+    CASE_ROCKER_PANEL_RANGE_MM,
+    CASE_ROCKER_PANEL_THICKNESS_MM,
+    CASE_ROCKER_POCKET_ROOF_MM,
+    CASE_ROCKER_POCKET_WIDTH_MM,
+    CASE_ROCKER_POCKET_Z_MM,
+    CASE_SD_PANEL_THICKNESS_MM,
+    CASE_SD_SLOT_CENTER_Y_MM,
+    CASE_SD_SLOT_CENTER_Z_MM,
+    CASE_SD_SLOT_MM,
     CASE_WALL_MM,
+    CASE_WALL_POCKET_Z_MM,
     CASE_WIDTH_MM,
+    PCB_POCKET_CLEARANCE_MM,
+    PCB_POCKET_SIZE_MM,
     PCB_SUPPORT_BOSS_DIAMETER_MM,
     PCB_SUPPORT_PILOT_DEPTH_MM,
     PCB_SUPPORT_PILOT_DIAMETER_MM,
     PCB_SUPPORT_POSITIONS_MM,
     PCB_TO_PLATE_GAP_MM,
+    PCB_TOP_Z_MM,
+    PCB_UNDERSIDE_Z_MM,
     PI_BAY_HEIGHT_MM,
     PI_BOARD_SIZE_MM,
+    PI_BOARD_TO_BOARD_MM,
+    PI_CENTER_MM,
     PI_CLEARANCE_MM,
-    PI_HEADER_HEIGHT_MM,
+    PI_HEADER_PIN_COUNT,
+    PI_ROTATION_DEG,
+    PI_SD_SOCKET_ON_PI_MM,
+    pi_header_pin_xy,
+    pi_on_board_xy,
 )
 from .panel import (
+    PANEL_BUTTON_ACTUATOR_DIAMETER_MM,
+    PANEL_BUTTON_BODY_MM,
     PANEL_BUTTON_COUNT,
+    PANEL_BUTTON_HEIGHT_MM,
     PANEL_BUTTON_HOLE_DIAMETER_MM,
+    PANEL_BUTTON_MAX_PROTRUSION_MM,
+    PANEL_BUTTON_MIN_PROTRUSION_MM,
+    PANEL_BUTTON_RELIEF_CLEARANCE_MM,
+    PANEL_BUTTON_RELIEF_DEPTH_MM,
     PANEL_OLED_CENTER_MM,
     PANEL_OLED_MODULE_MM,
     PANEL_OLED_RECESS_CLEARANCE_XY_MM,
+    PANEL_OLED_RECESS_DEPTH_MM,
     PANEL_OLED_RECESS_MM,
     PANEL_OLED_WINDOW_MM,
 )
@@ -67,6 +123,7 @@ from .printing import (
     meets,
 )
 from .tile_plate import (
+    TILE_PLATE_CENTER_Y_MM,
     TILE_PLATE_CLEARANCE_MM,
     TILE_PLATE_DARK_SQUARE_DEPTH_MM,
     TILE_PLATE_DIFFUSER_SKIN_MM,
@@ -77,7 +134,7 @@ from .tile_plate import (
     TILE_PLATE_SCREW_HEAD_DEPTH_MM,
     TILE_PLATE_SCREW_HEAD_DIAMETER_MM,
     TILE_PLATE_SCREW_POSITIONS_MM,
-    TILE_PLATE_SPAN_MM,
+    TILE_PLATE_SIZE_MM,
     TILE_PLATE_THICKNESS_MM,
     TILE_PLATE_UNDERSIDE_POCKET_DEPTH_MM,
     TILE_PLATE_UNDERSIDE_POCKET_SPAN_MM,
@@ -120,7 +177,7 @@ def validate() -> None:
         + CASE_FLOOR_MM,
     ):
         raise ValueError("Case height must equal the sum of the internal stack")
-    if PI_BAY_HEIGHT_MM < PI_HEADER_HEIGHT_MM + PI_BOARD_SIZE_MM[2] + PI_CLEARANCE_MM:
+    if PI_BAY_HEIGHT_MM < PI_BOARD_TO_BOARD_MM + PI_BOARD_SIZE_MM[2] + PI_CLEARANCE_MM:
         raise ValueError(
             "Cavity below the board is too shallow for the Pi on its header"
         )
