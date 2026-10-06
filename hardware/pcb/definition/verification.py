@@ -220,3 +220,10 @@ ASSUMPTIONS = MappingProxyType(
     # Case/CAD dimensions still unread or unmeasured (mechanical's single list).
     | {f"CAD {name}": why for name, why in UNVERIFIED_DIMENSIONS.items()}
 )
+
+
+def verification_blockers() -> list[str]:
+    """Every open item, formatted for a refusal message."""
+    return [f"unverified land {key}: {why}" for key, why in UNVERIFIED.items()] + [
+        f"assumption {key}: {why}" for key, why in ASSUMPTIONS.items()
+    ]

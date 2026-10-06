@@ -1,4 +1,15 @@
-"""Build a reviewer-focused pull-request report from generated PCB artifacts."""
+"""Build a reviewer-focused pull-request report from generated PCB artifacts.
+
+Role: turns two sets of generated files (the fresh output of `just ... review` and
+the same files at a Git ref, `main` by default) into one Markdown comment that says
+what changed in *design* terms: components, nets, placements, design rules, copper
+geometry and ERC/DRC counts. Reviewers read that instead of diffing KiCad files.
+
+Inputs: `netlist.json`, `layout.json`, `manifest.json`, `erc.json`, `drc.json` and
+`chess-board.kicad_pcb` under `--current`, and, from `git show <ref>:...`, `netlist.json`, `layout.json` and the board. Output: the Markdown file (`--output`). The HTML comment
+markers let CI find and update its single comment, and tell it whether the design
+actually changed. Read-only with respect to the repository and generated files.
+"""
 
 from __future__ import annotations
 
@@ -15,9 +26,16 @@ from typing import Protocol, cast
 
 from shared.json_values import parse_json
 
+# Where generated artifacts live, relative to the repo root; also the path used to
+# read the base ref's copies through `git show`.
 GENERATED = Path("hardware/pcb/generated")
+# Hidden marker identifying this report's comment so CI updates it instead of
+# posting a new one each run.
 MARKER = "<!-- pcb-review-report -->"
+# Hidden machine-readable flag: CI keeps the comment only when this says true.
 CHANGE_MARKER = "<!-- pcb-design-changed: {changed} -->"
+# Most detail bullets shown per section; the rest are summarised as "…and N more"
+# so a big re-route cannot make the comment unreadably long.
 MAX_DETAILS = 24
 
 
@@ -31,7 +49,11 @@ class CopperPoint:
 
 @dataclass(frozen=True, order=True, slots=True)
 class CopperTrack:
-    """Stable identity of one routed copper segment."""
+    """Stable identity of one routed copper segment.
+
+    Compared by value as a set member, so identical geometry on the same net and
+    layer is "unchanged" regardless of the order KiCad stores it in.
+    """
 
     net_name: str
     layer: str
@@ -72,7 +94,11 @@ class CopperZone:
 
 @dataclass(frozen=True, slots=True)
 class BoardSnapshot:
-    """Stable copper facts extracted from a native KiCad board."""
+    """Stable copper facts extracted from a native KiCad board.
+
+    Sets of immutable items allow cheap added/removed comparison between boards.
+    `board_sha256` detects any other change to the file that those facts miss.
+    """
 
     tracks: frozenset[CopperTrack]
     vias: frozenset[CopperVia]
@@ -81,6 +107,7 @@ class BoardSnapshot:
 
 
 def _json_object(value: object, label: str) -> dict[str, object]:
+    """Narrow decoded JSON to a string-keyed object; `label` names it in the error."""
     if not isinstance(value, dict):
         raise ValueError(f"{label} must be a JSON object")
     mapping = cast(dict[object, object], value)
@@ -100,6 +127,11 @@ def _load_json(path: Path) -> dict[str, object]:
 
 
 def _git_file(ref: str, path: Path) -> bytes | None:
+    """Bytes of `path` at Git `ref`, or None if it does not exist there.
+
+    None is how a brand-new artifact (not present on the base) is represented, and
+    is treated as "everything is new" rather than as an error.
+    """
     result = subprocess.run(
         ["git", "show", f"{ref}:{path.as_posix()}"],
         check=False,
@@ -109,6 +141,7 @@ def _git_file(ref: str, path: Path) -> bytes | None:
 
 
 def _base_json(ref: str, name: str) -> dict[str, object] | None:
+    """A generated JSON file as committed at `ref`, or None if absent."""
     contents = _git_file(ref, GENERATED / name)
     if contents is None:
         return None
@@ -116,6 +149,7 @@ def _base_json(ref: str, name: str) -> dict[str, object] | None:
 
 
 def _project(netlist: Mapping[str, object]) -> dict[str, object]:
+    """Unwrap `netlist.json` to its board projection (`projects.board`)."""
     projects = _json_object(netlist.get("projects"), "netlist projects")
     return _json_object(projects.get("board"), "netlist board")
 
@@ -125,6 +159,7 @@ def _mapping(value: object, label: str) -> dict[str, object]:
 
 
 def _endpoint(value: object) -> str:
+    """Format a netlist `[reference, pin]` pair as "REF.PIN"."""
     if not isinstance(value, list):
         raise ValueError("net endpoint must be a two-item list")
     parts = cast(list[object], value)
@@ -133,6 +168,9 @@ def _endpoint(value: object) -> str:
     return f"{parts[0]}.{parts[1]}"
 
 
+# Minimal structural types for the parts of `pcbnew` used here. `pcbnew` is
+# imported lazily (it needs KiCad installed), so these let the helpers be
+# type-checked without it.
 class PcbnewApi(Protocol):
     def ToMM(self, value: int) -> float: ...
 
@@ -143,10 +181,12 @@ class NativePoint(Protocol):
 
 
 def _millimetres(pcbnew: PcbnewApi, value: int) -> float:
+    """KiCad internal units to mm, rounded to 3 decimals (1 um) to hide float noise."""
     return round(pcbnew.ToMM(value), 3)
 
 
 def _point(pcbnew: PcbnewApi, value: NativePoint) -> CopperPoint:
+    """Convert a KiCad point to a rounded mm `CopperPoint`."""
     return CopperPoint(
         x_mm=_millimetres(pcbnew, value.x),
         y_mm=_millimetres(pcbnew, value.y),
@@ -154,7 +194,12 @@ def _point(pcbnew: PcbnewApi, value: NativePoint) -> CopperPoint:
 
 
 def board_snapshot(path: Path) -> BoardSnapshot:
-    """Load track, via, and zone geometry using KiCad's native Python API."""
+    """Load track, via, and zone geometry using KiCad's native Python API.
+
+    Coordinates are KiCad page coordinates (not the shared centre-origin ones);
+    that is fine because both sides of the comparison use the same convention.
+    Track endpoints are sorted so a segment drawn in either direction is equal.
+    """
     try:
         import pcbnew
     except ImportError as error:
@@ -163,6 +208,7 @@ def board_snapshot(path: Path) -> BoardSnapshot:
         ) from error
 
     board = pcbnew.LoadBoard(str(path))
+    # KiCad stores vias and track segments in the same list; split them by type.
     tracks: set[CopperTrack] = set()
     vias: set[CopperVia] = set()
     for item in board.GetTracks():
@@ -193,6 +239,7 @@ def board_snapshot(path: Path) -> BoardSnapshot:
             )
         )
 
+    # Zones are summarised by net, layers and bounding box (not their fill polygons).
     zones: set[CopperZone] = set()
     for zone in board.Zones():
         bounds = zone.GetBoundingBox()
@@ -221,6 +268,11 @@ def board_snapshot(path: Path) -> BoardSnapshot:
 
 
 def _base_board(ref: str) -> BoardSnapshot | None:
+    """Snapshot of the board committed at `ref`, or None if there is none.
+
+    KiCad can only load a board from a file, so the committed bytes are written to
+    a temporary directory first.
+    """
     contents = _git_file(ref, GENERATED / "chess-board.kicad_pcb")
     if contents is None:
         return None
@@ -231,6 +283,7 @@ def _base_board(ref: str) -> BoardSnapshot | None:
 
 
 def _git_text(*arguments: str) -> str:
+    """Run `git <arguments>` and return stripped stdout; raises on failure."""
     result = subprocess.run(
         ["git", *arguments],
         check=True,
@@ -241,6 +294,10 @@ def _git_text(*arguments: str) -> str:
 
 
 def _repository_from_origin() -> str | None:
+    """Guess "owner/name" from the `origin` URL (https or scp-style ssh), else None.
+
+    Only a fallback for when `--repository` is not given; used to build links.
+    """
     remote = _git_text("remote", "get-url", "origin").removesuffix(".git")
     if "://" in remote:
         path = remote.split("://", maxsplit=1)[1].split("/", maxsplit=1)
@@ -251,6 +308,10 @@ def _repository_from_origin() -> str | None:
 
 
 def _run_url(repository: str | None) -> str | None:
+    """Link to the current GitHub Actions run (or the Actions page), if known.
+
+    Uses the standard `GITHUB_SERVER_URL` / `GITHUB_RUN_ID` variables set by CI.
+    """
     server = os.environ.get("GITHUB_SERVER_URL", "https://github.com")
     run_id = os.environ.get("GITHUB_RUN_ID")
     if repository is None:
@@ -264,6 +325,7 @@ def _signed(value: int) -> str:
 
 
 def _limited(items: list[str]) -> list[str]:
+    """Cap a detail list at `MAX_DETAILS`, noting how many were omitted."""
     visible = items[:MAX_DETAILS]
     if len(items) > MAX_DETAILS:
         visible.append(f"…and {len(items) - MAX_DETAILS} more")
@@ -271,6 +333,7 @@ def _limited(items: list[str]) -> list[str]:
 
 
 def _details(summary: str, items: list[str]) -> list[str]:
+    """A collapsible `<details>` block of bullets; nothing at all if there are none."""
     if not items:
         return []
     return [
@@ -285,6 +348,7 @@ def _details(summary: str, items: list[str]) -> list[str]:
 
 
 def _component_label(reference: str, component: object) -> str:
+    """One-line description: reference, purpose, and (value, package) if known."""
     fields = _mapping(component, f"component {reference}")
     description = str(fields.get("description", "component"))
     value = str(fields.get("value", ""))
@@ -296,6 +360,12 @@ def _component_label(reference: str, component: object) -> str:
 def _component_changes(
     base: Mapping[str, object], current: Mapping[str, object]
 ) -> tuple[str, list[str]]:
+    """Added/removed/modified components between two netlist projections.
+
+    Returns (summary line for the table, detail bullets). A modified component lists
+    only the names of the fields that differ. The other `_*_changes` helpers below
+    follow the same (summary, details) shape.
+    """
     before = _mapping(base.get("components", {}), "base components")
     after = _mapping(current.get("components", {}), "current components")
     added = sorted(set(after) - set(before))
@@ -324,6 +394,7 @@ def _component_changes(
 def _net_changes(
     base: Mapping[str, object], current: Mapping[str, object]
 ) -> tuple[str, list[str]]:
+    """Added, removed and rewired nets; a rewired net shows +/- pin differences."""
     before = _mapping(base.get("nets", {}), "base nets")
     after = _mapping(current.get("nets", {}), "current nets")
     added = sorted(set(after) - set(before))
@@ -359,6 +430,11 @@ def _net_changes(
 def _placement_changes(
     base_layout: Mapping[str, object], current_layout: Mapping[str, object]
 ) -> tuple[str, list[str]]:
+    """Footprints placed, removed or moved, from `layout.json` placements.
+
+    Each placement is [x_mm, y_mm, rotation_degrees] in shared centre-origin Y-up
+    coordinates, shown as-is for before/after comparison.
+    """
     before = _mapping(base_layout.get("placements", {}), "base placements")
     after = _mapping(current_layout.get("placements", {}), "current placements")
     changed = sorted(
@@ -378,6 +454,7 @@ def _placement_changes(
 
 
 def _flatten(value: object, prefix: str = "") -> dict[str, object]:
+    """Flatten nested dicts to dotted keys ("rules.min_clearance") for easy diffing."""
     if not isinstance(value, dict):
         return {prefix: value}
     mapping = cast(dict[object, object], value)
@@ -391,6 +468,7 @@ def _flatten(value: object, prefix: str = "") -> dict[str, object]:
 def _rule_changes(
     base_layout: Mapping[str, object], current_layout: Mapping[str, object]
 ) -> tuple[str, list[str]]:
+    """Changed design-rule settings (from the project's design settings)."""
     before = _flatten(base_layout.get("rules", {}))
     after = _flatten(current_layout.get("rules", {}))
     changed = sorted(
@@ -406,6 +484,11 @@ def _rule_changes(
 def _copper_changes(
     base: BoardSnapshot | None, current: BoardSnapshot
 ) -> tuple[str, list[str]]:
+    """Compare routed copper (tracks, vias, zones) as added/removed set members.
+
+    With no base board only totals are reported. Tracks and vias are grouped by net
+    (and layer) so a large re-route reads as a few lines, not thousands.
+    """
     if base is None:
         return (
             (
