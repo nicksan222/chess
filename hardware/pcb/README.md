@@ -12,6 +12,7 @@ definition/
   parts/                        Approved native FOOTPRINT/PAD templates
   routing/                      Native routing policies and grid pathfinding
   output/                       Schematic, BOM/project, symbols, review markings
+  verification.py               Open assumptions that block release (see below)
   evidence/                     Human prototype measurements (not generated)
 tests/                          Focused mechanics/build checks and SPICE scenarios
 generated/                      Native project, expanded netlist, BOM, reports/previews

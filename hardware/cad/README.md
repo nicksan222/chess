@@ -3,9 +3,10 @@
 Blender is the source of truth for printable parts. Every project is generated
 from Python; derived manufacturing files are not source models.
 
-Revision B is **two printed parts**: a case that holds one PCB, the Raspberry Pi
-and the control panel, and a single tile plate that lays the checkerboard over
-the whole playing area. Revision A needed 129 prints to cover a board — 64 tile
+Revision B is **two printed parts**: an open-tub case that holds one PCB and
+the Raspberry Pi, and a single tile plate that covers the whole board, laying
+the checkerboard over the playing area and forming the control bezel over the
+strip. Revision A needed 129 prints to cover a board — 64 tile
 lids, 64 trays and a tray — and all of that is gone.
 
 Both parts are larger than a desktop printer bed, so they are quoted from an FDM
@@ -50,7 +51,7 @@ per view, named `<project>.png` or `<project>-<view>.png`.
 
 `../shared/dimensions/` owns measurements shared across projects, with one
 module per physical object. It derives the playing span from square size and grid count, derives
-the plate span from fit clearance, and validates the vertical stack, the control
+the plate size from the board outline, and validates the vertical stack, the control
 panel layout, the board support positions and the plate fixings. Project READMEs
 describe intent rather than duplicating those values. Dimension tests run the
 same validation without Blender; the package's `generate` recipe then generates

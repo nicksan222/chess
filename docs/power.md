@@ -143,10 +143,40 @@ limit 0.3 V above it) and within 25 mV of ground while the buffer is off.
 
 ## Never power the Pi from its own USB while it is fitted
 
-This is deliberately a documented constraint rather than a circuit. An ideal-diode
-input selector would cost more complexity than the mistake is worth on a
-prototype, and a plain series Schottky would drop the Pi's supply close to its
-brown-out threshold.
+Power the board from the panel jack only, and **never power the Pi through its own
+micro-USB port while it is fitted to the board.** The Pi's 5 V is connected to the
+board's `+5V` rail through the header, so USB power would feed all 64 LEDs and the rest
+of the rail with no fuse or protection in the path, and would put two supplies in
+opposition when the jack is also connected.
+
+This is deliberately a documented constraint rather than a circuit. A TI LM66100
+ideal diode between `+5V` and the Pi header would stop the back-feed but costs about
+30-45 mV at the header, about twice the 15 mV margin above the 4.5 V floor. In the
+closed case the Pi's micro-USB edge has no aperture (the case has only the SD slot,
+jack and rocker), so Pi USB power is only possible with the case open, as on the bench. With the eFuse, reverse current to the jack side is also blocked.
+
+## Bench items
+
+The ordered bench checklist that covers these is [bring-up](bring-up.md).
+
+Related signal-integrity items (I²C rise time, LED line edges) are in
+[hardware](hardware.md#buses-and-led-lines-s5).
+
+No automated check proves any of these; they stay in `ASSUMPTIONS`
+(`hardware/pcb/definition/verification.py`) until measured:
+
+- enabling `LED_EN` into an uninitialised (possibly lit) chain, and the blank-frame timing (10 ms blanking, 2-3 ms buffer delay);
+- the real supply: actual output voltage and tolerance, plug-in overshoot and hiccup;
+  measure it against the board's OVLO trip and restart points with the real adapter and
+  a lab supply;
+- the Pi's behaviour at the worst-corner rail (`vcgencmd get_throttled`);
+- plug-in ring and a running over-voltage step reaching the LEDs;
+- the eFuse's trip and retry with a lit chain or full white (simulated; bench step 5.5 and an override test), and its heating while limiting;
+- U74 assembly (fine-pitch QFN, X-ray) and selective soldering of the bottom
+  through-hole joints at the fab;
+- the rocker switching about 5 mA of wetting current reliably, contact resistances,
+  the jack's 2.0 mm centre pin mating with the GST12A05-P1J plug, and harness crimps and
+  cavity order.
 
 ## Watchdog
 
