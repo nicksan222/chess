@@ -121,3 +121,66 @@ HOST_PULLED_PINS = frozenset({"3", "5"})
 # pin 37, a typed output in pins.rs): they count as drivers.
 HOST_PUSH_PULL_PINS = frozenset({"19", "23", "37"})
 # Parts with no logic pins (passives, switches, test points, off-board connectors).
+PASSIVE_KEYS = frozenset(
+    {
+        "BUTTON",
+        "CAP_100N",
+        "CAP_10U",
+        "CAP_560U",
+        "FUSE_2A",
+        "OLED_HEADER",
+        "POWER_HEADER",
+        "RES_1K",
+        "RES_10K",
+        "RES_56",
+        "RES_100K",
+        "TEST_POINT",
+        "TVS_12V0",
+        "RES_1K65",
+        "RES_261K",
+        "RES_604K_PRECISION",
+        "RES_169K_PRECISION",
+        "CAP_10N",
+        "CAP_1N",
+        "CAP_1U",
+    }
+)
+
+Endpoint = tuple[str, str]
+# Series resistors (S5 R9-R12 terminations; S6 R13 LED_EN to Q2's gate, R16 LED_EN_N
+# to Q1's gate): the net past one is driven by its source.
+SERIES_KEYS = frozenset({"RES_56", "RES_1K", "RES_100K"})
+
+
+def electrical_findings(
+    nets: Mapping[str, Sequence[Endpoint]],
+    part_keys: Mapping[str, str],
+    assumptions: Collection[str] = ASSUMPTIONS,
+) -> list[str]:
+    """Floating inputs, undriven open-drain nets, contention, misplaced rail pins."""
+    findings: list[str] = []
+    net_of = {end: name for name, ends in nets.items() for end in ends}
+    driven = {
+        name
+        for name, ends in nets.items()
+        for reference, pin in ends
+        if PIN_TYPES.get(part_keys.get(reference, ""), {}).get(pin) in PUSH_PULL
+        or (part_keys.get(reference) == "PI_ZERO_HEADER" and pin in HOST_PUSH_PULL_PINS)
+    }
+    # A resistor from the net to a rail (S6 R15 on LED_EN_N) is a pull-up; an
+    # open-drain net with one is driven both ways.
+    resistor_pulled = {
+        name
+        for name, ends in nets.items()
+        for reference, pin in ends
+        if part_keys.get(reference, "").startswith("RES_")
+        and net_of.get((reference, "2" if pin == "1" else "1")) in RAILS
+    }
+    driven |= {
+        name
+        for name in resistor_pulled
+        if any(
+            PIN_TYPES.get(part_keys.get(reference, ""), {}).get(pin) == OPEN_DRAIN
+            for reference, pin in nets[name]
+        )
+    }
