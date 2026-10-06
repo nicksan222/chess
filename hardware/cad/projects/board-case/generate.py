@@ -109,39 +109,47 @@ def _hollow_cavity(case: bpy.types.Object, construction: bpy.types.Collection) -
     left between the two carries the board edge. The pocket is the board
     outline plus clearance and runs up to the rim the plate rests on.
     """
-    cavity_height = (
-        shared.CASE_HEIGHT_MM - shared.TILE_PLATE_THICKNESS_MM - shared.CASE_FLOOR_MM
-    )
-    cavity = modeling.rounded_box(
-        "Cutter_Case_Cavity",
+    # The rim the plate rests on is one plate thickness below the top of the case.
+    rim_z = shared.CASE_HEIGHT_MM - shared.TILE_PLATE_THICKNESS_MM
+    # The cavity overshoots into the pocket so the two never share a face.
+    cavity_top = shared.PCB_UNDERSIDE_Z_MM + shared.PCB_THICKNESS_MM / 2.0
+    pocket_top = rim_z + shared.BOOLEAN_THROUGH_OVERLAP_MM
+    for name, size, bottom, top in (
         (
-            shared.PLAYING_SPAN_MM - 2.0 * shared.CASE_PLATE_LEDGE_MM,
-            shared.PCB_SIZE_MM[1] - 2.0 * shared.CASE_PLATE_LEDGE_MM,
-            cavity_height,
+            "Cutter_Case_Cavity",
+            shared.CASE_CAVITY_SIZE_MM,
+            shared.CASE_FLOOR_MM,
+            cavity_top,
         ),
         (
-            0.0,
-            shared.CASE_CENTER_OFFSET_Y_MM,
-            shared.CASE_FLOOR_MM + cavity_height / 2.0,
+            "Cutter_PCB_Pocket",
+            shared.PCB_POCKET_SIZE_MM,
+            shared.PCB_UNDERSIDE_Z_MM,
+            pocket_top,
         ),
-        1.5,
-        construction,
-    )
-    modeling.boolean_apply(case, cavity, "DIFFERENCE")
-    bpy.data.objects.remove(cavity, do_unlink=True)
+    ):
+        cutter = modeling.rounded_box(
+            name,
+            (size[0], size[1], top - bottom),
+            (0.0, shared.CASE_CENTER_OFFSET_Y_MM, (bottom + top) / 2.0),
+            1.0,
+            construction,
+        )
+        modeling.boolean_apply(case, cutter, "DIFFERENCE")
+        bpy.data.objects.remove(cutter, do_unlink=True)
 
 
 def _cut_plate_rebate(
     case: bpy.types.Object, construction: bpy.types.Collection
 ) -> None:
-    """Open the top over the playing area so the plate sits flush."""
+    """Open the top over the whole board so the plate sits flush on the rim."""
     depth = shared.TILE_PLATE_REBATE_DEPTH_MM + shared.BOOLEAN_THROUGH_OVERLAP_MM
     rebate = modeling.rounded_box(
         "Cutter_Plate_Rebate",
-        (shared.PLAYING_SPAN_MM, shared.PLAYING_SPAN_MM, depth),
+        (*shared.CASE_PLATE_REBATE_MM, depth),
         (
             0.0,
-            0.0,
+            shared.CASE_CENTER_OFFSET_Y_MM,
             shared.CASE_HEIGHT_MM
             - shared.TILE_PLATE_REBATE_DEPTH_MM
             + depth / 2.0
@@ -154,43 +162,6 @@ def _cut_plate_rebate(
     bpy.data.objects.remove(rebate, do_unlink=True)
 
 
-def _cut_panel_apertures(
-    case: bpy.types.Object, construction: bpy.types.Collection
-) -> None:
-    """Button holes and the display window in the face-up bezel."""
-    skin = shared.TILE_PLATE_THICKNESS_MM
-    through_height = skin + 2.0 * shared.BOOLEAN_THROUGH_OVERLAP_MM
-    through_z = shared.CASE_HEIGHT_MM - skin / 2.0
-    modeling.cut_batch(
-        case,
-        [
-            modeling.cylinder(
-                f"Cutter_Button_{index:02d}",
-                shared.PANEL_BUTTON_HOLE_DIAMETER_MM,
-                through_height,
-                (button.x_mm, button.y_mm, through_z),
-                construction,
-                vertices=32,
-            )
-            for index, button in enumerate(shared.PANEL_BUTTONS)
-        ],
-        "Cutter_All_Button_Holes",
-    )
-    # The window sits inside the recess that holds the module, so the two
-    # overlap and cannot share a batch.
-    modeling.cut_batch(
-        case,
-        [
-            modeling.rounded_box(
-                "Cutter_Display_Window",
-                (*shared.PANEL_OLED_WINDOW_MM, through_height),
-                (*shared.PANEL_OLED_CENTER_MM, through_z),
-                0.6,
-                construction,
-            )
-        ],
-        "Cutter_Display_Window_Batch",
-    )
     recess_depth = shared.PANEL_OLED_RECESS_DEPTH_MM
     modeling.cut_batch(
         case,
