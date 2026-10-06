@@ -290,3 +290,100 @@ class EfuseBoard:
             amps.low if slow else amps.high,
             volts.high if slow else volts.low,
         )
+
+    def _divider(self, trip: TripCorner | None) -> tuple[float, float, float]:
+        """OVLO top, bottom and pin leakage into the node for a trip corner.
+
+        `low`: everything that makes OVLO trip early (top -tol, bottom +tol, leakage
+        pushed into the pin); `high`: the reverse; None: nominal, no leakage.
+        """
+        if trip is None:
+            return self.ohms("ovlo_top"), self.ohms("ovlo_bottom"), 0.0
+        sign = 1 if trip == "high" else -1
+        leak = datasheets.EFUSE_OVLO_LEAKAGE_AMPS * -sign
+        return self.ohms("ovlo_top", sign), self.ohms("ovlo_bottom", -sign), leak
+
+    def ovlo_level(self, threshold: float, *, high: bool) -> float:
+        """Input voltage that puts `threshold` on the OVLO pin at a divider corner."""
+        top, bottom, leak = self._divider("high" if high else "low")
+        return threshold * (1 + top / bottom) - leak * top
+
+    def ovlo_trip(self, *, high: bool) -> float:
+        """Input voltage where OVLO trips at the latest (high) / earliest corner."""
+        return self.ovlo_level(pick_threshold(high), high=high)
+
+    def ovlo_release(self, *, high: bool) -> float:
+        """Input voltage below which a tripped OVLO lets the output restart."""
+        span: Span = datasheets.EFUSE_THRESHOLD_FALLING_VOLTS
+        return self.ovlo_level(span.high if high else span.low, high=high)
+
+    def front_end(
+        self,
+        title: str,
+        corner: Corner,
+        supply: str,
+        *,
+        path_ohms: float,
+        run_on: bool,
+        static: bool = False,
+        trip: TripCorner | None = None,
+        ovlo_filter: bool = True,
+        path_henries: float = 0.0,
+        timer: TimerCorner = "slow",
+    ) -> SpiceCircuit:
+        """PSU -> path -> DC_FUSED (C141, TVS, dividers) -> U74 -> +5V node `out`.
+
+        `trip` sets the OVLO divider tolerances and pin leakage (`_divider`);
+        `ovlo_filter` keeps the board's OVLO capacitor (largest at a high trip
+        corner, smallest at a low one); `path_henries` adds the supply cord's
+        inductance in series with the path resistance; `timer` picks the ITIMER
+        blanking corner (`EfuseBoard.timer`).
+        """
+        top, bottom, leak = self._divider(trip)
+        farads = self.ovlo_farads(1 if trip == "high" else -1 if trip else 0)
+        circuit = SpiceCircuit(title)
+        circuit.rows.extend(
+            efuse_rows("EFUSE", corner, static=static, timer=self.timer(timer))
+        )
+        if static:
+            # The static form is only valid under ILIM (see `_static_rows`).
+            circuit.controls.append("let result_static_input = abs(i(vpsu))")
+            circuit.expect("static_input", 0.0, datasheets.EFUSE_ILIM_AMPS_AT_1K65.low)
+        circuit.rows.extend(tvs_rows(datasheets.TVS_BREAKDOWN_VOLTS.low))
+        path = (
+            (f"RPATH psu cord {max(path_ohms, 1e-6)}", f"LPATH cord in {path_henries}")
+            if path_henries
+            else (f"RPATH psu in {max(path_ohms, 1e-6)}",)
+        )
+        circuit.rows.extend(
+            (
+                PIN_CLAMP_MODEL,
+                f"VPSU psu 0 {supply}",
+                *path,
+                "CIN in 0 1u",
+                "XTVS in 0 TVS",
+                f"RTOP in ovlo {top}",
+                f"RBOT ovlo 0 {bottom}",
+                *((f"IOVLK 0 ovlo {leak}",) if leak else ()),
+                *((f"COVLO ovlo 0 {farads}",) if ovlo_filter and farads else ()),
+                f"RSW in run {'1m' if run_on else '1T'}",
+                f"RWET run 0 {self.ohms('wetting')}",
+                f"RENT run en {self.ohms('enable_top')}",
+                f"RENB en 0 {self.ohms('enable_bottom')}",
+                "DOVLO 0 ovlo PINCLAMP",
+                "DEN 0 en PINCLAMP",
+                "XU74 in out en ovlo 0 EFUSE",
+            )
+        )
+        return circuit
+
+
+def pick_threshold(high: bool) -> float:
+    """OVLO rising-threshold corner: the datasheet span's high end (`high`) or low end."""
+    span: Span = datasheets.EFUSE_THRESHOLD_RISING_VOLTS
+    return span.high if high else span.low
+
+
+def slew(amps: float) -> float:
+    """Output slew (V/s) for a dVdt charging current, from the datasheet fit."""
+    return DVDT_GAIN * amps / DVDT_FARADS
