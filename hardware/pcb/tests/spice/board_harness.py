@@ -656,100 +656,22 @@ class BoardHarness:
         lines.append(".end")
         return "\n".join(lines) + "\n"
 
-    def _power_startup(self) -> str:
-        dc_input, dc_fused, five_volts = self._power_path_nets()
-        input_node = _node(dc_input)
-        fused_node = _node(dc_fused)
-        rail_node = _node(five_volts)
-        capacitors: list[tuple[str, str]] = []
-        five_volt_capacitor_roles = {
-            "LED rail bulk capacitor",
-            "Rail decoupling capacitor",
-            "Buffer decoupling capacitor",
-            "Local LED decoupling capacitor",
-        }
-        for component in self.components.values():
-            if component.GetFieldText("Purpose") not in five_volt_capacitor_roles:
-                continue
-            self._required_net(
-                component.GetReference(),
-                CapacitorPin.SUPPLY_OR_ELECTRODE_A,
-                "+5V",
-            )
-            self._required_net(
-                component.GetReference(),
-                CapacitorPin.RETURN_OR_ELECTRODE_B,
-                "GND",
-            )
-            value = (
-                component.GetFieldText("NominalValue")
-                .split()[0]
-                .replace("uF", "u")
-                .replace("nF", "n")
-            )
-            capacitors.append((component.GetReference(), value))
-        lines = [
-            "Generated chess-board fitted-capacitor startup",
-            (
-                f"* EXPECT result_5v_at_1ms {BOARD_POWER.healthy_rail.minimum} "
-                f"{BOARD_POWER.healthy_rail.maximum}"
-            ),
-            f"VINPUT {input_node} 0 PULSE(0 {BOARD_POWER.supply_volts} 0 1u 1u 10 20)",
-            f"RFUSE {input_node} {fused_node} {BOARD_POWER.path_ohms / 2}",
-            f"RSWITCH {fused_node} {rail_node} {BOARD_POWER.path_ohms / 2}",
-            (
-                f"BLOAD {rail_node} 0 I={BOARD_POWER.host_and_logic_amps}*"
-                f"tanh(V({rail_node})/{BOARD_POWER.load_soft_start_volts})"
-            ),
-        ]
-        lines.extend(
-            f"C{reference} {rail_node} 0 {value}" for reference, value in capacitors
-        )
-        lines.extend(
-            (
-                ".tran 5u 2m",
-                f".meas tran result_5v_at_1ms FIND v({rail_node}) AT=1m",
-                ".end",
-            )
-        )
-        return "\n".join(lines) + "\n"
-
-    def _power_off(self) -> str:
-        dc_input, dc_fused, five_volts = self._power_path_nets()
-        input_node = _node(dc_input)
-        fused_node = _node(dc_fused)
-        rail_node = _node(five_volts)
-        return "\n".join(
-            (
-                "Generated chess-board open power switch",
-                (
-                    f"* EXPECT result_5v {BOARD_POWER.off_rail.minimum} "
-                    f"{BOARD_POWER.off_rail.maximum}"
-                ),
-                f"VINPUT {input_node} 0 {BOARD_POWER.supply_volts}",
-                f"RFUSE {input_node} {fused_node} {BOARD_POWER.path_ohms}",
-                f"RSWITCH {fused_node} {rail_node} 1T",
-                f"RBLEED {rail_node} 0 10k",
-                ".tran 1u 10u",
-                f".meas tran result_5v FIND v({rail_node}) AT=5u",
-                ".end",
-                "",
-            )
-        )
-
     def power_current(self, *, full_white: bool = False) -> float:
+        """Total LED supply current (amps): every LED on the LED_5V net, at the approved brightness or at full white."""
         leds = [
             component
             for component in self.components.values()
             if component.GetFieldText("PartKey") == "SK9822"
         ]
         for led in leds:
-            self._required_net(led.GetReference(), Sk9822Pin.FIVE_VOLTS, "+5V")
+            self._required_net(
+                led.GetReference(), Sk9822Pin.FIVE_VOLTS, wiring.LED_SUPPLY_NET
+            )
             self._required_net(led.GetReference(), Sk9822Pin.GROUND, "GND")
-        led_count = len(leds)
         brightness = Fraction(1) if full_white else self.led_brightness_max
-        return BOARD_POWER.host_and_logic_amps + (
-            led_count * BOARD_POWER.led_full_white_amps_each * float(brightness)
+        each = (
+            datasheets.SK9822_STATIC_AMPS
+            + 3 * datasheets.SK9822_CHANNEL_AMPS_MAX * float(brightness)
         )
 
     def _power(self, full_white: bool) -> str:
