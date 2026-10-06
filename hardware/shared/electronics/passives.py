@@ -74,25 +74,35 @@ class FusePin(StrEnum):
 
 
 class FuseComponent(ElectronicComponent[FusePin]):
+    """Typed model of the input fuse F1."""
+
     pin_type = FusePin
     specs = (FUSE_2A,)
 
 
 class TvsDiodePin(StrEnum):
-    CATHODE_FIVE_VOLTS = "1"
-    ANODE_GROUND = "2"
+    """Bidirectional TVS: either terminal; pad 1 faces the protected input."""
+
+    PROTECTED_INPUT = "1"
+    GROUND = "2"
 
 
 class TvsDiodeComponent(ElectronicComponent[TvsDiodePin]):
+    """Typed model of the input TVS D1."""
+
     pin_type = TvsDiodePin
-    specs = (TVS_6V8,)
+    specs = (TVS_12V0,)
 
 
 class PowerSwitchPin(StrEnum):
+    """SPST rocker: switches the fused input onto RUN (eFuse enable, S4b)."""
+
     FUSED_INPUT = "1"
-    SWITCHED_FIVE_VOLTS = "2"
+    RUN_OUTPUT = "2"
 
 
 class PowerSwitchComponent(ElectronicComponent[PowerSwitchPin]):
+    """Typed model of the rocker (off-board, wired through the harness)."""
+
     pin_type = PowerSwitchPin
     specs = (POWER_SWITCH,)

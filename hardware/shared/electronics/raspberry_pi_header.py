@@ -1,4 +1,9 @@
-"""Typed Raspberry Pi 40-pin header and its human-readable board legend."""
+"""Typed Raspberry Pi 40-pin header and its human-readable board legend.
+
+Role: the Pi header pinout as an enum (pin number -> function), shared by the PCB assembly,
+the pin-type and firmware-parity tests and the silkscreen legend. The enum names carry the
+BCM GPIO number where there is one, which is how `panel_buttons` derives each button's GPIO.
+"""
 
 from __future__ import annotations
 
@@ -10,6 +15,8 @@ from shared.electronics.base import ElectronicComponent
 
 
 class RaspberryPiHeaderPin(StrEnum):
+    """All 40 Pi header pins by function (supply, ground, GPIO, button, SPI, I2C...), numbered as on the Pi."""
+
     THREE_VOLTS_THREE = "1"
     FIVE_VOLTS = "2"
     I2C_SDA = "3"
@@ -46,13 +53,15 @@ class RaspberryPiHeaderPin(StrEnum):
     GROUND_34 = "34"
     BUTTON_PASS_GPIO19 = "35"
     BUTTON_OK_GPIO16 = "36"
-    GPIO26 = "37"
+    LED_EN_GPIO26 = "37"
     BUTTON_F1_GPIO20 = "38"
     GROUND_39 = "39"
     BUTTON_F2_GPIO21 = "40"
 
 
 class HeaderLegend(StrEnum):
+    """The short labels printed beside the Pi header on the board silkscreen."""
+
     SDA = "SDA"
     SCL = "SCL"
     RESET = "RESET"
@@ -79,6 +88,7 @@ class HeaderLegendEntry:
     label: HeaderLegend
 
     def render(self) -> str:
+        """The silkscreen text for one pin, "<pin number> <label>"."""
         return f"{self.pin.value} {self.label.value}"
 
 
