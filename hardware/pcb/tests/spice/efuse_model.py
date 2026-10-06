@@ -224,3 +224,69 @@ def efuse_rows(
         f"Bpass in out I={{{current}}}",
         ".ends",
     ]
+
+
+def tvs_rows(breakdown: float) -> list[str]:
+    """Bidirectional SMBJ12CA: a breakdown branch each way at the datasheet IT."""
+    return [
+        f".model TVSBR D(IS=1e-20 BV={breakdown} IBV={datasheets.TVS_TEST_AMPS} RS=0.07)",
+        ".subckt TVS a b",
+        "D1 a x TVSBR",
+        "D2 b x TVSBR",
+        ".ends",
+    ]
+
+
+TripCorner = Literal["low", "high"]
+
+
+class EfuseBoard:
+    """Circuits for the U74 input stage with the board's own bias values."""
+
+    def __init__(self, board: BoardHarness) -> None:
+        self.board = board
+        self.roles = board.power_topology()
+
+    def ohms(self, role: str, sign: int = 0) -> float:
+        """Resistance of the placed resistor for `role`, nominal scaled by its tolerance
+        in direction `sign` (-1 low, 0 nominal, +1 high).
+        """
+        nominal, tolerance = self.board.resistor_ohms(self.roles[role])
+        return nominal * (1 + sign * tolerance)
+
+    def ovlo_farads(self, sign: int = 0) -> float | None:
+        """The OVLO filter capacitor on the board (C144, S4c), with X7R tolerance."""
+        ovlo = self.roles["ovlo"]
+        for reference, component in self.board.components.items():
+            nets = {self.board.net_by_endpoint.get((reference, pin)) for pin in "12"}
+            if component.GetFieldText("PartKey") == "CAP_10N" and nets == {ovlo, "GND"}:
+                return 10e-9 * (1 + sign * datasheets.MLCC_X7R_TOLERANCE)
+        return None
+
+    def timer(self, corner: TimerCorner) -> Timer:
+        """ITIMER from the capacitor the board places on U74's ITIMER pin.
+
+        `slow`: largest capacitor (X7R +10 %), smallest IITIMER and largest
+        dVITIMER, the longest blanking; `fast`: the reverse (SLVSFC9C 6.5).
+        """
+        pin = (ComponentReference.INPUT_EFUSE, str(EfusePin.OVERCURRENT_TIMER))
+        net = self.board.net_by_endpoint[pin]
+        # Reviewer-s6d m2: exactly one known capacitor, so a parallel part can
+        # never be missed (that would understate the blanking, unsafe for F1).
+        found = [
+            component.GetFieldText("PartKey")
+            for reference, component in self.board.components.items()
+            if reference != pin[0]
+            and net
+            in {self.board.net_by_endpoint.get((reference, p)) for p in ("1", "2")}
+        ]
+        if len(found) != 1 or found[0] not in CAPACITOR_FARADS:
+            raise ValueError(f"{net} must carry exactly one known capacitor: {found}")
+        slow = corner == "slow"
+        tolerance = datasheets.MLCC_X7R_TOLERANCE * (1 if slow else -1)
+        amps, volts = datasheets.EFUSE_ITIMER_AMPS, datasheets.EFUSE_ITIMER_DELTA_VOLTS
+        return Timer(
+            CAPACITOR_FARADS[found[0]] * (1 + tolerance),
+            amps.low if slow else amps.high,
+            volts.high if slow else volts.low,
+        )
