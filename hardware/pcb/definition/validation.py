@@ -1,10 +1,16 @@
-"""Physical, product, and logical-connectivity checks for the native board."""
+"""Physical, product, and logical-connectivity checks for the native board.
+
+Role: the load-time gate in `board.load()`. It compares the composed board with the
+authoritative contracts (approved products, assembly part counts, Hall-bank wiring) so a
+mis-built board fails immediately instead of being routed and exported. It checks the design
+sources only, not physical manufacturability.
+"""
 
 from collections import Counter
 
 import pcbnew
 
-from pcb.definition.assemblies import controls, power, sensing, square
+from pcb.definition.assemblies import controls, led_switch, power, sensing, square
 from pcb.definition.bank_assemblies import BANK_ASSEMBLIES
 from pcb.definition.native import connections, endpoint_pads, logical_pin, parts, point
 from pcb.definition.parts.catalog import PCB_PARTS

@@ -282,10 +282,22 @@ def pin_roles(
 
 
 def groups(design: pcbnew.BOARD) -> dict[str, tuple[pcbnew.FOOTPRINT, ...]]:
+    """Partition parts into schematic sheets: power, controls (with the LED rail
+    switch and the LED-chain terminators), one per Hall bank.
+
+    A bank sheet holds the bank's expander/capacitor followed by its eight squares,
+    in channel order, so the schematic mirrors the sensing hierarchy. Dict order is
+    the sheet order in the overview.
+    """
+
     def members(assembly: str) -> tuple[pcbnew.FOOTPRINT, ...]:
         return tuple(f for f in parts(design) if f.GetFieldText("Assembly") == assembly)
 
-    result = {"power": members("power"), "controls": members("controls")}
+    # The LED chain's rank-turn terminators (S5) join the LED buffer's sheet.
+    result = {
+        "power": members("power"),
+        "controls": members("controls") + members("led-switch") + members("led-chain"),
+    }
     for bank in dimensions.HALL_BANKS:
         bank_members = list(members(f"sensing/{bank.label}"))
         for position in bank.members:
@@ -295,7 +307,11 @@ def groups(design: pcbnew.BOARD) -> dict[str, tuple[pcbnew.FOOTPRINT, ...]]:
 
 
 def render(design: pcbnew.BOARD | None = None) -> str:
-    """Overview links to subsystem sheets; global nets cross sheet boundaries."""
+    """Overview links to subsystem sheets; global nets cross sheet boundaries.
+
+    The top sheet contains only sheet symbols (four per row, linking each
+    `<name>.kicad_sch`); connectivity itself lives in the per-sheet global labels.
+    """
     design = design or definition.load()
     lines = [
         "(kicad_sch",
@@ -327,11 +343,17 @@ def render(design: pcbnew.BOARD | None = None) -> str:
 
 
 def write(design: pcbnew.BOARD, out: Path) -> None:
+    """Write the overview, all sheets, the combined symbol library and its table.
+
+    `out` is the (staging) output directory chosen by the caller. The library is
+    gathered from each rendered sheet so it contains exactly the symbols used.
+    """
     (out / "chess-board.kicad_sch").write_text(render(design))
     libraries: list[str] = []
     for name, members in groups(design).items():
         text = render_sheet(design, members, name)
         (out / f"{name}.kicad_sch").write_text(text)
+        # Drop the library header/footer lines; keep only the symbol definitions.
         libraries.extend(render_symbol_library(text).splitlines()[4:-1])
     library = "\n".join(
         [
@@ -345,6 +367,7 @@ def write(design: pcbnew.BOARD, out: Path) -> None:
         ]
     )
     (out / "generated-symbols.kicad_sym").write_text(library)
+    # Tell KiCad to resolve the "Generated" library from this project directory.
     (out / "sym-lib-table").write_text(
         '(sym_lib_table (version 7) (lib (name "Generated")(type "KiCad")(uri "${KIPRJMOD}/generated-symbols.kicad_sym")(options "")(descr "")))\n'
     )

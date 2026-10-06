@@ -1,4 +1,15 @@
-"""Deterministic KiCad symbol and UUID generation."""
+"""Deterministic KiCad symbol and UUID generation.
+
+Role: low-level text emitters for the generated schematic (`schematic.py`) and the
+UUID scheme shared with the PCB (`native.py`). Symbols are written as KiCad
+s-expression lines. Every symbol is a one-off "physical pin" symbol: its pins are
+the footprint's pad numbers in pad order (named by datasheet role where known), so
+the schematic can be cross-checked pad for pad against the board.
+
+UUIDs are `uuid5` of a semantic name inside one fixed namespace, never random, so
+regenerating an unchanged design reproduces identical identifiers and the PCB
+footprint paths stay linked to their schematic symbols.
+"""
 
 from __future__ import annotations
 
@@ -6,12 +17,16 @@ import uuid
 
 from shared.components import ComponentSpec
 
+# Fixed namespace for all uuid5 identities. Changing it re-keys every UUID in the
+# schematic and board (and breaks the PCB<->schematic links until both regenerate).
 NAMESPACE = uuid.UUID("83abf953-6539-4c7d-9e0f-e3b5ac2c4f3b")
 
+# Identity of the top-level (overview) sheet; the root of every footprint path.
 ROOT_UUID = uuid.uuid5(NAMESPACE, "root")
 
 
 def uid(name: str) -> str:
+    """Stable UUID string for a semantic name such as "symbol:U1" or "sheet:power"."""
     return str(uuid.uuid5(NAMESPACE, name))
 
 
@@ -22,10 +37,21 @@ def library_symbol_lines(
     pin_roles: dict[str, tuple[str, str]] | None = None,
     part_key: str = "",
 ) -> list[str]:
-    """Draw passives or a named functional block with physical package pins."""
+    """Draw passives or a named functional block with physical package pins.
+
+    Returns the `lib_symbols` entry for one placed component. `physical_pins` are
+    pad numbers and `offsets` their vertical positions (same order). `pin_roles`
+    maps pad number to (displayed name, ERC pin type) from `schematic.pin_roles`;
+    a pin without a role falls back to its number as a passive. Passives (CAP_/RES_)
+    hide pin names for a conventional look. Box width grows with the longest pin name.
+    """
     lines: list[str] = []
+    # 2.54 mm (two KiCad grid steps) per pin, matching the pin offsets chosen by
+    # the caller.
     height = max(2.54, len(physical_pins) * 2.54)
+    # Symbols are per reference (not per part type): each is its own library entry.
     symbol = f"Generated:{reference}"
+    # Wide enough for the longest pin name plus the box margin.
     width = max(
         3.81,
         max((len(name) for name, _ in (pin_roles or {}).values()), default=0) * 1.0
@@ -63,6 +89,7 @@ def library_symbol_lines(
             f'      (symbol "{reference}_1_1"',
         ]
     )
+    # All pins sit on the left edge so the global labels can share one column.
     for physical, offset in zip(physical_pins, offsets, strict=True):
         pin_name, pin_kind = (pin_roles or {}).get(physical, (physical, "passive"))
         lines.extend(
@@ -85,8 +112,15 @@ def instance_lines(
     y: float,
     sheet_path: str = f"/{ROOT_UUID}",
 ) -> list[str]:
-    """Place a library symbol with its approved part and pin identities."""
+    """Place a library symbol with its approved part and pin identities.
+
+    Emits the schematic instance at (x, y): reference, value (the MPN), datasheet
+    and description taken from the approved `ComponentSpec`, plus a UUID per pin.
+    `sheet_path` is the hierarchical path that must match the footprint's path set
+    in `native.place()`, which is what links symbol and footprint for parity checks.
+    """
     lines: list[str] = []
+    # Same name `native.place()` uses for the footprint path's final element.
     symbol_uuid = uid(f"symbol:{reference}")
     half_height = max(2.54, len(physical_pins) * 2.54) / 2
     label_x = x + (1.27 if spec.key.startswith(("CAP_", "RES_")) else 10.16)
@@ -146,7 +180,11 @@ def instance_lines(
 
 
 def render_symbol_library(schematic: str) -> str:
-    """Extract the embedded symbols without changing their serialized ordering."""
+    """Extract the embedded symbols without changing their serialized ordering.
+
+    Reuses the `lib_symbols` block of a rendered sheet as a standalone library, so
+    the library always matches the symbols the sheets actually reference.
+    """
     lines = schematic.splitlines()
     start = lines.index("  (lib_symbols") + 1
     end = next(index for index in range(start, len(lines)) if lines[index] == "  )")
@@ -165,7 +203,11 @@ def render_symbol_library(schematic: str) -> str:
 
 
 def body_lines(part_key: str, height: float, width: float) -> list[str]:
-    """Small conventional capacitor/resistor glyphs; other parts are named blocks."""
+    """Small conventional capacitor/resistor glyphs; other parts are named blocks.
+
+    Active parts are a plain rectangle sized by `height`/`width`. The 1000 uF
+    capacitor (`CAP_560U`) gets an extra plus mark to show it is polarized.
+    """
     if not part_key.startswith(("CAP_", "RES_")):
         return [
             f"        (rectangle (start -1.27 {-height / 2:.3f}) (end {width:.3f} {height / 2:.3f})",
@@ -179,7 +221,7 @@ def body_lines(part_key: str, height: float, width: float) -> list[str]:
     ]
     if part_key.startswith("CAP_"):
         paths += [((0.0, -0.635), (2.54, -0.635)), ((0.0, 0.635), (2.54, 0.635))]
-        if part_key == "CAP_1000U":
+        if part_key == "CAP_560U":
             paths += [
                 ((3.175, -1.27), (4.445, -1.27)),
                 ((3.81, -1.905), (3.81, -0.635)),
