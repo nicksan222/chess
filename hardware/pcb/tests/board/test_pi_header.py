@@ -31,3 +31,35 @@ def header_mismatches(footprint: pcbnew.FOOTPRINT) -> list[int]:
         ):
             wrong.append(number)
     return sorted(wrong)
+
+
+class PiHeaderTest(unittest.TestCase):
+    """J1's pads sit under the Pi's pins; a mirrored header is detected."""
+
+    def test_every_j1_pad_sits_under_the_pi_pin_of_the_same_number(self) -> None:
+        native_board = board.load()
+        header = native_board.FindFootprintByReference("J1")
+        assert header is not None
+        self.assertTrue(header.IsFlipped(), "J1 must be on the bottom side")
+        self.assertEqual(len(list(header.Pads())), dimensions.PI_HEADER_PIN_COUNT)
+        self.assertEqual(header_mismatches(header), [])
+        # Pin 1 (3V3) and pin 2 (5V) must not trade places: that would put 5 V on
+        # the Pi's 3.3 V rail.
+        pads = {pad.GetNumber(): pad for pad in header.Pads()}
+        self.assertEqual(pads["1"].GetNetname(), "+3V3")
+        self.assertEqual(pads["2"].GetNetname(), "+5V")
+
+    def test_a_plainly_flipped_header_is_reported_as_mirrored(self) -> None:
+        scratch = pcbnew.BOARD()
+        mirrored = PCB_PARTS["PI_ZERO_HEADER"].template.Duplicate()
+        scratch.Add(mirrored)
+        mirrored.SetPosition(native.point(*dimensions.PI_HEADER_CENTER_MM))
+        mirrored.SetOrientationDegrees((dimensions.PI_ROTATION_DEG + 90.0) % 360.0)
+        mirrored.Flip(mirrored.GetPosition(), pcbnew.FLIP_DIRECTION_LEFT_RIGHT)
+        self.assertEqual(
+            len(header_mismatches(mirrored)), dimensions.PI_HEADER_PIN_COUNT
+        )
+
+
+if __name__ == "__main__":
+    unittest.main()
