@@ -1,14 +1,39 @@
-"""Small native land-pattern constructors; pcbnew owns every physical definition."""
+"""Small native land-pattern constructors; pcbnew owns every physical definition.
+
+Role: the helpers every `parts/<component>.py` uses to build a footprint template: a pad
+constructor with sanity checks, a courtyard calculation, generic SOIC/two-terminal/axial/
+header builders, the silkscreen polarity dot, and the wide thermal-spoke override for
+power-carrying parts. Dimensions arrive from the caller (cited from datasheets in each part
+file); nothing here invents a land pattern. Footprint coordinates are millimetres, Y up in
+the datasheet "top view", converted to KiCad's Y-down units inside `pad()`.
+"""
 
 from __future__ import annotations
 
+import math
 from collections.abc import Sequence
 
 import pcbnew
 
 from pcb.definition import rules
 
+# Courtyard margin around pads/body; also the inset of the F.Fab outline.
 COURTYARD_MARGIN_MM = 0.25
+
+# Sullins .100" female header catalogue p81: recommended P.C. board hole Ø.040 [1.02].
+SULLINS_HOLE_MM = 1.02
+
+# Front-silk polarity dot beside pad 1 / cathode / "+". Its edge keeps the fab's
+# mask dam beyond the pad's solder-mask opening, plus margin.
+POLARITY_DOT_MM = 0.5
+
+# Thermal spokes for pads that carry the 2 A board supply into a plane: 4 x 0.75 mm
+# of 1 oz inner copper is 2.6 A at a 10 °C rise by IPC-2221 (tests/board/test_ampacity.py).
+POWER_PAD_SPOKE_MM = 0.75
+
+# Distance from a pad edge to the dot edge: the mask opening plus the fab's minimum mask
+# dam plus 0.1 mm, so the dot never sits in the solder-mask opening.
+POLARITY_DOT_GAP_MM = rules.MASK_EXPANSION_MM + rules.PCBWAY_MIN_MASK_DAM_MM + 0.1
 
 
 def pad(
@@ -21,6 +46,13 @@ def pad(
     drill: float = 0.0,
     drill_height: float = 0.0,
 ) -> pcbnew.PAD:
+    """One pad at (x, y) mm, Y up, of `width` x `height`, optionally drilled.
+
+    `drill > 0` makes a plated through-hole pad on all layers (round, or oblong when
+    `drill_height` differs); otherwise a surface-mount pad on the top layer. Raises on an
+    empty number, non-positive size or a drill larger than the pad. Every pad gets the default local
+    solder-mask expansion (callers may override it, as the eFuse does) so mask webs are consistent.
+    """
     hole_height = drill_height or drill
     if (
         not number
@@ -53,6 +85,7 @@ def pad(
 def courtyard_for(
     pads: tuple[pcbnew.PAD, ...], body: tuple[float, float] = (0.0, 0.0)
 ) -> tuple[float, float]:
+    """Courtyard (width, height) enclosing all pads and the body, plus the margin."""
     reach_x = max(pcbnew.ToMM(abs(p.GetPosition().x) + p.GetSize().x / 2) for p in pads)
     reach_y = max(pcbnew.ToMM(abs(p.GetPosition().y) + p.GetSize().y / 2) for p in pads)
     return (
@@ -67,6 +100,11 @@ def footprint(
     pads: tuple[pcbnew.PAD, ...],
     courtyard: tuple[float, float],
 ) -> pcbnew.FOOTPRINT:
+    """Assemble a footprint template from pads plus courtyard and fab outlines.
+
+    `package` must equal the approved product's package string (`PcbPart` checks it);
+    `courtyard` is (width, height) from `courtyard_for`.
+    """
     result = pcbnew.FOOTPRINT(None)
     result.SetField("Package", package)
     result.SetLibDescription(description)
@@ -174,7 +212,11 @@ def two_pad_axial(
     body: tuple[float, float],
     pin_numbers: Sequence[str],
 ) -> pcbnew.FOOTPRINT:
-    """Build a leaded part lying flat, with both holes on the X axis."""
+    """Build a leaded part lying flat, with both holes on the X axis.
+
+    Pad 1 is square as the polarity cue; drill and copper ring follow `rules` from the
+    lead diameter.
+    """
     from pcb.definition import rules
 
     if len(pin_numbers) != 2:
@@ -217,6 +259,7 @@ def pin_header(
     pitch: float = 2.54,
     lead_diameter: float = 0.64,
     pin_numbers: tuple[str, ...] = (),
+    drill: float | None = None,
 ) -> pcbnew.FOOTPRINT:
     """A pin header numbered the way a Raspberry Pi header is: odd, even, odd.
 
@@ -228,7 +271,7 @@ def pin_header(
     count = columns * rows
     if len(pin_numbers) != count:
         raise ValueError(f"{package}: expected {count} semantic pin numbers")
-    drill = rules.drill_for_lead(lead_diameter)
+    drill = drill if drill is not None else rules.drill_for_lead(lead_diameter)
     copper = rules.pad_for_drill(drill)
     span_x = (rows - 1) * pitch
     span_y = (columns - 1) * pitch
