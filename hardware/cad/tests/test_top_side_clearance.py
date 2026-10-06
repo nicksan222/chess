@@ -224,3 +224,101 @@ def _bottom_side_problem(rect: Rect, height: float) -> str | None:
     if rect[0] < -half_x or rect[1] > half_x or rect[2] < low_y or rect[3] > high_y:
         return "too close to the cavity wall"
     return None
+
+
+def bottom_side_violations() -> dict[str, str]:
+    """Reference -> reason for every bottom-side part (except the Pi socket, checked as
+    the Pi stack) that does not fit the bay."""
+    rows = _rows()
+    origin_x, origin_y = _board_offset(rows)
+    violations: dict[str, str] = {}
+    for row in rows:
+        if row["Side"] != "bottom" or row["Ref"] == PI_HEADER_REFERENCE:
+            continue
+        spec = SPECS_BY_MPN.get(row["Val"])
+        if spec is None or spec.body_mm is None:
+            violations[row["Ref"]] = f"{row['Val']} has no catalogued height"
+            continue
+        centre = (float(row["PosX"]) - origin_x, float(row["PosY"]) - origin_y)
+        body = _square(centre, max(spec.body_mm[:2]))
+        for rect, height in [
+            (body, spec.body_mm[2]),
+            *mated_zones(row["Ref"], row["Val"]),
+        ]:
+            problem = _bottom_side_problem(rect, height)
+            if problem is not None:
+                violations[row["Ref"]] = problem
+    return violations
+
+
+class TopSideClearanceTest(unittest.TestCase):
+    def test_every_top_side_part_fits_its_local_gap(self) -> None:
+        self.assertEqual(top_side_violations(), {})
+
+    def test_the_gap_check_rejects_a_tall_part_on_top(self) -> None:
+        # Negative test: a 560 uF electrolytic placed on top must be reported, proving the
+        # check can fail.
+        rows = [*_rows()]
+        tall = dict(rows[0], Ref="X9", Val="10ZLJ560M8X11.5", Side="top")
+        origin_x, origin_y = _board_offset(rows)
+        tall["PosX"], tall["PosY"] = str(origin_x + 60.0), str(origin_y)
+        self.assertIn("X9", _violations_in([*rows, tall]))
+
+    def test_the_position_file_agrees_with_the_shared_button_layout(self) -> None:
+        _board_offset(_rows())
+
+    def test_the_position_file_agrees_with_the_shared_strip_placements(self) -> None:
+        """Mated envelopes read the shared placement, so it must be the PCB's."""
+        rows = _rows()
+        origin_x, origin_y = _board_offset(rows)
+        by_ref = {row["Ref"]: row for row in rows}
+        for reference, placement in cad.PCB_STRIP_PLACEMENTS.items():
+            with self.subTest(reference=reference):
+                row = by_ref[reference]
+                self.assertAlmostEqual(float(row["PosX"]) - origin_x, placement.x_mm, 3)
+                self.assertAlmostEqual(float(row["PosY"]) - origin_y, placement.y_mm, 3)
+                self.assertEqual(row["Side"], "bottom" if placement.bottom else "top")
+
+    def test_every_catalogued_connector_envelope_has_a_placement(self) -> None:
+        for row in _rows():
+            if row["Val"] in MATED_ENVELOPES:
+                with self.subTest(reference=row["Ref"]):
+                    self.assertIn(row["Ref"], cad.PCB_STRIP_PLACEMENTS)
+
+    def test_a_mated_plug_reaching_under_the_display_is_rejected(self) -> None:
+        """The S3c defect: J2 at y -162.5 puts its housing under the module."""
+        housing = mated_zones("J2", "SM04B-SRSS-TB")[0][0]
+        shift = -162.5 - cad.PCB_STRIP_PLACEMENTS["J2"].y_mm
+        moved = (housing[0], housing[1], housing[2] + shift, housing[3] + shift)
+        self.assertLess(_local_gap(moved) - TOP_SIDE_MARGIN_MM, 2.95)
+
+
+class BottomSideClearanceTest(unittest.TestCase):
+    def test_every_bottom_side_part_fits_the_bay(self) -> None:
+        self.assertEqual(bottom_side_violations(), {})
+
+    # Negative cases for the bay check: each forbidden spot must be named.
+    def test_the_bay_check_rejects_a_part_under_the_pi(self) -> None:
+        problem = _bottom_side_problem(_square(cad.PI_CENTER_MM, 2.0), 1.25)
+        self.assertEqual(problem, "inside the Pi envelope")
+
+    def test_the_bay_check_rejects_a_part_too_tall_for_the_bay(self) -> None:
+        self.assertIsNotNone(_bottom_side_problem(_square((-60.0, 0.0), 10.0), 17.0))
+
+    def test_the_bay_check_rejects_a_part_in_a_panel_keepout(self) -> None:
+        x0, x1, y0, y1 = cad.BOTTOM_SIDE_KEEPOUTS_MM["rocker"]
+        rect = _square(((x0 + x1) / 2.0, (y0 + y1) / 2.0), 2.0)
+        self.assertEqual(
+            _bottom_side_problem(rect, 1.25), "inside the rocker bay keepout"
+        )
+
+    def test_the_bay_check_rejects_a_plug_reaching_the_wall(self) -> None:
+        wall_y = cad.CASE_CENTER_OFFSET_Y_MM + cad.CASE_CAVITY_SIZE_MM[1] / 2.0
+        rect = (-100.0, -90.0, wall_y - 5.0, wall_y - 0.5)
+        self.assertEqual(
+            _bottom_side_problem(rect, 10.5), "too close to the cavity wall"
+        )
+
+
+if __name__ == "__main__":
+    unittest.main()
