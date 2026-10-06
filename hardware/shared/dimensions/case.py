@@ -1,20 +1,34 @@
-"""Case envelope, vertical stack, Pi bay, and PCB supports."""
+"""Case envelope, vertical stack, Pi bay, and PCB supports.
+
+Role: the open-tub case's measurements, derived from the board and plate sizes so a
+change upstream propagates. Everything is in millimetres in board coordinates (origin
+at the playing-area centre, Y up, +Y toward the rear wall) with Z measured from the
+outside of the case floor. `validation.py` checks that the pieces fit each other;
+`hardware/cad` generates the case from these values and `hardware/pcb` takes the Pi
+header transform and the bottom-side keep-outs from here. Values marked UNVERIFIED are
+also listed in `unverified.py`, which blocks PCB release until each is cleared.
+"""
 
 from .board import (
     PANEL_STRIP_DEPTH_MM,
     PCB_CENTER_OFFSET_Y_MM,
+    PCB_SIZE_MM,
     PCB_THICKNESS_MM,
     PLAYING_SPAN_MM,
 )
-from .tile_plate import TILE_PLATE_THICKNESS_MM
+from .tile_plate import (
+    TILE_PLATE_CLEARANCE_MM,
+    TILE_PLATE_SIZE_MM,
+    TILE_PLATE_THICKNESS_MM,
+)
 
 # --- Case -------------------------------------------------------------------
-CASE_FRAME_WIDTH_MM = 10.0
+# The case is an open tub. The PCB drops straight into a pocket and rests on a
+# ledge under its edge; the plate, which also carries the control bezel, closes
+# the top. 12 mm leaves a solid wall outboard of the plate rebate.
+CASE_FRAME_WIDTH_MM = 12.0
 CASE_WALL_MM = 3.0
 CASE_FLOOR_MM = 3.0
-# The plate rests on a ledge around the cavity, and its screws land in that
-# ledge. They cannot land anywhere inboard of it, because the PCB is there.
-CASE_PLATE_LEDGE_MM = 8.0
 CASE_HEIGHT_MM = 30.0
 CASE_OUTER_RADIUS_MM = 2.2
 CASE_WIDTH_MM = PLAYING_SPAN_MM + 2.0 * CASE_FRAME_WIDTH_MM
