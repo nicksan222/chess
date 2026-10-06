@@ -297,3 +297,56 @@ def pin_header(
         pads=tuple(pads),
         courtyard=courtyard_for(tuple(pads)),
     )
+
+
+# Used to pick the polarity-dot position furthest from every other pad.
+def _box_distance(x: float, y: float, pad: pcbnew.PAD) -> float:
+    """Distance from a point to a pad's rectangular copper extent, in mm."""
+    centre, size = pad.GetPosition(), pad.GetSize()
+    dx = max(abs(x - pcbnew.ToMM(centre.x)) - pcbnew.ToMM(size.x) / 2, 0.0)
+    dy = max(abs(y - pcbnew.ToMM(centre.y)) - pcbnew.ToMM(size.y) / 2, 0.0)
+    return math.hypot(dx, dy)
+
+
+def add_polarity_marker(template: pcbnew.FOOTPRINT, number: str) -> None:
+    """Put one silk dot just outside pad `number`, on its most open outward side."""
+    pads = list(template.Pads())
+    target = next(p for p in pads if p.GetNumber() == number)
+    others = [p for p in pads if p is not target]
+    cx, cy = pcbnew.ToMM(target.GetPosition().x), pcbnew.ToMM(target.GetPosition().y)
+    half_x = pcbnew.ToMM(target.GetSize().x) / 2
+    half_y = pcbnew.ToMM(target.GetSize().y) / 2
+    reach = POLARITY_DOT_GAP_MM + POLARITY_DOT_MM / 2
+    candidates = [
+        (cx + half_x + reach, cy),
+        (cx - half_x - reach, cy),
+        (cx, cy + half_y + reach),
+        (cx, cy - half_y - reach),
+    ]
+    outward = [
+        (x, y) for x, y in candidates if x * x + y * y > cx * cx + cy * cy + 1e-9
+    ]
+
+    def clearance(point: tuple[float, float]) -> float:
+        return min((_box_distance(*point, p) for p in others), default=1e9)
+
+    x, y = max(outward, key=clearance)
+    if clearance((x, y)) <= _box_distance(x, y, target):
+        raise ValueError(f"pad {number}: polarity mark would sit nearer another pad")
+    dot = pcbnew.PCB_SHAPE(template)
+    dot.SetShape(pcbnew.SHAPE_T_SEGMENT)
+    dot.SetStart(pcbnew.VECTOR2I(pcbnew.FromMM(x - 0.01), pcbnew.FromMM(y)))
+    dot.SetEnd(pcbnew.VECTOR2I(pcbnew.FromMM(x + 0.01), pcbnew.FromMM(y)))
+    dot.SetLayer(pcbnew.F_SilkS)
+    dot.SetWidth(pcbnew.FromMM(POLARITY_DOT_MM))
+    template.Add(dot)
+
+
+def widen_thermal_spokes(template: pcbnew.FOOTPRINT) -> None:
+    """Give every pad of a supply-path part the power spoke width.
+
+    The default thermal spokes of a plane connection are too narrow to carry the 2 A
+    supply; `tests/board/test_ampacity.py` checks the resulting plane entry.
+    """
+    for item in template.Pads():
+        item.SetLocalThermalSpokeWidthOverride(pcbnew.FromMM(POWER_PAD_SPOKE_MM))
