@@ -178,6 +178,11 @@ class SquareLayout:
         return tuple(square for square in self.squares if square.is_dark)
 
     def validate_topology(self) -> None:
+        """Fail loudly on any inconsistency; a bad layout would silently mis-wire.
+
+        Uniqueness checks catch overlapping features, and the contiguity checks
+        guarantee every LED chain slot and every sensor label is used exactly once.
+        """
         if self.grid_count != len(FILES) or self.grid_count != 8:
             raise ValueError("Square layout must be exactly 8x8")
         expected = self.grid_count**2
