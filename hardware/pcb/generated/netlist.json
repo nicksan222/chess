@@ -7,9 +7,9 @@
           "description": "LED rail bulk capacitor",
           "extras": {},
           "lib": "C",
-          "package": "radial 10 mm",
-          "part_key": "CAP_1000U",
-          "value": "1000uF 10V"
+          "package": "radial 8 mm",
+          "part_key": "CAP_560U",
+          "value": "560uF 10V"
         },
         "C10": {
           "assembly": "square/C1",
@@ -537,6 +537,69 @@
           "extras": {
             "Square": "G1"
           },
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_100N",
+          "value": "100nF"
+        },
+        "C140": {
+          "assembly": "power",
+          "description": "LED rail bulk capacitor",
+          "extras": {},
+          "lib": "C",
+          "package": "radial 8 mm",
+          "part_key": "CAP_560U",
+          "value": "560uF 10V"
+        },
+        "C141": {
+          "assembly": "power",
+          "description": "eFuse input bypass",
+          "extras": {},
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_1U",
+          "value": "1uF 25V"
+        },
+        "C142": {
+          "assembly": "power",
+          "description": "eFuse dVdt",
+          "extras": {},
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_10N",
+          "value": "10nF"
+        },
+        "C143": {
+          "assembly": "power",
+          "description": "eFuse ITIMER",
+          "extras": {},
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_1N",
+          "value": "1nF"
+        },
+        "C144": {
+          "assembly": "power",
+          "description": "OVLO spike filter",
+          "extras": {},
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_10N",
+          "value": "10nF"
+        },
+        "C145": {
+          "assembly": "led-switch",
+          "description": "Q1 gate-to-drain ramp capacitor",
+          "extras": {},
+          "lib": "C",
+          "package": "0603 (1608 metric)",
+          "part_key": "CAP_10N",
+          "value": "10nF"
+        },
+        "C146": {
+          "assembly": "led-switch",
+          "description": "U75 decoupling capacitor",
+          "extras": {},
           "lib": "C",
           "package": "0603 (1608 metric)",
           "part_key": "CAP_100N",
@@ -1591,21 +1654,21 @@
         },
         "D1": {
           "assembly": "power",
-          "description": "Input transient suppressor on the 5 V rail",
+          "description": "Bidirectional transient suppressor on the eFuse input",
           "extras": {},
           "lib": "TVS",
           "package": "SMB (DO-214AA)",
-          "part_key": "TVS_6V8",
-          "value": "SMBJ6.0A"
+          "part_key": "TVS_12V0",
+          "value": "SMBJ12CA"
         },
         "F1": {
           "assembly": "power",
-          "description": "Input over-current protection matched to the 2.5 A jack",
+          "description": "Input over-current protection on the jack tip",
           "extras": {},
           "lib": "FUSE",
           "package": "2410 fuse",
           "part_key": "FUSE_2A",
-          "value": "2 A time-delay"
+          "value": "2 A very fast-acting"
         },
         "HS1": {
           "assembly": "square/A1",
@@ -2322,43 +2385,187 @@
         },
         "J2": {
           "assembly": "controls",
-          "description": "SSD1306 OLED module connector",
+          "description": "OLED harness header (module wired by its pad labels)",
           "extras": {},
           "lib": "OLED_HEADER",
-          "package": "1x4 2.54 mm THT",
+          "package": "SH 4P side entry SMD",
           "part_key": "OLED_HEADER",
-          "value": "1x4 header"
+          "value": "SH 4P"
         },
-        "J3": {
+        "J4": {
           "assembly": "power",
-          "description": "5 V DC input jack, centre positive",
+          "description": "Power entry: jack and rocker harness",
           "extras": {},
-          "lib": "BARREL_JACK",
-          "package": "5.5x2.0 mm THT",
-          "part_key": "BARREL_JACK",
-          "value": "DC 5.5x2.0"
+          "lib": "POWER_HEADER",
+          "package": "VH 4P side entry THT",
+          "part_key": "POWER_HEADER",
+          "value": "VH 4P"
         },
-        "R1": {
-          "assembly": "controls",
-          "description": "I2C pull-up",
+        "Q1": {
+          "assembly": "led-switch",
+          "description": "LED rail switch, +5V to LED_5V",
+          "extras": {},
+          "lib": "Q_PMOS",
+          "package": "SO-8 1.27 mm",
+          "part_key": "LED_SWITCH",
+          "value": "Si4403DDY"
+        },
+        "Q2": {
+          "assembly": "led-switch",
+          "description": "LED_EN inverter driving the LED switch gate and buffer enables",
+          "extras": {},
+          "lib": "Q_NMOS",
+          "package": "SOT-23 (TO-236)",
+          "part_key": "LED_SWITCH_DRIVER",
+          "value": "BSS138LT1G"
+        },
+        "R10": {
+          "assembly": "led-chain",
+          "description": "LED rank-turn data source termination",
           "extras": {},
           "lib": "R",
           "package": "0603 (1608 metric)",
-          "part_key": "RES_4K7",
-          "value": "4.7k"
+          "part_key": "RES_56",
+          "value": "56R"
         },
-        "R2": {
-          "assembly": "controls",
-          "description": "I2C pull-up",
+        "R11": {
+          "assembly": "led-chain",
+          "description": "LED rank-turn data source termination",
           "extras": {},
           "lib": "R",
           "package": "0603 (1608 metric)",
-          "part_key": "RES_4K7",
-          "value": "4.7k"
+          "part_key": "RES_56",
+          "value": "56R"
+        },
+        "R12": {
+          "assembly": "led-chain",
+          "description": "LED rank-turn data source termination",
+          "extras": {},
+          "lib": "R",
+          "package": "0603 (1608 metric)",
+          "part_key": "RES_56",
+          "value": "56R"
+        },
+        "R13": {
+          "assembly": "led-switch",
+          "description": "LED_EN series to Q2 gate",
+          "extras": {},
+          "lib": "R",
+          "package": "0603 (1608 metric)",
+          "part_key": "RES_1K",
+          "value": "1k"
+        },
+        "R14": {
+          "assembly": "led-switch",
+          "description": "Q2 gate pull-down (LED rail off)",
+          "extras": {},
+          "lib": "R",
+          "package": "0603 (1608 metric)",
+          "part_key": "RES_100K",
+          "value": "100k"
+        },
+        "R15": {
+          "assembly": "led-switch",
+          "description": "LED_EN_N pull-up",
+          "extras": {},
+          "lib": "R",
+          "package": "0603 (1608 metric)",
+          "part_key": "RES_10K",
+          "value": "10k"
+        },
+        "R16": {
+          "assembly": "led-switch",
+          "description": "Q1 gate drive (turn-on ramp)",
+          "extras": {},
+          "lib": "R",
+          "package": "0603 (1608 metric)",
+          "part_key": "RES_100K",
+          "value": "100k"
+        },
+        "R17": {
+          "assembly": "controls",
+          "description": "LED_DATA_5V pull-down while the buffer is Hi-Z",
+          "extras": {},
+          "lib": "R",
+          "package": "0603 (1608 metric)",
+          "part_key": "RES_10K",
+          "value": "10k"
+        },
+        "R18": {
+          "assembly": "controls",
+          "description": "LED_CLK_5V pull-down while the buffer is Hi-Z",
+          "extras": {},
+          "lib": "R",
+          "package": "0603 (1608 metric)",
+          "part_key": "RES_10K",
+          "value": "10k"
+        },
+        "R3": {
+          "assembly": "power",
+          "description": "eFuse current limit (ILM)",
+          "extras": {},
+          "lib": "R",
+          "package": "0603 (1608 metric)",
+          "part_key": "RES_1K65",
+          "value": "1.65k"
+        },
+        "R4": {
+          "assembly": "power",
+          "description": "OVLO divider, top",
+          "extras": {},
+          "lib": "R",
+          "package": "0603 (1608 metric)",
+          "part_key": "RES_604K_PRECISION",
+          "value": "604k 0.1%"
+        },
+        "R5": {
+          "assembly": "power",
+          "description": "OVLO divider, bottom",
+          "extras": {},
+          "lib": "R",
+          "package": "0603 (1608 metric)",
+          "part_key": "RES_169K_PRECISION",
+          "value": "169k 0.1%"
+        },
+        "R6": {
+          "assembly": "power",
+          "description": "EN divider from RUN, top",
+          "extras": {},
+          "lib": "R",
+          "package": "0603 (1608 metric)",
+          "part_key": "RES_604K_PRECISION",
+          "value": "604k 0.1%"
+        },
+        "R7": {
+          "assembly": "power",
+          "description": "EN divider, bottom",
+          "extras": {},
+          "lib": "R",
+          "package": "0603 (1608 metric)",
+          "part_key": "RES_261K",
+          "value": "261k"
+        },
+        "R8": {
+          "assembly": "power",
+          "description": "Rocker contact wetting load",
+          "extras": {},
+          "lib": "R",
+          "package": "0603 (1608 metric)",
+          "part_key": "RES_1K",
+          "value": "1k"
+        },
+        "R9": {
+          "assembly": "controls",
+          "description": "LED data source termination",
+          "extras": {},
+          "lib": "R",
+          "package": "0603 (1608 metric)",
+          "part_key": "RES_56",
+          "value": "56R"
         },
         "SW1": {
           "assembly": "controls",
-          "description": "Momentary panel button, 9.5 mm actuator",
+          "description": "Momentary panel button, 8.0 mm round stem",
           "extras": {
             "Function": "UP"
           },
@@ -2369,7 +2576,7 @@
         },
         "SW10": {
           "assembly": "controls",
-          "description": "Momentary panel button, 9.5 mm actuator",
+          "description": "Momentary panel button, 8.0 mm round stem",
           "extras": {
             "Function": "F3"
           },
@@ -2380,7 +2587,7 @@
         },
         "SW11": {
           "assembly": "controls",
-          "description": "Momentary panel button, 9.5 mm actuator",
+          "description": "Momentary panel button, 8.0 mm round stem",
           "extras": {
             "Function": "F4"
           },
@@ -2391,7 +2598,7 @@
         },
         "SW12": {
           "assembly": "controls",
-          "description": "Momentary panel button, 9.5 mm actuator",
+          "description": "Momentary panel button, 8.0 mm round stem",
           "extras": {
             "Function": "F5"
           },
@@ -2400,18 +2607,9 @@
           "part_key": "BUTTON",
           "value": "TACT 6mm"
         },
-        "SW13": {
-          "assembly": "power",
-          "description": "Latching power switch",
-          "extras": {},
-          "lib": "SWITCH",
-          "package": "SPST rocker THT",
-          "part_key": "POWER_SWITCH",
-          "value": "POWER"
-        },
         "SW2": {
           "assembly": "controls",
-          "description": "Momentary panel button, 9.5 mm actuator",
+          "description": "Momentary panel button, 8.0 mm round stem",
           "extras": {
             "Function": "DOWN"
           },
@@ -2422,7 +2620,7 @@
         },
         "SW3": {
           "assembly": "controls",
-          "description": "Momentary panel button, 9.5 mm actuator",
+          "description": "Momentary panel button, 8.0 mm round stem",
           "extras": {
             "Function": "LEFT"
           },
@@ -2433,7 +2631,7 @@
         },
         "SW4": {
           "assembly": "controls",
-          "description": "Momentary panel button, 9.5 mm actuator",
+          "description": "Momentary panel button, 8.0 mm round stem",
           "extras": {
             "Function": "RIGHT"
           },
@@ -2444,7 +2642,7 @@
         },
         "SW5": {
           "assembly": "controls",
-          "description": "Momentary panel button, 9.5 mm actuator",
+          "description": "Momentary panel button, 8.0 mm round stem",
           "extras": {
             "Function": "OK"
           },
@@ -2455,7 +2653,7 @@
         },
         "SW6": {
           "assembly": "controls",
-          "description": "Momentary panel button, 9.5 mm actuator",
+          "description": "Momentary panel button, 8.0 mm round stem",
           "extras": {
             "Function": "RESET"
           },
@@ -2466,7 +2664,7 @@
         },
         "SW7": {
           "assembly": "controls",
-          "description": "Momentary panel button, 9.5 mm actuator",
+          "description": "Momentary panel button, 8.0 mm round stem",
           "extras": {
             "Function": "PASS"
           },
@@ -2477,7 +2675,7 @@
         },
         "SW8": {
           "assembly": "controls",
-          "description": "Momentary panel button, 9.5 mm actuator",
+          "description": "Momentary panel button, 8.0 mm round stem",
           "extras": {
             "Function": "F1"
           },
@@ -2488,7 +2686,7 @@
         },
         "SW9": {
           "assembly": "controls",
-          "description": "Momentary panel button, 9.5 mm actuator",
+          "description": "Momentary panel button, 8.0 mm round stem",
           "extras": {
             "Function": "F2"
           },
@@ -3409,6 +3607,24 @@
           "part_key": "TCA9554",
           "value": "TCA9554DWR"
         },
+        "U74": {
+          "assembly": "power",
+          "description": "Input eFuse: inrush, OVLO, reverse blocking, circuit breaker",
+          "extras": {},
+          "lib": "EFUSE",
+          "package": "VQFN-HR-10 RPW 2x2 mm",
+          "part_key": "EFUSE",
+          "value": "TPS259474ARPW"
+        },
+        "U75": {
+          "assembly": "led-switch",
+          "description": "LED_OE_N = Schmitt(Q1 gate) OR LED_EN_N: buffer on only once LED_5V is up",
+          "extras": {},
+          "lib": "LVC1G97",
+          "package": "SOT-23-6 (DBV)",
+          "part_key": "LED_ENABLE_GATE",
+          "value": "SN74LVC1G97"
+        },
         "U8": {
           "assembly": "square/C1",
           "description": "Clocked 5050 RGB LED",
@@ -3995,14 +4211,6 @@
               "2"
             ],
             [
-              "R1",
-              "1"
-            ],
-            [
-              "R2",
-              "1"
-            ],
-            [
               "TP5",
               "1"
             ],
@@ -4096,43 +4304,11 @@
               "1"
             ],
             [
-              "C10",
+              "C140",
               "1"
             ],
             [
-              "C11",
-              "1"
-            ],
-            [
-              "C12",
-              "1"
-            ],
-            [
-              "C13",
-              "1"
-            ],
-            [
-              "C14",
-              "1"
-            ],
-            [
-              "C15",
-              "1"
-            ],
-            [
-              "C16",
-              "1"
-            ],
-            [
-              "C17",
-              "1"
-            ],
-            [
-              "C18",
-              "1"
-            ],
-            [
-              "C19",
+              "C146",
               "1"
             ],
             [
@@ -4140,227 +4316,7 @@
               "1"
             ],
             [
-              "C20",
-              "1"
-            ],
-            [
-              "C21",
-              "1"
-            ],
-            [
-              "C22",
-              "1"
-            ],
-            [
-              "C23",
-              "1"
-            ],
-            [
-              "C24",
-              "1"
-            ],
-            [
-              "C25",
-              "1"
-            ],
-            [
-              "C26",
-              "1"
-            ],
-            [
-              "C27",
-              "1"
-            ],
-            [
-              "C28",
-              "1"
-            ],
-            [
-              "C29",
-              "1"
-            ],
-            [
-              "C30",
-              "1"
-            ],
-            [
-              "C31",
-              "1"
-            ],
-            [
-              "C32",
-              "1"
-            ],
-            [
-              "C33",
-              "1"
-            ],
-            [
-              "C34",
-              "1"
-            ],
-            [
-              "C35",
-              "1"
-            ],
-            [
-              "C36",
-              "1"
-            ],
-            [
-              "C37",
-              "1"
-            ],
-            [
-              "C38",
-              "1"
-            ],
-            [
-              "C39",
-              "1"
-            ],
-            [
-              "C40",
-              "1"
-            ],
-            [
-              "C41",
-              "1"
-            ],
-            [
-              "C42",
-              "1"
-            ],
-            [
-              "C43",
-              "1"
-            ],
-            [
-              "C44",
-              "1"
-            ],
-            [
-              "C45",
-              "1"
-            ],
-            [
-              "C46",
-              "1"
-            ],
-            [
-              "C47",
-              "1"
-            ],
-            [
-              "C48",
-              "1"
-            ],
-            [
-              "C49",
-              "1"
-            ],
-            [
-              "C50",
-              "1"
-            ],
-            [
-              "C51",
-              "1"
-            ],
-            [
-              "C52",
-              "1"
-            ],
-            [
-              "C53",
-              "1"
-            ],
-            [
-              "C54",
-              "1"
-            ],
-            [
-              "C55",
-              "1"
-            ],
-            [
-              "C56",
-              "1"
-            ],
-            [
-              "C57",
-              "1"
-            ],
-            [
-              "C58",
-              "1"
-            ],
-            [
-              "C59",
-              "1"
-            ],
-            [
-              "C60",
-              "1"
-            ],
-            [
-              "C61",
-              "1"
-            ],
-            [
-              "C62",
-              "1"
-            ],
-            [
-              "C63",
-              "1"
-            ],
-            [
-              "C64",
-              "1"
-            ],
-            [
-              "C65",
-              "1"
-            ],
-            [
-              "C66",
-              "1"
-            ],
-            [
-              "C67",
-              "1"
-            ],
-            [
-              "C68",
-              "1"
-            ],
-            [
-              "C69",
-              "1"
-            ],
-            [
               "C7",
-              "1"
-            ],
-            [
-              "C70",
-              "1"
-            ],
-            [
-              "C71",
-              "1"
-            ],
-            [
-              "C8",
-              "1"
-            ],
-            [
-              "C9",
-              "1"
-            ],
-            [
-              "D1",
               "1"
             ],
             [
@@ -4372,172 +4328,24 @@
               "4"
             ],
             [
-              "SW13",
+              "Q1",
+              "1"
+            ],
+            [
+              "Q1",
+              "2"
+            ],
+            [
+              "Q1",
+              "3"
+            ],
+            [
+              "R15",
               "2"
             ],
             [
               "TP1",
               "1"
-            ],
-            [
-              "U10",
-              "4"
-            ],
-            [
-              "U11",
-              "4"
-            ],
-            [
-              "U12",
-              "4"
-            ],
-            [
-              "U13",
-              "4"
-            ],
-            [
-              "U14",
-              "4"
-            ],
-            [
-              "U15",
-              "4"
-            ],
-            [
-              "U16",
-              "4"
-            ],
-            [
-              "U17",
-              "4"
-            ],
-            [
-              "U18",
-              "4"
-            ],
-            [
-              "U19",
-              "4"
-            ],
-            [
-              "U20",
-              "4"
-            ],
-            [
-              "U21",
-              "4"
-            ],
-            [
-              "U22",
-              "4"
-            ],
-            [
-              "U23",
-              "4"
-            ],
-            [
-              "U24",
-              "4"
-            ],
-            [
-              "U25",
-              "4"
-            ],
-            [
-              "U26",
-              "4"
-            ],
-            [
-              "U27",
-              "4"
-            ],
-            [
-              "U28",
-              "4"
-            ],
-            [
-              "U29",
-              "4"
-            ],
-            [
-              "U30",
-              "4"
-            ],
-            [
-              "U31",
-              "4"
-            ],
-            [
-              "U32",
-              "4"
-            ],
-            [
-              "U33",
-              "4"
-            ],
-            [
-              "U34",
-              "4"
-            ],
-            [
-              "U35",
-              "4"
-            ],
-            [
-              "U36",
-              "4"
-            ],
-            [
-              "U37",
-              "4"
-            ],
-            [
-              "U38",
-              "4"
-            ],
-            [
-              "U39",
-              "4"
-            ],
-            [
-              "U40",
-              "4"
-            ],
-            [
-              "U41",
-              "4"
-            ],
-            [
-              "U42",
-              "4"
-            ],
-            [
-              "U43",
-              "4"
-            ],
-            [
-              "U44",
-              "4"
-            ],
-            [
-              "U45",
-              "4"
-            ],
-            [
-              "U46",
-              "4"
-            ],
-            [
-              "U47",
-              "4"
-            ],
-            [
-              "U48",
-              "4"
-            ],
-            [
-              "U49",
-              "4"
             ],
             [
               "U5",
@@ -4552,100 +4360,16 @@
               "14"
             ],
             [
-              "U50",
-              "4"
+              "U74",
+              "6"
             ],
             [
-              "U51",
-              "4"
+              "U75",
+              "3"
             ],
             [
-              "U52",
-              "4"
-            ],
-            [
-              "U53",
-              "4"
-            ],
-            [
-              "U54",
-              "4"
-            ],
-            [
-              "U55",
-              "4"
-            ],
-            [
-              "U56",
-              "4"
-            ],
-            [
-              "U57",
-              "4"
-            ],
-            [
-              "U58",
-              "4"
-            ],
-            [
-              "U59",
-              "4"
-            ],
-            [
-              "U6",
-              "4"
-            ],
-            [
-              "U60",
-              "4"
-            ],
-            [
-              "U61",
-              "4"
-            ],
-            [
-              "U62",
-              "4"
-            ],
-            [
-              "U63",
-              "4"
-            ],
-            [
-              "U64",
-              "4"
-            ],
-            [
-              "U65",
-              "4"
-            ],
-            [
-              "U66",
-              "4"
-            ],
-            [
-              "U67",
-              "4"
-            ],
-            [
-              "U68",
-              "4"
-            ],
-            [
-              "U69",
-              "4"
-            ],
-            [
-              "U7",
-              "4"
-            ],
-            [
-              "U8",
-              "4"
-            ],
-            [
-              "U9",
-              "4"
+              "U75",
+              "5"
             ]
           ]
         },
@@ -4809,12 +4533,28 @@
           "name": "DC_FUSED",
           "pads": [
             [
+              "C141",
+              "1"
+            ],
+            [
+              "D1",
+              "1"
+            ],
+            [
               "F1",
               "2"
             ],
             [
-              "SW13",
-              "1"
+              "J4",
+              "3"
+            ],
+            [
+              "R4",
+              "2"
+            ],
+            [
+              "U74",
+              "5"
             ]
           ]
         },
@@ -4826,8 +4566,89 @@
               "1"
             ],
             [
-              "J3",
+              "J4",
               "1"
+            ]
+          ]
+        },
+        {
+          "name": "EFUSE_DVDT",
+          "pads": [
+            [
+              "C142",
+              "1"
+            ],
+            [
+              "U74",
+              "7"
+            ]
+          ]
+        },
+        {
+          "name": "EFUSE_EN",
+          "pads": [
+            [
+              "R6",
+              "2"
+            ],
+            [
+              "R7",
+              "1"
+            ],
+            [
+              "U74",
+              "1"
+            ]
+          ]
+        },
+        {
+          "name": "EFUSE_ILM",
+          "pads": [
+            [
+              "R3",
+              "1"
+            ],
+            [
+              "U74",
+              "9"
+            ]
+          ]
+        },
+        {
+          "name": "EFUSE_ITIMER",
+          "pads": [
+            [
+              "C143",
+              "1"
+            ],
+            [
+              "U74",
+              "10"
+            ]
+          ]
+        },
+        {
+          "name": "EFUSE_OVLO",
+          "pads": [
+            [
+              "C144",
+              "1"
+            ],
+            [
+              "R4",
+              "1"
+            ],
+            [
+              "R5",
+              "1"
+            ],
+            [
+              "U74",
+              "2"
+            ],
+            [
+              "U74",
+              "4"
             ]
           ]
         },
@@ -5016,6 +4837,30 @@
             ],
             [
               "C14",
+              "2"
+            ],
+            [
+              "C140",
+              "2"
+            ],
+            [
+              "C141",
+              "2"
+            ],
+            [
+              "C142",
+              "2"
+            ],
+            [
+              "C143",
+              "2"
+            ],
+            [
+              "C144",
+              "2"
+            ],
+            [
+              "C146",
               "2"
             ],
             [
@@ -5687,12 +5532,48 @@
               "1"
             ],
             [
-              "J3",
+              "J2",
+              "5"
+            ],
+            [
+              "J2",
+              "6"
+            ],
+            [
+              "J4",
               "2"
             ],
             [
-              "J3",
-              "3"
+              "Q2",
+              "2"
+            ],
+            [
+              "R14",
+              "2"
+            ],
+            [
+              "R17",
+              "2"
+            ],
+            [
+              "R18",
+              "2"
+            ],
+            [
+              "R3",
+              "2"
+            ],
+            [
+              "R5",
+              "2"
+            ],
+            [
+              "R7",
+              "2"
+            ],
+            [
+              "R8",
+              "2"
             ],
             [
               "SW1",
@@ -5956,15 +5837,7 @@
             ],
             [
               "U5",
-              "1"
-            ],
-            [
-              "U5",
               "12"
-            ],
-            [
-              "U5",
-              "4"
             ],
             [
               "U5",
@@ -6095,6 +5968,14 @@
               "8"
             ],
             [
+              "U74",
+              "8"
+            ],
+            [
+              "U75",
+              "2"
+            ],
+            [
               "U8",
               "3"
             ],
@@ -6114,10 +5995,6 @@
             [
               "J2",
               "3"
-            ],
-            [
-              "R2",
-              "2"
             ],
             [
               "TP6",
@@ -6169,10 +6046,6 @@
               "4"
             ],
             [
-              "R1",
-              "2"
-            ],
-            [
               "TP7",
               "1"
             ],
@@ -6207,6 +6080,543 @@
             [
               "U73",
               "15"
+            ]
+          ]
+        },
+        {
+          "name": "LED_5V",
+          "pads": [
+            [
+              "C10",
+              "1"
+            ],
+            [
+              "C11",
+              "1"
+            ],
+            [
+              "C12",
+              "1"
+            ],
+            [
+              "C13",
+              "1"
+            ],
+            [
+              "C14",
+              "1"
+            ],
+            [
+              "C145",
+              "2"
+            ],
+            [
+              "C15",
+              "1"
+            ],
+            [
+              "C16",
+              "1"
+            ],
+            [
+              "C17",
+              "1"
+            ],
+            [
+              "C18",
+              "1"
+            ],
+            [
+              "C19",
+              "1"
+            ],
+            [
+              "C20",
+              "1"
+            ],
+            [
+              "C21",
+              "1"
+            ],
+            [
+              "C22",
+              "1"
+            ],
+            [
+              "C23",
+              "1"
+            ],
+            [
+              "C24",
+              "1"
+            ],
+            [
+              "C25",
+              "1"
+            ],
+            [
+              "C26",
+              "1"
+            ],
+            [
+              "C27",
+              "1"
+            ],
+            [
+              "C28",
+              "1"
+            ],
+            [
+              "C29",
+              "1"
+            ],
+            [
+              "C30",
+              "1"
+            ],
+            [
+              "C31",
+              "1"
+            ],
+            [
+              "C32",
+              "1"
+            ],
+            [
+              "C33",
+              "1"
+            ],
+            [
+              "C34",
+              "1"
+            ],
+            [
+              "C35",
+              "1"
+            ],
+            [
+              "C36",
+              "1"
+            ],
+            [
+              "C37",
+              "1"
+            ],
+            [
+              "C38",
+              "1"
+            ],
+            [
+              "C39",
+              "1"
+            ],
+            [
+              "C40",
+              "1"
+            ],
+            [
+              "C41",
+              "1"
+            ],
+            [
+              "C42",
+              "1"
+            ],
+            [
+              "C43",
+              "1"
+            ],
+            [
+              "C44",
+              "1"
+            ],
+            [
+              "C45",
+              "1"
+            ],
+            [
+              "C46",
+              "1"
+            ],
+            [
+              "C47",
+              "1"
+            ],
+            [
+              "C48",
+              "1"
+            ],
+            [
+              "C49",
+              "1"
+            ],
+            [
+              "C50",
+              "1"
+            ],
+            [
+              "C51",
+              "1"
+            ],
+            [
+              "C52",
+              "1"
+            ],
+            [
+              "C53",
+              "1"
+            ],
+            [
+              "C54",
+              "1"
+            ],
+            [
+              "C55",
+              "1"
+            ],
+            [
+              "C56",
+              "1"
+            ],
+            [
+              "C57",
+              "1"
+            ],
+            [
+              "C58",
+              "1"
+            ],
+            [
+              "C59",
+              "1"
+            ],
+            [
+              "C60",
+              "1"
+            ],
+            [
+              "C61",
+              "1"
+            ],
+            [
+              "C62",
+              "1"
+            ],
+            [
+              "C63",
+              "1"
+            ],
+            [
+              "C64",
+              "1"
+            ],
+            [
+              "C65",
+              "1"
+            ],
+            [
+              "C66",
+              "1"
+            ],
+            [
+              "C67",
+              "1"
+            ],
+            [
+              "C68",
+              "1"
+            ],
+            [
+              "C69",
+              "1"
+            ],
+            [
+              "C70",
+              "1"
+            ],
+            [
+              "C71",
+              "1"
+            ],
+            [
+              "C8",
+              "1"
+            ],
+            [
+              "C9",
+              "1"
+            ],
+            [
+              "Q1",
+              "5"
+            ],
+            [
+              "Q1",
+              "6"
+            ],
+            [
+              "Q1",
+              "7"
+            ],
+            [
+              "Q1",
+              "8"
+            ],
+            [
+              "U10",
+              "4"
+            ],
+            [
+              "U11",
+              "4"
+            ],
+            [
+              "U12",
+              "4"
+            ],
+            [
+              "U13",
+              "4"
+            ],
+            [
+              "U14",
+              "4"
+            ],
+            [
+              "U15",
+              "4"
+            ],
+            [
+              "U16",
+              "4"
+            ],
+            [
+              "U17",
+              "4"
+            ],
+            [
+              "U18",
+              "4"
+            ],
+            [
+              "U19",
+              "4"
+            ],
+            [
+              "U20",
+              "4"
+            ],
+            [
+              "U21",
+              "4"
+            ],
+            [
+              "U22",
+              "4"
+            ],
+            [
+              "U23",
+              "4"
+            ],
+            [
+              "U24",
+              "4"
+            ],
+            [
+              "U25",
+              "4"
+            ],
+            [
+              "U26",
+              "4"
+            ],
+            [
+              "U27",
+              "4"
+            ],
+            [
+              "U28",
+              "4"
+            ],
+            [
+              "U29",
+              "4"
+            ],
+            [
+              "U30",
+              "4"
+            ],
+            [
+              "U31",
+              "4"
+            ],
+            [
+              "U32",
+              "4"
+            ],
+            [
+              "U33",
+              "4"
+            ],
+            [
+              "U34",
+              "4"
+            ],
+            [
+              "U35",
+              "4"
+            ],
+            [
+              "U36",
+              "4"
+            ],
+            [
+              "U37",
+              "4"
+            ],
+            [
+              "U38",
+              "4"
+            ],
+            [
+              "U39",
+              "4"
+            ],
+            [
+              "U40",
+              "4"
+            ],
+            [
+              "U41",
+              "4"
+            ],
+            [
+              "U42",
+              "4"
+            ],
+            [
+              "U43",
+              "4"
+            ],
+            [
+              "U44",
+              "4"
+            ],
+            [
+              "U45",
+              "4"
+            ],
+            [
+              "U46",
+              "4"
+            ],
+            [
+              "U47",
+              "4"
+            ],
+            [
+              "U48",
+              "4"
+            ],
+            [
+              "U49",
+              "4"
+            ],
+            [
+              "U50",
+              "4"
+            ],
+            [
+              "U51",
+              "4"
+            ],
+            [
+              "U52",
+              "4"
+            ],
+            [
+              "U53",
+              "4"
+            ],
+            [
+              "U54",
+              "4"
+            ],
+            [
+              "U55",
+              "4"
+            ],
+            [
+              "U56",
+              "4"
+            ],
+            [
+              "U57",
+              "4"
+            ],
+            [
+              "U58",
+              "4"
+            ],
+            [
+              "U59",
+              "4"
+            ],
+            [
+              "U6",
+              "4"
+            ],
+            [
+              "U60",
+              "4"
+            ],
+            [
+              "U61",
+              "4"
+            ],
+            [
+              "U62",
+              "4"
+            ],
+            [
+              "U63",
+              "4"
+            ],
+            [
+              "U64",
+              "4"
+            ],
+            [
+              "U65",
+              "4"
+            ],
+            [
+              "U66",
+              "4"
+            ],
+            [
+              "U67",
+              "4"
+            ],
+            [
+              "U68",
+              "4"
+            ],
+            [
+              "U69",
+              "4"
+            ],
+            [
+              "U7",
+              "4"
+            ],
+            [
+              "U8",
+              "4"
+            ],
+            [
+              "U9",
+              "4"
             ]
           ]
         },
@@ -6305,6 +6715,10 @@
           "name": "LED_CLK_5V",
           "pads": [
             [
+              "R18",
+              "1"
+            ],
+            [
               "TP4",
               "1"
             ],
@@ -6322,12 +6736,25 @@
           "name": "LED_D16",
           "pads": [
             [
-              "U21",
-              "6"
+              "R10",
+              "1"
             ],
             [
               "U22",
               "1"
+            ]
+          ]
+        },
+        {
+          "name": "LED_D16_SRC",
+          "pads": [
+            [
+              "R10",
+              "2"
+            ],
+            [
+              "U21",
+              "6"
             ]
           ]
         },
@@ -6348,12 +6775,25 @@
           "name": "LED_D32",
           "pads": [
             [
-              "U37",
-              "6"
+              "R11",
+              "1"
             ],
             [
               "U38",
               "1"
+            ]
+          ]
+        },
+        {
+          "name": "LED_D32_SRC",
+          "pads": [
+            [
+              "R11",
+              "2"
+            ],
+            [
+              "U37",
+              "6"
             ]
           ]
         },
@@ -6374,12 +6814,25 @@
           "name": "LED_D48",
           "pads": [
             [
-              "U53",
-              "6"
+              "R12",
+              "1"
             ],
             [
               "U54",
               "1"
+            ]
+          ]
+        },
+        {
+          "name": "LED_D48_SRC",
+          "pads": [
+            [
+              "R12",
+              "2"
+            ],
+            [
+              "U53",
+              "6"
             ]
           ]
         },
@@ -6413,16 +6866,122 @@
           "name": "LED_DATA_5V",
           "pads": [
             [
+              "R17",
+              "1"
+            ],
+            [
+              "R9",
+              "1"
+            ],
+            [
               "TP3",
               "1"
             ],
             [
+              "U6",
+              "1"
+            ]
+          ]
+        },
+        {
+          "name": "LED_DATA_BUF",
+          "pads": [
+            [
+              "R9",
+              "2"
+            ],
+            [
               "U5",
+              "3"
+            ]
+          ]
+        },
+        {
+          "name": "LED_EN",
+          "pads": [
+            [
+              "J1",
+              "37"
+            ],
+            [
+              "R13",
+              "1"
+            ]
+          ]
+        },
+        {
+          "name": "LED_EN_GATE",
+          "pads": [
+            [
+              "Q2",
+              "1"
+            ],
+            [
+              "R13",
+              "2"
+            ],
+            [
+              "R14",
+              "1"
+            ]
+          ]
+        },
+        {
+          "name": "LED_EN_N",
+          "pads": [
+            [
+              "Q2",
               "3"
             ],
             [
-              "U6",
+              "R15",
               "1"
+            ],
+            [
+              "R16",
+              "1"
+            ],
+            [
+              "U75",
+              "1"
+            ]
+          ]
+        },
+        {
+          "name": "LED_OE_N",
+          "pads": [
+            [
+              "U5",
+              "1"
+            ],
+            [
+              "U5",
+              "4"
+            ],
+            [
+              "U75",
+              "4"
+            ]
+          ]
+        },
+        {
+          "name": "LED_SW_GATE",
+          "pads": [
+            [
+              "C145",
+              "1"
+            ],
+            [
+              "Q1",
+              "4"
+            ],
+            [
+              "R16",
+              "2"
+            ],
+            [
+              "U75",
+              "6"
             ]
           ]
         },
@@ -7883,6 +8442,23 @@
           ]
         },
         {
+          "name": "RUN",
+          "pads": [
+            [
+              "J4",
+              "4"
+            ],
+            [
+              "R6",
+              "1"
+            ],
+            [
+              "R8",
+              "1"
+            ]
+          ]
+        },
+        {
           "name": "SPI_CLK_3V3",
           "pads": [
             [
@@ -8831,16 +9407,6 @@
           ]
         },
         {
-          "name": "unconnected-(J1-Pad37)",
-          "no_connect": true,
-          "pads": [
-            [
-              "J1",
-              "37"
-            ]
-          ]
-        },
-        {
           "name": "unconnected-(J1-Pad7)",
           "no_connect": true,
           "pads": [
@@ -8977,6 +9543,16 @@
             [
               "U73",
               "13"
+            ]
+          ]
+        },
+        {
+          "name": "unconnected-(U74-Pad3)",
+          "no_connect": true,
+          "pads": [
+            [
+              "U74",
+              "3"
             ]
           ]
         }
@@ -9540,14 +10116,6 @@
             "2"
           ],
           [
-            "R1",
-            "1"
-          ],
-          [
-            "R2",
-            "1"
-          ],
-          [
             "TP5",
             "1"
           ],
@@ -9638,43 +10206,11 @@
             "1"
           ],
           [
-            "C10",
+            "C140",
             "1"
           ],
           [
-            "C11",
-            "1"
-          ],
-          [
-            "C12",
-            "1"
-          ],
-          [
-            "C13",
-            "1"
-          ],
-          [
-            "C14",
-            "1"
-          ],
-          [
-            "C15",
-            "1"
-          ],
-          [
-            "C16",
-            "1"
-          ],
-          [
-            "C17",
-            "1"
-          ],
-          [
-            "C18",
-            "1"
-          ],
-          [
-            "C19",
+            "C146",
             "1"
           ],
           [
@@ -9682,227 +10218,7 @@
             "1"
           ],
           [
-            "C20",
-            "1"
-          ],
-          [
-            "C21",
-            "1"
-          ],
-          [
-            "C22",
-            "1"
-          ],
-          [
-            "C23",
-            "1"
-          ],
-          [
-            "C24",
-            "1"
-          ],
-          [
-            "C25",
-            "1"
-          ],
-          [
-            "C26",
-            "1"
-          ],
-          [
-            "C27",
-            "1"
-          ],
-          [
-            "C28",
-            "1"
-          ],
-          [
-            "C29",
-            "1"
-          ],
-          [
-            "C30",
-            "1"
-          ],
-          [
-            "C31",
-            "1"
-          ],
-          [
-            "C32",
-            "1"
-          ],
-          [
-            "C33",
-            "1"
-          ],
-          [
-            "C34",
-            "1"
-          ],
-          [
-            "C35",
-            "1"
-          ],
-          [
-            "C36",
-            "1"
-          ],
-          [
-            "C37",
-            "1"
-          ],
-          [
-            "C38",
-            "1"
-          ],
-          [
-            "C39",
-            "1"
-          ],
-          [
-            "C40",
-            "1"
-          ],
-          [
-            "C41",
-            "1"
-          ],
-          [
-            "C42",
-            "1"
-          ],
-          [
-            "C43",
-            "1"
-          ],
-          [
-            "C44",
-            "1"
-          ],
-          [
-            "C45",
-            "1"
-          ],
-          [
-            "C46",
-            "1"
-          ],
-          [
-            "C47",
-            "1"
-          ],
-          [
-            "C48",
-            "1"
-          ],
-          [
-            "C49",
-            "1"
-          ],
-          [
-            "C50",
-            "1"
-          ],
-          [
-            "C51",
-            "1"
-          ],
-          [
-            "C52",
-            "1"
-          ],
-          [
-            "C53",
-            "1"
-          ],
-          [
-            "C54",
-            "1"
-          ],
-          [
-            "C55",
-            "1"
-          ],
-          [
-            "C56",
-            "1"
-          ],
-          [
-            "C57",
-            "1"
-          ],
-          [
-            "C58",
-            "1"
-          ],
-          [
-            "C59",
-            "1"
-          ],
-          [
-            "C60",
-            "1"
-          ],
-          [
-            "C61",
-            "1"
-          ],
-          [
-            "C62",
-            "1"
-          ],
-          [
-            "C63",
-            "1"
-          ],
-          [
-            "C64",
-            "1"
-          ],
-          [
-            "C65",
-            "1"
-          ],
-          [
-            "C66",
-            "1"
-          ],
-          [
-            "C67",
-            "1"
-          ],
-          [
-            "C68",
-            "1"
-          ],
-          [
-            "C69",
-            "1"
-          ],
-          [
             "C7",
-            "1"
-          ],
-          [
-            "C70",
-            "1"
-          ],
-          [
-            "C71",
-            "1"
-          ],
-          [
-            "C8",
-            "1"
-          ],
-          [
-            "C9",
-            "1"
-          ],
-          [
-            "D1",
             "1"
           ],
           [
@@ -9914,172 +10230,24 @@
             "4"
           ],
           [
-            "SW13",
+            "Q1",
+            "1"
+          ],
+          [
+            "Q1",
+            "2"
+          ],
+          [
+            "Q1",
+            "3"
+          ],
+          [
+            "R15",
             "2"
           ],
           [
             "TP1",
             "1"
-          ],
-          [
-            "U10",
-            "4"
-          ],
-          [
-            "U11",
-            "4"
-          ],
-          [
-            "U12",
-            "4"
-          ],
-          [
-            "U13",
-            "4"
-          ],
-          [
-            "U14",
-            "4"
-          ],
-          [
-            "U15",
-            "4"
-          ],
-          [
-            "U16",
-            "4"
-          ],
-          [
-            "U17",
-            "4"
-          ],
-          [
-            "U18",
-            "4"
-          ],
-          [
-            "U19",
-            "4"
-          ],
-          [
-            "U20",
-            "4"
-          ],
-          [
-            "U21",
-            "4"
-          ],
-          [
-            "U22",
-            "4"
-          ],
-          [
-            "U23",
-            "4"
-          ],
-          [
-            "U24",
-            "4"
-          ],
-          [
-            "U25",
-            "4"
-          ],
-          [
-            "U26",
-            "4"
-          ],
-          [
-            "U27",
-            "4"
-          ],
-          [
-            "U28",
-            "4"
-          ],
-          [
-            "U29",
-            "4"
-          ],
-          [
-            "U30",
-            "4"
-          ],
-          [
-            "U31",
-            "4"
-          ],
-          [
-            "U32",
-            "4"
-          ],
-          [
-            "U33",
-            "4"
-          ],
-          [
-            "U34",
-            "4"
-          ],
-          [
-            "U35",
-            "4"
-          ],
-          [
-            "U36",
-            "4"
-          ],
-          [
-            "U37",
-            "4"
-          ],
-          [
-            "U38",
-            "4"
-          ],
-          [
-            "U39",
-            "4"
-          ],
-          [
-            "U40",
-            "4"
-          ],
-          [
-            "U41",
-            "4"
-          ],
-          [
-            "U42",
-            "4"
-          ],
-          [
-            "U43",
-            "4"
-          ],
-          [
-            "U44",
-            "4"
-          ],
-          [
-            "U45",
-            "4"
-          ],
-          [
-            "U46",
-            "4"
-          ],
-          [
-            "U47",
-            "4"
-          ],
-          [
-            "U48",
-            "4"
-          ],
-          [
-            "U49",
-            "4"
           ],
           [
             "U5",
@@ -10094,100 +10262,16 @@
             "14"
           ],
           [
-            "U50",
-            "4"
+            "U74",
+            "6"
           ],
           [
-            "U51",
-            "4"
+            "U75",
+            "3"
           ],
           [
-            "U52",
-            "4"
-          ],
-          [
-            "U53",
-            "4"
-          ],
-          [
-            "U54",
-            "4"
-          ],
-          [
-            "U55",
-            "4"
-          ],
-          [
-            "U56",
-            "4"
-          ],
-          [
-            "U57",
-            "4"
-          ],
-          [
-            "U58",
-            "4"
-          ],
-          [
-            "U59",
-            "4"
-          ],
-          [
-            "U6",
-            "4"
-          ],
-          [
-            "U60",
-            "4"
-          ],
-          [
-            "U61",
-            "4"
-          ],
-          [
-            "U62",
-            "4"
-          ],
-          [
-            "U63",
-            "4"
-          ],
-          [
-            "U64",
-            "4"
-          ],
-          [
-            "U65",
-            "4"
-          ],
-          [
-            "U66",
-            "4"
-          ],
-          [
-            "U67",
-            "4"
-          ],
-          [
-            "U68",
-            "4"
-          ],
-          [
-            "U69",
-            "4"
-          ],
-          [
-            "U7",
-            "4"
-          ],
-          [
-            "U8",
-            "4"
-          ],
-          [
-            "U9",
-            "4"
+            "U75",
+            "5"
           ]
         ],
         "BTN_DOWN": [
@@ -10312,12 +10396,28 @@
         ],
         "DC_FUSED": [
           [
+            "C141",
+            "1"
+          ],
+          [
+            "D1",
+            "1"
+          ],
+          [
             "F1",
             "2"
           ],
           [
-            "SW13",
-            "1"
+            "J4",
+            "3"
+          ],
+          [
+            "R4",
+            "2"
+          ],
+          [
+            "U74",
+            "5"
           ]
         ],
         "DC_IN": [
@@ -10326,8 +10426,74 @@
             "1"
           ],
           [
-            "J3",
+            "J4",
             "1"
+          ]
+        ],
+        "EFUSE_DVDT": [
+          [
+            "C142",
+            "1"
+          ],
+          [
+            "U74",
+            "7"
+          ]
+        ],
+        "EFUSE_EN": [
+          [
+            "R6",
+            "2"
+          ],
+          [
+            "R7",
+            "1"
+          ],
+          [
+            "U74",
+            "1"
+          ]
+        ],
+        "EFUSE_ILM": [
+          [
+            "R3",
+            "1"
+          ],
+          [
+            "U74",
+            "9"
+          ]
+        ],
+        "EFUSE_ITIMER": [
+          [
+            "C143",
+            "1"
+          ],
+          [
+            "U74",
+            "10"
+          ]
+        ],
+        "EFUSE_OVLO": [
+          [
+            "C144",
+            "1"
+          ],
+          [
+            "R4",
+            "1"
+          ],
+          [
+            "R5",
+            "1"
+          ],
+          [
+            "U74",
+            "2"
+          ],
+          [
+            "U74",
+            "4"
           ]
         ],
         "GND": [
@@ -10513,6 +10679,30 @@
           ],
           [
             "C14",
+            "2"
+          ],
+          [
+            "C140",
+            "2"
+          ],
+          [
+            "C141",
+            "2"
+          ],
+          [
+            "C142",
+            "2"
+          ],
+          [
+            "C143",
+            "2"
+          ],
+          [
+            "C144",
+            "2"
+          ],
+          [
+            "C146",
             "2"
           ],
           [
@@ -11184,12 +11374,48 @@
             "1"
           ],
           [
-            "J3",
+            "J2",
+            "5"
+          ],
+          [
+            "J2",
+            "6"
+          ],
+          [
+            "J4",
             "2"
           ],
           [
-            "J3",
-            "3"
+            "Q2",
+            "2"
+          ],
+          [
+            "R14",
+            "2"
+          ],
+          [
+            "R17",
+            "2"
+          ],
+          [
+            "R18",
+            "2"
+          ],
+          [
+            "R3",
+            "2"
+          ],
+          [
+            "R5",
+            "2"
+          ],
+          [
+            "R7",
+            "2"
+          ],
+          [
+            "R8",
+            "2"
           ],
           [
             "SW1",
@@ -11453,15 +11679,7 @@
           ],
           [
             "U5",
-            "1"
-          ],
-          [
-            "U5",
             "12"
-          ],
-          [
-            "U5",
-            "4"
           ],
           [
             "U5",
@@ -11592,6 +11810,14 @@
             "8"
           ],
           [
+            "U74",
+            "8"
+          ],
+          [
+            "U75",
+            "2"
+          ],
+          [
             "U8",
             "3"
           ],
@@ -11608,10 +11834,6 @@
           [
             "J2",
             "3"
-          ],
-          [
-            "R2",
-            "2"
           ],
           [
             "TP6",
@@ -11660,10 +11882,6 @@
             "4"
           ],
           [
-            "R1",
-            "2"
-          ],
-          [
             "TP7",
             "1"
           ],
@@ -11698,6 +11916,540 @@
           [
             "U73",
             "15"
+          ]
+        ],
+        "LED_5V": [
+          [
+            "C10",
+            "1"
+          ],
+          [
+            "C11",
+            "1"
+          ],
+          [
+            "C12",
+            "1"
+          ],
+          [
+            "C13",
+            "1"
+          ],
+          [
+            "C14",
+            "1"
+          ],
+          [
+            "C145",
+            "2"
+          ],
+          [
+            "C15",
+            "1"
+          ],
+          [
+            "C16",
+            "1"
+          ],
+          [
+            "C17",
+            "1"
+          ],
+          [
+            "C18",
+            "1"
+          ],
+          [
+            "C19",
+            "1"
+          ],
+          [
+            "C20",
+            "1"
+          ],
+          [
+            "C21",
+            "1"
+          ],
+          [
+            "C22",
+            "1"
+          ],
+          [
+            "C23",
+            "1"
+          ],
+          [
+            "C24",
+            "1"
+          ],
+          [
+            "C25",
+            "1"
+          ],
+          [
+            "C26",
+            "1"
+          ],
+          [
+            "C27",
+            "1"
+          ],
+          [
+            "C28",
+            "1"
+          ],
+          [
+            "C29",
+            "1"
+          ],
+          [
+            "C30",
+            "1"
+          ],
+          [
+            "C31",
+            "1"
+          ],
+          [
+            "C32",
+            "1"
+          ],
+          [
+            "C33",
+            "1"
+          ],
+          [
+            "C34",
+            "1"
+          ],
+          [
+            "C35",
+            "1"
+          ],
+          [
+            "C36",
+            "1"
+          ],
+          [
+            "C37",
+            "1"
+          ],
+          [
+            "C38",
+            "1"
+          ],
+          [
+            "C39",
+            "1"
+          ],
+          [
+            "C40",
+            "1"
+          ],
+          [
+            "C41",
+            "1"
+          ],
+          [
+            "C42",
+            "1"
+          ],
+          [
+            "C43",
+            "1"
+          ],
+          [
+            "C44",
+            "1"
+          ],
+          [
+            "C45",
+            "1"
+          ],
+          [
+            "C46",
+            "1"
+          ],
+          [
+            "C47",
+            "1"
+          ],
+          [
+            "C48",
+            "1"
+          ],
+          [
+            "C49",
+            "1"
+          ],
+          [
+            "C50",
+            "1"
+          ],
+          [
+            "C51",
+            "1"
+          ],
+          [
+            "C52",
+            "1"
+          ],
+          [
+            "C53",
+            "1"
+          ],
+          [
+            "C54",
+            "1"
+          ],
+          [
+            "C55",
+            "1"
+          ],
+          [
+            "C56",
+            "1"
+          ],
+          [
+            "C57",
+            "1"
+          ],
+          [
+            "C58",
+            "1"
+          ],
+          [
+            "C59",
+            "1"
+          ],
+          [
+            "C60",
+            "1"
+          ],
+          [
+            "C61",
+            "1"
+          ],
+          [
+            "C62",
+            "1"
+          ],
+          [
+            "C63",
+            "1"
+          ],
+          [
+            "C64",
+            "1"
+          ],
+          [
+            "C65",
+            "1"
+          ],
+          [
+            "C66",
+            "1"
+          ],
+          [
+            "C67",
+            "1"
+          ],
+          [
+            "C68",
+            "1"
+          ],
+          [
+            "C69",
+            "1"
+          ],
+          [
+            "C70",
+            "1"
+          ],
+          [
+            "C71",
+            "1"
+          ],
+          [
+            "C8",
+            "1"
+          ],
+          [
+            "C9",
+            "1"
+          ],
+          [
+            "Q1",
+            "5"
+          ],
+          [
+            "Q1",
+            "6"
+          ],
+          [
+            "Q1",
+            "7"
+          ],
+          [
+            "Q1",
+            "8"
+          ],
+          [
+            "U10",
+            "4"
+          ],
+          [
+            "U11",
+            "4"
+          ],
+          [
+            "U12",
+            "4"
+          ],
+          [
+            "U13",
+            "4"
+          ],
+          [
+            "U14",
+            "4"
+          ],
+          [
+            "U15",
+            "4"
+          ],
+          [
+            "U16",
+            "4"
+          ],
+          [
+            "U17",
+            "4"
+          ],
+          [
+            "U18",
+            "4"
+          ],
+          [
+            "U19",
+            "4"
+          ],
+          [
+            "U20",
+            "4"
+          ],
+          [
+            "U21",
+            "4"
+          ],
+          [
+            "U22",
+            "4"
+          ],
+          [
+            "U23",
+            "4"
+          ],
+          [
+            "U24",
+            "4"
+          ],
+          [
+            "U25",
+            "4"
+          ],
+          [
+            "U26",
+            "4"
+          ],
+          [
+            "U27",
+            "4"
+          ],
+          [
+            "U28",
+            "4"
+          ],
+          [
+            "U29",
+            "4"
+          ],
+          [
+            "U30",
+            "4"
+          ],
+          [
+            "U31",
+            "4"
+          ],
+          [
+            "U32",
+            "4"
+          ],
+          [
+            "U33",
+            "4"
+          ],
+          [
+            "U34",
+            "4"
+          ],
+          [
+            "U35",
+            "4"
+          ],
+          [
+            "U36",
+            "4"
+          ],
+          [
+            "U37",
+            "4"
+          ],
+          [
+            "U38",
+            "4"
+          ],
+          [
+            "U39",
+            "4"
+          ],
+          [
+            "U40",
+            "4"
+          ],
+          [
+            "U41",
+            "4"
+          ],
+          [
+            "U42",
+            "4"
+          ],
+          [
+            "U43",
+            "4"
+          ],
+          [
+            "U44",
+            "4"
+          ],
+          [
+            "U45",
+            "4"
+          ],
+          [
+            "U46",
+            "4"
+          ],
+          [
+            "U47",
+            "4"
+          ],
+          [
+            "U48",
+            "4"
+          ],
+          [
+            "U49",
+            "4"
+          ],
+          [
+            "U50",
+            "4"
+          ],
+          [
+            "U51",
+            "4"
+          ],
+          [
+            "U52",
+            "4"
+          ],
+          [
+            "U53",
+            "4"
+          ],
+          [
+            "U54",
+            "4"
+          ],
+          [
+            "U55",
+            "4"
+          ],
+          [
+            "U56",
+            "4"
+          ],
+          [
+            "U57",
+            "4"
+          ],
+          [
+            "U58",
+            "4"
+          ],
+          [
+            "U59",
+            "4"
+          ],
+          [
+            "U6",
+            "4"
+          ],
+          [
+            "U60",
+            "4"
+          ],
+          [
+            "U61",
+            "4"
+          ],
+          [
+            "U62",
+            "4"
+          ],
+          [
+            "U63",
+            "4"
+          ],
+          [
+            "U64",
+            "4"
+          ],
+          [
+            "U65",
+            "4"
+          ],
+          [
+            "U66",
+            "4"
+          ],
+          [
+            "U67",
+            "4"
+          ],
+          [
+            "U68",
+            "4"
+          ],
+          [
+            "U69",
+            "4"
+          ],
+          [
+            "U7",
+            "4"
+          ],
+          [
+            "U8",
+            "4"
+          ],
+          [
+            "U9",
+            "4"
           ]
         ],
         "LED_C16": [
@@ -11772,6 +12524,10 @@
         ],
         "LED_CLK_5V": [
           [
+            "R18",
+            "1"
+          ],
+          [
             "TP4",
             "1"
           ],
@@ -11786,12 +12542,22 @@
         ],
         "LED_D16": [
           [
-            "U21",
-            "6"
+            "R10",
+            "1"
           ],
           [
             "U22",
             "1"
+          ]
+        ],
+        "LED_D16_SRC": [
+          [
+            "R10",
+            "2"
+          ],
+          [
+            "U21",
+            "6"
           ]
         ],
         "LED_D24": [
@@ -11806,12 +12572,22 @@
         ],
         "LED_D32": [
           [
-            "U37",
-            "6"
+            "R11",
+            "1"
           ],
           [
             "U38",
             "1"
+          ]
+        ],
+        "LED_D32_SRC": [
+          [
+            "R11",
+            "2"
+          ],
+          [
+            "U37",
+            "6"
           ]
         ],
         "LED_D40": [
@@ -11826,12 +12602,22 @@
         ],
         "LED_D48": [
           [
-            "U53",
-            "6"
+            "R12",
+            "1"
           ],
           [
             "U54",
             "1"
+          ]
+        ],
+        "LED_D48_SRC": [
+          [
+            "R12",
+            "2"
+          ],
+          [
+            "U53",
+            "6"
           ]
         ],
         "LED_D56": [
@@ -11856,16 +12642,104 @@
         ],
         "LED_DATA_5V": [
           [
+            "R17",
+            "1"
+          ],
+          [
+            "R9",
+            "1"
+          ],
+          [
             "TP3",
             "1"
           ],
           [
+            "U6",
+            "1"
+          ]
+        ],
+        "LED_DATA_BUF": [
+          [
+            "R9",
+            "2"
+          ],
+          [
             "U5",
+            "3"
+          ]
+        ],
+        "LED_EN": [
+          [
+            "J1",
+            "37"
+          ],
+          [
+            "R13",
+            "1"
+          ]
+        ],
+        "LED_EN_GATE": [
+          [
+            "Q2",
+            "1"
+          ],
+          [
+            "R13",
+            "2"
+          ],
+          [
+            "R14",
+            "1"
+          ]
+        ],
+        "LED_EN_N": [
+          [
+            "Q2",
             "3"
           ],
           [
-            "U6",
+            "R15",
             "1"
+          ],
+          [
+            "R16",
+            "1"
+          ],
+          [
+            "U75",
+            "1"
+          ]
+        ],
+        "LED_OE_N": [
+          [
+            "U5",
+            "1"
+          ],
+          [
+            "U5",
+            "4"
+          ],
+          [
+            "U75",
+            "4"
+          ]
+        ],
+        "LED_SW_GATE": [
+          [
+            "C145",
+            "1"
+          ],
+          [
+            "Q1",
+            "4"
+          ],
+          [
+            "R16",
+            "2"
+          ],
+          [
+            "U75",
+            "6"
           ]
         ],
         "N$115": [
@@ -12986,6 +13860,20 @@
           [
             "U9",
             "2"
+          ]
+        ],
+        "RUN": [
+          [
+            "J4",
+            "4"
+          ],
+          [
+            "R6",
+            "1"
+          ],
+          [
+            "R8",
+            "1"
           ]
         ],
         "SPI_CLK_3V3": [

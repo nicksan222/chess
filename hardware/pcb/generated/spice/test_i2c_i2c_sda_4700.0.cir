@@ -1,0 +1,37 @@
+I2C I2C_SDA edge, OLED pull-up 4700.0
+.model SINK SW(Ron=1e-3 Roff=1e12 Vt=0.5 Vh=0.1)
+VLO lo 0 3.135
+RW lo bus 1310.923596195152
+CB bus 0 2.4287115905343164e-10
+VREL rel 0 PULSE(1 0 1u 1n 1n 1 2)
+SREL bus 0 rel 0 SINK
+VHI hi 0 3.465
+RS hi held 1292.1012033323047
+RSINK held 0 133.33333333333334
+.tran 1n 12u
+.control
+run
+meas tran t30 WHEN v(bus)=0.9404999999999999 RISE=1
+meas tran t70 WHEN v(bus)=2.1944999999999997 RISE=1
+let result_rise = (t70 - t30) * 1e9
+meas tran result_low FIND v(held) AT=6u
+print result_rise result_low
+if result_rise < 264.373
+echo "ASSERTION FAILED: result_rise below 264.373"
+quit 1
+end
+if result_rise > 275.163
+echo "ASSERTION FAILED: result_rise above 275.163"
+quit 1
+end
+if result_low < 0
+echo "ASSERTION FAILED: result_low below 0"
+quit 1
+end
+if result_low > 0.4
+echo "ASSERTION FAILED: result_low above 0.4"
+quit 1
+end
+quit 0
+.endc
+.end

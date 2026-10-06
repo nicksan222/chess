@@ -1,0 +1,54 @@
+LED link LED_C24, Drive(ohms=100.0, rise_ns=3.0), 4.5 V
+Tlled_c24_0 lled_c24_0 0 lled_c24_1 0 Z0=33.29027936627942 TD=0.24790870362703316n
+Clled_c24_1 lled_c24_0 0 5.585159730098562e-13
+Clled_c24_2 lled_c24_1 0 5.585159730098562e-13
+Vlled_c24 lled_c24_src 0 PULSE(4.5 0.0 1.0n 3.0n 1n 100n 200n)
+Rdrv_lled_c24 lled_c24_src lled_c24_1 100.0
+Crx_lled_c24 lled_c24_0 0 5e-12
+.tran 10p 60.0n
+.control
+run
+meas tran cross WHEN v(lled_c24_0)=1.3499999999999999 FALL=1
+meas tran result_peak MAX v(lled_c24_0)
+meas tran result_trough MIN v(lled_c24_0)
+meas tran result_hold MAX v(lled_c24_0) FROM=$&cross
+meas tran last WHEN v(lled_c24_0)=0.45 CROSS=LAST
+let result_settle = (last - 1.0n) * 1e9
+let result_arrival = (cross - 1.0n) * 1e9
+print result_settle
+print result_arrival
+if result_settle < 0
+echo "ASSERTION FAILED: result_settle below 0"
+quit 1
+end
+if result_settle > 25
+echo "ASSERTION FAILED: result_settle above 25"
+quit 1
+end
+if result_peak < 0
+echo "ASSERTION FAILED: result_peak below 0"
+quit 1
+end
+if result_peak > 4.8
+echo "ASSERTION FAILED: result_peak above 4.8"
+quit 1
+end
+if result_trough < -0.3
+echo "ASSERTION FAILED: result_trough below -0.3"
+quit 1
+end
+if result_trough > 4.5
+echo "ASSERTION FAILED: result_trough above 4.5"
+quit 1
+end
+if result_hold < -0.3
+echo "ASSERTION FAILED: result_hold below -0.3"
+quit 1
+end
+if result_hold > 1.355
+echo "ASSERTION FAILED: result_hold above 1.355"
+quit 1
+end
+quit 0
+.endc
+.end

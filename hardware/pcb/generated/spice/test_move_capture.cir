@@ -1,5 +1,5 @@
 Generated chess-board capture sensor sequence
-.model HALLSW SW(Ron=50.0 Roff=1T Vt=1.65 Vh=0.1)
+.model HALLSW SW(Ron=300.0 Roff=1T Vt=1.65 Vh=0.1)
 .subckt SQUARE_SENSOR OUT VDD MAG GND
 SOUTPUT OUT GND MAG GND HALLSW
 RPULL OUT VDD 100000.0

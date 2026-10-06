@@ -2,9 +2,9 @@ Generated chess-board open-drain bus inputs
 .model INPUTSW SW(Ron=50.0 Roff=1T Vt=1.65 Vh=0.1)
 VDD 3v3 0 3.3
 VDRIVE drive 0 PULSE(0 3.3 1m 1u 1u 10 20)
-RPULL1 i2c_sda 3v3 4.7k
+RPULL1 i2c_sda 3v3 1818.0
 SDRIVE1 i2c_sda 0 drive 0 INPUTSW
-RPULL2 i2c_scl 3v3 4.7k
+RPULL2 i2c_scl 3v3 1818.0
 SDRIVE2 i2c_scl 0 drive 0 INPUTSW
 .tran 10u 3m
 .control

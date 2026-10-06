@@ -1,0 +1,109 @@
+Generated chess-board LED switch, full_white overload, fast_trip [BEH]
+.subckt EFUSE in out en ovlo gnd
+Bset ovs gnd V={max(0.5 * (1 + tanh((V(ovlo,gnd) - 1.223) / 0.002)), min(0.5 * (1 + tanh((V(ovlo,gnd) - 1.116) / 0.002)), V(ov,gnd)))}
+Rov ovs ov 1k
+Cov ov gnd 1n
+Bcb cbs gnd V={max(0.5 * (1 + tanh((V(td,gnd) - 1.741) / 0.002)), min(0.5 * (1 + tanh((V(cb,gnd) - 0.5) / 0.01)), 1 - 0.5 * (1 + tanh((V(rt,gnd) - 1) / 0.005))))}
+Rcb cbs cb 1k
+Ccb cb gnd 1n
+Crt rt gnd 1
+Brt gnd rt I={0.5 * (1 + tanh((V(cb,gnd) - 0.5) / 0.01)) / 0.11 - 0.5 * (1 + tanh((0.1 - V(cb,gnd)) / 0.01)) * V(rt,gnd) * 1e4}
+Bon on gnd V={0.5 * (1 + tanh((V(en,gnd) - 1.223) / 0.002)) * 0.5 * (1 + tanh((V(in,gnd) - 2.53) / 0.002)) * (1 - V(ov,gnd)) * (1 - 0.5 * (1 + tanh((V(cb,gnd) - 0.5) / 0.01)))}
+Cramp ramp gnd 1
+Bramp gnd ramp I={V(on,gnd) * 345.70135746606337 * 0.5 * (1 + tanh((V(in,gnd) + 1 - V(ramp,gnd)) / 0.05))}
+Breset ramp gnd I={0.5 * (1 + tanh((0.5 - V(on,gnd)) / 0.01)) * V(ramp,gnd) * 1e4}
+Rramp ramp gnd 1e12
+Bsd sds gnd V={max(0.5 * (1 + tanh((V(ramp,gnd) - V(in,gnd)) / 0.01)) * 0.5 * (1 + tanh((V(out,gnd) - V(in,gnd) + 0.2) / 0.01)) * 0.5 * (1 + tanh((V(on,gnd) - 0.5) / 0.01)), 0.5 * (1 + tanh((V(sd,gnd) - 0.5) / 0.01)) * 0.5 * (1 + tanh((V(on,gnd) - 0.5) / 0.01)))}
+Rsd sds sd 1k
+Csd sd gnd 1n
+Bfl fls gnd V={max(0.5 * (1 + tanh(((V(on,gnd) * 14.472 * tanh(max(0, min(V(in,gnd), V(ramp,gnd)) - V(out,gnd)) / (0.0014472))) - 3.618) / 0.01)) * 0.5 * (1 + tanh((V(sd,gnd) - 0.5) / 0.01)) * V(on,gnd), min(0.5 * (1 + tanh((V(fl,gnd) - 0.5) / 0.01)), 0.5 * (1 + tanh((max(0, min(V(in,gnd), V(ramp,gnd)) - V(out,gnd)) / 0.0001 - 1.8) / 0.01))) * V(on,gnd))}
+Rfl fls fl 1k
+Cfl fl gnd 1n
+Ctd td gnd 1.1000000000000001e-09
+Btd gnd td I={1.2e-06 * 0.5 * (1 + tanh(((V(on,gnd) * (1.8 * max(1 - 0.5 * (1 + tanh((V(sd,gnd) - 0.5) / 0.01)), 0.5 * (1 + tanh((V(fl,gnd) - 0.5) / 0.01))) + 14.472 * (1 - max(1 - 0.5 * (1 + tanh((V(sd,gnd) - 0.5) / 0.01)), 0.5 * (1 + tanh((V(fl,gnd) - 0.5) / 0.01))))) * tanh(max(0, min(V(in,gnd), V(ramp,gnd)) - V(out,gnd)) / ((1.8 * max(1 - 0.5 * (1 + tanh((V(sd,gnd) - 0.5) / 0.01)), 0.5 * (1 + tanh((V(fl,gnd) - 0.5) / 0.01))) + 14.472 * (1 - max(1 - 0.5 * (1 + tanh((V(sd,gnd) - 0.5) / 0.01)), 0.5 * (1 + tanh((V(fl,gnd) - 0.5) / 0.01))))) * 0.0001))) - 1.8) / 0.01)) * 0.5 * (1 + tanh((V(sd,gnd) - 0.5) / 0.01)) * (1 - 0.5 * (1 + tanh((V(fl,gnd) - 0.5) / 0.01))) * (1 - 0.5 * (1 + tanh((V(cb,gnd) - 0.5) / 0.01))) - (1 - 0.5 * (1 + tanh(((V(on,gnd) * (1.8 * max(1 - 0.5 * (1 + tanh((V(sd,gnd) - 0.5) / 0.01)), 0.5 * (1 + tanh((V(fl,gnd) - 0.5) / 0.01))) + 14.472 * (1 - max(1 - 0.5 * (1 + tanh((V(sd,gnd) - 0.5) / 0.01)), 0.5 * (1 + tanh((V(fl,gnd) - 0.5) / 0.01))))) * tanh(max(0, min(V(in,gnd), V(ramp,gnd)) - V(out,gnd)) / ((1.8 * max(1 - 0.5 * (1 + tanh((V(sd,gnd) - 0.5) / 0.01)), 0.5 * (1 + tanh((V(fl,gnd) - 0.5) / 0.01))) + 14.472 * (1 - max(1 - 0.5 * (1 + tanh((V(sd,gnd) - 0.5) / 0.01)), 0.5 * (1 + tanh((V(fl,gnd) - 0.5) / 0.01))))) * 0.0001))) - 1.8) / 0.01))) * V(td,gnd) / 15000.0 - 0.5 * (1 + tanh((V(cb,gnd) - 0.5) / 0.01)) * V(td,gnd) * 1e-3}
+Bpass in out I={(V(on,gnd) * (1.8 * max(1 - 0.5 * (1 + tanh((V(sd,gnd) - 0.5) / 0.01)), 0.5 * (1 + tanh((V(fl,gnd) - 0.5) / 0.01))) + 14.472 * (1 - max(1 - 0.5 * (1 + tanh((V(sd,gnd) - 0.5) / 0.01)), 0.5 * (1 + tanh((V(fl,gnd) - 0.5) / 0.01))))) * tanh(max(0, min(V(in,gnd), V(ramp,gnd)) - V(out,gnd)) / ((1.8 * max(1 - 0.5 * (1 + tanh((V(sd,gnd) - 0.5) / 0.01)), 0.5 * (1 + tanh((V(fl,gnd) - 0.5) / 0.01))) + 14.472 * (1 - max(1 - 0.5 * (1 + tanh((V(sd,gnd) - 0.5) / 0.01)), 0.5 * (1 + tanh((V(fl,gnd) - 0.5) / 0.01))))) * 0.0001)))}
+.ends
+.model TVSBR D(IS=1e-20 BV=13.3 IBV=0.001 RS=0.07)
+.subckt TVS a b
+D1 a x TVSBR
+D2 b x TVSBR
+.ends
+.model PINCLAMP D(IS=1e-14 N=1)
+VPSU psu 0 PULSE(0 5.25 0 1u 1u 1 2)
+RPATH psu in 0.07256813609744617
+CIN in 0 1u
+XTVS in 0 TVS
+RTOP in ovlo 604000.0
+RBOT ovlo 0 169000.0
+COVLO ovlo 0 1e-08
+RSW in run 1m
+RWET run 0 1000.0
+RENT run en 604000.0
+RENB en 0 261000.0
+DOVLO 0 ovlo PINCLAMP
+DEN 0 en PINCLAMP
+XU74 in out en ovlo 0 EFUSE
+CC1 out 0 560u
+CC140 out 0 560u
+CC146 out 0 100n
+CC2 out 0 10u
+CC7 out 0 100n
+RHOST out 0 11.11111111111111
+.model Q1P PMOS(LEVEL=1 VTO=-0.4 KP=14.890258792697818)
+.model Q2N NMOS(LEVEL=1 VTO=1.2 KP=0.06451612903225806)
+.model Q1BODY D(IS=1e-12 N=1)
+R13 en_pi en_g 1000.0
+R14 en_g 0 100000.0
+MQ2 en_n en_g 0 0 Q2N
+R15 out en_n 10000.0
+R16 en_n q1g 100000.0
+C145 q1g led 10n
+CQ1GS q1g out 2.92n
+CQ1GD q1g led 0.33n
+MQ1 led q1g out out Q1P
+DQ1 led out Q1BODY
+CLED led 0 6.4e-06
+RCHAIN led 0 78.125
+VEN en_pi 0 PWL(0 0 60.0m 0 60.001m 3.3)
+VWHITE white 0 PWL(0 0 70.0m 0 70.01m 1)
+BWHITE led 0 I={V(white) * 3.4559999999999995 * 0.5 * (1 + tanh((V(led) - 3.0) / 0.1))}
+.tran 10u 91.0m 0 10u uic
+.control
+run
+let fuse_amps_squared = i(vpsu) * i(vpsu)
+meas tran result_fuse_i2t INTEG fuse_amps_squared FROM=70.0m TO=90.0m
+meas tran low_at WHEN v(out)=4.63 FALL=1 FROM=70.0m
+let result_brownout_ms = (low_at - 70.0m) * 1000
+print result_fuse_i2t result_brownout_ms
+let input_amps = -i(vpsu)
+meas tran limit_at WHEN v(xu74.fl)=0.5 RISE=1 FROM=70.0m
+let after_trip = limit_at + 0.2m
+meas tran result_limited_max MAX input_amps FROM=$&after_trip TO=90.0m
+print result_limited_max
+if result_fuse_i2t < 0
+echo "ASSERTION FAILED: result_fuse_i2t below 0"
+quit 1
+end
+if result_fuse_i2t > 0.106
+echo "ASSERTION FAILED: result_fuse_i2t above 0.106"
+quit 1
+end
+if result_brownout_ms < 0
+echo "ASSERTION FAILED: result_brownout_ms below 0"
+quit 1
+end
+if result_brownout_ms > 20
+echo "ASSERTION FAILED: result_brownout_ms above 20"
+quit 1
+end
+if result_limited_max < 0
+echo "ASSERTION FAILED: result_limited_max below 0"
+quit 1
+end
+if result_limited_max > 1.89
+echo "ASSERTION FAILED: result_limited_max above 1.89"
+quit 1
+end
+quit 0
+.endc
+.end

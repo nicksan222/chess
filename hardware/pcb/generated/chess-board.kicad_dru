@@ -1,0 +1,14 @@
+(version 1)
+(rule "Board clearance"
+  (constraint clearance (min 0.3mm)))
+(rule "Board track width"
+  (condition "A.Type == 'Track'")
+  (constraint track_width (min 0.31mm)))
+(rule "U74 fine-pitch clearance"
+  (layer "F.Cu")
+  (condition "A.memberOfFootprint('U74') || ((A.Type == 'Track' || A.Type == 'Via') && A.intersectsCourtyard('U74')) || B.memberOfFootprint('U74') || ((B.Type == 'Track' || B.Type == 'Via') && B.intersectsCourtyard('U74'))")
+  (constraint clearance (min 0.16mm)))
+(rule "U74 escape track width"
+  (layer "F.Cu")
+  (condition "A.Type == 'Track' && A.intersectsCourtyard('U74')")
+  (constraint track_width (min 0.2mm)))

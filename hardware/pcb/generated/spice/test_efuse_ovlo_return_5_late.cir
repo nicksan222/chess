@@ -1,0 +1,67 @@
+Generated chess-board OVLO return to 5 V [BEH]
+.subckt EFUSE in out en ovlo gnd
+Bset ovs gnd V={max(0.5 * (1 + tanh((V(ovlo,gnd) - 1.223) / 0.002)), min(0.5 * (1 + tanh((V(ovlo,gnd) - 1.116) / 0.002)), V(ov,gnd)))}
+Rov ovs ov 1k
+Cov ov gnd 1n
+Bcb cbs gnd V={max(0.5 * (1 + tanh((V(td,gnd) - 1.741) / 0.002)), min(0.5 * (1 + tanh((V(cb,gnd) - 0.5) / 0.01)), 1 - 0.5 * (1 + tanh((V(rt,gnd) - 1) / 0.005))))}
+Rcb cbs cb 1k
+Ccb cb gnd 1n
+Crt rt gnd 1
+Brt gnd rt I={0.5 * (1 + tanh((V(cb,gnd) - 0.5) / 0.01)) / 0.11 - 0.5 * (1 + tanh((0.1 - V(cb,gnd)) / 0.01)) * V(rt,gnd) * 1e4}
+Bon on gnd V={0.5 * (1 + tanh((V(en,gnd) - 1.223) / 0.002)) * 0.5 * (1 + tanh((V(in,gnd) - 2.53) / 0.002)) * (1 - V(ov,gnd)) * (1 - 0.5 * (1 + tanh((V(cb,gnd) - 0.5) / 0.01)))}
+Cramp ramp gnd 1
+Bramp gnd ramp I={V(on,gnd) * 345.70135746606337 * 0.5 * (1 + tanh((V(in,gnd) + 1 - V(ramp,gnd)) / 0.05))}
+Breset ramp gnd I={0.5 * (1 + tanh((0.5 - V(on,gnd)) / 0.01)) * V(ramp,gnd) * 1e4}
+Rramp ramp gnd 1e12
+Bsd sds gnd V={max(0.5 * (1 + tanh((V(ramp,gnd) - V(in,gnd)) / 0.01)) * 0.5 * (1 + tanh((V(out,gnd) - V(in,gnd) + 0.2) / 0.01)) * 0.5 * (1 + tanh((V(on,gnd) - 0.5) / 0.01)), 0.5 * (1 + tanh((V(sd,gnd) - 0.5) / 0.01)) * 0.5 * (1 + tanh((V(on,gnd) - 0.5) / 0.01)))}
+Rsd sds sd 1k
+Csd sd gnd 1n
+Bfl fls gnd V={max(0.5 * (1 + tanh(((V(on,gnd) * 17.688 * tanh(max(0, min(V(in,gnd), V(ramp,gnd)) - V(out,gnd)) / (0.0017688))) - 4.422) / 0.01)) * 0.5 * (1 + tanh((V(sd,gnd) - 0.5) / 0.01)) * V(on,gnd), min(0.5 * (1 + tanh((V(fl,gnd) - 0.5) / 0.01)), 0.5 * (1 + tanh((max(0, min(V(in,gnd), V(ramp,gnd)) - V(out,gnd)) / 0.0001 - 2.2) / 0.01))) * V(on,gnd))}
+Rfl fls fl 1k
+Cfl fl gnd 1n
+Ctd td gnd 1.1000000000000001e-09
+Btd gnd td I={1.2e-06 * 0.5 * (1 + tanh(((V(on,gnd) * (2.2 * max(1 - 0.5 * (1 + tanh((V(sd,gnd) - 0.5) / 0.01)), 0.5 * (1 + tanh((V(fl,gnd) - 0.5) / 0.01))) + 17.688 * (1 - max(1 - 0.5 * (1 + tanh((V(sd,gnd) - 0.5) / 0.01)), 0.5 * (1 + tanh((V(fl,gnd) - 0.5) / 0.01))))) * tanh(max(0, min(V(in,gnd), V(ramp,gnd)) - V(out,gnd)) / ((2.2 * max(1 - 0.5 * (1 + tanh((V(sd,gnd) - 0.5) / 0.01)), 0.5 * (1 + tanh((V(fl,gnd) - 0.5) / 0.01))) + 17.688 * (1 - max(1 - 0.5 * (1 + tanh((V(sd,gnd) - 0.5) / 0.01)), 0.5 * (1 + tanh((V(fl,gnd) - 0.5) / 0.01))))) * 0.0001))) - 2.2) / 0.01)) * 0.5 * (1 + tanh((V(sd,gnd) - 0.5) / 0.01)) * (1 - 0.5 * (1 + tanh((V(fl,gnd) - 0.5) / 0.01))) * (1 - 0.5 * (1 + tanh((V(cb,gnd) - 0.5) / 0.01))) - (1 - 0.5 * (1 + tanh(((V(on,gnd) * (2.2 * max(1 - 0.5 * (1 + tanh((V(sd,gnd) - 0.5) / 0.01)), 0.5 * (1 + tanh((V(fl,gnd) - 0.5) / 0.01))) + 17.688 * (1 - max(1 - 0.5 * (1 + tanh((V(sd,gnd) - 0.5) / 0.01)), 0.5 * (1 + tanh((V(fl,gnd) - 0.5) / 0.01))))) * tanh(max(0, min(V(in,gnd), V(ramp,gnd)) - V(out,gnd)) / ((2.2 * max(1 - 0.5 * (1 + tanh((V(sd,gnd) - 0.5) / 0.01)), 0.5 * (1 + tanh((V(fl,gnd) - 0.5) / 0.01))) + 17.688 * (1 - max(1 - 0.5 * (1 + tanh((V(sd,gnd) - 0.5) / 0.01)), 0.5 * (1 + tanh((V(fl,gnd) - 0.5) / 0.01))))) * 0.0001))) - 2.2) / 0.01))) * V(td,gnd) / 15000.0 - 0.5 * (1 + tanh((V(cb,gnd) - 0.5) / 0.01)) * V(td,gnd) * 1e-3}
+Bpass in out I={(V(on,gnd) * (2.2 * max(1 - 0.5 * (1 + tanh((V(sd,gnd) - 0.5) / 0.01)), 0.5 * (1 + tanh((V(fl,gnd) - 0.5) / 0.01))) + 17.688 * (1 - max(1 - 0.5 * (1 + tanh((V(sd,gnd) - 0.5) / 0.01)), 0.5 * (1 + tanh((V(fl,gnd) - 0.5) / 0.01))))) * tanh(max(0, min(V(in,gnd), V(ramp,gnd)) - V(out,gnd)) / ((2.2 * max(1 - 0.5 * (1 + tanh((V(sd,gnd) - 0.5) / 0.01)), 0.5 * (1 + tanh((V(fl,gnd) - 0.5) / 0.01))) + 17.688 * (1 - max(1 - 0.5 * (1 + tanh((V(sd,gnd) - 0.5) / 0.01)), 0.5 * (1 + tanh((V(fl,gnd) - 0.5) / 0.01))))) * 0.0001)))}
+.ends
+.model TVSBR D(IS=1e-20 BV=13.3 IBV=0.001 RS=0.07)
+.subckt TVS a b
+D1 a x TVSBR
+D2 b x TVSBR
+.ends
+.model PINCLAMP D(IS=1e-14 N=1)
+VPSU psu 0 PWL(0 0 1u 5.0 40m 5.0 40.001m 6.0 50m 6.0 50.001m 5.0)
+RPATH psu in 0.07256813609744617
+CIN in 0 1u
+XTVS in 0 TVS
+RTOP in ovlo 604603.9999999999
+RBOT ovlo 0 168831.0
+IOVLK 0 ovlo -1e-07
+COVLO ovlo 0 1.1000000000000001e-08
+RSW in run 1m
+RWET run 0 1000.0
+RENT run en 604000.0
+RENB en 0 261000.0
+DOVLO 0 ovlo PINCLAMP
+DEN 0 en PINCLAMP
+XU74 in out en ovlo 0 EFUSE
+CC1 out 0 0.000672
+CC140 out 0 0.000672
+CC146 out 0 100n
+CC2 out 0 10u
+CC7 out 0 100n
+RLOAD out 0 1000.0
+.tran 10u 90.0m 0 10u uic
+.control
+run
+meas tran result_ovlo_state FIND v(xu74.ov) AT=89m
+if result_ovlo_state < -0.1
+echo "ASSERTION FAILED: result_ovlo_state below -0.1"
+quit 1
+end
+if result_ovlo_state > 0.1
+echo "ASSERTION FAILED: result_ovlo_state above 0.1"
+quit 1
+end
+quit 0
+.endc
+.end

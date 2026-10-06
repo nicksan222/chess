@@ -282,21 +282,21 @@
           (stroke (width 0.254) (type default)) (fill (type background)))
       )
       (symbol "U6_1_1"
-        (pin passive line (at -5.08 -6.350 0) (length 3.81)
-          (name "GROUND" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
+        (pin output line (at -5.08 -6.350 0) (length 3.81)
+          (name "DATA_OUT" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
         )
-        (pin passive line (at -5.08 -3.810 0) (length 3.81)
-          (name "FIVE_VOLTS" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin output line (at -5.08 -1.270 0) (length 3.81)
+        (pin output line (at -5.08 -3.810 0) (length 3.81)
           (name "CLOCK_OUT" (effects (font (size 1.27 1.27))))
           (number "5" (effects (font (size 1.27 1.27))))
         )
-        (pin output line (at -5.08 1.270 0) (length 3.81)
-          (name "DATA_OUT" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
+        (pin passive line (at -5.08 -1.270 0) (length 3.81)
+          (name "FIVE_VOLTS" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin passive line (at -5.08 1.270 0) (length 3.81)
+          (name "GROUND" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
         (pin input line (at -5.08 3.810 0) (length 3.81)
           (name "CLOCK_IN" (effects (font (size 1.27 1.27))))
@@ -450,21 +450,21 @@
           (stroke (width 0.254) (type default)) (fill (type background)))
       )
       (symbol "U7_1_1"
-        (pin passive line (at -5.08 -6.350 0) (length 3.81)
-          (name "GROUND" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
+        (pin output line (at -5.08 -6.350 0) (length 3.81)
+          (name "DATA_OUT" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
         )
-        (pin passive line (at -5.08 -3.810 0) (length 3.81)
-          (name "FIVE_VOLTS" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin output line (at -5.08 -1.270 0) (length 3.81)
+        (pin output line (at -5.08 -3.810 0) (length 3.81)
           (name "CLOCK_OUT" (effects (font (size 1.27 1.27))))
           (number "5" (effects (font (size 1.27 1.27))))
         )
-        (pin output line (at -5.08 1.270 0) (length 3.81)
-          (name "DATA_OUT" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
+        (pin passive line (at -5.08 -1.270 0) (length 3.81)
+          (name "FIVE_VOLTS" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin passive line (at -5.08 1.270 0) (length 3.81)
+          (name "GROUND" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
         (pin input line (at -5.08 3.810 0) (length 3.81)
           (name "CLOCK_IN" (effects (font (size 1.27 1.27))))
@@ -618,21 +618,21 @@
           (stroke (width 0.254) (type default)) (fill (type background)))
       )
       (symbol "U21_1_1"
-        (pin passive line (at -5.08 -6.350 0) (length 3.81)
-          (name "GROUND" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
+        (pin output line (at -5.08 -6.350 0) (length 3.81)
+          (name "DATA_OUT" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
         )
-        (pin passive line (at -5.08 -3.810 0) (length 3.81)
-          (name "FIVE_VOLTS" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin output line (at -5.08 -1.270 0) (length 3.81)
+        (pin output line (at -5.08 -3.810 0) (length 3.81)
           (name "CLOCK_OUT" (effects (font (size 1.27 1.27))))
           (number "5" (effects (font (size 1.27 1.27))))
         )
-        (pin output line (at -5.08 1.270 0) (length 3.81)
-          (name "DATA_OUT" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
+        (pin passive line (at -5.08 -1.270 0) (length 3.81)
+          (name "FIVE_VOLTS" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin passive line (at -5.08 1.270 0) (length 3.81)
+          (name "GROUND" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
         (pin input line (at -5.08 3.810 0) (length 3.81)
           (name "CLOCK_IN" (effects (font (size 1.27 1.27))))
@@ -786,21 +786,21 @@
           (stroke (width 0.254) (type default)) (fill (type background)))
       )
       (symbol "U20_1_1"
-        (pin passive line (at -5.08 -6.350 0) (length 3.81)
-          (name "GROUND" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
+        (pin output line (at -5.08 -6.350 0) (length 3.81)
+          (name "DATA_OUT" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
         )
-        (pin passive line (at -5.08 -3.810 0) (length 3.81)
-          (name "FIVE_VOLTS" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin output line (at -5.08 -1.270 0) (length 3.81)
+        (pin output line (at -5.08 -3.810 0) (length 3.81)
           (name "CLOCK_OUT" (effects (font (size 1.27 1.27))))
           (number "5" (effects (font (size 1.27 1.27))))
         )
-        (pin output line (at -5.08 1.270 0) (length 3.81)
-          (name "DATA_OUT" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
+        (pin passive line (at -5.08 -1.270 0) (length 3.81)
+          (name "FIVE_VOLTS" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin passive line (at -5.08 1.270 0) (length 3.81)
+          (name "GROUND" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
         (pin input line (at -5.08 3.810 0) (length 3.81)
           (name "CLOCK_IN" (effects (font (size 1.27 1.27))))
@@ -954,21 +954,21 @@
           (stroke (width 0.254) (type default)) (fill (type background)))
       )
       (symbol "U8_1_1"
-        (pin passive line (at -5.08 -6.350 0) (length 3.81)
-          (name "GROUND" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
+        (pin output line (at -5.08 -6.350 0) (length 3.81)
+          (name "DATA_OUT" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
         )
-        (pin passive line (at -5.08 -3.810 0) (length 3.81)
-          (name "FIVE_VOLTS" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin output line (at -5.08 -1.270 0) (length 3.81)
+        (pin output line (at -5.08 -3.810 0) (length 3.81)
           (name "CLOCK_OUT" (effects (font (size 1.27 1.27))))
           (number "5" (effects (font (size 1.27 1.27))))
         )
-        (pin output line (at -5.08 1.270 0) (length 3.81)
-          (name "DATA_OUT" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
+        (pin passive line (at -5.08 -1.270 0) (length 3.81)
+          (name "FIVE_VOLTS" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin passive line (at -5.08 1.270 0) (length 3.81)
+          (name "GROUND" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
         (pin input line (at -5.08 3.810 0) (length 3.81)
           (name "CLOCK_IN" (effects (font (size 1.27 1.27))))
@@ -1122,21 +1122,21 @@
           (stroke (width 0.254) (type default)) (fill (type background)))
       )
       (symbol "U9_1_1"
-        (pin passive line (at -5.08 -6.350 0) (length 3.81)
-          (name "GROUND" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
+        (pin output line (at -5.08 -6.350 0) (length 3.81)
+          (name "DATA_OUT" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
         )
-        (pin passive line (at -5.08 -3.810 0) (length 3.81)
-          (name "FIVE_VOLTS" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin output line (at -5.08 -1.270 0) (length 3.81)
+        (pin output line (at -5.08 -3.810 0) (length 3.81)
           (name "CLOCK_OUT" (effects (font (size 1.27 1.27))))
           (number "5" (effects (font (size 1.27 1.27))))
         )
-        (pin output line (at -5.08 1.270 0) (length 3.81)
-          (name "DATA_OUT" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
+        (pin passive line (at -5.08 -1.270 0) (length 3.81)
+          (name "FIVE_VOLTS" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin passive line (at -5.08 1.270 0) (length 3.81)
+          (name "GROUND" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
         (pin input line (at -5.08 3.810 0) (length 3.81)
           (name "CLOCK_IN" (effects (font (size 1.27 1.27))))
@@ -1290,21 +1290,21 @@
           (stroke (width 0.254) (type default)) (fill (type background)))
       )
       (symbol "U19_1_1"
-        (pin passive line (at -5.08 -6.350 0) (length 3.81)
-          (name "GROUND" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
+        (pin output line (at -5.08 -6.350 0) (length 3.81)
+          (name "DATA_OUT" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
         )
-        (pin passive line (at -5.08 -3.810 0) (length 3.81)
-          (name "FIVE_VOLTS" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin output line (at -5.08 -1.270 0) (length 3.81)
+        (pin output line (at -5.08 -3.810 0) (length 3.81)
           (name "CLOCK_OUT" (effects (font (size 1.27 1.27))))
           (number "5" (effects (font (size 1.27 1.27))))
         )
-        (pin output line (at -5.08 1.270 0) (length 3.81)
-          (name "DATA_OUT" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
+        (pin passive line (at -5.08 -1.270 0) (length 3.81)
+          (name "FIVE_VOLTS" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin passive line (at -5.08 1.270 0) (length 3.81)
+          (name "GROUND" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
         (pin input line (at -5.08 3.810 0) (length 3.81)
           (name "CLOCK_IN" (effects (font (size 1.27 1.27))))
@@ -1458,21 +1458,21 @@
           (stroke (width 0.254) (type default)) (fill (type background)))
       )
       (symbol "U18_1_1"
-        (pin passive line (at -5.08 -6.350 0) (length 3.81)
-          (name "GROUND" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
+        (pin output line (at -5.08 -6.350 0) (length 3.81)
+          (name "DATA_OUT" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27))))
         )
-        (pin passive line (at -5.08 -3.810 0) (length 3.81)
-          (name "FIVE_VOLTS" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin output line (at -5.08 -1.270 0) (length 3.81)
+        (pin output line (at -5.08 -3.810 0) (length 3.81)
           (name "CLOCK_OUT" (effects (font (size 1.27 1.27))))
           (number "5" (effects (font (size 1.27 1.27))))
         )
-        (pin output line (at -5.08 1.270 0) (length 3.81)
-          (name "DATA_OUT" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
+        (pin passive line (at -5.08 -1.270 0) (length 3.81)
+          (name "FIVE_VOLTS" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27))))
+        )
+        (pin passive line (at -5.08 1.270 0) (length 3.81)
+          (name "GROUND" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
         (pin input line (at -5.08 3.810 0) (length 3.81)
           (name "CLOCK_IN" (effects (font (size 1.27 1.27))))
@@ -1847,7 +1847,7 @@
       (effects (font (size 1.27 1.27)) (hide yes))
     )
   )
-  (global_label "+5V"
+  (global_label "LED_5V"
     (shape bidirectional)
     (at 68.580 82.550 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -1958,7 +1958,7 @@
       )
     )
   )
-  (global_label "GND"
+  (global_label "N$207"
     (shape bidirectional)
     (at 165.100 90.170 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -1967,7 +1967,7 @@
       (effects (font (size 1.27 1.27)) (hide yes))
     )
   )
-  (global_label "+5V"
+  (global_label "N$208"
     (shape bidirectional)
     (at 165.100 87.630 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -1976,7 +1976,7 @@
       (effects (font (size 1.27 1.27)) (hide yes))
     )
   )
-  (global_label "N$208"
+  (global_label "LED_5V"
     (shape bidirectional)
     (at 165.100 85.090 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -1985,7 +1985,7 @@
       (effects (font (size 1.27 1.27)) (hide yes))
     )
   )
-  (global_label "N$207"
+  (global_label "GND"
     (shape bidirectional)
     (at 165.100 82.550 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -2024,28 +2024,28 @@
     (property "Reference" "U6" (at 180.340 73.660 0)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Value" "SK9822-EC20" (at 180.340 93.980 0)
+    (property "Value" "SK9822-A" (at 180.340 93.980 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" "" (at 170.180 83.820 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (property "Datasheet" "" (at 170.180 83.820 0)
+    (property "Datasheet" "https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf" (at 170.180 83.820 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
     (property "Description" "Clocked 5050 RGB LED" (at 170.180 83.820 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "6"
       (uuid "24e2abea-1a96-54fb-abae-895f40922421")
     )
-    (pin "4"
+    (pin "5"
       (uuid "9028c904-dbfa-5554-b113-bb97b19e8c0f")
     )
-    (pin "5"
+    (pin "4"
       (uuid "8d09d964-47ce-5dc1-925c-b8d73ac2beb9")
     )
-    (pin "6"
+    (pin "3"
       (uuid "bc50b7df-9bf1-5749-b7dd-c327e1e1f4e4")
     )
     (pin "2"
@@ -2123,7 +2123,7 @@
       (effects (font (size 1.27 1.27)) (hide yes))
     )
   )
-  (global_label "+5V"
+  (global_label "LED_5V"
     (shape bidirectional)
     (at 68.580 107.950 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -2234,7 +2234,7 @@
       )
     )
   )
-  (global_label "GND"
+  (global_label "N$225"
     (shape bidirectional)
     (at 165.100 115.570 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -2243,7 +2243,7 @@
       (effects (font (size 1.27 1.27)) (hide yes))
     )
   )
-  (global_label "+5V"
+  (global_label "N$226"
     (shape bidirectional)
     (at 165.100 113.030 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -2252,7 +2252,7 @@
       (effects (font (size 1.27 1.27)) (hide yes))
     )
   )
-  (global_label "N$226"
+  (global_label "LED_5V"
     (shape bidirectional)
     (at 165.100 110.490 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -2261,7 +2261,7 @@
       (effects (font (size 1.27 1.27)) (hide yes))
     )
   )
-  (global_label "N$225"
+  (global_label "GND"
     (shape bidirectional)
     (at 165.100 107.950 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -2300,28 +2300,28 @@
     (property "Reference" "U7" (at 180.340 99.060 0)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Value" "SK9822-EC20" (at 180.340 119.380 0)
+    (property "Value" "SK9822-A" (at 180.340 119.380 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" "" (at 170.180 109.220 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (property "Datasheet" "" (at 170.180 109.220 0)
+    (property "Datasheet" "https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf" (at 170.180 109.220 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
     (property "Description" "Clocked 5050 RGB LED" (at 170.180 109.220 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "6"
       (uuid "f234bfa3-ac6f-5dca-9ba3-faf13fc9f0e5")
     )
-    (pin "4"
+    (pin "5"
       (uuid "bbbfcbcd-0936-5f9c-ab30-1d17ec7b6442")
     )
-    (pin "5"
+    (pin "4"
       (uuid "b11b8302-6e88-588f-bbd3-0caf12bc72c6")
     )
-    (pin "6"
+    (pin "3"
       (uuid "f74df314-f4f3-50fd-ab95-2d1f25b5ec53")
     )
     (pin "2"
@@ -2345,7 +2345,7 @@
       (effects (font (size 1.27 1.27)) (hide yes))
     )
   )
-  (global_label "+5V"
+  (global_label "LED_5V"
     (shape bidirectional)
     (at 20.320 133.350 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -2510,7 +2510,7 @@
       )
     )
   )
-  (global_label "GND"
+  (global_label "LED_D16_SRC"
     (shape bidirectional)
     (at 165.100 140.970 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -2519,7 +2519,7 @@
       (effects (font (size 1.27 1.27)) (hide yes))
     )
   )
-  (global_label "+5V"
+  (global_label "LED_C16"
     (shape bidirectional)
     (at 165.100 138.430 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -2528,7 +2528,7 @@
       (effects (font (size 1.27 1.27)) (hide yes))
     )
   )
-  (global_label "LED_C16"
+  (global_label "LED_5V"
     (shape bidirectional)
     (at 165.100 135.890 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -2537,7 +2537,7 @@
       (effects (font (size 1.27 1.27)) (hide yes))
     )
   )
-  (global_label "LED_D16"
+  (global_label "GND"
     (shape bidirectional)
     (at 165.100 133.350 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -2576,28 +2576,28 @@
     (property "Reference" "U21" (at 180.340 124.460 0)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Value" "SK9822-EC20" (at 180.340 144.780 0)
+    (property "Value" "SK9822-A" (at 180.340 144.780 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" "" (at 170.180 134.620 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (property "Datasheet" "" (at 170.180 134.620 0)
+    (property "Datasheet" "https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf" (at 170.180 134.620 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
     (property "Description" "Clocked 5050 RGB LED" (at 170.180 134.620 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "6"
       (uuid "29fcb82b-6e18-5d00-8746-3776de2a9955")
     )
-    (pin "4"
+    (pin "5"
       (uuid "f30bf9d4-0f01-5d7c-99b0-71651e5feef2")
     )
-    (pin "5"
+    (pin "4"
       (uuid "928f3e60-90f9-5041-88ef-4b1d488c8e5b")
     )
-    (pin "6"
+    (pin "3"
       (uuid "592108f5-5aee-5464-a0b3-891e422c931c")
     )
     (pin "2"
@@ -2621,7 +2621,7 @@
       (effects (font (size 1.27 1.27)) (hide yes))
     )
   )
-  (global_label "+5V"
+  (global_label "LED_5V"
     (shape bidirectional)
     (at 20.320 158.750 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -2786,7 +2786,7 @@
       )
     )
   )
-  (global_label "GND"
+  (global_label "N$135"
     (shape bidirectional)
     (at 165.100 166.370 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -2795,7 +2795,7 @@
       (effects (font (size 1.27 1.27)) (hide yes))
     )
   )
-  (global_label "+5V"
+  (global_label "N$136"
     (shape bidirectional)
     (at 165.100 163.830 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -2804,7 +2804,7 @@
       (effects (font (size 1.27 1.27)) (hide yes))
     )
   )
-  (global_label "N$136"
+  (global_label "LED_5V"
     (shape bidirectional)
     (at 165.100 161.290 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -2813,7 +2813,7 @@
       (effects (font (size 1.27 1.27)) (hide yes))
     )
   )
-  (global_label "N$135"
+  (global_label "GND"
     (shape bidirectional)
     (at 165.100 158.750 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -2852,28 +2852,28 @@
     (property "Reference" "U20" (at 180.340 149.860 0)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Value" "SK9822-EC20" (at 180.340 170.180 0)
+    (property "Value" "SK9822-A" (at 180.340 170.180 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" "" (at 170.180 160.020 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (property "Datasheet" "" (at 170.180 160.020 0)
+    (property "Datasheet" "https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf" (at 170.180 160.020 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
     (property "Description" "Clocked 5050 RGB LED" (at 170.180 160.020 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "6"
       (uuid "71d14cb5-405e-596e-95db-eb33cd580733")
     )
-    (pin "4"
+    (pin "5"
       (uuid "b0ac4412-6c32-5fad-8aac-ce01c2c4f918")
     )
-    (pin "5"
+    (pin "4"
       (uuid "f557d98b-e361-5ed8-8cbe-9f8313f2b6d8")
     )
-    (pin "6"
+    (pin "3"
       (uuid "e58413b2-5120-56b4-a625-0684e9dbd5a2")
     )
     (pin "2"
@@ -2897,7 +2897,7 @@
       (effects (font (size 1.27 1.27)) (hide yes))
     )
   )
-  (global_label "+5V"
+  (global_label "LED_5V"
     (shape bidirectional)
     (at 20.320 184.150 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -3062,7 +3062,7 @@
       )
     )
   )
-  (global_label "GND"
+  (global_label "N$227"
     (shape bidirectional)
     (at 165.100 191.770 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -3071,7 +3071,7 @@
       (effects (font (size 1.27 1.27)) (hide yes))
     )
   )
-  (global_label "+5V"
+  (global_label "N$228"
     (shape bidirectional)
     (at 165.100 189.230 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -3080,7 +3080,7 @@
       (effects (font (size 1.27 1.27)) (hide yes))
     )
   )
-  (global_label "N$228"
+  (global_label "LED_5V"
     (shape bidirectional)
     (at 165.100 186.690 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -3089,7 +3089,7 @@
       (effects (font (size 1.27 1.27)) (hide yes))
     )
   )
-  (global_label "N$227"
+  (global_label "GND"
     (shape bidirectional)
     (at 165.100 184.150 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -3128,28 +3128,28 @@
     (property "Reference" "U8" (at 180.340 175.260 0)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Value" "SK9822-EC20" (at 180.340 195.580 0)
+    (property "Value" "SK9822-A" (at 180.340 195.580 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" "" (at 170.180 185.420 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (property "Datasheet" "" (at 170.180 185.420 0)
+    (property "Datasheet" "https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf" (at 170.180 185.420 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
     (property "Description" "Clocked 5050 RGB LED" (at 170.180 185.420 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "6"
       (uuid "46cb3341-a335-5692-bc12-f67f924b781e")
     )
-    (pin "4"
+    (pin "5"
       (uuid "9d3819d9-03d7-594a-915e-26f4794c09ef")
     )
-    (pin "5"
+    (pin "4"
       (uuid "ea2ee1ce-8921-595d-9ee7-d180e351e61d")
     )
-    (pin "6"
+    (pin "3"
       (uuid "b61434ee-a57c-5be1-ad56-d6e5120e7b24")
     )
     (pin "2"
@@ -3173,7 +3173,7 @@
       (effects (font (size 1.27 1.27)) (hide yes))
     )
   )
-  (global_label "+5V"
+  (global_label "LED_5V"
     (shape bidirectional)
     (at 20.320 209.550 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -3338,7 +3338,7 @@
       )
     )
   )
-  (global_label "GND"
+  (global_label "N$115"
     (shape bidirectional)
     (at 165.100 217.170 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -3347,7 +3347,7 @@
       (effects (font (size 1.27 1.27)) (hide yes))
     )
   )
-  (global_label "+5V"
+  (global_label "N$116"
     (shape bidirectional)
     (at 165.100 214.630 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -3356,7 +3356,7 @@
       (effects (font (size 1.27 1.27)) (hide yes))
     )
   )
-  (global_label "N$116"
+  (global_label "LED_5V"
     (shape bidirectional)
     (at 165.100 212.090 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -3365,7 +3365,7 @@
       (effects (font (size 1.27 1.27)) (hide yes))
     )
   )
-  (global_label "N$115"
+  (global_label "GND"
     (shape bidirectional)
     (at 165.100 209.550 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -3404,28 +3404,28 @@
     (property "Reference" "U9" (at 180.340 200.660 0)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Value" "SK9822-EC20" (at 180.340 220.980 0)
+    (property "Value" "SK9822-A" (at 180.340 220.980 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" "" (at 170.180 210.820 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (property "Datasheet" "" (at 170.180 210.820 0)
+    (property "Datasheet" "https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf" (at 170.180 210.820 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
     (property "Description" "Clocked 5050 RGB LED" (at 170.180 210.820 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "6"
       (uuid "27b35ffa-8261-5331-aff0-4ac68505e172")
     )
-    (pin "4"
+    (pin "5"
       (uuid "3020f30e-423b-5cfb-85d4-df412f3e614b")
     )
-    (pin "5"
+    (pin "4"
       (uuid "b468052d-c1ea-54e8-82f0-eda7fc8710f3")
     )
-    (pin "6"
+    (pin "3"
       (uuid "3a28dee0-dc3a-5a34-a2c6-4ff1b6add130")
     )
     (pin "2"
@@ -3449,7 +3449,7 @@
       (effects (font (size 1.27 1.27)) (hide yes))
     )
   )
-  (global_label "+5V"
+  (global_label "LED_5V"
     (shape bidirectional)
     (at 20.320 234.950 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -3614,7 +3614,7 @@
       )
     )
   )
-  (global_label "GND"
+  (global_label "N$133"
     (shape bidirectional)
     (at 165.100 242.570 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -3623,7 +3623,7 @@
       (effects (font (size 1.27 1.27)) (hide yes))
     )
   )
-  (global_label "+5V"
+  (global_label "N$134"
     (shape bidirectional)
     (at 165.100 240.030 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -3632,7 +3632,7 @@
       (effects (font (size 1.27 1.27)) (hide yes))
     )
   )
-  (global_label "N$134"
+  (global_label "LED_5V"
     (shape bidirectional)
     (at 165.100 237.490 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -3641,7 +3641,7 @@
       (effects (font (size 1.27 1.27)) (hide yes))
     )
   )
-  (global_label "N$133"
+  (global_label "GND"
     (shape bidirectional)
     (at 165.100 234.950 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -3680,28 +3680,28 @@
     (property "Reference" "U19" (at 180.340 226.060 0)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Value" "SK9822-EC20" (at 180.340 246.380 0)
+    (property "Value" "SK9822-A" (at 180.340 246.380 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" "" (at 170.180 236.220 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (property "Datasheet" "" (at 170.180 236.220 0)
+    (property "Datasheet" "https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf" (at 170.180 236.220 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
     (property "Description" "Clocked 5050 RGB LED" (at 170.180 236.220 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "6"
       (uuid "340c5ddf-9b60-56c2-9304-5220796887d8")
     )
-    (pin "4"
+    (pin "5"
       (uuid "c2af4335-0b3c-5318-be5b-c0d4b843a2b3")
     )
-    (pin "5"
+    (pin "4"
       (uuid "df494aff-3e93-5275-84c8-81e6145bc6e9")
     )
-    (pin "6"
+    (pin "3"
       (uuid "1c13bbc2-06d7-54e1-a9e2-5490c0ea4bc9")
     )
     (pin "2"
@@ -3725,7 +3725,7 @@
       (effects (font (size 1.27 1.27)) (hide yes))
     )
   )
-  (global_label "+5V"
+  (global_label "LED_5V"
     (shape bidirectional)
     (at 20.320 260.350 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -3890,7 +3890,7 @@
       )
     )
   )
-  (global_label "GND"
+  (global_label "N$131"
     (shape bidirectional)
     (at 165.100 267.970 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -3899,7 +3899,7 @@
       (effects (font (size 1.27 1.27)) (hide yes))
     )
   )
-  (global_label "+5V"
+  (global_label "N$132"
     (shape bidirectional)
     (at 165.100 265.430 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -3908,7 +3908,7 @@
       (effects (font (size 1.27 1.27)) (hide yes))
     )
   )
-  (global_label "N$132"
+  (global_label "LED_5V"
     (shape bidirectional)
     (at 165.100 262.890 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -3917,7 +3917,7 @@
       (effects (font (size 1.27 1.27)) (hide yes))
     )
   )
-  (global_label "N$131"
+  (global_label "GND"
     (shape bidirectional)
     (at 165.100 260.350 0)
     (effects (font (size 1.27 1.27)) (justify right))
@@ -3956,28 +3956,28 @@
     (property "Reference" "U18" (at 180.340 251.460 0)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Value" "SK9822-EC20" (at 180.340 271.780 0)
+    (property "Value" "SK9822-A" (at 180.340 271.780 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" "" (at 170.180 261.620 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (property "Datasheet" "" (at 170.180 261.620 0)
+    (property "Datasheet" "https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf" (at 170.180 261.620 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
     (property "Description" "Clocked 5050 RGB LED" (at 170.180 261.620 0)
       (effects (font (size 1.27 1.27)) (hide yes))
     )
-    (pin "3"
+    (pin "6"
       (uuid "2ae8441c-863e-5b88-a057-70ab2f054590")
     )
-    (pin "4"
+    (pin "5"
       (uuid "bfc4200b-fe86-5279-a0cf-8a50de39f525")
     )
-    (pin "5"
+    (pin "4"
       (uuid "e6de9506-b682-5db4-9be5-d9c190637097")
     )
-    (pin "6"
+    (pin "3"
       (uuid "7dcceb6d-b72d-5ad2-ad02-12ed15d73b0b")
     )
     (pin "2"

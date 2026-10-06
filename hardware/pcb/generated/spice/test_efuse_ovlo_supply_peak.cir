@@ -1,0 +1,53 @@
+Generated chess-board OVLO supply_peak [BEH]
+.subckt EFUSE in out en ovlo gnd
+Bov ov gnd V={0.5 * (1 + tanh((V(ovlo,gnd) - 1.183) / 0.002))}
+Bon on gnd V={0.5 * (1 + tanh((V(en,gnd) - 1.183) / 0.002)) * 0.5 * (1 + tanh((V(in,gnd) - 2.53) / 0.002)) * (1 - V(ov,gnd))}
+Vramp ramp gnd 1e3
+Bpass in out I={V(on,gnd) * 2.2 * tanh(max(0, min(V(in,gnd), V(ramp,gnd)) - V(out,gnd)) / (2.2 * 0.045))}
+.ends
+.model TVSBR D(IS=1e-20 BV=13.3 IBV=0.001 RS=0.07)
+.subckt TVS a b
+D1 a x TVSBR
+D2 b x TVSBR
+.ends
+.model PINCLAMP D(IS=1e-14 N=1)
+VPSU psu 0 5.29
+RPATH psu in 0.07256813609744617
+CIN in 0 1u
+XTVS in 0 TVS
+RTOP in ovlo 603396.0
+RBOT ovlo 0 169168.99999999997
+IOVLK 0 ovlo 1e-07
+COVLO ovlo 0 9.000000000000001e-09
+RSW in run 1m
+RWET run 0 1000.0
+RENT run en 604000.0
+RENB en 0 261000.0
+DOVLO 0 ovlo PINCLAMP
+DEN 0 en PINCLAMP
+XU74 in out en ovlo 0 EFUSE
+RLOAD out 0 1k
+.op
+.control
+run
+let result_static_input = abs(i(vpsu))
+let result_rail = v(out)
+if result_static_input < 0
+echo "ASSERTION FAILED: result_static_input below 0"
+quit 1
+end
+if result_static_input > 1.8
+echo "ASSERTION FAILED: result_static_input above 1.8"
+quit 1
+end
+if result_rail < 4.9
+echo "ASSERTION FAILED: result_rail below 4.9"
+quit 1
+end
+if result_rail > 5.29
+echo "ASSERTION FAILED: result_rail above 5.29"
+quit 1
+end
+quit 0
+.endc
+.end

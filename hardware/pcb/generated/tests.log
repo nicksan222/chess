@@ -1,6 +1,972 @@
-........../kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
-....................................
+...................12:23:43: Debug: Adding duplicate image handler for 'PNG file'
+12:23:43: Debug: Adding duplicate image handler for 'JPEG file'
+12:23:43: Debug: Adding duplicate image handler for 'TIFF file'
+12:23:43: Debug: Adding duplicate image handler for 'GIF file'
+12:23:43: Debug: Adding duplicate image handler for 'PNM file'
+12:23:43: Debug: Adding duplicate image handler for 'PCX file'
+12:23:43: Debug: Adding duplicate image handler for 'IFF file'
+12:23:43: Debug: Adding duplicate image handler for 'Windows icon file'
+12:23:43: Debug: Adding duplicate image handler for 'Windows cursor file'
+12:23:43: Debug: Adding duplicate image handler for 'Windows animated cursor file'
+12:23:43: Debug: Adding duplicate image handler for 'TGA file'
+12:23:43: Debug: Adding duplicate image handler for 'XPM file'
+...12:23:43: Debug: Adding duplicate image handler for 'PNG file'
+12:23:43: Debug: Adding duplicate image handler for 'JPEG file'
+12:23:43: Debug: Adding duplicate image handler for 'TIFF file'
+12:23:43: Debug: Adding duplicate image handler for 'GIF file'
+12:23:43: Debug: Adding duplicate image handler for 'PNM file'
+12:23:43: Debug: Adding duplicate image handler for 'PCX file'
+12:23:43: Debug: Adding duplicate image handler for 'IFF file'
+12:23:43: Debug: Adding duplicate image handler for 'Windows icon file'
+12:23:43: Debug: Adding duplicate image handler for 'Windows cursor file'
+12:23:43: Debug: Adding duplicate image handler for 'Windows animated cursor file'
+12:23:43: Debug: Adding duplicate image handler for 'TGA file'
+12:23:43: Debug: Adding duplicate image handler for 'XPM file'
+..12:23:44: Debug: Adding duplicate image handler for 'PNG file'
+12:23:44: Debug: Adding duplicate image handler for 'JPEG file'
+12:23:44: Debug: Adding duplicate image handler for 'TIFF file'
+12:23:44: Debug: Adding duplicate image handler for 'GIF file'
+12:23:44: Debug: Adding duplicate image handler for 'PNM file'
+12:23:44: Debug: Adding duplicate image handler for 'PCX file'
+12:23:44: Debug: Adding duplicate image handler for 'IFF file'
+12:23:44: Debug: Adding duplicate image handler for 'Windows icon file'
+12:23:44: Debug: Adding duplicate image handler for 'Windows cursor file'
+12:23:44: Debug: Adding duplicate image handler for 'Windows animated cursor file'
+12:23:44: Debug: Adding duplicate image handler for 'TGA file'
+12:23:44: Debug: Adding duplicate image handler for 'XPM file'
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+./kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+.12:23:46: Debug: Adding duplicate image handler for 'PNG file'
+12:23:46: Debug: Adding duplicate image handler for 'JPEG file'
+12:23:46: Debug: Adding duplicate image handler for 'TIFF file'
+12:23:46: Debug: Adding duplicate image handler for 'GIF file'
+12:23:46: Debug: Adding duplicate image handler for 'PNM file'
+12:23:46: Debug: Adding duplicate image handler for 'PCX file'
+12:23:46: Debug: Adding duplicate image handler for 'IFF file'
+12:23:46: Debug: Adding duplicate image handler for 'Windows icon file'
+12:23:46: Debug: Adding duplicate image handler for 'Windows cursor file'
+12:23:46: Debug: Adding duplicate image handler for 'Windows animated cursor file'
+12:23:46: Debug: Adding duplicate image handler for 'TGA file'
+12:23:46: Debug: Adding duplicate image handler for 'XPM file'
+.............................................12:23:46: Debug: Adding duplicate image handler for 'PNG file'
+12:23:46: Debug: Adding duplicate image handler for 'JPEG file'
+12:23:46: Debug: Adding duplicate image handler for 'TIFF file'
+12:23:46: Debug: Adding duplicate image handler for 'GIF file'
+12:23:46: Debug: Adding duplicate image handler for 'PNM file'
+12:23:46: Debug: Adding duplicate image handler for 'PCX file'
+12:23:46: Debug: Adding duplicate image handler for 'IFF file'
+12:23:46: Debug: Adding duplicate image handler for 'Windows icon file'
+12:23:46: Debug: Adding duplicate image handler for 'Windows cursor file'
+12:23:46: Debug: Adding duplicate image handler for 'Windows animated cursor file'
+12:23:46: Debug: Adding duplicate image handler for 'TGA file'
+12:23:46: Debug: Adding duplicate image handler for 'XPM file'
+.../kicad/pcbnew/pcb_track.cpp(381): assert ""false"" failed in GetWidth(): Warning: PCB_VIA::GetWidth called without a layer argument
+.......12:23:49: Debug: Adding duplicate image handler for 'PNG file'
+12:23:49: Debug: Adding duplicate image handler for 'JPEG file'
+12:23:49: Debug: Adding duplicate image handler for 'TIFF file'
+12:23:49: Debug: Adding duplicate image handler for 'GIF file'
+12:23:49: Debug: Adding duplicate image handler for 'PNM file'
+12:23:49: Debug: Adding duplicate image handler for 'PCX file'
+12:23:49: Debug: Adding duplicate image handler for 'IFF file'
+12:23:49: Debug: Adding duplicate image handler for 'Windows icon file'
+12:23:49: Debug: Adding duplicate image handler for 'Windows cursor file'
+12:23:49: Debug: Adding duplicate image handler for 'Windows animated cursor file'
+12:23:49: Debug: Adding duplicate image handler for 'TGA file'
+12:23:49: Debug: Adding duplicate image handler for 'XPM file'
+...12:23:50: Debug: Adding duplicate image handler for 'PNG file'
+12:23:50: Debug: Adding duplicate image handler for 'JPEG file'
+12:23:50: Debug: Adding duplicate image handler for 'TIFF file'
+12:23:50: Debug: Adding duplicate image handler for 'GIF file'
+12:23:50: Debug: Adding duplicate image handler for 'PNM file'
+12:23:50: Debug: Adding duplicate image handler for 'PCX file'
+12:23:50: Debug: Adding duplicate image handler for 'IFF file'
+12:23:50: Debug: Adding duplicate image handler for 'Windows icon file'
+12:23:50: Debug: Adding duplicate image handler for 'Windows cursor file'
+12:23:50: Debug: Adding duplicate image handler for 'Windows animated cursor file'
+12:23:50: Debug: Adding duplicate image handler for 'TGA file'
+12:23:50: Debug: Adding duplicate image handler for 'XPM file'
+........................12:23:50: Debug: Adding duplicate image handler for 'PNG file'
+12:23:50: Debug: Adding duplicate image handler for 'JPEG file'
+12:23:50: Debug: Adding duplicate image handler for 'TIFF file'
+12:23:50: Debug: Adding duplicate image handler for 'GIF file'
+12:23:50: Debug: Adding duplicate image handler for 'PNM file'
+12:23:50: Debug: Adding duplicate image handler for 'PCX file'
+12:23:50: Debug: Adding duplicate image handler for 'IFF file'
+12:23:50: Debug: Adding duplicate image handler for 'Windows icon file'
+12:23:50: Debug: Adding duplicate image handler for 'Windows cursor file'
+12:23:50: Debug: Adding duplicate image handler for 'Windows animated cursor file'
+12:23:50: Debug: Adding duplicate image handler for 'TGA file'
+12:23:50: Debug: Adding duplicate image handler for 'XPM file'
+....12:23:51: Debug: Adding duplicate image handler for 'PNG file'
+12:23:51: Debug: Adding duplicate image handler for 'JPEG file'
+12:23:51: Debug: Adding duplicate image handler for 'TIFF file'
+12:23:51: Debug: Adding duplicate image handler for 'GIF file'
+12:23:51: Debug: Adding duplicate image handler for 'PNM file'
+12:23:51: Debug: Adding duplicate image handler for 'PCX file'
+12:23:51: Debug: Adding duplicate image handler for 'IFF file'
+12:23:51: Debug: Adding duplicate image handler for 'Windows icon file'
+12:23:51: Debug: Adding duplicate image handler for 'Windows cursor file'
+12:23:51: Debug: Adding duplicate image handler for 'Windows animated cursor file'
+12:23:51: Debug: Adding duplicate image handler for 'TGA file'
+12:23:51: Debug: Adding duplicate image handler for 'XPM file'
+...12:24:06: Debug: Adding duplicate image handler for 'PNG file'
+12:24:06: Debug: Adding duplicate image handler for 'JPEG file'
+12:24:06: Debug: Adding duplicate image handler for 'TIFF file'
+12:24:06: Debug: Adding duplicate image handler for 'GIF file'
+12:24:06: Debug: Adding duplicate image handler for 'PNM file'
+12:24:06: Debug: Adding duplicate image handler for 'PCX file'
+12:24:06: Debug: Adding duplicate image handler for 'IFF file'
+12:24:06: Debug: Adding duplicate image handler for 'Windows icon file'
+12:24:06: Debug: Adding duplicate image handler for 'Windows cursor file'
+12:24:06: Debug: Adding duplicate image handler for 'Windows animated cursor file'
+12:24:06: Debug: Adding duplicate image handler for 'TGA file'
+12:24:06: Debug: Adding duplicate image handler for 'XPM file'
+.12:24:09: Debug: Adding duplicate image handler for 'PNG file'
+12:24:09: Debug: Adding duplicate image handler for 'JPEG file'
+12:24:09: Debug: Adding duplicate image handler for 'TIFF file'
+12:24:09: Debug: Adding duplicate image handler for 'GIF file'
+12:24:09: Debug: Adding duplicate image handler for 'PNM file'
+12:24:09: Debug: Adding duplicate image handler for 'PCX file'
+12:24:09: Debug: Adding duplicate image handler for 'IFF file'
+12:24:09: Debug: Adding duplicate image handler for 'Windows icon file'
+12:24:09: Debug: Adding duplicate image handler for 'Windows cursor file'
+12:24:09: Debug: Adding duplicate image handler for 'Windows animated cursor file'
+12:24:09: Debug: Adding duplicate image handler for 'TGA file'
+12:24:09: Debug: Adding duplicate image handler for 'XPM file'
+...........12:24:20: Debug: Adding duplicate image handler for 'PNG file'
+12:24:20: Debug: Adding duplicate image handler for 'JPEG file'
+12:24:20: Debug: Adding duplicate image handler for 'TIFF file'
+12:24:20: Debug: Adding duplicate image handler for 'GIF file'
+12:24:20: Debug: Adding duplicate image handler for 'PNM file'
+12:24:20: Debug: Adding duplicate image handler for 'PCX file'
+12:24:20: Debug: Adding duplicate image handler for 'IFF file'
+12:24:20: Debug: Adding duplicate image handler for 'Windows icon file'
+12:24:20: Debug: Adding duplicate image handler for 'Windows cursor file'
+12:24:20: Debug: Adding duplicate image handler for 'Windows animated cursor file'
+12:24:20: Debug: Adding duplicate image handler for 'TGA file'
+12:24:20: Debug: Adding duplicate image handler for 'XPM file'
+...12:24:23: Debug: Adding duplicate image handler for 'PNG file'
+12:24:23: Debug: Adding duplicate image handler for 'JPEG file'
+12:24:23: Debug: Adding duplicate image handler for 'TIFF file'
+12:24:23: Debug: Adding duplicate image handler for 'GIF file'
+12:24:23: Debug: Adding duplicate image handler for 'PNM file'
+12:24:23: Debug: Adding duplicate image handler for 'PCX file'
+12:24:23: Debug: Adding duplicate image handler for 'IFF file'
+12:24:23: Debug: Adding duplicate image handler for 'Windows icon file'
+12:24:23: Debug: Adding duplicate image handler for 'Windows cursor file'
+12:24:23: Debug: Adding duplicate image handler for 'Windows animated cursor file'
+12:24:23: Debug: Adding duplicate image handler for 'TGA file'
+12:24:23: Debug: Adding duplicate image handler for 'XPM file'
+..........12:24:31: Debug: Adding duplicate image handler for 'PNG file'
+12:24:31: Debug: Adding duplicate image handler for 'JPEG file'
+12:24:31: Debug: Adding duplicate image handler for 'TIFF file'
+12:24:31: Debug: Adding duplicate image handler for 'GIF file'
+12:24:31: Debug: Adding duplicate image handler for 'PNM file'
+12:24:31: Debug: Adding duplicate image handler for 'PCX file'
+12:24:31: Debug: Adding duplicate image handler for 'IFF file'
+12:24:31: Debug: Adding duplicate image handler for 'Windows icon file'
+12:24:31: Debug: Adding duplicate image handler for 'Windows cursor file'
+12:24:31: Debug: Adding duplicate image handler for 'Windows animated cursor file'
+12:24:31: Debug: Adding duplicate image handler for 'TGA file'
+12:24:31: Debug: Adding duplicate image handler for 'XPM file'
+.12:24:33: Debug: Adding duplicate image handler for 'PNG file'
+12:24:33: Debug: Adding duplicate image handler for 'JPEG file'
+12:24:33: Debug: Adding duplicate image handler for 'TIFF file'
+12:24:33: Debug: Adding duplicate image handler for 'GIF file'
+12:24:33: Debug: Adding duplicate image handler for 'PNM file'
+12:24:33: Debug: Adding duplicate image handler for 'PCX file'
+12:24:33: Debug: Adding duplicate image handler for 'IFF file'
+12:24:33: Debug: Adding duplicate image handler for 'Windows icon file'
+12:24:33: Debug: Adding duplicate image handler for 'Windows cursor file'
+12:24:33: Debug: Adding duplicate image handler for 'Windows animated cursor file'
+12:24:33: Debug: Adding duplicate image handler for 'TGA file'
+12:24:33: Debug: Adding duplicate image handler for 'XPM file'
+.12:24:35: Debug: Adding duplicate image handler for 'PNG file'
+12:24:35: Debug: Adding duplicate image handler for 'JPEG file'
+12:24:35: Debug: Adding duplicate image handler for 'TIFF file'
+12:24:35: Debug: Adding duplicate image handler for 'GIF file'
+12:24:35: Debug: Adding duplicate image handler for 'PNM file'
+12:24:35: Debug: Adding duplicate image handler for 'PCX file'
+12:24:35: Debug: Adding duplicate image handler for 'IFF file'
+12:24:35: Debug: Adding duplicate image handler for 'Windows icon file'
+12:24:35: Debug: Adding duplicate image handler for 'Windows cursor file'
+12:24:35: Debug: Adding duplicate image handler for 'Windows animated cursor file'
+12:24:35: Debug: Adding duplicate image handler for 'TGA file'
+12:24:35: Debug: Adding duplicate image handler for 'XPM file'
+.....
 ----------------------------------------------------------------------
-Ran 45 tests in 1.594s
+Ran 145 tests in 56.942s
 
 OK
