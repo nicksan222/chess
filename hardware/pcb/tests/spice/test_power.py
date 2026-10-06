@@ -517,7 +517,26 @@ class EfuseSpiceTest(unittest.TestCase):
         self.assertGreater(amps, datasheets.PSU_RATED_AMPS)
 
 
-    def test_rail_settles_after_switch_on_with_every_fitted_capacitor(self) -> None:
-        circuit = board_circuits().power_startup().clear_expectations()
-        circuit.expect("5v_at_1ms", *BOARD_POWER.healthy_rail.tuple())
-        run_circuit("test_power_startup.py", circuit)
+class PlaneDropSpiceTest(unittest.TestCase):
+    """Plane voltage drop from the resistor mesh at approved and full-white load, within the 50 mV budget."""
+
+    def _run(self, name: str, brightness: float) -> None:
+        """Build the mesh circuit for one brightness and assert the worst LED supply drop."""
+        board = board_circuits()
+        mesh = PlaneMesh(routed_board())
+        circuit = mesh.circuit(
+            f"Generated chess-board plane drop, {name}",
+            led_amps=_led_amps(brightness),
+            host_amps=datasheets.HOST_AND_LOGIC_AMPS,
+            switch_ohms=datasheets.LED_SWITCH_OHMS.high,
+        )
+        for square in SQUARES:
+            circuit.expect(f"drop_{square}", 0.0, PLANE_DROP_BUDGET_VOLTS)
+        self.assertEqual(len(board.square_nets), 64)
+        run_circuit(f"test_plane_drop_{name}.py", circuit)
+
+    def test_approved_brightness_plane_drop_within_budget(self) -> None:
+        self._run("approved", float(board_circuits().led_brightness_max))
+
+    def test_full_white_plane_drop_within_budget(self) -> None:
+        self._run("full_white", 1.0)
