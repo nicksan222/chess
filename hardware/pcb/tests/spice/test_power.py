@@ -129,22 +129,83 @@ class EfuseSpiceTest(unittest.TestCase):
                 rows.append(f"C{reference} out 0 {value}")
         return rows
 
-    def test_full_white_exposes_supply_sag_and_overcurrent(self) -> None:
-        board = board_circuits()
-        expected_current = board.power_current(full_white=True)
-        circuit = board.power(full_white=True).clear_expectations()
-        circuit.expect(
-            "current",
-            expected_current - BOARD_POWER.current_tolerance_amps,
-            expected_current + BOARD_POWER.current_tolerance_amps,
+    def test_inrush_stays_inside_the_fuse_pulse_rule(self) -> None:
+        # Hot plug at PSU +5 %, least path resistance, fastest dVdt: the fuse sees
+        # C141's charge plus the ramped rail; I2t over the whole ramp bounds any
+        # 8 ms window (Littelfuse Fuseology p3: <= 20 % of nominal melting I2t).
+        board = routed_board()
+        path = series_path(board, _fuse_mpn(), "low")
+        melting = FUSES[_fuse_mpn()][1]
+        circuit = self.stage.front_end(
+            "Generated chess-board eFuse inrush [BEH]",
+            _corner(fast=True, ron="low"),
+            f"PULSE(0 {datasheets.PSU_VOLTS.high} 0 1u 1u 1 2)",
+            path_ohms=path.total_ohms,
+            run_on=True,
         )
-        circuit.expect("5v", *BOARD_POWER.overloaded_rail.tuple())
-        run_circuit("test_power_full_white.py", circuit)
+        circuit.rows.extend(self._rail_caps())
+        circuit.rows.append(".tran 10u 60m uic")
+        circuit.controls.extend(
+            (
+                "let i = -i(vpsu)",
+                "let e = integ(i * i)",
+                "let result_i2t = e[length(e) - 1]",
+                "let result_rail_60ms = v(out)[length(e) - 1]",
+            )
+        )
+        circuit.expect("i2t", 0.0, datasheets.FUSE_PULSE_I2T_FRACTION * melting)
+        circuit.expect(
+            "rail_60ms", datasheets.SK9822_VDD.low, datasheets.PSU_VOLTS.high
+        )
+        run_circuit("test_efuse_inrush.py", circuit)
 
-    def test_open_switch_removes_the_board_rail(self) -> None:
-        circuit = board_circuits().power_off().clear_expectations()
-        circuit.expect("5v", *BOARD_POWER.off_rail.tuple())
-        run_circuit("test_power_off.py", circuit)
+    def test_slowest_ramp_still_reaches_the_rail(self) -> None:
+        circuit = self.stage.front_end(
+            "Generated chess-board eFuse slow start [BEH]",
+            _corner(fast=False),
+            f"PULSE(0 {datasheets.PSU_VOLTS.low} 0 1u 1u 1 2)",
+            path_ohms=0.0,
+            run_on=True,
+        )
+        circuit.rows.extend(self._rail_caps())
+        circuit.rows.append(".tran 100u 120m uic")
+        circuit.controls.append("meas tran result_rail FIND v(out) AT=110m")
+        circuit.expect("rail", datasheets.SK9822_VDD.low, datasheets.PSU_VOLTS.low)
+        run_circuit("test_efuse_slow_start.py", circuit)
+
+    def _op(
+        self,
+        name: str,
+        supply: float,
+        *,
+        run_on: bool = True,
+        high: bool = True,
+        load_ohms: float | None = None,
+        ilim_high: bool = True,
+    ) -> SpiceCircuit:
+        """Operating point at one OVLO trip corner (`high`: latest trip)."""
+        corner = _corner(fast=True, ilim_high=ilim_high)
+        if not high:
+            corner = Corner(
+                corner.ron,
+                datasheets.EFUSE_THRESHOLD_RISING_VOLTS.low,
+                corner.slew_volts_per_s,
+                corner.ilim,
+            )
+        circuit = self.stage.front_end(
+            name,
+            corner,
+            str(supply),
+            path_ohms=self.path_ohms,
+            run_on=run_on,
+            static=True,
+            trip="high" if high else "low",
+        )
+        circuit.rows.append(
+            f"RLOAD out 0 {load_ohms if load_ohms is not None else '1k'}"
+        )
+        circuit.rows.append(".op")
+        return circuit
 
     def test_rail_settles_after_switch_on_with_every_fitted_capacitor(self) -> None:
         circuit = board_circuits().power_startup().clear_expectations()
