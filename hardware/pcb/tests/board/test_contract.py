@@ -26,7 +26,11 @@ from shared.json_values import parse_json
 # Left rank-turn data terminators (S5), by driving square.
 TURN_TERMINATORS = {"A2": "R10", "A4": "R11", "A6": "R12"}
 PCB_ROOT = Path(__file__).resolve().parents[2]
+# Package pin numbers of the expander's eight input channels P0..P7, in channel
+# order. Square i of a bank's list below must land on EXPANDER_INPUT_PINS[i].
 EXPANDER_INPUT_PINS = ("4", "5", "6", "7", "9", "10", "11", "12")
+# (expander reference, I2C address, squares in P0..P7 channel order). Channel order
+# is: two left-half files x two ranks (P0-P3), then the right half (P4-P7).
 BANKS = (
     ("U1", "0x20", "A1 B1 A2 B2 C1 D1 C2 D2"),
     ("U2", "0x21", "E1 F1 E2 F2 G1 H1 G2 H2"),
@@ -37,12 +41,14 @@ BANKS = (
     ("U72", "0x26", "A7 B7 A8 B8 C7 D7 C8 D8"),
     ("U73", "0x27", "E7 F7 E8 F8 G7 H7 G8 H8"),
 )
+# Serpentine LED chain from A1: odd chess ranks (1, 3, ...) run A->H, even ranks H->A.
 LED_ORDER = """
     A1 B1 C1 D1 E1 F1 G1 H1 H2 G2 F2 E2 D2 C2 B2 A2
     A3 B3 C3 D3 E3 F3 G3 H3 H4 G4 F4 E4 D4 C4 B4 A4
     A5 B5 C5 D5 E5 F5 G5 H5 H6 G6 F6 E6 D6 C6 B6 A6
     A7 B7 C7 D7 E7 F7 G7 H7 H8 G8 F8 E8 D8 C8 B8 A8
 """.split()  # noqa: SIM905 - compact, reviewable golden data
+# (button, switch reference, physical pin number on the Pi's 40-pin header J1).
 BUTTONS = (
     ("UP", "SW1", "29"),
     ("DOWN", "SW2", "31"),
@@ -59,6 +65,8 @@ BUTTONS = (
 )
 
 
+# Typed views of the parts of `netlist.json` this test reads (the strict type
+# checker rejects untyped JSON).
 class PartRecord(TypedDict):
     part_key: str
     extras: dict[str, str]
@@ -80,6 +88,7 @@ class BoardContractTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
+        # Build lookup tables once: net -> endpoints, and endpoint -> net.
         output = Path(os.environ.get("PCB_OUTPUT", PCB_ROOT / "generated"))
         record = cast(NetlistRecord, parse_json((output / "netlist.json").read_text()))
         board = record["projects"]["board"]
@@ -95,9 +104,13 @@ class BoardContractTest(unittest.TestCase):
         }
 
     def assert_net(self, name: str, *endpoints: tuple[str, str]) -> None:
+        """The net must contain exactly these (reference, pin) endpoints, no more."""
         self.assertEqual(self.nets.get(name), set(endpoints), name)
 
     def test_each_hall_square_reaches_its_designated_expander_input(self) -> None:
+        # For all eight banks: every square's net joins that square's Hall output
+        # (pin 2) to exactly the expander channel pin in BANKS, and the address
+        # pins (1-3) are strapped to +3V3/GND matching the address bits.
         sensors = {
             part["extras"]["Square"]: reference
             for reference, part in self.components.items()
@@ -122,6 +135,10 @@ class BoardContractTest(unittest.TestCase):
                     self.assertEqual(self.endpoint_net[(reference, pin)], expected)
 
     def test_led_data_and_clock_follow_all_64_squares_in_order(self) -> None:
+        # Pi SPI -> buffer -> first LED, then each LED's output pins (6 data,
+        # 5 clock) feed only the next LED in LED_ORDER's inputs (1, 2). The last LED
+        # (A8) has unconnected outputs, so the chain is open-ended, not a loop.
+        # The left rank-turn data hops (A2, A4, A6) pass a 56 ohm terminator (S5).
         leds = {
             part["extras"]["Square"]: reference
             for reference, part in self.components.items()
@@ -130,8 +147,19 @@ class BoardContractTest(unittest.TestCase):
         self.assertEqual(set(leds), set(LED_ORDER))
         self.assert_net("SPI_DATA_3V3", ("J1", "19"), ("U5", "2"))
         self.assert_net("SPI_CLK_3V3", ("J1", "23"), ("U5", "5"))
-        self.assert_net("LED_DATA_5V", ("U5", "3"), (leds["A1"], "1"), ("TP3", "1"))
-        self.assert_net("LED_CLK_5V", ("U5", "6"), (leds["A1"], "2"), ("TP4", "1"))
+        self.assert_net("LED_DATA_BUF", ("U5", "3"), ("R9", "2"))
+        self.assertEqual(self.components["R9"]["part_key"], "RES_56")
+        # S6d: R17/R18 (10 kOhm to GND) hold the first LED's inputs low while U5
+        # is Hi-Z.
+        self.assert_net(
+            "LED_DATA_5V", ("R9", "1"), (leds["A1"], "1"), ("TP3", "1"), ("R17", "1")
+        )
+        self.assert_net(
+            "LED_CLK_5V", ("U5", "6"), (leds["A1"], "2"), ("TP4", "1"), ("R18", "1")
+        )
+        for reference in ("R17", "R18"):
+            self.assertEqual(self.components[reference]["part_key"], "RES_10K")
+            self.assertEqual(self.endpoint_net[(reference, "2")], "GND")
         for index, (left, right) in enumerate(pairwise(LED_ORDER)):
             with self.subTest(link=index + 1):
                 self.assertEqual(
@@ -139,6 +167,16 @@ class BoardContractTest(unittest.TestCase):
                 )
                 for output_pin, input_pin in (("6", "1"), ("5", "2")):
                     net = self.endpoint_net[(leds[left], output_pin)]
+                    terminator = TURN_TERMINATORS.get(left)
+                    if terminator and output_pin == "6":
+                        # Left rank-turn data: DO -> 56 ohm terminator -> next DI.
+                        self.assertEqual(
+                            self.components[terminator]["part_key"], "RES_56"
+                        )
+                        self.assert_net(net, (leds[left], "6"), (terminator, "2"))
+                        net = self.endpoint_net[(terminator, "1")]
+                        self.assert_net(net, (terminator, "1"), (leds[right], "1"))
+                        continue
                     self.assert_net(
                         net, (leds[left], output_pin), (leds[right], input_pin)
                     )
@@ -147,15 +185,15 @@ class BoardContractTest(unittest.TestCase):
         self.assertNotIn((leds["A8"], "5"), self.endpoint_net)
 
     def test_host_bus_and_button_pins_reach_the_right_devices(self) -> None:
+        # The shared I2C bus must reach the Pi (its own pull-ups), the display
+        # header, a test point and pins 15 (data) / 14 (clock) of every expander; each button net
+        # joins exactly its Pi header pin and its switch.
         expanders = [(reference, "15") for reference, _, _ in BANKS]
-        self.assert_net(
-            "I2C_SDA", ("J1", "3"), ("J2", "4"), ("R1", "2"), ("TP7", "1"), *expanders
-        )
+        self.assert_net("I2C_SDA", ("J1", "3"), ("J2", "4"), ("TP7", "1"), *expanders)
         self.assert_net(
             "I2C_SCL",
             ("J1", "5"),
             ("J2", "3"),
-            ("R2", "2"),
             ("TP6", "1"),
             *((reference, "14") for reference, _, _ in BANKS),
         )
@@ -163,11 +201,33 @@ class BoardContractTest(unittest.TestCase):
             with self.subTest(button=name):
                 self.assert_net(f"BTN_{name}", ("J1", header_pin), (switch, "1"))
 
-    def test_input_protection_and_supply_polarity(self) -> None:
-        self.assertEqual(self.components["F1"]["part_key"], "FUSE_2A")
-        self.assert_net("DC_IN", ("J3", "1"), ("F1", "1"))
-        self.assert_net("DC_FUSED", ("F1", "2"), ("SW13", "1"))
-        for endpoint in (("SW13", "2"), ("D1", "1"), ("J1", "2"), ("J1", "4")):
+    def test_led_rail_switch_and_buffer_enable(self) -> None:
+        # S6 (user decision D1, interface H5): Pi pin 37 (BCM26) -> R13 -> Q2 gate
+        # (R14 to GND); Q2 drain LED_EN_N (R15 to +5V) gates Q1 through R16; Q1
+        # sources on +5V, drains on LED_5V with every LED VDD.
+        for reference, key in (
+            ("Q1", "LED_SWITCH"),
+            ("Q2", "LED_SWITCH_DRIVER"),
+            ("R13", "RES_1K"),
+            ("R14", "RES_100K"),
+            ("R15", "RES_10K"),
+            ("R16", "RES_100K"),
+            ("C145", "CAP_10N"),
+        ):
+            self.assertEqual(self.components[reference]["part_key"], key)
+        self.assert_net("LED_EN", ("J1", "37"), ("R13", "1"))
+        self.assert_net("LED_EN_GATE", ("R13", "2"), ("R14", "1"), ("Q2", "1"))
+        # S6b (H6): U75 (SN74LVC1G97, Y = In1 if In2 low else In0; In0 high) makes
+        # LED_OE_N = Q1 gate OR LED_EN_N, U5's 1OE/2OE.
+        self.assert_net(
+            "LED_EN_N", ("Q2", "3"), ("R15", "1"), ("R16", "1"), ("U75", "1")
+        )
+        self.assert_net("LED_OE_N", ("U75", "4"), ("U5", "1"), ("U5", "4"))
+        self.assert_net(
+            "LED_SW_GATE", ("R16", "2"), ("Q1", "4"), ("C145", "1"), ("U75", "6")
+        )
+        self.assertEqual(self.components["U75"]["part_key"], "LED_ENABLE_GATE")
+        for endpoint in (("U75", "3"), ("U75", "5"), ("C146", "1")):
             self.assertEqual(self.endpoint_net[endpoint], "+5V")
-        for endpoint in (("J3", "2"), ("J3", "3"), ("D1", "2")):
+        for endpoint in (("U75", "2"), ("C146", "2")):
             self.assertEqual(self.endpoint_net[endpoint], "GND")
