@@ -1,4 +1,10 @@
-"""Board silkscreen, labels, and other visible markings."""
+"""Board silkscreen, labels, and other visible markings.
+
+Role: the visible (non-electrical) markings added after all parts are placed: a dotted square
+grid, square names, bank labels with their I2C addresses, the Pi header pinout, button names,
+the LED chain end, and test-point labels. They are for assembly and bring-up people; the PCB
+tests keep them off pads and mask openings (`tests/board/test_silkscreen.py`).
+"""
 
 from __future__ import annotations
 
@@ -14,8 +20,13 @@ from shared import dimensions
 from shared.electronics import RaspberryPiHeaderComponent as RaspberryPiHeader
 from shared.panel_buttons import PANEL_BUTTONS
 
+# Where a square's name sits relative to its centre (mm).
 SQUARE_LABEL_OFFSET_MM = (-12.0, 0.0)
+# Copper edge to label: mask expansion, fab mask dam, then margin.
+CHAIN_END_LABEL_GAP_MM = rules.MASK_EXPANSION_MM + rules.PCBWAY_MIN_MASK_DAM_MM + 0.5
 
+# The grid is drawn as dots (spacing, diameter, drawn as a very short segment) rather than
+# lines, and dots near a mounting hole are omitted (clearance).
 SQUARE_GRID_DOT_PITCH_MM = 8.0
 
 SQUARE_GRID_DOT_DIAMETER_MM = 0.6
@@ -26,6 +37,8 @@ SQUARE_GRID_HOLE_CLEARANCE_MM = 4.0
 
 
 class GridDimensions(Protocol):
+    """The shared dimensions the grid-dot placement reads (a Protocol so tests can pass a stand-in)."""
+
     @property
     def PLAYING_SPAN_MM(self) -> float: ...
 
@@ -86,7 +99,8 @@ def _add_text(
     at: tuple[float, float],
     *,
     height: float = rules.SILK_TEXT_HEIGHT_MM,
-) -> None:
+) -> pcbnew.PCB_TEXT:
+    """One silkscreen text label at `at` (shared mm); returned so callers can adjust it."""
     label = pcbnew.PCB_TEXT(board)
     label.SetText(text)
     label.SetPosition(native.point(*at))
