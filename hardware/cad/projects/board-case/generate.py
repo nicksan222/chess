@@ -162,37 +162,15 @@ def _cut_plate_rebate(
     bpy.data.objects.remove(rebate, do_unlink=True)
 
 
-    recess_depth = shared.PANEL_OLED_RECESS_DEPTH_MM
-    modeling.cut_batch(
-        case,
-        [
-            modeling.rounded_box(
-                "Cutter_Display_Recess",
-                (
-                    shared.PANEL_OLED_RECESS_MM[0],
-                    shared.PANEL_OLED_RECESS_MM[1],
-                    recess_depth + shared.BOOLEAN_RECESS_OVERLAP_MM,
-                ),
-                (
-                    *shared.PANEL_OLED_CENTER_MM,
-                    shared.CASE_HEIGHT_MM
-                    - skin
-                    + recess_depth / 2.0
-                    - shared.BOOLEAN_RECESS_OVERLAP_MM / 2.0,
-                ),
-                0.8,
-                construction,
-            )
-        ],
-        "Cutter_Display_Recess_Batch",
-    )
-
-
 def _cut_rear_apertures(
     case: bpy.types.Object, construction: bpy.types.Collection
 ) -> None:
-    """Power input on the back wall, clear of the playing surface."""
-    wall_y = shared.PLAYING_SPAN_MM / 2.0 + shared.CASE_FRAME_WIDTH_MM
+    """Panel-mounted power input on the back wall, wired to the board.
+
+    The snap-in rocker and the nut-held jack each need a thin panel, so the
+    wall is pocketed from the inside down to each part's panel thickness.
+    """
+    wall_y = shared.CASE_CENTER_OFFSET_Y_MM + shared.CASE_DEPTH_MM / 2.0
     depth = 2.0 * shared.CASE_FRAME_WIDTH_MM
     center_y = wall_y - depth / 2.0 + shared.BOOLEAN_THROUGH_OVERLAP_MM
     z = shared.CASE_REAR_APERTURE_CENTER_Z_MM
@@ -201,32 +179,74 @@ def _cut_rear_apertures(
         "Cutter_Jack_Aperture",
         shared.CASE_JACK_APERTURE_DIAMETER_MM,
         depth,
-        (shared.PCB_STRIP_PLACEMENTS["J3"].x_mm, center_y, z),
+        (shared.CASE_JACK_APERTURE_CENTER_X_MM, center_y, z),
         construction,
         vertices=48,
     )
+    # Rotate the cylinder 90 degrees so its axis points through the rear wall (Y).
     jack.rotation_euler = (1.5707963267948966, 0.0, 0.0)
     rocker = modeling.rounded_box(
         "Cutter_Rocker_Aperture",
         (shared.CASE_ROCKER_APERTURE_MM[0], depth, shared.CASE_ROCKER_APERTURE_MM[1]),
-        (shared.PCB_STRIP_PLACEMENTS["SW13"].x_mm, center_y, z),
+        (shared.CASE_ROCKER_APERTURE_CENTER_X_MM, center_y, z),
         0.6,
         construction,
     )
+    # Round jack hole and rectangular rocker cutout through the wall (disjoint cutters).
     modeling.cut_batch(case, [jack, rocker], "Cutter_All_Rear_Apertures")
+
+    # Inner pockets thin the wall to each part's panel thickness; they start inside the
+    # cavity so they open into it, and stop below the roof that keeps the PCB ledge whole.
+    cavity_y = shared.CASE_CENTER_OFFSET_Y_MM + shared.CASE_CAVITY_SIZE_MM[1] / 2.0
+    bottom, top = shared.CASE_WALL_POCKET_Z_MM
+    pockets = [
+        modeling.box_between(
+            f"Cutter_{name}_Wall_Pocket",
+            (
+                centre_x - width / 2.0,
+                centre_x + width / 2.0,
+                cavity_y - shared.BOOLEAN_THROUGH_OVERLAP_MM,
+                wall_y - panel,
+                # Dips just under the floor surface so no face is coplanar with it.
+                bottom - shared.BOOLEAN_RECESS_OVERLAP_MM,
+                top,
+            ),
+            construction,
+        )
+        for name, centre_x, width, panel in (
+            (
+                "Rocker",
+                shared.CASE_ROCKER_APERTURE_CENTER_X_MM,
+                shared.CASE_ROCKER_POCKET_WIDTH_MM,
+                shared.CASE_ROCKER_PANEL_THICKNESS_MM,
+            ),
+            (
+                "Jack",
+                shared.CASE_JACK_APERTURE_CENTER_X_MM,
+                shared.CASE_JACK_POCKET_WIDTH_MM,
+                shared.CASE_JACK_PANEL_THICKNESS_MM,
+            ),
+        )
+    ]
+    modeling.cut_batch(case, pockets, "Cutter_All_Rear_Wall_Pockets")
 
 
 def _cut_side_slot(case: bpy.types.Object, construction: bpy.types.Collection) -> None:
-    """A slot on the right wall reaches the Pi's memory card."""
-    wall_x = shared.PLAYING_SPAN_MM / 2.0 + shared.CASE_FRAME_WIDTH_MM
+    """A slot in the right wall, level with the Pi's microSD socket.
+
+    The wall is pocketed from inside around it so a card standing proud of the
+    Pi edge clears the wall and its edge can be reached with tweezers.
+    """
+    wall_x = shared.CASE_WIDTH_MM / 2.0
     depth = 2.0 * shared.CASE_FRAME_WIDTH_MM
+    slot_y = shared.CASE_SD_SLOT_CENTER_Y_MM
     slot = modeling.rounded_box(
         "Cutter_Card_Slot",
         (depth, shared.CASE_SD_SLOT_MM[0], shared.CASE_SD_SLOT_MM[1]),
         (
             wall_x - depth / 2.0 + shared.BOOLEAN_THROUGH_OVERLAP_MM,
-            shared.PI_BAY_CENTER_MM[1],
-            shared.CASE_FLOOR_MM + 6.0,
+            slot_y,
+            shared.CASE_SD_SLOT_CENTER_Z_MM,
         ),
         0.6,
         construction,
