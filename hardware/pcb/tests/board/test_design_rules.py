@@ -207,3 +207,96 @@ class DesignRulesTest(unittest.TestCase):
         )
         points = _closest(first, second)
         self.assertFalse(all(_inside(p, box) for p in points))
+
+
+Box = tuple[int, int, int, int]
+Segment = tuple[pcbnew.VECTOR2I, pcbnew.VECTOR2I]
+
+
+def _routed_board() -> pcbnew.BOARD:
+    """Load the published routed board."""
+    output = Path(os.environ.get("PCB_OUTPUT", PCB_ROOT / "generated"))
+    return pcbnew.LoadBoard(str(output / "chess-board.kicad_pcb"))
+
+
+def _mm(point: pcbnew.VECTOR2I) -> tuple[float, float]:
+    """A native point as (x, y) mm rounded to 1 um."""
+    return (round(pcbnew.ToMM(point.x), 3), round(pcbnew.ToMM(point.y), 3))
+
+
+def _grow(box: Box, by: int) -> Box:
+    """A (left, top, right, bottom) box grown by `by` on every side."""
+    left, top, right, bottom = box
+    return left - by, top - by, right + by, bottom + by
+
+
+def _escape_box(board: pcbnew.BOARD, margin_mm: float) -> Box:
+    """U74's F.CrtYd rectangle grown by `margin_mm`, in board units."""
+    module = board.FindFootprintByReference(rules.FINE_PITCH_REFERENCE)
+    assert module is not None
+    points = [
+        p
+        for shape in module.GraphicalItems()
+        if shape.GetLayer() == pcbnew.F_CrtYd
+        for p in (shape.GetStart(), shape.GetEnd())
+    ]
+    box = (
+        min(p.x for p in points),
+        min(p.y for p in points),
+        max(p.x for p in points),
+        max(p.y for p in points),
+    )
+    return _grow(box, pcbnew.FromMM(margin_mm))
+
+
+def _inside(point: pcbnew.VECTOR2I, box: Box) -> bool:
+    """True if the point lies inside or on the box."""
+    left, top, right, bottom = box
+    return left <= point.x <= right and top <= point.y <= bottom
+
+
+def _segment_touches(segment: Segment, box: Box) -> bool:
+    """Whether the segment meets the box (sampled finely enough for a 0.01 mm box)."""
+    start, end = segment
+    steps = max(1, int(math.hypot(end.x - start.x, end.y - start.y) // 5000))
+    return any(
+        _inside(
+            pcbnew.VECTOR2I(
+                round(start.x + (end.x - start.x) * k / steps),
+                round(start.y + (end.y - start.y) * k / steps),
+            ),
+            box,
+        )
+        for k in range(steps + 1)
+    )
+
+
+Shape = tuple[tuple[Segment, ...], int]
+
+
+def _shapes_by_uuid(board: pcbnew.BOARD) -> dict[str, Shape]:
+    """Each copper item as segments plus a half width: a track's centre line, a
+    via's centre (half its pad), a pad's or zone fill's polygon edges (0)."""
+    shapes: dict[str, Shape] = {}
+    for track in board.GetTracks():
+        ends = (
+            (track.GetPosition(), track.GetPosition())
+            if isinstance(track, pcbnew.PCB_VIA)
+            else (track.GetStart(), track.GetEnd())
+        )
+        shapes[track.m_Uuid.AsString()] = ((ends,), track.GetWidth() // 2)
+    for module in board.GetFootprints():
+        for pad in module.Pads():
+            polygon = pcbnew.SHAPE_POLY_SET()
+            pad.TransformShapeToPolygon(
+                polygon, pcbnew.F_Cu, 0, pcbnew.FromMM(0.005), pcbnew.ERROR_INSIDE
+            )
+            shapes[pad.m_Uuid.AsString()] = (_edges(polygon), 0)
+    for zone in board.Zones():
+        polygon = pcbnew.SHAPE_POLY_SET()
+        for layer in (pcbnew.F_Cu, pcbnew.B_Cu):
+            if zone.IsOnLayer(layer):
+                polygon = zone.GetFilledPolysList(layer)
+                break
+        shapes[zone.m_Uuid.AsString()] = (_edges(polygon), 0)
+    return shapes
