@@ -29,3 +29,14 @@ def route_led_switch(ctx: RoutingContext) -> None:
     Runs before the grid router so these power connections are fixed copper the router
     then treats as obstacles, rather than being routed (or starved) like signals.
     """
+    board = ctx.board
+    module = footprint(board, SWITCH)
+    centre = module.GetPosition()
+    pads = {pad.GetNumber(): pad for pad in module.Pads()}
+    for pins, net in ((SOURCE_PINS, "+5V"), (DRAIN_PINS, wiring.LED_SUPPLY_NET)):
+        for pin in pins:
+            at = pads[str(pin)].GetPosition()
+            outward = 1 if at.x > centre.x else -1
+            via = pcbnew.VECTOR2I(at.x + outward * pcbnew.FromMM(VIA_OFFSET_MM), at.y)
+            native.add_trace(board, ctx.nets_by_name[net], at, via, width=STUB_MM)
+            native.add_via(board, ctx.nets_by_name[net], via)

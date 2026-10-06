@@ -1,4 +1,16 @@
-"""Deterministic multilayer grid search and copper obstacle rasterization."""
+"""Deterministic multilayer grid search and copper obstacle rasterization.
+
+Role: the pathfinding engine behind the routing policies in `policies.py`. Given a
+board, a net and two endpoints it (1) rasterizes all copper of *other* nets onto a
+0.25 mm grid as blocked cells, (2) runs an A* search over (x, y, layer) cells, and
+(3) `apply_route` turns the resulting path into exact KiCad tracks and vias.
+
+Why a custom grid router: output must be reproducible byte for byte (ties are broken
+by insertion order, never by hashing), and routing happens inside the same Python
+build as placement, so there is no external router in the loop for these nets.
+Coordinates here are KiCad's (absolute, Y down); grid cells are integers in units of
+`GRID_MM`.
+"""
 
 from __future__ import annotations
 
@@ -12,12 +24,19 @@ import pcbnew
 
 from pcb.definition import native, rules
 
+# Routing grid pitch. Endpoints are snapped to it; `apply_route` re-attaches the
+# exact (off-grid) pad positions with short stubs.
 GRID_MM = 0.25
 
+# Width of every routed signal segment.
 TRACK_MM = rules.TRACE_WIDTH_MM
 
+# How far from foreign copper a track *centre line* must stay: clearance plus half
+# the track width, plus a 0.02 mm margin so grid rounding never lands exactly on
+# the DRC limit.
 TRACK_KEEP_OUT_MM = rules.CLEARANCE_MM + TRACK_MM / 2 + 0.02
 
+# Same idea for a via's centre: clearance plus the via pad radius plus the margin.
 VIA_KEEP_OUT_MM = rules.CLEARANCE_MM + rules.VIA_PAD_MM / 2 + 0.02
 
 
@@ -30,6 +49,7 @@ def grid_cell(position: pcbnew.VECTOR2I) -> tuple[int, int]:
 
 
 def position(cell: tuple[int, int]) -> pcbnew.VECTOR2I:
+    """Inverse of `grid_cell`: the KiCad position of a cell's centre."""
     return pcbnew.VECTOR2I(
         pcbnew.FromMM(cell[0] * GRID_MM), pcbnew.FromMM(cell[1] * GRID_MM)
     )
@@ -42,11 +62,20 @@ def blocked_cells(
     layers: tuple[int, ...],
     additional_via_keepouts: frozenset[tuple[int, int]],
 ) -> tuple[dict[int, set[tuple[int, int]]], set[tuple[int, int]]]:
-    """Rasterize foreign copper separately for tracks and full-stack vias."""
+    """Rasterize foreign copper separately for tracks and full-stack vias.
+
+    Returns (blocked, via_forbidden). `blocked[layer]` holds cells where a track
+    centre may not go on that layer. `via_forbidden` is layer-independent: a through
+    via pierces every layer, so it must also avoid copper and drills on layers the
+    route does not use. `bounds` limits work to the search window
+    (x0, y0, x1, y1 in cells); `additional_via_keepouts` adds caller-owned via bans.
+    Copper on `netcode` is skipped (it is a legal destination); net 0 never matches.
+    """
     x0, y0, x1, y1 = bounds
     blocked: dict[int, set[tuple[int, int]]] = {layer: set() for layer in layers}
     via_forbidden = set(additional_via_keepouts)
 
+    # Mark every cell within `radius + extra` of a circle's centre.
     def mark_circle(
         position: pcbnew.VECTOR2I,
         radius: float,
@@ -67,6 +96,8 @@ def blocked_cells(
                     for cells in targets:
                         cells.add((ix, iy))
 
+    # Mark every cell inside a bounding box grown by `extra` (conservative for
+    # non-circular pads and for tracks, whose boxes over-cover diagonals).
     def mark_box(
         box: pcbnew.BOX2I, targets: tuple[set[tuple[int, int]], ...], extra: float
     ) -> None:
@@ -79,6 +110,7 @@ def blocked_cells(
                 for cells in targets:
                     cells.add((ix, iy))
 
+    # Pads first: they are the fixed obstacles.
     for footprint in board.GetFootprints():
         for pad in footprint.Pads():
             is_hole = pad.GetAttribute() in {
@@ -117,18 +149,51 @@ def blocked_cells(
                 else:
                     mark_box(pad.GetBoundingBox(), targets, extra)
 
+    # Then copper already routed for other nets, including earlier routing stages.
+    def mark_segment(
+        track: pcbnew.PCB_TRACK,
+        targets: tuple[set[tuple[int, int]], ...],
+        extra: float,
+    ) -> None:
+        """Cells within reach of the segment itself, not of its bounding box.
+
+        A diagonal track's bounding box can span tens of millimetres and would wall
+        off whole regions of a layer that the copper never occupies.
+        """
+        start, end = track.GetStart(), track.GetEnd()
+        ax, ay, bx, by = mm(start.x), mm(start.y), mm(end.x), mm(end.y)
+        reach = mm(track.GetWidth()) / 2 + extra
+        dx, dy = bx - ax, by - ay
+        length = dx * dx + dy * dy
+        left = math.floor((min(ax, bx) - reach) / GRID_MM)
+        right = math.ceil((max(ax, bx) + reach) / GRID_MM)
+        top = math.floor((min(ay, by) - reach) / GRID_MM)
+        bottom = math.ceil((max(ay, by) + reach) / GRID_MM)
+        for ix in range(max(x0, left), min(x1, right) + 1):
+            for iy in range(max(y0, top), min(y1, bottom) + 1):
+                px, py = ix * GRID_MM, iy * GRID_MM
+                t = 0.0 if length == 0 else ((px - ax) * dx + (py - ay) * dy) / length
+                t = min(max(t, 0.0), 1.0)
+                if math.hypot(ax + t * dx - px, ay + t * dy - py) <= reach:
+                    for cells in targets:
+                        cells.add((ix, iy))
+
     for track in board.GetTracks():
         if track.GetNetCode() == netcode and netcode != 0:
             continue
-        box = track.GetBoundingBox()
-        mark_box(box, (via_forbidden,), VIA_KEEP_OUT_MM)
         if isinstance(track, pcbnew.PCB_VIA):
+            box = track.GetBoundingBox()
+            mark_box(box, (via_forbidden,), VIA_KEEP_OUT_MM)
             mark_box(box, tuple(blocked.values()), TRACK_KEEP_OUT_MM)
-        elif track.GetLayer() in layers:
-            mark_box(box, (blocked[track.GetLayer()],), TRACK_KEEP_OUT_MM)
+            continue
+        mark_segment(track, (via_forbidden,), VIA_KEEP_OUT_MM)
+        if track.GetLayer() in layers:
+            mark_segment(track, (blocked[track.GetLayer()],), TRACK_KEEP_OUT_MM)
     return blocked, via_forbidden
 
 
+# Default routing layers: the two outer copper layers. Policies pass internal
+# signal layers explicitly when they route inside the stack.
 LAYERS = (pcbnew.F_Cu, pcbnew.B_Cu)
 
 
@@ -150,7 +215,10 @@ class RoutingOptions(TypedDict, total=False):
 
 @dataclass(frozen=True, slots=True)
 class GridNode:
-    """One routing-grid cell on a specific index into a route's layers."""
+    """One routing-grid cell on a specific index into a route's layers.
+
+    `layer_index` indexes the `layers` tuple of the search, not a KiCad layer id.
+    """
 
     x: int
     y: int
@@ -165,6 +233,7 @@ class GridNode:
         return (self.x, self.y)
 
     def direction_from(self, other: GridNode) -> tuple[int, int, int]:
+        """Step vector from `other` to this node; used to detect corners."""
         return (
             self.x - other.x,
             self.y - other.y,
