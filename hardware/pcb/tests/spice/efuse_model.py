@@ -145,3 +145,82 @@ def _static_rows(name: str, corner: Corner) -> list[str]:
         ),
         ".ends",
     ]
+
+
+def efuse_rows(
+    name: str, corner: Corner, *, static: bool = False, timer: Timer | None = None
+) -> list[str]:
+    """Subcircuit IN OUT EN OVLO GND for one datasheet corner.
+
+    `static` (operating point): see `_static_rows`. Otherwise a 1 F integrator
+    ramps at the corner's slew rate; `ov` holds the OVLO state with hysteresis;
+    `sd` marks start-up done; `fl` the post-fast-trip limit; `td` the ITIMER
+    discharge (volts) on `timer`; `cb` the open breaker, released by `rt` after
+    tRST. `timer` is required for a transient.
+    """
+    if static:
+        return _static_rows(name, corner)
+    if timer is None:
+        raise ValueError("a transient eFuse needs the board's ITIMER")
+    ron = max(corner.ron, 1e-4)
+    ilim = corner.ilim
+    isc = datasheets.EFUSE_ISC_RATIO * ilim
+    done, limiting, broken = _on("sd"), _on("fl"), _on("cb")
+    drop = "max(0, min(V(in,gnd), V(ramp,gnd)) - V(out,gnd))"
+    limit_mode = f"max(1 - {done}, {limiting})"
+    ceiling = f"({ilim} * {limit_mode} + {4 * isc} * (1 - {limit_mode}))"
+    current = f"(V(on,gnd) * {ceiling} * tanh({drop} / ({ceiling} * {ron})))"
+    unlimited = f"(V(on,gnd) * {4 * isc} * tanh({drop} / ({4 * isc * ron})))"
+    over = _soft(f"{current} - {ilim}", 0.01)
+    demand = _soft(f"{drop} / {ron} - {ilim}", 0.01)
+    started = (
+        f"{_soft('V(ramp,gnd) - V(in,gnd)', 0.01)}"
+        f" * {_soft('V(out,gnd) - V(in,gnd) + 0.2', 0.01)}"
+    )
+    trip, release = _step("ovlo", corner.threshold), _step("ovlo", corner.ovlo_release)
+    return [
+        f".subckt {name} in out en ovlo gnd",
+        f"Bset ovs gnd V={{max({trip}, min({release}, V(ov,gnd)))}}",
+        "Rov ovs ov 1k",
+        "Cov ov gnd 1n",
+        *_latch(
+            "cb",
+            _soft(f"V(td,gnd) - {timer.delta_volts}", 0.002),
+            f"min({broken}, 1 - {_soft('V(rt,gnd) - 1', 0.005)})",
+        ),
+        "Crt rt gnd 1",
+        (
+            f"Brt gnd rt I={{{broken} / {datasheets.EFUSE_RETRY_S}"
+            f" - {_soft('0.1 - V(cb,gnd)', 0.01)} * V(rt,gnd) * 1e4}}"
+        ),
+        (
+            f"Bon on gnd V={{{_step('en', corner.enable_threshold)}"
+            f" * {_step('in', UVP_VOLTS)} * (1 - V(ov,gnd)) * (1 - {broken})}}"
+        ),
+        "Cramp ramp gnd 1",
+        (
+            f"Bramp gnd ramp I={{V(on,gnd) * {corner.slew_volts_per_s}"
+            f" * {_soft('V(in,gnd) + 1 - V(ramp,gnd)', 0.05)}}}"
+        ),
+        # Off (OVLO, EN, UVP or breaker): the ramp restarts from 0 (474A).
+        f"Breset ramp gnd I={{{_soft('0.5 - V(on,gnd)', 0.01)} * V(ramp,gnd) * 1e4}}",
+        "Rramp ramp gnd 1e12",
+        *_latch(
+            "sd",
+            f"{started} * {_soft('V(on,gnd) - 0.5', 0.01)}",
+            f"{done} * {_soft('V(on,gnd) - 0.5', 0.01)}",
+        ),
+        *_latch(
+            "fl",
+            f"{_soft(f'{unlimited} - {isc}', 0.01)} * {done} * V(on,gnd)",
+            f"min({limiting}, {demand}) * V(on,gnd)",
+        ),
+        f"Ctd td gnd {timer.farads}",
+        (
+            f"Btd gnd td I={{{timer.amps} * {over} * {done} * (1 - {limiting})"
+            f" * (1 - {broken}) - (1 - {over}) * V(td,gnd)"
+            f" / {datasheets.EFUSE_ITIMER_PULLUP_OHMS} - {broken} * V(td,gnd) * 1e-3}}"
+        ),
+        f"Bpass in out I={{{current}}}",
+        ".ends",
+    ]
