@@ -598,6 +598,61 @@ class BoardHarness:
             for reference, component in self.components.items()
             if component.GetFieldText("PartKey") == "BUTTON"
         )
+        signal_net: dict[str, str] = {}
+        for reference in switches:
+            nets = {
+                str(pad.GetNetname())
+                for pad in self.components[reference].Pads()
+                if str(pad.GetNetname()) != "GND"
+            }
+            if len(nets) != 1 or not next(iter(nets)).startswith("BTN_"):
+                raise ValueError(f"{reference} must carry one BTN_ net and GND")
+            name = next(iter(nets))
+            button = PANEL_BUTTONS.by_name(name.removeprefix("BTN_"))
+            host_pin = next(
+                pin
+                for pin in RaspberryPiHeaderPin
+                if pin.name.endswith(f"GPIO{button.gpio}")
+            )
+            self._required_net("J1", host_pin, name)
+            signal_net[reference] = name
+        supply_node = _node("+3V3")
+        lines = [
+            "Generated chess-board panel buttons, one press at a time",
+            (
+                f".model TL1105_DOME SW(Ron={datasheets.TL1105_CONTACT_OHMS_MAX} "
+                f"Roff={datasheets.TL1105_INSULATION_OHMS_MIN} Vt=0.5 Vh=0.1)"
+            ),
+            f"VDD {supply_node} 0 {LOGIC_3V3.supply_volts}",
+        ]
+        for index, reference in enumerate(switches):
+            node = _node(signal_net[reference])
+            control = f"press_{index}"
+            start = (index + 1) * BUTTON_WINDOW_MS
+            lines.extend(
+                (
+                    f"RPULL_{reference} {node} {supply_node} {datasheets.PI_GPIO_PULLUP_OHMS.low}",
+                    (
+                        f"VPRESS_{reference} {control} 0 PULSE(0 1 {start}m 1u 1u "
+                        f"{BUTTON_WINDOW_MS / 2}m 1)"
+                    ),
+                    *self._tactile_switch(reference, control),
+                )
+            )
+        stop = (len(switches) + 1) * BUTTON_WINDOW_MS
+        lines.append(f".tran 10u {stop}m")
+        for reference in switches:
+            node = _node(signal_net[reference])
+            lines.append(
+                f".meas tran result_{node}_idle FIND v({node}) "
+                f"AT={BUTTON_WINDOW_MS / 2}m"
+            )
+            for index, pressed in enumerate(switches):
+                at = (index + 1) * BUTTON_WINDOW_MS + BUTTON_WINDOW_MS / 4
+                lines.append(
+                    f".meas tran result_{node}_with_{_node(signal_net[pressed])} "
+                    f"FIND v({node}) AT={at}m"
+                )
         lines.append(".end")
         return "\n".join(lines) + "\n"
 
