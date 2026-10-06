@@ -488,7 +488,12 @@ def logical_pin(pad: pcbnew.PAD) -> str:
 
 
 def connect(board: pcbnew.BOARD, name: str, *pins: BoundPin) -> None:
-    """Assign native pads from component-bound datasheet pins; reject reassignment."""
+    """Assign native pads from component-bound datasheet pins; reject reassignment.
+
+    Creates the net on first use. Raises on an unplaced component, an unknown pin, a
+    pin that already has a net (each pin has exactly one owner), or a pin listed
+    twice. Failing here, at authoring time, beats finding a short in DRC later.
+    """
     if not name or not pins:
         raise ValueError("a connection requires a name and pins")
     selected: list[pcbnew.PAD] = []
@@ -512,11 +517,17 @@ def connect(board: pcbnew.BOARD, name: str, *pins: BoundPin) -> None:
 
 
 def no_connect(board: pcbnew.BOARD, pin: BoundPin) -> None:
+    """Mark a pin intentionally unused with KiCad's `unconnected-(REF-PadN)` net.
+
+    Distinguishes "deliberately open" from "forgotten": the completeness check
+    rejects pads with no net at all.
+    """
     reference, number = pin.endpoint
     connect(board, f"unconnected-({reference}-Pad{number})", pin)
 
 
 def endpoint_pads(board: pcbnew.BOARD) -> dict[Endpoint[str], pcbnew.PAD]:
+    """Index every purchased part's pads by (reference, logical pin)."""
     return {
         Endpoint(f.GetReference(), logical_pin(p)): p
         for f in parts(board)
@@ -533,6 +544,12 @@ def connections(board: pcbnew.BOARD) -> dict[str, tuple[Endpoint[str], ...]]:
 
 
 def add_mechanical_features(board: pcbnew.BOARD) -> None:
+    """Add the non-electrical board features: outline, screw holes, silkscreen.
+
+    Called after all assemblies so the markings are added to the finished board.
+    """
+    # Lazy import: markings imports this module, so importing it at module level
+    # would be circular.
     from pcb.definition.output.markings import add_front_silkscreen, add_square_grid
 
     _add_outline(board)

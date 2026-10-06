@@ -1,4 +1,12 @@
-"""Purchasing, project settings, and review artwork exporters."""
+"""Purchasing, project settings, and review artwork exporters.
+
+Role: text/JSON/SVG outputs derived from the finished board. Two BOMs (a Markdown
+one for people, a CSV one for the board fabricator's assembly service), the KiCad
+project file with design rules taken from `rules.py`, and a clean-up pass over
+KiCad's SVG renders. All are derived from the actual footprints and the shared
+component catalog; none is edited by hand. Nothing here orders parts or proves
+the board can be manufactured.
+"""
 
 from __future__ import annotations
 
@@ -16,13 +24,36 @@ import pcb.definition.board as board_definition
 from pcb.definition import rules
 from pcb.definition.native import parts
 from shared.components import COMPONENTS
+from shared.electronics.harness import HARNESS_PARTS
 from shared.json_values import parse_json
 
-EXTRA_ASSEMBLY_PARTS = ("PI_ZERO_2_W", "OLED_MODULE", "POWER_SUPPLY", "MICRO_SD")
+# Approved products that are part of the finished product but are not soldered on
+# this board (Pi, display, power supply, SD card). They appear in the human BOM with
+# "—" as reference, and are excluded from the fabricator's assembly CSV.
+# Bought parts that are not on the PCB, with the quantity one board needs
+# (interface S3a H1-H3: panel jack/rocker harness, OLED harness, Pi male header).
+EXTRA_ASSEMBLY_PARTS = {
+    "PI_ZERO_2_W": 1,
+    "PI_MALE_HEADER": 1,
+    "OLED_MODULE": 1,
+    "POWER_SUPPLY": 1,
+    "MICRO_SD": 1,
+    "BARREL_JACK": 1,
+    "POWER_SWITCH": 1,
+    **{
+        key: quantity
+        for parts in HARNESS_PARTS.values()
+        for key, quantity in parts.items()
+    },
+}
 
 
 def reference_sort_key(reference: str) -> tuple[str, int]:
-    """Sort references naturally, including multi-letter prefixes such as HS."""
+    """Sort references naturally, including multi-letter prefixes such as HS.
+
+    Orders by letter prefix, then numerically, so C2 sorts before C10 (plain string
+    order would not). A reference with no number sorts first within its prefix.
+    """
     prefix = reference.rstrip("0123456789")
     suffix = reference[len(prefix) :]
     return (prefix, int(suffix) if suffix else 0)
@@ -37,16 +68,24 @@ def _references_by_part(design: pcbnew.BOARD) -> dict[str, list[str]]:
 
 
 def render_bom(design: pcbnew.BOARD | None = None) -> str:
+    """Markdown bill of materials: one row per approved part, with quantity and refs.
+
+    Includes the off-board `EXTRA_ASSEMBLY_PARTS`. Builds the board itself when none
+    is passed, so callers needing a consistent snapshot should pass one in.
+    """
     design = design or board_definition.load()
     references = _references_by_part(design)
-    for key in EXTRA_ASSEMBLY_PARTS:
-        references[key].append("—")
+    for key, quantity in EXTRA_ASSEMBLY_PARTS.items():
+        references[key].extend(["off-board"] * quantity)
     rows: list[str] = []
     for key in sorted(references):
         spec = COMPONENTS[key]
         refs = sorted(references[key], key=reference_sort_key)
+        shown = sorted(set(refs), key=reference_sort_key)
         rows.append(
-            f"| {len(refs)} | `{spec.mpn}` | {spec.manufacturer} | {spec.description} | {spec.package} | {', '.join(refs)} |"
+            f"| {spec.kit_quantity(len(refs))} | {spec.purchase_unit} | `{spec.mpn}` | "
+            f"{spec.manufacturer} | {spec.description} | {spec.package} | "
+            f"{', '.join(shown)} |"
         )
     text = [
         "# Approved bill of materials",
@@ -55,8 +94,11 @@ def render_bom(design: pcbnew.BOARD | None = None) -> str:
         "Every row names an exact manufacturer part number; substitutions require",
         "updating the shared catalog and passing footprint/package validation.",
         "",
-        "| Qty | Manufacturer part number | Manufacturer | Description | Package | References |",
-        "|---:|---|---|---|---|---|",
+        (
+            "| Kit qty | Purchase unit | Manufacturer part number | Manufacturer "
+            "| Description | Package | References |"
+        ),
+        "|---:|---|---|---|---|---|---|",
         *rows,
         "",
     ]
@@ -89,6 +131,9 @@ def render_assembly_csv(design: pcbnew.BOARD | None = None) -> str:
     return output.getvalue()
 
 
+# KiCad DRC checks the project file promotes to errors. They guard footprint
+# library consistency (courtyards, footprint type/filters) and drilled pads sitting
+# inside another part's courtyard, which would otherwise be easy to ignore.
 STRICT_RULES = (
     "footprint_filters_mismatch",
     "footprint_type_mismatch",
@@ -99,6 +144,7 @@ STRICT_RULES = (
 
 
 def _json_object(value: object, label: str) -> dict[str, object]:
+    """Narrow decoded JSON to a string-keyed object, or raise naming `label`."""
     if not isinstance(value, dict):
         raise ValueError(f"{label} must be a JSON object")
     mapping = cast(dict[object, object], value)
@@ -108,6 +154,14 @@ def _json_object(value: object, label: str) -> dict[str, object]:
 
 
 def render_project() -> str:
+    """KiCad project JSON: the checked-in template with `rules.py` values applied.
+
+    The template (`definition/project-template.json`) holds the static settings;
+    this overwrites the line widths, clearances, drill/via limits and silkscreen
+    sizes so KiCad's DRC enforces exactly the design rules used by routing. Output
+    is key-sorted for stable diffs. DRC exclusions are cleared so no violation can
+    be silently waived, and `STRICT_RULES` are forced to errors.
+    """
     project = _json_object(
         parse_json(
             (Path(__file__).parents[2] / "definition/project-template.json").read_text()
@@ -133,7 +187,7 @@ def render_project() -> str:
     constraints = _json_object(settings.get("rules"), "design rules")
     constraints.update(
         {
-            "min_clearance": rules.CLEARANCE_MM,
+            "min_clearance": rules.FINE_PITCH_CLEARANCE_MM,
             "min_copper_edge_clearance": rules.POUR_TO_OUTLINE_MM,
             "min_hole_clearance": rules.HOLE_CLEARANCE_MM,
             "min_hole_to_hole": rules.HOLE_TO_HOLE_MM,
@@ -141,7 +195,7 @@ def render_project() -> str:
             "min_text_height": rules.PCBWAY_MIN_SILK_TEXT_HEIGHT_MM,
             "min_text_thickness": rules.PCBWAY_MIN_SILK_LINE_MM,
             "min_through_hole_diameter": rules.PCBWAY_MIN_DRILL_MM,
-            "min_track_width": rules.TRACE_WIDTH_MM,
+            "min_track_width": rules.FINE_PITCH_TRACE_WIDTH_MM,
             "min_via_annular_width": rules.annular_ring(
                 rules.VIA_PAD_MM, rules.VIA_DRILL_MM
             ),
