@@ -8,7 +8,11 @@ This directory is the tool-independent contract between hardware domains.
   presentation settings remain in their own domains.
 - `components/<part>.py` owns each approved product: manufacturer, exact MPN,
   package, body metadata, and datasheet link. The package registry enumerates them.
-- `electronics/` owns tool-independent component families and typed pin semantics.
+- `electronics/` owns tool-independent component families and typed pin semantics,
+  including `harness.py`, the cavity-by-cavity definition of the off-board power and
+  OLED wiring harnesses (tests, BOM and `generated/harness.md` all read it).
+- `dimensions/unverified.py` lists case/CAD dimensions that still rest on an unread
+  datasheet or an unmeasured drawing; the PCB release gate imports it.
 - `panel_buttons.py` owns each control button's position, typed header pin,
   switch reference, and routing priority.
 - `hall_banks.py` owns compact bank membership, P-port order, labels, and address
