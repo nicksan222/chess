@@ -302,6 +302,102 @@ class EfuseSpiceTest(unittest.TestCase):
         circuit.rows.append(f".tran 10u {end_ms}m 0 10u uic")
         return circuit
 
+    def test_hot_plug_ring_needs_the_ovlo_filter(self) -> None:
+        # The cord's inductance rings into C141 at plug-in (up to about 9-10 V,
+        # below D1's 13.3 V). At the earliest-trip corner (low divider, VOV(R)
+        # and VOV(F) low, leakage in, smallest C) the ring trips OVLO and its last
+        # troughs stay above the restart level, so without C144 a +5 % supply never
+        # turns on; with C144 the pin never reaches VOV(R) and the board starts.
+        supply = datasheets.PSU_VOLTS.high + datasheets.PSU_RIPPLE_VOLTS_PP / 2
+        self.assertGreater(supply, self.stage.ovlo_release(high=False))
+        for henries in datasheets.PSU_CORD_HENRIES:
+            for ovlo_filter in (False, True):
+                circuit = self._plug(
+                    f"Generated chess-board hot plug, filter {ovlo_filter} [BEH]",
+                    f"PULSE(0 {supply} 0 1u 1u 1 2)",
+                    high=False,
+                    ovlo_filter=ovlo_filter,
+                    henries=henries,
+                )
+                circuit.controls.extend(
+                    (
+                        "meas tran result_dc_fused_peak MAX v(in)",
+                        "meas tran result_rail FIND v(out) AT=29m",
+                    )
+                )
+                circuit.expect("dc_fused_peak", supply * 1.1, 20.0)
+                if ovlo_filter:
+                    circuit.expect("rail", datasheets.SK9822_VDD.low, supply)
+                else:
+                    circuit.expect("rail", -0.01, 0.05)
+                label = f"{henries * 1e6:g}uH_{'c144' if ovlo_filter else 'bare'}"
+                with self.subTest(henries=henries, ovlo_filter=ovlo_filter):
+                    run_circuit(f"test_efuse_hot_plug_{label}.py", circuit)
+
+    def test_wrong_adapter_trips_before_the_rail_rises(self) -> None:
+        # A 12 V adapter, slowest trip corner (high divider, largest C144): OVLO
+        # must trip while the dVdt-ramped output is still far below the LEDs.
+        circuit = self._plug(
+            "Generated chess-board 12 V plug [BEH]",
+            "PULSE(0 12 0 1u 1u 1 2)",
+            high=True,
+            henries=max(datasheets.PSU_CORD_HENRIES),
+            end_ms=10.0,
+        )
+        circuit.controls.extend(
+            (
+                "meas tran trip WHEN v(xu74.ov)=0.5 RISE=1",
+                "let result_trip_ms = trip * 1000",
+                "print result_trip_ms",
+                "meas tran result_rail_peak MAX v(out)",
+            )
+        )
+        circuit.expect("trip_ms", 0.0, 2.0)
+        circuit.expect("rail_peak", 0.0, 0.5)
+        run_circuit("test_efuse_wrong_adapter.py", circuit)
+
+    @residual("OVLO filter")
+    def test_running_supply_step_reaches_the_rail_until_ovlo_trips(self) -> None:
+        # Residual of C144 (ASSUMPTION "OVLO filter"): with the output on, a supply
+        # stepping from 5 V to 6 V or the GST over-voltage maximum (7 V, below
+        # D1's 13.3 V) reaches the rail until the filtered OVLO trips: the bulk
+        # capacitors' charging current fast-trips U74, which then charges them at
+        # ILIM (SLVSFC9C 7.3.5.4); they then hold the rail until the load drains it.
+        # Slowest trip corner; minimum load = the 64 LEDs' static current.
+        leds = board_circuits().components
+        led_count = sum(c.GetFieldText("PartKey") == "SK9822" for c in leds.values())
+        idle_ohms = datasheets.PSU_RATED_VOLTS / (
+            led_count * datasheets.SK9822_STATIC_AMPS
+        )
+        rated = datasheets.PSU_RATED_VOLTS
+        ovp = rated * datasheets.PSU_OVER_VOLTAGE_FRACTION.high
+        for step in (6.0, ovp):
+            circuit = self._plug(
+                f"Generated chess-board running step to {step:g} V [BEH]",
+                f"PWL(0 0 1u {rated} 40m {rated} 40.001m {step})",
+                high=True,
+                end_ms=100.0,
+                load_ohms=idle_ohms,
+            )
+            circuit.controls.extend(
+                (
+                    "meas tran result_rail_before FIND v(out) AT=39m",
+                    "meas tran trip WHEN v(xu74.ov)=0.5 RISE=1",
+                    "let result_trip_ms = (trip - 40m) * 1000",
+                    "meas tran result_rail_peak MAX v(out) FROM=40m TO=100m",
+                    "meas tran over_start WHEN v(out)=5.5 RISE=1",
+                    "meas tran over_end WHEN v(out)=5.5 FALL=1",
+                    "let result_over_ms = (over_end - over_start) * 1000",
+                    "print result_trip_ms result_over_ms",
+                )
+            )
+            circuit.expect("rail_before", 4.9, rated)
+            circuit.expect("trip_ms", 0.0, RUNNING_STEP_TRIP_MS)
+            circuit.expect("rail_peak", 5.5, RUNNING_STEP_PEAK_VOLTS)
+            circuit.expect("over_ms", 0.0, RUNNING_STEP_OVER_MS)
+            with self.subTest(step=step):
+                run_circuit(f"test_efuse_running_step_{step:g}.py", circuit)
+
     def test_rail_settles_after_switch_on_with_every_fitted_capacitor(self) -> None:
         circuit = board_circuits().power_startup().clear_expectations()
         circuit.expect("5v_at_1ms", *BOARD_POWER.healthy_rail.tuple())
