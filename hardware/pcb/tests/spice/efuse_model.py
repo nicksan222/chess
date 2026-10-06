@@ -25,3 +25,72 @@ no states and is valid only under ILIM (`_static_rows`).
 The divider, filter, timer, wetting and timing values come from the parts placed
 on the board (`BoardHarness.power_topology`).
 """
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Literal
+
+from shared.electronics import ComponentReference, EfusePin
+from spice import datasheets
+from spice.board_harness import BoardHarness
+from spice.circuit import SpiceCircuit
+from spice.datasheets import Span
+
+UVP_VOLTS = 2.53  # SLVSFC9C 6.5 VUVP(R) typ: below this the device stays off.
+EDGE = 0.002  # Smoothing width of the behavioural comparators (V).
+DVDT_GAIN = (
+    datasheets.EFUSE_DVDT_PF_VOLTS_PER_MS
+    * 1e-12
+    * 1e3
+    / datasheets.EFUSE_DVDT_TYPICAL_AMPS
+)
+DVDT_FARADS = 10e-9  # C142 (CAP_10N) on DVDT.
+# Generic clamp for a pin's ESD diode to GND in a reversed plug [BEH].
+PIN_CLAMP_MODEL = ".model PINCLAMP D(IS=1e-14 N=1)"
+STATE_EDGE = 0.01  # Smoothing width of the state latches (0..1).
+# Ceramic capacitors the model can read from the board, by part key.
+CAPACITOR_FARADS = {"CAP_1N": 1e-9, "CAP_10N": 10e-9}
+TimerCorner = Literal["slow", "fast"]
+
+
+@dataclass(frozen=True)
+class Timer:
+    """ITIMER blanking: the board's capacitor, discharge current and threshold."""
+
+    farads: float
+    amps: float
+    delta_volts: float
+
+    @property
+    def blanking_s(self) -> float:
+        """Time above ILIM before the breaker opens (SLVSFC9C eq. 6)."""
+        return self.farads * self.delta_volts / self.amps
+
+
+@dataclass(frozen=True)
+class Corner:
+    """One datasheet corner: RON, OVLO rising/falling and EN rising thresholds."""
+
+    ron: float
+    threshold: float
+    slew_volts_per_s: float
+    ilim: float
+    release: float | None = None
+    enable: float | None = None
+
+    @property
+    def ovlo_release(self) -> float:
+        """VOV(F) at the same end of its range as the rising threshold."""
+        if self.release is not None:
+            return self.release
+        rising, falling = (
+            datasheets.EFUSE_THRESHOLD_RISING_VOLTS,
+            datasheets.EFUSE_THRESHOLD_FALLING_VOLTS,
+        )
+        return falling.high if self.threshold >= rising.high else falling.low
+
+    @property
+    def enable_threshold(self) -> float:
+        """EN rising threshold; falls back to the OVLO threshold when no separate EN corner is set."""
+        return self.threshold if self.enable is None else self.enable
