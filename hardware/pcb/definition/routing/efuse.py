@@ -83,3 +83,34 @@ def _shared(at: pcbnew.VECTOR2I) -> Point:
         pcbnew.ToMM(at.x) - native.ORIGIN_X_MM,
         native.ORIGIN_Y_MM - pcbnew.ToMM(at.y),
     )
+
+
+def _path(
+    ctx: RoutingContext, net: str, points: Sequence[pcbnew.VECTOR2I], width: float
+) -> None:
+    """Lay a polyline of straight tracks of one `width` on net `net` (F.Cu)."""
+    for start, end in pairwise(points):
+        native.add_trace(ctx.board, ctx.nets_by_name[net], start, end, width=width)
+
+
+def _bar_paths(
+    x: float, sign: int, north_y: float, south_y: float
+) -> list[list[Point]]:
+    """Necks from both bar ends, turning away (sign) from the other bar, to a row."""
+    paths: list[list[Point]] = []
+    for end, row_y in ((1, north_y), (-1, south_y)):
+        path = [(x, end * 1.05), (x, end * 1.4), (x + sign * 0.7, end * 2.1)]
+        if abs(row_y - end * 2.1) > 1e-6:
+            path.append((x + sign * 0.7, row_y))
+        paths.append(path)
+    return paths
+
+
+def route_efuse_power(ctx: RoutingContext) -> None:
+    """Fixed copper for the eFuse power path and its bias escapes, laid before grid routing.
+
+    IN: two necks into a DC_FUSED loop that returns to J4.3. OUT: two necks into two rows of +5V
+    vias. Then the 0.20 mm bias escapes for EN, ITIMER, ILM, GND, DVDT and OVLO, the shared GND
+    vias, and the DC_FUSED stubs for R4, C141 and D1. Positions are fixed offsets from U74 because
+    the pad gaps are too tight for the grid router.
+    """
