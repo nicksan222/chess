@@ -1,4 +1,19 @@
-"""Independent pin-level expectations for the generated native board."""
+"""Independent pin-level expectations for the generated native board.
+
+Role: checks the *generated* `netlist.json` (from `PCB_OUTPUT` if set, else
+`generated/`) against golden values written out by hand below. The tables are
+deliberately not imported from `shared/` or the assemblies: if a mapping were wrong
+in both the code and its own test data, the same mistake could never be caught. Here
+a change to bank membership, LED order, button pins or supply wiring must be made
+twice, on purpose. Evidence type: software test of generated connectivity only; it
+does not show the real parts, footprints or board work electrically.
+
+Reference designators used: J1 Pi header, J2 display harness header, J4 power-entry
+harness header (panel jack + rocker; J3/SW13 retired), F1 fuse, D1 TVS across
++5V/GND, U5 LED-data buffer with R9 series termination (R1/R2 retired in S5:
+the Pi's own I2C pull-ups suffice),
+TP* test points, U1-U4/U70-U73 Hall-bank expanders (see `bank_assemblies.py`).
+"""
 
 import os
 import unittest
@@ -8,6 +23,8 @@ from typing import ClassVar, TypedDict, cast
 
 from shared.json_values import parse_json
 
+# Left rank-turn data terminators (S5), by driving square.
+TURN_TERMINATORS = {"A2": "R10", "A4": "R11", "A6": "R12"}
 PCB_ROOT = Path(__file__).resolve().parents[2]
 EXPANDER_INPUT_PINS = ("4", "5", "6", "7", "9", "10", "11", "12")
 BANKS = (
