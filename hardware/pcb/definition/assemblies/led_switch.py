@@ -83,3 +83,51 @@ def add_led_switch(
         hold.pin(a),
         driver.pin(p.SmallMosfetPin.GATE),
     )
+    connect(
+        board,
+        "GND",
+        hold.pin(b),
+        driver.pin(p.SmallMosfetPin.SOURCE),
+        gate_or.pin(p.LogicGatePin.GROUND),
+        gate_or_bypass.pin(p.CapacitorPin.RETURN_OR_ELECTRODE_B),
+    )
+    connect(
+        board,
+        wiring.LED_ENABLE_N_NET,
+        driver.pin(p.SmallMosfetPin.DRAIN),
+        pull_up.pin(a),
+        gate.pin(a),
+        gate_or.pin(p.LogicGatePin.INPUT_1),
+    )
+    connect(
+        board,
+        wiring.LED_OUTPUT_ENABLE_N_NET,
+        gate_or.pin(p.LogicGatePin.OUTPUT),
+        buffer.pin(p.Ahct125Pin.BUFFER_1_OUTPUT_ENABLE),
+        buffer.pin(p.Ahct125Pin.BUFFER_2_OUTPUT_ENABLE),
+    )
+    connect(
+        board,
+        "+5V",
+        pull_up.pin(b),
+        *(switch.pin(pin) for pin in SOURCE_PINS),
+        # SCES416N Table 1: Y = In1 while In2 is low, In0 while In2 is high. With
+        # In0 high and In2 on Q1's gate, Y = gate OR LED_EN_N (reviewer-s6b B1).
+        gate_or.pin(p.LogicGatePin.INPUT_0),
+        gate_or.pin(p.LogicGatePin.SUPPLY),
+        gate_or_bypass.pin(p.CapacitorPin.SUPPLY_OR_ELECTRODE_A),
+    )
+    connect(
+        board,
+        "LED_SW_GATE",
+        gate.pin(b),
+        switch.pin(p.PowerMosfetPin.GATE),
+        miller.pin(p.CapacitorPin.SUPPLY_OR_ELECTRODE_A),
+        gate_or.pin(p.LogicGatePin.INPUT_2),
+    )
+    connect(
+        board,
+        wiring.LED_SUPPLY_NET,
+        *(switch.pin(pin) for pin in DRAIN_PINS),
+        miller.pin(p.CapacitorPin.RETURN_OR_ELECTRODE_B),
+    )

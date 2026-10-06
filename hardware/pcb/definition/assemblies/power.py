@@ -1,17 +1,24 @@
-"""Input protection, power distribution, and control-strip placement."""
+"""Input protection, power distribution, and control-strip placement.
+
+Role: the 'power' assembly: J4 (harness header), F1 (last-resort fuse), D1 (input TVS), the
+U74 eFuse and its bias network, the bulk and bypass capacitors and the power test points,
+and `add_strip`, the placement helper other assemblies share. The nets and the rocker-on-RUN
+wiring follow the harness definition in `shared/electronics/harness.py`.
+"""
 
 from __future__ import annotations
 
 import pcbnew
 
-from pcb.definition.native import connect, place
+from pcb.definition.native import connect, no_connect, place
 from pcb.definition.parts import catalog as parts
 from pcb.definition.parts.part import PcbPart
 from shared import dimensions
 from shared import electronics as p
 from shared.electronics import EndpointResolver
 
-ASSEMBLY_PART_COUNT = 9
+# J4 F1 D1 U74 C1 C140 C2 C141 C142 C143 C144 R3-R8 TP1 TP2 TP5
+ASSEMBLY_PART_COUNT = 20
 
 
 def add_strip[Part: EndpointResolver](
@@ -23,6 +30,12 @@ def add_strip[Part: EndpointResolver](
     purpose: str | None = None,
     nominal_value: str | None = None,
 ) -> Part:
+    """Place a hand-placed part from the shared `PCB_STRIP_PLACEMENTS` table.
+
+    Position, rotation and side all come from `shared/dimensions/panel.py`, so the PCB and the
+    CAD clearance tests agree where the part is. `purpose`/`nominal_value` override the
+    product defaults for the BOM and schematic.
+    """
     placement = dimensions.PCB_STRIP_PLACEMENTS[reference]
     return place(
         board,
@@ -33,6 +46,7 @@ def add_strip[Part: EndpointResolver](
         assembly=assembly,
         purpose=purpose,
         nominal_value=nominal_value,
+        bottom=placement.bottom,
     )
 
 
