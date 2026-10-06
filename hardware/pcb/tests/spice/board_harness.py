@@ -557,50 +557,46 @@ class BoardHarness:
         lines.append(".end")
         return "\n".join(lines) + "\n"
 
-    def _buttons(self) -> str:
-        button_nets = sorted(
-            str(name)
-            for name in self.connections
-            if name and str(name).startswith("BTN_")
-        )
-        lines = ["Generated chess-board complete button input bank"]
-        lines.extend(_expect(_node(name), True) for name in button_nets)
-        supply_node = _node("+3V3")
-        lines.append(f"VDD {supply_node} 0 {LOGIC_3V3.supply_volts}")
-        for index, name in enumerate(button_nets, start=1):
-            switches = [
-                str(reference)
-                for reference, pin in self.connections[name]
-                if str(reference).startswith("SW")
-                and str(pin) == TactileSwitchPin.SIGNAL
-            ]
-            if len(switches) != 1:
-                raise ValueError(f"{name} must have exactly one tactile switch")
-            reference = switches[0]
-            button = PANEL_BUTTONS.by_name(name.removeprefix("BTN_"))
-            gpio = button.gpio
-            host_pin = next(
-                pin for pin in RaspberryPiHeaderPin if pin.name.endswith(f"GPIO{gpio}")
-            )
-            self._required_endpoints(
-                name,
-                {
-                    (reference, str(TactileSwitchPin.SIGNAL)),
-                    ("J1", str(host_pin)),
-                },
-            )
-            self._required_net(reference, TactileSwitchPin.GROUND, "GND")
-            node = _node(name)
-            lines.extend(
-                (
-                    f"RPULL{index} {node} {supply_node} {PI_GPIO_PULLUP_OHMS}",
-                    f"R{reference} {node} 0 {HALL_SENSOR.output_on_ohms}",
+    def _pad_node(self, reference: str, pad_number: str) -> str:
+        """SPICE node of one physical pad's actual net (board ground is node 0)."""
+        component = self.components[reference]
+        pad = next(p for p in component.Pads() if p.GetNumber() == pad_number)
+        name = str(pad.GetNetname())
+        return "0" if name == "GND" else _node(name)
+
+    def _tactile_switch(self, reference: str, control: str) -> list[str]:
+        """TL1105 internals from its lead geometry (datasheet p25), not pad names."""
+        pads = list(self.components[reference].Pads())
+        lines: list[str] = []
+        for first, second in combinations(pads, 2):
+            gap = pcbnew.ToMM(
+                round(
+                    math.hypot(
+                        first.GetPosition().x - second.GetPosition().x,
+                        first.GetPosition().y - second.GetPosition().y,
+                    )
                 )
             )
-        lines.append(".tran 1u 10u")
-        lines.extend(
-            f".meas tran result_{_node(name)} FIND v({_node(name)}) AT=5u"
-            for name in button_nets
+            a = self._pad_node(reference, first.GetNumber())
+            b = self._pad_node(reference, second.GetNumber())
+            tag = f"{reference}_{first.GetNumber()}_{second.GetNumber()}"
+            tolerance = datasheets.TL1105_LEAD_PITCH_TOLERANCE_MM
+            if abs(gap - datasheets.TL1105_STRAPPED_LEAD_PITCH_MM) <= tolerance:
+                lines.append(f"RSTRAP_{tag} {a} {b} {datasheets.TL1105_STRAP_OHMS}")
+            elif abs(gap - datasheets.TL1105_BRIDGED_LEAD_PITCH_MM) <= tolerance:
+                lines.append(f"SDOME_{tag} {a} {b} {control} 0 TL1105_DOME")
+        if sum(line.startswith("RSTRAP_") for line in lines) != 2 or (
+            sum(line.startswith("SDOME_") for line in lines) != 2
+        ):
+            raise ValueError(f"{reference}: pads do not match the TL1105 lead pattern")
+        return lines
+
+    def _buttons(self) -> str:
+        """Press each panel button alone; every other GPIO must stay released."""
+        switches = sorted(
+            reference
+            for reference, component in self.components.items()
+            if component.GetFieldText("PartKey") == "BUTTON"
         )
         lines.append(".end")
         return "\n".join(lines) + "\n"
