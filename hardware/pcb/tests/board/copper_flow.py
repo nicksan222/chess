@@ -73,3 +73,46 @@ def max_flow(
             u, v = _key(start), _key(end)
             capacity[u][v] += amps
             capacity[v][u] += amps
+    ends = {_key(p) for p in points}
+
+    def attach(item: pcbnew.PAD | pcbnew.PCB_VIA, node: str, amps: float) -> None:
+        """Join a pad or via to the copper nodes whose track ends lie inside it, with `amps` of capacity."""
+        box = item.GetBoundingBox()
+        for x, y in ends:
+            if (
+                box.GetLeft() <= x * 1000 <= box.GetRight()
+                and box.GetTop() <= y * 1000 <= box.GetBottom()
+            ):
+                capacity[node][(x, y)] += amps
+                capacity[(x, y)][node] += amps
+
+    for pad in sources:
+        attach(pad, "source", math.inf)
+    for index, sink in enumerate(sinks):
+        if isinstance(sink, pcbnew.PCB_VIA):
+            attach(sink, f"via{index}", math.inf)
+            capacity[f"via{index}"]["sink"] += via_amps
+        else:
+            attach(sink, "sink", math.inf)
+    flow = 0.0
+    while True:
+        parent: dict[Node, Node] = {"source": "source"}
+        queue: deque[Node] = deque(["source"])
+        while queue and "sink" not in parent:
+            u = queue.popleft()
+            for v, c in capacity[u].items():
+                if c > 1e-9 and v not in parent:
+                    parent[v] = u
+                    queue.append(v)
+        if "sink" not in parent:
+            return flow
+        path: list[tuple[Node, Node]] = []
+        v: Node = "sink"
+        while v != "source":
+            path.append((parent[v], v))
+            v = parent[v]
+        bottleneck = min(capacity[u][v] for u, v in path)
+        for u, v in path:
+            capacity[u][v] -= bottleneck
+            capacity[v][u] += bottleneck
+        flow += bottleneck
