@@ -1,12 +1,33 @@
-"""Typed native PCB part binding and registry validation."""
+"""Typed native PCB part binding and registry validation.
+
+Role: `PcbPart` ties one approved product (`ComponentSpec`) to its typed pin model and
+its native footprint template, plus the display defaults shown in the BOM and
+schematic. `parts/catalog.py` lists every binding and `native.place()` consumes them.
+Validating at construction (import) time means an inconsistent binding fails
+immediately rather than producing a quietly wrong board.
+"""
 
 from collections.abc import Callable
 from dataclasses import dataclass
+from enum import Enum
 
 import pcbnew
 
 from shared.components import ComponentSpec
 from shared.electronics import EndpointResolver
+
+
+class DrawingView(Enum):
+    """Which side the template's land drawing is seen from.
+
+    MOUNTING_SIDE: the datasheet layout as seen from the side the part sits on
+    (KiCad and most catalogues, e.g. JST VH p4 note 1). On the bottom it needs a
+    true mirror flip. BOARD_TOP: holes defined by a mating part seen from the
+    board top (the Pi header), so a bottom placement keeps them unmirrored.
+    """
+
+    MOUNTING_SIDE = "mounting side"
+    BOARD_TOP = "board top"
 
 
 @dataclass(frozen=True)
