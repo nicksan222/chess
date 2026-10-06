@@ -472,19 +472,9 @@ class BoardHarness:
             if self.net_by_endpoint.get((reference, other)) == "GND":
                 found.append((reference, pin, self.resistor_ohms(reference)[0]))
         return found
-        output_1 = _node(self.net_by_endpoint[("U5", str(Ahct125Pin.BUFFER_1_OUTPUT))])
-        output_2 = _node(self.net_by_endpoint[("U5", str(Ahct125Pin.BUFFER_2_OUTPUT))])
-        lines.extend(
-            (
-                ".tran 1u 10u",
-                f".meas tran result_channel_1 FIND v({output_1}) AT=5u",
-                f".meas tran result_channel_2 FIND v({output_2}) AT=5u",
-                ".end",
-            )
-        )
-        return "\n".join(lines) + "\n"
 
     def _open_drain_inputs(self) -> str:
+        """Circuit text for the open-drain buses and Hall inputs: pull-ups and device pins taken from the board."""
         bus_nets = (wiring.SDA_NET, wiring.SCL_NET)
         expander_references = tuple(
             reference
@@ -495,7 +485,6 @@ class BoardHarness:
             wiring.SDA_NET: {
                 ("J1", str(RaspberryPiHeaderPin.I2C_SDA)),
                 ("J2", "4"),
-                ("R1", "2"),
                 ("TP7", str(TestPointPin.PROBE)),
                 *(
                     (reference, str(Tca9554Pin.I2C_DATA))
@@ -505,7 +494,6 @@ class BoardHarness:
             wiring.SCL_NET: {
                 ("J1", str(RaspberryPiHeaderPin.I2C_SCL)),
                 ("J2", "3"),
-                ("R2", "2"),
                 ("TP6", str(TestPointPin.PROBE)),
                 *(
                     (reference, str(Tca9554Pin.I2C_CLOCK))
@@ -527,39 +515,33 @@ class BoardHarness:
         lines.extend(
             (
                 (
-                    f".model INPUTSW SW(Ron={HALL_SENSOR.output_on_ohms} "
-                    f"Roff={HALL_SENSOR.output_off_spice} "
-                    f"Vt={HALL_SENSOR.magnetic_drive_threshold_volts} "
-                    f"Vh={HALL_SENSOR.magnetic_drive_hysteresis_volts})"
+                    f".model INPUTSW SW(Ron={CONTROL_SWITCH.on_ohms} "
+                    f"Roff={CONTROL_SWITCH.off_spice} "
+                    f"Vt={CONTROL_SWITCH.drive_threshold_volts} "
+                    f"Vh={CONTROL_SWITCH.drive_hysteresis_volts})"
                 ),
                 f"VDD {supply_node} 0 {LOGIC_3V3.supply_volts}",
                 f"VDRIVE drive 0 PULSE(0 {LOGIC_3V3.supply_volts} 1m 1u 1u 10 20)",
             )
         )
-        for index, name in enumerate(bus_nets, start=1):
-            resistor = next(
-                component
-                for component in self.components.values()
-                if component.GetFieldText("PartKey") == "RES_4K7"
-                and name
-                in {
-                    self.net_by_endpoint.get((component.GetReference(), "1")),
-                    self.net_by_endpoint.get((component.GetReference(), "2")),
-                }
+        # The only pull-ups are the Pi's own (Zero 2 W R23/R24, GPIO2/GPIO3 to 3V3);
+        # the board must not add any (S5: R1/R2 removed).
+        for name in bus_nets:
+            extra = sorted(
+                reference
+                for reference, _pin in self.endpoints_by_net[name]
+                if self.components[reference].GetFieldText("PartKey").startswith("RES_")
             )
-            attached_nets = {
-                self.net_by_endpoint.get((resistor.GetReference(), "1")),
-                self.net_by_endpoint.get((resistor.GetReference(), "2")),
-            }
-            if attached_nets != {name, "+3V3"}:
-                raise ValueError(
-                    f"{resistor.GetReference()} must connect {name} to +3V3; "
-                    f"found {sorted(str(net) for net in attached_nets)}"
-                )
+            if extra:
+                raise ValueError(f"{name}: unexpected on-board pull-up {extra}")
+        pullup = datasheets.PI_I2C_PULLUP_OHMS * (
+            1 + datasheets.PI_I2C_PULLUP_TOLERANCE
+        )
+        for index, name in enumerate(bus_nets, start=1):
             node = _node(name)
             lines.extend(
                 (
-                    f"RPULL{index} {node} {supply_node} {resistor.GetFieldText('NominalValue')}",
+                    f"RPULL{index} {node} {supply_node} {pullup}",
                     f"SDRIVE{index} {node} 0 drive 0 INPUTSW",
                 )
             )
