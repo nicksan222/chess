@@ -150,3 +150,60 @@ def connected_vias(board: pcbnew.BOARD, pad: pcbnew.PAD) -> list[pcbnew.PCB_VIA]
         and v.GetNetCode() == pad.GetNetCode()
         and any(_on(v.GetPosition(), t) for t in reached)
     ]
+
+
+def spoke_width_mm(board: pcbnew.BOARD, pad: pcbnew.PAD, layer: int) -> float:
+    """Copper crossing the middle of the pad's thermal gap on a plane layer."""
+    zone = next(
+        z
+        for z in board.Zones()
+        if z.GetLayer() == layer and z.GetNetCode() == pad.GetNetCode()
+    )
+    middle = zone.GetThermalReliefGap() // 2
+    band = pcbnew.FromMM(0.05)
+    outer = pcbnew.SHAPE_POLY_SET()
+    inner = pcbnew.SHAPE_POLY_SET()
+    error = pcbnew.FromMM(0.005)
+    pad.TransformShapeToPolygon(outer, layer, middle + band, error, pcbnew.ERROR_INSIDE)
+    pad.TransformShapeToPolygon(inner, layer, middle - band, error, pcbnew.ERROR_INSIDE)
+    outer.BooleanSubtract(inner)
+    copper = pcbnew.SHAPE_POLY_SET(zone.GetFilledPolysList(layer))
+    copper.BooleanIntersection(outer)
+    return copper.Area() / 1e12 / pcbnew.ToMM(2 * band)
+
+
+def thermal_gap_mm(board: pcbnew.BOARD, layer: int, netcode: int) -> float:
+    """Thermal-relief gap (mm) of the zone on `layer` for `netcode`, for the series spoke resistance."""
+    zone = next(
+        z for z in board.Zones() if z.GetLayer() == layer and z.GetNetCode() == netcode
+    )
+    return pcbnew.ToMM(zone.GetThermalReliefGap())
+
+
+class PlaneMesh:
+    """Two plane meshes sharing grid geometry; node names p_i_j and g_i_j."""
+
+    def __init__(self, board: pcbnew.BOARD) -> None:
+        self.board = board
+        zones = {zone.GetNetname(): zone for zone in board.Zones()}
+        self.zones = (zones["+5V"], zones["GND"], zones["LED_5V"])
+        box = zones["+5V"].GetBoundingBox()
+        self.left, self.top = box.GetLeft(), box.GetTop()
+        pitch = pcbnew.FromMM(MESH_PITCH_MM)
+        self.pitch = pitch
+        self.columns = (box.GetRight() - box.GetLeft()) // pitch + 1
+        self.rows = (box.GetBottom() - box.GetTop()) // pitch + 1
+        thickness = _inner_copper_mm() / 1000
+        self.sheet_ohms = COPPER_RESISTIVITY_OHM_M / thickness
+
+    def node(self, prefix: str, at: pcbnew.VECTOR2I) -> str:
+        """Mesh node name for the grid cell nearest `at`, clamped to the mesh."""
+        column = min(max(round((at.x - self.left) / self.pitch), 0), self.columns - 1)
+        row = min(max(round((at.y - self.top) / self.pitch), 0), self.rows - 1)
+        return f"{prefix}_{column}_{row}"
+
+    def _fill_ratio(self, zone: pcbnew.ZONE) -> float:
+        """Filled area over outline area of the zone: how much of the sheet is really copper."""
+        filled = zone.GetFilledPolysList(zone.GetLayer()).Area()
+        outline = zone.Outline().Area()
+        return filled / outline
