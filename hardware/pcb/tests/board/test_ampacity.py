@@ -169,3 +169,51 @@ class AmpacityTest(unittest.TestCase):
         finally:
             for track in north:
                 self.routed.Add(track)
+
+    def test_plane_entries_carry_the_fuse_rating(self) -> None:
+        inner = _copper_mm(outer=False)
+        wall = math.pi * VIA_WALL_MM
+        entries = power_entry_pads(self.routed)
+        nets = {pad.GetNetname() for pad in entries}
+        # LED_5V (In6, S6) is fed only through the LED switch Q1, tested below.
+        self.assertEqual(
+            nets, set(PLANE_LAYERS) - {"LED_5V"}, "supply entry must reach both planes"
+        )
+        for pad in entries:
+            label = f"{pad.GetParentFootprint().GetReference()}-{pad.GetNumber()}"
+            if pad.GetAttribute() == pcbnew.PAD_ATTRIB_PTH:
+                width = spoke_width_mm(self.routed, pad, PLANE_LAYERS[pad.GetNetname()])
+                capacity = ampacity(width * inner, outer=False)
+            else:
+                # Via-fed entry: the plated walls of the vias it reaches carry it.
+                capacity = sum(
+                    ampacity(wall * pcbnew.ToMM(via.GetDrillValue()), outer=False)
+                    for via in self._connected(pad)
+                )
+            with self.subTest(pad=label, amps=round(capacity, 2)):
+                self.assertGreaterEqual(capacity, FUSE_AMPS)
+
+    def test_led_switch_carries_the_efuse_limit(self) -> None:
+        # S6: Q1 passes whatever the LEDs draw. U74 lets at most ILIM max (RILM
+        # 1.65 kOhm) flow continuously, in start-up or after a fast trip; above it,
+        # up to ISC (about 4.4 A) only for the 0.46-1.6 ms ITIMER blanking, a pulse
+        # rather than an ampacity load (SLVSFC9C 7.3.5). Q1's source stubs into the
+        # +5V plane and drain stubs into the LED_5V plane, and those vias' plated
+        # walls, must each carry ILIM.
+        q1 = self.routed.FindFootprintByReference("Q1")
+        assert q1 is not None
+        wall = math.pi * VIA_WALL_MM
+        for net, numbers in (
+            ("+5V", ("1", "2", "3")),
+            ("LED_5V", ("5", "6", "7", "8")),
+        ):
+            pads = [self._pad(q1, n) for n in numbers]
+            vias = [via for pad in pads for via in self._connected(pad)]
+            flow = self._flow(net, pads, vias)
+            walls = sum(
+                ampacity(wall * pcbnew.ToMM(via.GetDrillValue()), outer=False)
+                for via in vias
+            )
+            with self.subTest(net=net, flow=round(flow, 2), walls=round(walls, 2)):
+                self.assertGreaterEqual(flow, LED_SWITCH_AMPS)
+                self.assertGreaterEqual(walls, LED_SWITCH_AMPS)
