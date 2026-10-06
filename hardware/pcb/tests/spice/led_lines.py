@@ -99,3 +99,68 @@ class Link:
         if point not in self.nodes:
             self.nodes[point] = f"{self.tag}_{len(self.nodes)}"
         return self.nodes[point]
+
+
+def _add_net(link: Link, board: pcbnew.BOARD, net: str) -> None:
+    """Add every segment and via of `net` to the link: lines per segment, via capacitance,
+    and merged nodes where copper touches.
+    """
+    segments: list[tuple[str, float, Point, Point]] = []
+    vias: list[Point] = []
+    for track in board.GetTracks():
+        if track.GetNetname() != net:
+            continue
+        if isinstance(track, pcbnew.PCB_VIA):
+            vias.append(_point(track.GetPosition()))
+            continue
+        layer = board.GetLayerName(track.GetLayer())
+        width = pcbnew.ToMM(track.GetWidth())
+        segments.append(
+            (layer, width, _point(track.GetStart()), _point(track.GetEnd()))
+        )
+    points = {p for _, _, a, b in segments for p in (a, b)} | set(vias)
+    # Router output can overlap (a track retraced); each copper piece counts once.
+    pieces: dict[tuple[str, Point, Point], Line] = {}
+    for layer, width, start, end in segments:
+        cuts = sorted(
+            (t, p) for p in points if (t := _interior(start, end, p)) is not None
+        )
+        stops = [start, *(p for _, p in cuts), end]
+        for a, b in pairwise(stops):
+            if a != b:
+                low, high = sorted((a, b))
+                pieces.setdefault((layer, low, high), line(layer, width))
+    lumped: list[tuple[Point, float]] = []
+    lines: list[tuple[Point, Point, Line, float]] = []
+    for (_layer, a, b), properties in pieces.items():
+        mm = pcbnew.ToMM(round(math.hypot(b[0] - a[0], b[1] - a[1])))
+        if mm * properties.delay_ns_per_mm < LUMPED_NS:
+            link.merge(a, b)
+            lumped.append((a, mm * properties.farads_per_mm))
+        else:
+            lines.append((a, b, properties, mm))
+    for footprint in board.GetFootprints():
+        for pad in footprint.Pads():
+            if pad.GetNetname() != net:
+                continue
+            inside = sorted(p for p in points if pad.HitTest(pcbnew.VECTOR2I(*p)))
+            key = (footprint.GetReference(), pad.GetNumber())
+            if not inside:
+                raise ValueError(f"{net}: no routed copper reaches {key}")
+            for other in inside[1:]:
+                link.merge(inside[0], other)
+            link.pads[key] = inside[0]
+    for a, b, properties, mm in lines:
+        name = f"{link.tag}_{len(link.rows)}"
+        if link.root(a) == link.root(b):
+            link.rows.append(
+                f"C{name} {link.node(a)} 0 {mm * properties.farads_per_mm}"
+            )
+            continue
+        delay = mm * properties.delay_ns_per_mm
+        link.rows.append(
+            f"T{name} {link.node(a)} 0 {link.node(b)} 0 "
+            f"Z0={properties.impedance} TD={delay}n"
+        )
+    for point, farads in [*lumped, *((via, via_farads()) for via in vias)]:
+        link.rows.append(f"C{link.tag}_{len(link.rows)} {link.node(point)} 0 {farads}")
