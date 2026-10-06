@@ -144,5 +144,89 @@ GOLDEN = (
         # chamfer bottom-right; 3 x 1.0 mm leads within 4.2 mm => 1.6 mm pitch;
         # 5.0 x 5.0 body, 5.4 over leads, 1.6 high, +-0.1); p4 §5 pin
         # configuration; p4 §6 recommended PCB land: 1.80 x 1.20 pads, 0.40 apart,
-    )
+        # 3.40 inner gap => centres +/-2.60 mm.
+        "Opsco SPC/SK9822-A Rev 01 p3-p4",
+        ((5.3, 5.5), (4.9, 5.1), (1.5, 1.7)),
+        (
+            LandPad("1", "SDI", "DATA_IN", None, (2.6, -1.6), PLCC6_PAD),
+            LandPad("2", "CKI", "CLOCK_IN", None, (2.6, 0.0), PLCC6_PAD),
+            LandPad("3", "GND", "GROUND", "GND", (2.6, 1.6), PLCC6_PAD),
+            LandPad("4", "VCC", "FIVE_VOLTS", "LED_5V", (-2.6, 1.6), PLCC6_PAD),
+            LandPad("5", "CKO", "CLOCK_OUT", None, (-2.6, 0.0), PLCC6_PAD),
+            LandPad("6", "SDO", "DATA_OUT", None, (-2.6, -1.6), PLCC6_PAD),
+        ),
+        polarity_pad="1",
+    ),
+    LandPattern(
+        "TCA9554",
+        "TCA9554DWR",
+        "SOIC-16W 1.27 mm",
+        # TI SCPS233E: p4 §5 pin functions (DW); p39 DW0016A outline (D 10.1-10.5,
+        # E1 7.4-7.6, 2.65 max); p40 example board layout ((9.3) row, 16X (2) x
+        # 16X (0.6), 14X (1.27)).
+        "TI SCPS233E p4, p39-p40 (DW0016A)",
+        ((10.1, 10.5), (7.4, 7.6), (0.0, 2.65)),
+        (
+            LandPad("1", "A0", "ADDRESS_0", None, (-4.65, 4.445), SOIC16W_PAD),
+            LandPad("2", "A1", "ADDRESS_1", None, (-4.65, 3.175), SOIC16W_PAD),
+            LandPad("3", "A2", "ADDRESS_2", None, (-4.65, 1.905), SOIC16W_PAD),
+            LandPad("4", "P0", "P0", None, (-4.65, 0.635), SOIC16W_PAD),
+            LandPad("5", "P1", "P1", None, (-4.65, -0.635), SOIC16W_PAD),
+            LandPad("6", "P2", "P2", None, (-4.65, -1.905), SOIC16W_PAD),
+            LandPad("7", "P3", "P3", None, (-4.65, -3.175), SOIC16W_PAD),
+            LandPad("8", "GND", "GROUND", "GND", (-4.65, -4.445), SOIC16W_PAD),
+            LandPad("9", "P4", "P4", None, (4.65, -4.445), SOIC16W_PAD),
+            LandPad("10", "P5", "P5", None, (4.65, -3.175), SOIC16W_PAD),
+            LandPad("11", "P6", "P6", None, (4.65, -1.905), SOIC16W_PAD),
+            LandPad("12", "P7", "P7", None, (4.65, -0.635), SOIC16W_PAD),
+            LandPad("13", "INT", "INTERRUPT", None, (4.65, 0.635), SOIC16W_PAD),
+            LandPad("14", "SCL", "I2C_CLOCK", None, (4.65, 1.905), SOIC16W_PAD),
+            LandPad("15", "SDA", "I2C_DATA", None, (4.65, 3.175), SOIC16W_PAD),
+            LandPad("16", "VCC", "SUPPLY", "+3V3", (4.65, 4.445), SOIC16W_PAD),
+        ),
+        polarity_pad="1",
+    ),
+    LandPattern(
+        "LED_SWITCH",
+        "Si4403DDY-T1-GE3",
+        "SO-8 1.27 mm",
+        # Vishay Si4403DDY (S17-0318-Rev A) p1 pinout (1-3 S, 4 G, 5-8 D); package
+        # information 71192 (D 4.80-5.00, H 5.80-6.20, A 1.75 max); AN826 (72606
+        # p22 = 72286 p33) recommended minimum pads: 0.559 x 1.194 at 1.270, rows 3.861 apart
+        # inside => centres +/-2.5275, 4.369 overall along the row.
+        "Vishay Si4403DDY p1; 71192; AN826 72606 p22 = 72286 p33",
+        ((4.80, 5.00), (5.80, 6.20), (0.0, 1.75)),
+        tuple(
+            LandPad(number, name, semantic, net, (x, y), (1.194, 0.559))
+            for number, name, semantic, net, x, y in (
+                ("1", "S1", "SOURCE_1", "+5V", -2.5275, 1.905),
+                ("2", "S2", "SOURCE_2", "+5V", -2.5275, 0.635),
+                ("3", "S3", "SOURCE_3", "+5V", -2.5275, -0.635),
+                ("4", "G", "GATE", None, -2.5275, -1.905),
+                ("5", "D5", "DRAIN_5", "LED_5V", 2.5275, -1.905),
+                ("6", "D6", "DRAIN_6", "LED_5V", 2.5275, -0.635),
+                ("7", "D7", "DRAIN_7", "LED_5V", 2.5275, 0.635),
+                ("8", "D8", "DRAIN_8", "LED_5V", 2.5275, 1.905),
+            )
+        ),
+        polarity_pad="1",
+        internal_groups=(("S1", "S2", "S3"), ("D5", "D6", "D7", "D8")),
+    ),
+    LandPattern(
+        "LED_SWITCH_DRIVER",
+        "BSS138LT1G",
+        "SOT-23 (TO-236)",
+        # onsemi BSS138LT1/D Rev 15 (Sept 2026) p8 STYLE 21 (1 gate, 2 source,
+        # 3 drain); case 318 Issue AU (98ASB42226B) p7: D 2.80-3.04, HE 2.10-2.64,
+        # A 0.89-1.11; recommended mounting footprint 3X 0.56 x 3X 0.95, 0.95
+        # pitch, 2.90 overall => centres +/-0.975 (reports/datasheets/).
+        "onsemi BSS138LT1/D Rev 15 p7-p8; case 318 Issue AU",
+        ((2.80, 3.04), (2.10, 2.64), (0.89, 1.11)),
+        (
+            LandPad("1", "G", "GATE", None, (-0.95, -0.975), (0.56, 0.95)),
+            LandPad("2", "S", "SOURCE", "GND", (0.95, -0.975), (0.56, 0.95)),
+            LandPad("3", "D", "DRAIN", None, (0.0, 0.975), (0.56, 0.95)),
+        ),
+        polarity_pad="1",
+    ),
 )
