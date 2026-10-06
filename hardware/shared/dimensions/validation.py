@@ -473,6 +473,77 @@ def validate_buttons() -> None:
                 raise ValueError("Neighbouring button reliefs merge")
 
 
+def validate_rocker() -> None:
+    """The snap-in rocker fits its cutout in a wall pocketed to panel thickness."""
+    if any(a < c for a, c in zip(CASE_ROCKER_APERTURE_MM, CASE_ROCKER_CUTOUT_MM)):
+        raise ValueError("Rocker aperture is smaller than the panel cutout")
+    rear_wall = (CASE_DEPTH_MM - CASE_CAVITY_SIZE_MM[1]) / 2.0
+    if not FDM_MIN_FEATURE_MM <= CASE_ROCKER_PANEL_THICKNESS_MM < rear_wall:
+        raise ValueError("Rocker panel thickness must be printable and inside the wall")
+    low, high = CASE_ROCKER_PANEL_RANGE_MM
+    if not low <= CASE_ROCKER_PANEL_THICKNESS_MM <= high:
+        raise ValueError("Rocker panel is outside the cutout's panel-thickness row")
+    if not meets(CASE_ROCKER_POCKET_ROOF_MM, FDM_MIN_FLOOR_MM):
+        raise ValueError("Rocker pocket roof under the PCB ledge is too thin")
+    half_z = CASE_ROCKER_APERTURE_MM[1] / 2.0
+    bottom, top = CASE_ROCKER_POCKET_Z_MM
+    if not (
+        meets(
+            CASE_REAR_APERTURE_CENTER_Z_MM - half_z - bottom,
+            CASE_ROCKER_LATCH_MARGIN_MM,
+        )
+        and meets(
+            top - CASE_REAR_APERTURE_CENTER_Z_MM - half_z, CASE_ROCKER_LATCH_MARGIN_MM
+        )
+        and CASE_FLOOR_MM <= bottom
+        and top <= PCB_UNDERSIDE_Z_MM
+    ):
+        raise ValueError("Rocker wall pocket leaves no room for the snap-in latches")
+    cavity_half_x = CASE_CAVITY_SIZE_MM[0] / 2.0
+    pockets = (
+        (CASE_ROCKER_APERTURE_CENTER_X_MM, CASE_ROCKER_POCKET_WIDTH_MM),
+        (CASE_JACK_APERTURE_CENTER_X_MM, CASE_JACK_POCKET_WIDTH_MM),
+    )
+    for centre, width in pockets:
+        if not meets(cavity_half_x - abs(centre) - width / 2.0, FDM_MIN_FEATURE_MM):
+            raise ValueError("A rear wall pocket runs into the side wall")
+    if not meets(
+        abs(pockets[0][0] - pockets[1][0]) - (pockets[0][1] + pockets[1][1]) / 2.0,
+        FDM_MIN_FEATURE_MM,
+    ):
+        raise ValueError("Jack and rocker wall pockets merge")
+
+
+def validate_jack() -> None:
+    """The panel jack's bushing fits its hole and its thread spans the panel."""
+    if CASE_JACK_APERTURE_DIAMETER_MM <= CASE_JACK_BUSHING_DIAMETER_MM:
+        raise ValueError("Jack aperture does not clear the bushing")
+    rear_wall = (CASE_DEPTH_MM - CASE_CAVITY_SIZE_MM[1]) / 2.0
+    if not (
+        FDM_MIN_FEATURE_MM <= CASE_JACK_PANEL_THICKNESS_MM <= CASE_JACK_MAX_PANEL_MM
+        and CASE_JACK_PANEL_THICKNESS_MM < rear_wall
+    ):
+        raise ValueError("Jack panel thickness is outside the jack's thread range")
+    if not meets(
+        CASE_JACK_POCKET_WIDTH_MM / 2.0 - CASE_JACK_FLANGE_DIAMETER_MM / 2.0,
+        FDM_MIN_FEATURE_MM,
+    ):
+        raise ValueError("Jack wall pocket does not clear the jack flange")
+
+
+def validate_bottom_keepouts() -> None:
+    """Bay keepouts for the panel parts stay clear of the bosses and the Pi."""
+    boss_radius = PCB_SUPPORT_BOSS_DIAMETER_MM / 2.0
+    for name, (x0, x1, y0, y1) in BOTTOM_SIDE_KEEPOUTS_MM.items():
+        centre = ((x0 + x1) / 2.0, (y0 + y1) / 2.0)
+        size = (x1 - x0, y1 - y0)
+        for boss in PCB_SUPPORT_POSITIONS_MM:
+            if _outside(boss, centre, size) < boss_radius + FDM_MIN_FEATURE_MM:
+                raise ValueError(f"The {name} bay keepout reaches a support boss")
+        if _outside(PI_CENTER_MM, centre, size) < max(PI_BOARD_SIZE_MM[:2]):
+            raise ValueError(f"The {name} bay keepout reaches the Pi")
+
+
 def describe(domain: str = "Shared hardware") -> str:
     """Return a compact summary suitable for domain validation commands."""
     return (
