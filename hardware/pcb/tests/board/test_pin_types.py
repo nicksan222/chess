@@ -280,3 +280,80 @@ class PinTypeTest(unittest.TestCase):
 
     def test_board_has_no_floating_input_or_undriven_open_drain(self) -> None:
         self.assertEqual(electrical_findings(self.nets, self.part_keys), [])
+
+    def test_unused_buffer_channels_are_disabled_and_tied(self) -> None:
+        # SCLS264R: nOE is active-low, so an unused channel's OE goes high (+5V).
+        rail = {endpoint: name for name, ends in self.nets.items() for endpoint in ends}
+        buffer = next(r for r, k in self.part_keys.items() if k == "AHCT125")
+        # S6b: channels 1-2 are enabled by LED_OE_N (U75: low only once LED_5V is
+        # up), so their outputs are Hi-Z whenever the chain is not fully powered.
+        for pin, net in (
+            ("1", "LED_OE_N"),
+            ("4", "LED_OE_N"),
+            ("10", "+5V"),
+            ("13", "+5V"),
+        ):
+            with self.subTest(pin=pin):
+                self.assertEqual(rail[(buffer, pin)], net)
+        for pin in ("9", "12"):
+            with self.subTest(pin=pin):
+                self.assertIn(rail[(buffer, pin)], RAILS | {"GND"})
+
+    def test_every_catalogue_part_is_typed_or_declared_passive(self) -> None:
+        self.assertEqual(set(PIN_TYPES) | PASSIVE_KEYS, set(PCB_PARTS))
+        self.assertFalse(set(PIN_TYPES) & PASSIVE_KEYS)
+
+    def test_checker_reports_contention_wrong_rail_and_unrecorded_bias(self) -> None:
+        nets = {name: list(ends) for name, ends in self.nets.items()}
+        leds = sorted(r for r, k in self.part_keys.items() if k == "SK9822")
+        data = next(name for name, ends in nets.items() if (leds[0], "6") in ends)
+        nets[data].append((leds[1], "6"))
+        nets["LED_5V"].remove((leds[2], "4"))
+        nets["+3V3"].append((leds[2], "4"))
+        findings = electrical_findings(nets, self.part_keys, assumptions=())
+        self.assertTrue(any("contention" in f for f in findings))
+        self.assertIn(f"{leds[2]}-4 power pin on +3V3, not LED_5V", findings)
+        self.assertTrue(any("unrecorded firmware bias" in f for f in findings))
+
+    def test_checker_reports_a_floating_input_and_a_missing_pull_up(self) -> None:
+        nets = {name: list(ends) for name, ends in self.nets.items()}
+        buffer = next(r for r, k in self.part_keys.items() if k == "AHCT125")
+        nets["GND"].remove((buffer, "9"))
+        nets[f"unconnected-({buffer}-Pad9)"] = [(buffer, "9")]
+        expander = next(r for r, k in self.part_keys.items() if k == "TCA9554")
+        sda = next(name for name, ends in nets.items() if (expander, "15") in ends)
+        nets[sda] = [
+            end for end in nets[sda] if self.part_keys.get(end[0]) != "PI_ZERO_HEADER"
+        ]
+        efuse = next(r for r, k in self.part_keys.items() if k == "EFUSE")
+        limit = next(name for name, ends in nets.items() if (efuse, "9") in ends)
+        nets[limit] = [(efuse, "9")]
+        # R9 open: the LED data past it has no source.
+        series = "R9"
+        self.assertIn(self.part_keys[series], SERIES_KEYS)
+        buffered = next(name for name, ends in nets.items() if (series, "2") in ends)
+        nets[buffered] = [end for end in nets[buffered] if end[0] != series]
+        findings = electrical_findings(nets, self.part_keys)
+        self.assertIn(f"{buffer}-9 input left unconnected", findings)
+        self.assertTrue(any("open-drain without a pull-up" in f for f in findings))
+        self.assertTrue(
+            any("LED_DATA_5V: input without a driver" in f for f in findings)
+        )
+        self.assertTrue(
+            any("analog pin without its setting part" in f for f in findings)
+        )
+
+    def test_led_enable_node_needs_its_pull_up_and_single_driver(self) -> None:
+        # S6: LED_EN_N (Q2 open drain, R15 to +5V) drives U5's 1OE/2OE and Q1's
+        # gate. Without R15 it floats (buffer and switch undefined); a second
+        # push-pull source on LED_EN (pin 37's net) is contention.
+        nets = {name: list(ends) for name, ends in self.nets.items()}
+        nets["LED_EN_N"] = [end for end in nets["LED_EN_N"] if end[0] != "R15"]
+        nets["LED_EN"].append(("U5", "3"))
+        findings = electrical_findings(nets, self.part_keys)
+        self.assertIn("LED_EN_N: open-drain without a pull-up (Q2-3, U75-1)", findings)
+        self.assertTrue(any(f.startswith("LED_EN: contention") for f in findings))
+
+
+if __name__ == "__main__":
+    unittest.main()
