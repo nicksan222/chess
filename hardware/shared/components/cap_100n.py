@@ -1,4 +1,4 @@
-"""Approved cap 100n product."""
+"""Approved product: Yageo 100 nF 0603 MLCC (decoupling)."""
 
 from .spec import part
 

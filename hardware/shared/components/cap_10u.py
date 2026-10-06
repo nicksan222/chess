@@ -1,4 +1,4 @@
-"""Approved cap 10u product."""
+"""Approved product: Yageo 10 uF 0805 MLCC."""
 
 from .spec import part
 
