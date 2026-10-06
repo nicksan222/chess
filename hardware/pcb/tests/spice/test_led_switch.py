@@ -377,3 +377,19 @@ class LedSwitchSpiceTest(unittest.TestCase):
                     "off_high", -0.1, datasheets.SK9822_INPUT_ABSOLUTE_MARGIN
                 )
                 run_circuit("test_led_switch_outputs.py", circuit)
+
+
+# F1's I2t is summed over this window after the overload starts, and the rail must
+# reach the Pi's low-voltage level inside it.
+OVERLOAD_WINDOW_MS = 20.0
+LIT_RAMP_MS = 1.5  # LED_5V reaches the LEDs' 3 V this long after LED_EN, at most.
+LED_COUNT = 64
+LED_ENABLE_INPUT_AMPS_MAX = 1.0  # Pi/logic 0.45 A plus a ramp far under ILIM min 1.8 A.
+# Recorded residual [BEH], both ILIM branches: the rail still holds 5.08 V 1 ms
+# after enable (the chain lights as LED_5V passes about 3 V). Low ILIM: U74
+# fast-trips and limits at 1.8 A, +5V 3.03 V by 5 ms. High ILIM: the breaker opens
+# 2.6 ms after enable, +5V 2.49 V at 5 ms and falling. Both are before U75 lets U5
+# send a blank frame: the Pi browns out and boot-loops (ASSUMPTION "LED power-up
+# state").
+LIT_ENABLE_RAIL_1MS = (5.0, 5.3)
+LIT_ENABLE_RAIL_5MS = (0.0, 3.5)

@@ -1,4 +1,10 @@
-"""Movement scenarios against the native board connectivity."""
+"""Movement scenarios: connectivity checks on the native board (S6c naming).
+
+Each magnet is an ideal switch (`electrical.CONTROL_SWITCH` drive, DRV5032 VOL
+as Ron) on its square's net; the checks show that a lift or place changes that
+square's input and no other. They are not Hall/magnet margin evidence: field
+strength, sensor thresholds and timing need the bench (`definition/evidence`).
+"""
 
 from __future__ import annotations
 
@@ -8,7 +14,9 @@ from spice.movement import MovementCase
 from spice.support import board_circuits, run_circuit
 
 
-class MovementSpiceTest(unittest.TestCase):
+class MovementConnectivityTest(unittest.TestCase):
+    """Piece movements (lift, place, capture, king-and-rook, three-square, promotion rank) are visible at the expander inputs, in the order they happen."""
+
     def test_lift_then_place_is_electrically_visible(self) -> None:
         case = (
             MovementCase("quiet")
