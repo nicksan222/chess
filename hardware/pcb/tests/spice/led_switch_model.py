@@ -146,3 +146,96 @@ def _u75_input_nets(board: BoardHarness) -> tuple[str, ...]:
     if not set(nets) <= allowed:
         raise ValueError(f"U75 inputs on {nets}: not modelled")
     return nets
+
+
+def u75_output(board: BoardHarness, *, gate: int, enable_n: int) -> int:
+    """U75's Y for logic levels on Q1's gate and LED_EN_N, as the board wires it.
+
+    Looks the placed pins' levels up in SCES416N Table 1; nothing here assumes
+    which function the wiring was meant to make.
+    """
+    levels = {_GATE_SIGNAL: gate, wiring.LED_ENABLE_N_NET: enable_n, **_FIXED_LEVELS}
+    key = tuple(levels[net] for net in _u75_input_nets(board))
+    return datasheets.LVC1G97_FUNCTION_TABLE[(key[0], key[1], key[2])]
+
+
+def _u75_rows(board: BoardHarness, thresholds: tuple[float, float]) -> list[str]:
+    """U75 as Schmitt inputs and the sum of SCES416N Table 1's high rows."""
+    signals = {_GATE_SIGNAL: ("sg", "q1g"), wiring.LED_ENABLE_N_NET: ("sen", "en_n")}
+    rows: list[str] = []
+    level: dict[str, str] = {net: str(value) for net, value in _FIXED_LEVELS.items()}
+    for net, (state, node) in signals.items():
+        rows.extend(_schmitt(state, node, thresholds))
+        level[net] = f"V({state})"
+    inputs = [level[net] for net in _u75_input_nets(board)]
+    minterms = [
+        "*".join(
+            value if bit else f"(1-{value})"
+            for value, bit in zip(inputs, key, strict=True)
+        )
+        for key, high in datasheets.LVC1G97_FUNCTION_TABLE.items()
+        if high
+    ]
+    rows.append(f"BOE oe 0 V={{V(out)*min(1, {' + '.join(minterms)})}}")
+    return rows
+
+
+def buffer_rows(board: BoardHarness, *, thresholds: tuple[float, float]) -> list[str]:
+    """U5's LED outputs as the board wires their enables, driving U6's inputs.
+
+    U5 1OE/2OE sit either on LED_OE_N, U75's output (S6b H6), or directly on
+    LED_EN_N (the S6 wiring, kept as a mutation). U75 (SN74LVC1G97) is modelled
+    from SCES416N Table 1 with its inputs on whatever nets the board gives them,
+    each a Schmitt input at `thresholds` (VT-, VT+). U5 counts as enabled whenever
+    OE is below its VIH (2.0 V, the earliest point it may enable; OE active low,
+    SCLS264R function table) and then drives VOH = +5V through 75 Ohm, data
+    through R9, into U6's DI/CI (5 pF, input clamp diode to LED_5V). Nodes
+    `di`/`ci` are U6's inputs. While Hi-Z, U5 leaks its IOZ maximum (2.5 uA,
+    SCLS264R 6.5) into each output, worst case towards the rail; the board's
+    pull-downs on LED_DATA_5V / LED_CLK_5V (S6d, R17/R18) are what hold the
+    inputs low, and without them the nodes float (10 GOhm).
+    """
+    nets = board.net_by_endpoint
+    oe = nets[("U5", "1")]
+    rows: list[str]
+    if oe == wiring.LED_OUTPUT_ENABLE_N_NET:
+        # Reviewer-s6c m1: the thresholds assume U75 on +5V; refuse anything else.
+        supply = {
+            str(LogicGatePin.OUTPUT): oe,
+            str(LogicGatePin.SUPPLY): "+5V",
+            str(LogicGatePin.GROUND): "GND",
+        }
+        if any(nets[("U75", pin)] != net for pin, net in supply.items()):
+            raise ValueError("U75 must drive LED_OE_N from +5V and GND")
+        rows = _u75_rows(board, thresholds)
+    elif oe == wiring.LED_ENABLE_N_NET:
+        rows = ["ROE en_n oe 1m"]
+    else:
+        raise ValueError(f"U5 OE on {oe}: not modelled")
+    r9 = board.resistor_ohms("R9")[0]
+    return [
+        *rows,
+        "Roe_load oe 0 1e7",
+        f"BENA ena 0 V={{0.5*(1+tanh(({datasheets.AHCT125_VIH}-V(oe))/0.02))}}",
+        ".model U5SW SW(Ron=75 Roff=1e9 Vt=0.5 Vh=0.05)",
+        "SDATA out di_drv ena 0 U5SW",
+        f"R9 di_drv di {r9}",
+        "SCLK out ci ena 0 U5SW",
+        ".model U6CLAMP D(IS=1e-14 N=1)",
+        "DDI di led U6CLAMP",
+        "DCI ci led U6CLAMP",
+        f"CDI di 0 {datasheets.SK9822_INPUT_FARADS}",
+        f"CCI ci 0 {datasheets.SK9822_INPUT_FARADS}",
+        f"IOZDI 0 di_drv {datasheets.AHCT125_IOZ_AMPS}",
+        f"IOZCI 0 ci {datasheets.AHCT125_IOZ_AMPS}",
+        *_pull_down_rows(board, wiring.LED_DATA_NET, "di"),
+        *_pull_down_rows(board, wiring.LED_CLOCK_NET, "ci"),
+    ]
+
+
+def _pull_down_rows(board: BoardHarness, net: str, node: str) -> list[str]:
+    """The board's resistors from `net` to GND on `node`, else a floating input."""
+    found = board.pull_downs(net)
+    if not found:
+        return [f"RFLOAT_{node} {node} 0 1e10"]
+    return [f"RPD_{reference} {node} 0 {ohms}" for reference, _, ohms in found]
