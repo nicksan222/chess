@@ -182,3 +182,74 @@ class LedSwitchSpiceTest(unittest.TestCase):
         circuit.expect("ramp_ms", 0.3, 5.0)
         circuit.expect("led_end", 4.9, datasheets.PSU_VOLTS.high)
         run_circuit("test_led_switch_enable.py", circuit)
+
+    def test_overload_trips_inside_the_fuse_pulse_rule(self) -> None:
+        # S6d (hardware-engineer-breaker.md): full white from a running board and a
+        # chain that wakes lit at enable both draw about 4 A, inside U74's fast-trip
+        # band (ISC = 2.01 x ILIM). Low ILIM: fast trip, then limiting at ILIM (at
+        # most 1.1 x F1's rating, a current rather than a pulse). High ILIM: the
+        # full load until the breaker opens after the ITIMER blanking, then off for
+        # tRST. Either way F1's I2t over the event stays inside the Fuseology 20 %
+        # pulse rule at the slowest ITIMER corner. LED_EN is held high (worst for
+        # F1; the Pi actually browns out and drops it).
+        fuse = self.stage.board.components["F1"].GetValue()
+        pulse_limit = datasheets.FUSE_PULSE_I2T_FRACTION * FUSES[fuse][1]
+        blanking_ms = self.stage.timer("slow").blanking_s * 1000
+        for case, ilim_high in itertools.product(("full_white", "lit"), (False, True)):
+            lit = case == "lit"
+            branch = "breaker" if ilim_high else "fast_trip"
+            start = ENABLE_AT_MS if lit else ENABLE_AT_MS + 10
+            circuit = self._circuit(
+                f"{case} overload, {branch}",
+                lit=lit,
+                enable=True,
+                ilim_high=ilim_high,
+                full_white_ms=None if lit else start,
+            )
+            end = f"{start + OVERLOAD_WINDOW_MS}m"
+            circuit.controls.extend(
+                (
+                    "let fuse_amps_squared = i(vpsu) * i(vpsu)",
+                    (
+                        "meas tran result_fuse_i2t INTEG fuse_amps_squared"
+                        f" FROM={start}m TO={end}"
+                    ),
+                    f"meas tran low_at WHEN v(out)=4.63 FALL=1 FROM={start}m",
+                    f"let result_brownout_ms = (low_at - {start}m) * 1000",
+                    "print result_fuse_i2t result_brownout_ms",
+                )
+            )
+            circuit.expect("fuse_i2t", 0.0, pulse_limit)
+            circuit.expect("brownout_ms", 0.0, OVERLOAD_WINDOW_MS)
+            if ilim_high:
+                circuit.controls.extend(
+                    (
+                        f"meas tran open_at WHEN v(xu74.cb)=0.5 RISE=1 FROM={start}m",
+                        f"let result_breaker_ms = (open_at - {start}m) * 1000",
+                        f"meas tran input_after FIND i(vpsu) AT={end}",
+                        "let result_input_after = -input_after",
+                        "print result_breaker_ms result_input_after",
+                    )
+                )
+                # Lit: the blanking starts once LED_5V has ramped to the LEDs' 3 V.
+                circuit.expect("breaker_ms", 0.0, blanking_ms + LIT_RAMP_MS)
+                # Open: only the input capacitor and dividers draw from the supply.
+                circuit.expect("input_after", -0.01, 0.05)
+            else:
+                circuit.controls.extend(
+                    (
+                        "let input_amps = -i(vpsu)",
+                        f"meas tran limit_at WHEN v(xu74.fl)=0.5 RISE=1 FROM={start}m",
+                        "let after_trip = limit_at + 0.2m",
+                        (
+                            "meas tran result_limited_max MAX input_amps"
+                            f" FROM=$&after_trip TO={end}"
+                        ),
+                        "print result_limited_max",
+                    )
+                )
+                circuit.expect(
+                    "limited_max", 0.0, datasheets.EFUSE_ILIM_AMPS_AT_1K65.low * 1.05
+                )
+            with self.subTest(case=case, branch=branch):
+                run_circuit(f"test_led_switch_overload_{case}_{branch}.py", circuit)
