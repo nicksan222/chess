@@ -21,6 +21,14 @@ from shared.electronics.hall_sensor import HallSensorPin
 
 
 def validate(board: pcbnew.BOARD) -> None:
+    """Reject a board that does not match the approved design; raises ValueError.
+
+    Checks, in order: design rules; every assembly has exactly its expected part count (and no
+    unknown assembly exists); each footprint is the approved product and package with every pad
+    assigned; no-connect nets hold exactly one pin; each Hall bank's power, I2C, address straps,
+    interrupt no-connect and sense mapping; and each square's four parts and sensor position.
+    Run last by `board.load()`, so downstream steps can rely on all of it.
+    """
     from pcb.definition import rules
     from shared.electronics.tca9554 import Tca9554Component, Tca9554Pin
 
@@ -31,6 +39,8 @@ def validate(board: pcbnew.BOARD) -> None:
     expected = {
         "power": power.ASSEMBLY_PART_COUNT,
         "controls": controls.ASSEMBLY_PART_COUNT,
+        square.LED_CHAIN_ASSEMBLY: len(square.LED_TURN_TERMINATIONS),
+        led_switch.ASSEMBLY: led_switch.ASSEMBLY_PART_COUNT,
         **{
             f"square/{board_square.name}": square.ASSEMBLY_PART_COUNT
             for board_square in dimensions.BOARD_SQUARES
