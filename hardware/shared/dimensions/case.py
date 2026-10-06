@@ -30,13 +30,32 @@ CASE_FRAME_WIDTH_MM = 12.0
 CASE_WALL_MM = 3.0
 CASE_FLOOR_MM = 3.0
 CASE_HEIGHT_MM = 30.0
+PCB_POCKET_CLEARANCE_MM = 0.5
+PCB_POCKET_SIZE_MM = (
+    PCB_SIZE_MM[0] + 2.0 * PCB_POCKET_CLEARANCE_MM,
+    PCB_SIZE_MM[1] + 2.0 * PCB_POCKET_CLEARANCE_MM,
+)
+# How far the ledge reaches in under the nominally centred board edge.
+CASE_PCB_LEDGE_OVERLAP_MM = 2.5
+CASE_CAVITY_SIZE_MM = (
+    PCB_SIZE_MM[0] - 2.0 * CASE_PCB_LEDGE_OVERLAP_MM,
+    PCB_SIZE_MM[1] - 2.0 * CASE_PCB_LEDGE_OVERLAP_MM,
+)
+# The plate rests on a rim outboard of the PCB pocket and its screws land there.
+CASE_PLATE_REBATE_MM = (
+    TILE_PLATE_SIZE_MM[0] + TILE_PLATE_CLEARANCE_MM,
+    TILE_PLATE_SIZE_MM[1] + TILE_PLATE_CLEARANCE_MM,
+)
+CASE_PLATE_LEDGE_MM = (TILE_PLATE_SIZE_MM[0] - PCB_POCKET_SIZE_MM[0]) / 2.0
 CASE_OUTER_RADIUS_MM = 2.2
 CASE_WIDTH_MM = PLAYING_SPAN_MM + 2.0 * CASE_FRAME_WIDTH_MM
 CASE_DEPTH_MM = PLAYING_SPAN_MM + PANEL_STRIP_DEPTH_MM + 2.0 * CASE_FRAME_WIDTH_MM
 CASE_CENTER_OFFSET_Y_MM = PCB_CENTER_OFFSET_Y_MM
 CASE_OUTER_SIZE_MM = (CASE_WIDTH_MM, CASE_DEPTH_MM, CASE_HEIGHT_MM)
 
-# Vertical stack, measured from the outside of the case floor.
+# Vertical stack, measured from the outside of the case floor. The case height is
+# fixed (CASE_HEIGHT_MM); the PCB height and the Pi bay are what is left after the plate
+# and the PCB-to-plate gap, and `validate()` insists the pieces sum exactly.
 PCB_TO_PLATE_GAP_MM = 4.0
 PCB_TOP_Z_MM = CASE_HEIGHT_MM - TILE_PLATE_THICKNESS_MM - PCB_TO_PLATE_GAP_MM
 PCB_UNDERSIDE_Z_MM = PCB_TOP_Z_MM - PCB_THICKNESS_MM
@@ -56,15 +75,66 @@ PCB_SUPPORT_POSITIONS_MM = tuple(
     for x in PCB_SUPPORT_GRID_OFFSETS_MM
 )
 
-# Raspberry Pi Zero 2 W hangs under the board on its header.
+# Raspberry Pi Zero 2 W hangs component side up under the board, its male
+# header plugged up into J1 on the PCB bottom. Seen from the PCB top it is the
+# RP-008358-DS-1 drawing view, rotated but never mirrored. Drawing frame: origin
+# at the Pi's bottom-left corner, header along the top edge, microSD at the left.
 PI_BOARD_SIZE_MM = (65.0, 30.0, 1.4)
+# Header centre: left hole (3.5) + 29 along X, on the hole line 3.5 below the top.
+PI_HEADER_ON_PI_MM = (32.5, PI_BOARD_SIZE_MM[1] - 3.5)
+PI_HEADER_PITCH_MM = 2.54
+PI_HEADER_PIN_COUNT = 40
+# Board placement: the header centre is the one anchor; everything else derives.
+PI_HEADER_CENTER_MM = (123.0, -75.0)
+PI_ROTATION_DEG = 180.0
+# Stack: Sullins PPPC202LFBN-RC insulator .334 in (8.50) on the PCB plus the
+# PRPC020DAAN-RC insulator .100 in (2.54) on the Pi.
 PI_HEADER_HEIGHT_MM = 8.5
+PI_MALE_HEADER_INSULATOR_MM = 2.54
+PI_BOARD_TO_BOARD_MM = PI_HEADER_HEIGHT_MM + PI_MALE_HEADER_INSULATOR_MM
 PI_HEADER_BODY_MM = (51.0, 5.0, PI_HEADER_HEIGHT_MM)
-PI_HEADER_ROTATION_DEG = 90.0
 PI_CLEARANCE_MM = 2.0
-PI_BAY_CENTER_MM = (0.0, -PLAYING_SPAN_MM / 2.0 + 40.0)
-CASE_SD_SLOT_MM = (14.0, 3.5)
-CASE_VENT_SLOT_MM = (40.0, 3.0)
+
+# The Pi is only ever placed at multiples of 90 degrees, so rotation is done exactly
+# with these cos/sin pairs instead of floating-point trigonometry.
+_QUARTER_TURNS = {0: (1.0, 0.0), 90: (0.0, 1.0), 180: (-1.0, 0.0), 270: (0.0, -1.0)}
+
+
+def _rotate(vector: tuple[float, float], degrees: float) -> tuple[float, float]:
+    """Exact rotation by a quarter turn, which is all a placement here uses."""
+    cos, sin = _QUARTER_TURNS[int(degrees) % 360]
+    return (vector[0] * cos - vector[1] * sin, vector[0] * sin + vector[1] * cos)
+
+
+def pi_on_board_xy(point_on_pi: tuple[float, float]) -> tuple[float, float]:
+    """Board XY, seen from the PCB top, of a point in the Pi drawing frame."""
+    dx, dy = _rotate(
+        (
+            point_on_pi[0] - PI_HEADER_ON_PI_MM[0],
+            point_on_pi[1] - PI_HEADER_ON_PI_MM[1],
+        ),
+        PI_ROTATION_DEG,
+    )
+    return (PI_HEADER_CENTER_MM[0] + dx, PI_HEADER_CENTER_MM[1] + dy)
+
+
+def pi_header_pin_xy(pin: int) -> tuple[float, float]:
+    """Board XY, seen from the PCB top, of Pi GPIO header pin 1..40.
+
+    Pin 1 is the square pad at the microSD end of the inner row; odd pins run
+    along the inner row and even pins along the outer row, at the board edge.
+    """
+    if not 1 <= pin <= PI_HEADER_PIN_COUNT:
+        raise ValueError(f"Pi header pin {pin} is outside 1..{PI_HEADER_PIN_COUNT}")
+    column = (pin - 1) // 2
+    half_rows = PI_HEADER_PITCH_MM / 2.0
+    return pi_on_board_xy(
+        (
+            PI_HEADER_ON_PI_MM[0] + (column - 9.5) * PI_HEADER_PITCH_MM,
+            PI_HEADER_ON_PI_MM[1] + (half_rows if pin % 2 == 0 else -half_rows),
+        )
+    )
+
 
 # Rear wall apertures for the power input.
 CASE_JACK_APERTURE_DIAMETER_MM = 8.0
