@@ -61,3 +61,61 @@ def corner_pad(number: str, sx: int, sy: int) -> pcbnew.PAD:
         points.append(pcbnew.VECTOR2I(pcbnew.FromMM(x), pcbnew.FromMM(-y)))
     result.AddPrimitivePoly(pcbnew.F_Cu, points, 0, True)
     return result
+
+
+# Pin order follows the package: 1-5 down the left column and bars, 6-10 back up the right
+# (counter-clockwise from pin 1, the top-left corner pad).
+EFUSE_PADS = (
+    corner_pad(EfusePin.ENABLE_UVLO, -1, 1),
+    pad(
+        EfusePin.OVERVOLTAGE_LOCKOUT,
+        -COLUMN_X_MM,
+        SIDE_Y_MM,
+        *SIDE_PAD_MM,
+        pcbnew.PAD_SHAPE_RECT,
+    ),
+    pad(
+        EfusePin.POWER_GOOD,
+        -COLUMN_X_MM,
+        -SIDE_Y_MM,
+        *SIDE_PAD_MM,
+        pcbnew.PAD_SHAPE_RECT,
+    ),
+    corner_pad(EfusePin.POWER_GOOD_THRESHOLD, -1, -1),
+    pad(EfusePin.INPUT, -BAR_X_MM, 0.0, *BAR_PAD_MM, pcbnew.PAD_SHAPE_RECT),
+    pad(EfusePin.OUTPUT, BAR_X_MM, 0.0, *BAR_PAD_MM, pcbnew.PAD_SHAPE_RECT),
+    corner_pad(EfusePin.SLEW_RATE, 1, -1),
+    pad(EfusePin.GROUND, COLUMN_X_MM, -SIDE_Y_MM, *SIDE_PAD_MM, pcbnew.PAD_SHAPE_RECT),
+    pad(
+        EfusePin.CURRENT_LIMIT,
+        COLUMN_X_MM,
+        SIDE_Y_MM,
+        *SIDE_PAD_MM,
+        pcbnew.PAD_SHAPE_RECT,
+    ),
+    corner_pad(EfusePin.OVERCURRENT_TIMER, 1, 1),
+)
+
+# TI's NSMD note allows "0.05 MAX" mask expansion; 0 keeps a 0.2 mm mask web
+# between the 0.2 mm-gapped pads (PCBWay dam 0.1 mm).
+for _pad in EFUSE_PADS:
+    _pad.SetLocalSolderMaskMargin(0)
+
+# The land (2.4 tall, 2.4 wide with legs) exceeds the 2.0 mm body.
+EFUSE_FOOTPRINT = footprint(
+    "VQFN-HR-10 RPW 2x2 mm",
+    "TPS259474ARPW eFuse, TI RPW0010A",
+    EFUSE_PADS,
+    courtyard_for(EFUSE_PADS, (2.4, 2.4)),
+)
+add_polarity_marker(EFUSE_FOOTPRINT, EfusePin.ENABLE_UVLO)
+
+EFUSE_PART = PcbPart(
+    EFUSE,
+    Efuse,
+    EFUSE_FOOTPRINT,
+    "EFUSE",
+    "TPS259474ARPW",
+    "Input eFuse: inrush, OVLO, reverse blocking, circuit breaker",
+    DrawingView.MOUNTING_SIDE,
+)
