@@ -252,21 +252,38 @@ def _cut_side_slot(case: bpy.types.Object, construction: bpy.types.Collection) -
         construction,
     )
     modeling.cut_batch(case, [slot], "Cutter_Card_Slot_Combined")
+    cavity_x = shared.CASE_CAVITY_SIZE_MM[0] / 2.0
+    bottom, top = shared.CASE_WALL_POCKET_Z_MM
+    half_width = shared.CASE_SD_POCKET_WIDTH_MM / 2.0
+    pocket = modeling.box_between(
+        "Cutter_Card_Wall_Pocket",
+        (
+            cavity_x - shared.BOOLEAN_THROUGH_OVERLAP_MM,
+            wall_x - shared.CASE_SD_PANEL_THICKNESS_MM,
+            slot_y - half_width,
+            slot_y + half_width,
+            bottom - shared.BOOLEAN_RECESS_OVERLAP_MM,
+            top,
+        ),
+        construction,
+    )
+    modeling.cut_batch(case, [pocket], "Cutter_Card_Wall_Pocket_Batch")
 
 
 def _cut_floor_vents(
     case: bpy.types.Object, construction: bpy.types.Collection
 ) -> None:
-    """Slots under the Pi so it is not sealed inside a closed box."""
+    """Slots under the Pi, along its long axis, so it is not sealed in."""
     height = shared.CASE_FLOOR_MM + 2.0 * shared.BOOLEAN_THROUGH_OVERLAP_MM
     first = -(FLOOR_VENT_COUNT - 1) / 2.0 * FLOOR_VENT_PITCH_MM
+    pi_x, pi_y = shared.PI_CENTER_MM
     cutters = [
         modeling.rounded_box(
             f"Cutter_Floor_Vent_{index}",
             (shared.CASE_VENT_SLOT_MM[0], shared.CASE_VENT_SLOT_MM[1], height),
             (
-                shared.PI_BAY_CENTER_MM[0],
-                shared.PI_BAY_CENTER_MM[1] + first + index * FLOOR_VENT_PITCH_MM,
+                pi_x,
+                pi_y + first + index * FLOOR_VENT_PITCH_MM,
                 shared.CASE_FLOOR_MM / 2.0,
             ),
             0.8,
@@ -336,6 +353,7 @@ def _cut_plate_screws(
 
 
 def build(output_directory: Path = GENERATED) -> None:
+    """Generate `board-case.blend` and `board-case.png` into `output_directory`."""
     workspace = project.setup_printable(
         "Printable Board Case",
         shared.BLENDER_SCALE_LENGTH,
@@ -348,9 +366,10 @@ def build(output_directory: Path = GENERATED) -> None:
             grid_rows=shared.GRID_COUNT,
             grid_columns=shared.GRID_COUNT,
             pcb_size_mm=(f"{shared.PCB_SIZE_MM[0]:g} x {shared.PCB_SIZE_MM[1]:g}"),
-            panel_button_count=shared.PANEL_BUTTON_COUNT,
             pcb_support_count=len(shared.PCB_SUPPORT_POSITIONS_MM),
             host="Raspberry Pi Zero 2 W, hung under the board",
+            # Recorded for reviewers: the case exceeds a desktop printer bed, so it is
+            # quoted from a print service (see the CAD README).
             reference_build_volume_mm="420 x 420 x 420 print service",
         ),
     )
@@ -361,6 +380,7 @@ def build(output_directory: Path = GENERATED) -> None:
     floor_material = materials.solid("Studio floor", (0.025, 0.028, 0.03, 1.0), 0.48)
 
     case = add_case(workspace.printable, workspace.construction, case_material)
+    # Cutter helpers must not appear in the render.
     workspace.construction.hide_render = True
     workspace.construction.hide_viewport = True
     presentation.add_studio(

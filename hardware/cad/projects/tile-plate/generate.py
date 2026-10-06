@@ -1,12 +1,19 @@
-"""Generate the single printable tile plate that lays out the checkerboard.
+"""Generate the single printable tile plate: checkerboard and control bezel.
 
 The second of the project's two printed parts. Revision A printed 64 separate
 two-part tiles; this replaces all 128 of those prints with one overlay that
-drops into a rebate in the case, over the PCB.
+covers the whole PCB and drops into a rebate on the case rim. Over the control
+strip it is the bezel: button holes, and the display window and recess.
 
 Geometry is built in assembly coordinates: the plate occupies the top
 `TILE_PLATE_THICKNESS_MM` of the case, so the assembly view can load it and the
 case without moving either of them.
+
+Pipeline: `build()` makes the scene, `add_plate()` creates a rounded slab and applies
+the cut stages below in turn, `project.save_printable()` validates, saves and renders.
+All sizes come from `shared` (`hardware/shared/dimensions/`); none are repeated here.
+Cutter objects live in the hidden CONSTRUCTION collection. Cutters are batched with
+`modeling.cut_batch`, whose members must not overlap one another.
 """
 
 import sys
@@ -28,15 +35,21 @@ from core import (
     project,
 )
 
+# Project name: output file stem (`tile-plate.blend`) and the directory name.
 NAME = "tile-plate"
+# Object name other projects (`board-assembly`) import from the .blend; keep stable.
 PART_NAME = "Printable_Tile_Plate"
 
+# Assembly coordinates: the plate's top face is flush with the case height and its
+# underside is one plate thickness lower, so the case and plate meet without moving.
 TOP_Z_MM = shared.CASE_HEIGHT_MM
 UNDERSIDE_Z_MM = shared.CASE_HEIGHT_MM - shared.TILE_PLATE_THICKNESS_MM
 
 
 @dataclass(frozen=True, slots=True)
 class TilePlateMetadata:
+    """Facts stored as custom properties on the scene (visible in the saved .blend)."""
+
     design_status: str
     project_role: str
     grid_rows: int
@@ -44,6 +57,7 @@ class TilePlateMetadata:
     square_count: int
     dark_square_count: int
     diffuser_skin_mm: float
+    panel_button_count: int
     reference_build_volume_mm: str
 
     def apply_to(self, scene: bpy.types.Scene) -> None:
@@ -54,22 +68,10 @@ class TilePlateMetadata:
         project.set_scene_property(scene, "square_count", self.square_count)
         project.set_scene_property(scene, "dark_square_count", self.dark_square_count)
         project.set_scene_property(scene, "diffuser_skin_mm", self.diffuser_skin_mm)
+        project.set_scene_property(scene, "panel_button_count", self.panel_button_count)
         project.set_scene_property(
             scene, "reference_build_volume_mm", self.reference_build_volume_mm
         )
-
-
-def _edge_aware_span(
-    center: float, half_span: float, limit: float
-) -> tuple[float, float]:
-    """Extend a per-square cutter past the plate edge when it borders one."""
-    low = center - half_span
-    high = center + half_span
-    if low <= -limit + 1.0:
-        low = -limit - shared.BOOLEAN_THROUGH_OVERLAP_MM
-    if high >= limit - 1.0:
-        high = limit + shared.BOOLEAN_THROUGH_OVERLAP_MM
-    return low, high
 
 
 def add_plate(
@@ -77,29 +79,44 @@ def add_plate(
     construction: bpy.types.Collection,
     plate_material: bpy.types.Material,
 ) -> bpy.types.Object:
+    """Build the plate: a slab, then each feature cut in turn.
+
+    The slab is centred on the plate's own offset (the plate covers the control strip
+    too, so it is not centred on the playing area) and bevelled 0.8 mm.
+    """
     plate = modeling.rounded_box(
         PART_NAME,
         shared.TILE_PLATE_SIZE_MM,
-        (0.0, 0.0, UNDERSIDE_Z_MM + shared.TILE_PLATE_THICKNESS_MM / 2.0),
+        (
+            0.0,
+            shared.TILE_PLATE_CENTER_Y_MM,
+            UNDERSIDE_Z_MM + shared.TILE_PLATE_THICKNESS_MM / 2.0,
+        ),
         0.8,
         printable,
     )
     plate.data.materials.append(plate_material)
-    plate["purpose"] = "Single overlay carrying all 64 squares"
+    plate["purpose"] = "Single overlay carrying all 64 squares and the bezel"
 
+    # Underside pockets, top-face engraving, then screws and the bezel openings.
     _cut_underside_pockets(plate, construction)
     _cut_led_pockets(plate, construction)
     _cut_grid_grooves(plate, construction)
     _cut_dark_squares(plate, construction)
     _cut_screws(plate, construction)
-    _cut_orientation_notch(plate, construction)
+    _cut_bezel(plate, construction)
     return plate
 
 
 def _cut_underside_pockets(
     plate: bpy.types.Object, construction: bpy.types.Collection
 ) -> None:
-    """One pocket per square: removes weight and clears the Hall sensors."""
+    """One pocket per square: removes weight and clears the Hall sensors.
+
+    Pockets sit on the square grid and leave ribs on the grid lines. They overshoot
+    the underside by `BOOLEAN_RECESS_OVERLAP_MM` so the cutter face is not coplanar
+    with the plate face (coplanar faces defeat the exact solver).
+    """
     depth = shared.TILE_PLATE_UNDERSIDE_POCKET_DEPTH_MM
     half_span = shared.TILE_PLATE_UNDERSIDE_POCKET_SPAN_MM / 2.0
     z0 = UNDERSIDE_Z_MM - shared.BOOLEAN_RECESS_OVERLAP_MM
@@ -125,7 +142,11 @@ def _cut_underside_pockets(
 def _cut_led_pockets(
     plate: bpy.types.Object, construction: bpy.types.Collection
 ) -> None:
-    """A deeper pocket over each LED, leaving a thin diffusing skin."""
+    """A deeper pocket over each LED, leaving a thin diffusing skin.
+
+    The pocket is centred on the LED position (not the square centre) from the shared
+    LED offset; the material above it is what diffuses the light.
+    """
     depth = shared.TILE_PLATE_LED_POCKET_MM[2]
     half_x = shared.TILE_PLATE_LED_POCKET_MM[0] / 2.0
     half_y = shared.TILE_PLATE_LED_POCKET_MM[1] / 2.0
@@ -152,10 +173,13 @@ def _cut_led_pockets(
 def _cut_grid_grooves(
     plate: bpy.types.Object, construction: bpy.types.Collection
 ) -> None:
-    """Engrave the seven internal lines each way that draw the grid."""
+    """Engrave the nine lines each way that draw and outline the grid.
+
+    Nine lines bound eight squares per direction, so the playing area is outlined too.
+    """
     depth = shared.TILE_PLATE_GROOVE_DEPTH_MM
     half_width = shared.TILE_PLATE_GROOVE_WIDTH_MM / 2.0
-    reach = shared.TILE_PLATE_SPAN_MM / 2.0 + shared.BOOLEAN_THROUGH_OVERLAP_MM
+    reach = shared.PLAYING_SPAN_MM / 2.0 + half_width
     z0 = TOP_Z_MM - depth
     z1 = TOP_Z_MM + shared.BOOLEAN_RECESS_OVERLAP_MM
     offsets = [
