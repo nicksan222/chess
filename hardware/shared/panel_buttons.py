@@ -20,20 +20,40 @@ Point = tuple[float, float]
 
 @dataclass(frozen=True, slots=True)
 class PanelButton:
-    name: str
-    position_mm: Point
-    switch_reference: str
+    """One button: identity, location, header pin and routing hints.
+
+    The last three routing fields only matter to `routing/policies.py` and never
+    change connectivity, only how it is routed. `routing_priority` orders all
+    button routes and its index also picks the primary route's starting layer;
+    `header_launch_x_offset_mm` and `fallback_layer_index` are used only by the
+    fallback escape route when the normal grid route cannot reach the Pi header.
+    """
+
+    name: str  # Short label; also forms the net name BTN_<name>.
+    position_mm: Point  # Switch centre on the board.
+    switch_reference: str  # Schematic/PCB reference designator, e.g. "SW1".
+    # Lower numbers are routed first (see PanelLayout.routing_order); order matters
+    # because earlier routes occupy space the later ones must avoid.
     routing_priority: int
+    # Sideways nudge (+/-0.8 mm) of the fallback route's start point relative to
+    # the header pad, so neighbouring escapes do not start on the same column.
     header_launch_x_offset_mm: float
+    # Preferred internal signal layer (0-2) when the fallback route is used.
     fallback_layer_index: int
+    # Typed Pi header pin; carries the GPIO number the firmware must read.
     header_pin: RaspberryPiHeaderPin
 
     @property
     def gpio(self) -> int:
+        """BCM GPIO number, parsed from the typed pin name (e.g. "...GPIO5" -> 5).
+
+        Deriving it from the pin enum keeps a single source for the pin/GPIO pair.
+        """
         return int(self.header_pin.name.rsplit("GPIO", maxsplit=1)[1])
 
     @property
     def net_name(self) -> str:
+        """Net between the switch and the Pi header pin, e.g. "BTN_UP"."""
         return f"BTN_{self.name}"
 
     @property
@@ -47,6 +67,8 @@ class PanelButton:
 
 @dataclass(frozen=True, slots=True)
 class PanelLayout:
+    """The full button set, validated once at import (see `PANEL_BUTTONS`)."""
+
     buttons: tuple[PanelButton, ...]
 
     def __iter__(self) -> Iterator[PanelButton]:
@@ -56,6 +78,7 @@ class PanelLayout:
         return len(self.buttons)
 
     def by_name(self, name: str) -> PanelButton:
+        """Look up a button by its label; raises KeyError if unknown."""
         try:
             return next(button for button in self if button.name == name)
         except StopIteration as error:
@@ -63,9 +86,16 @@ class PanelLayout:
 
     @property
     def routing_order(self) -> tuple[PanelButton, ...]:
+        """Buttons sorted by ascending `routing_priority` (route in this order)."""
         return tuple(sorted(self, key=lambda button: button.routing_priority))
 
     def validate(self) -> None:
+        """Reject layouts that would double-assign a pin or leave a gap.
+
+        Duplicate GPIOs/header pins/references would silently short or merge
+        buttons, so each identity must be unique; priorities must be a permutation
+        so routing order is total; fallback layers must be real signal layers.
+        """
         if len(self) != 12:
             raise ValueError("Control panel must contain twelve buttons")
         for values, label in (
@@ -83,6 +113,9 @@ class PanelLayout:
             raise ValueError("Panel fallback layer indices must select layers 0-2")
 
 
+# Two rows of six on the front control strip (y = -172 mm and -188 mm, 16 mm
+# apart in x). SW1-SW12 follow reading order; routing priorities
+# are a separate order that only drives routing, not layout.
 PANEL_BUTTONS = PanelLayout(
     (
         PanelButton(
@@ -195,4 +228,5 @@ PANEL_BUTTONS = PanelLayout(
         ),
     )
 )
+# Validate at import so a bad edit fails every consumer immediately.
 PANEL_BUTTONS.validate()
