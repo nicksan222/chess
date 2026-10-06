@@ -184,9 +184,10 @@ def _cut_grid_grooves(
     z1 = TOP_Z_MM + shared.BOOLEAN_RECESS_OVERLAP_MM
     offsets = [
         -shared.PLAYING_SPAN_MM / 2.0 + index * shared.SQUARE_SIZE_MM
-        for index in range(1, shared.GRID_COUNT)
+        for index in range(shared.GRID_COUNT + 1)
     ]
-    # The two directions cross, so they cannot share a batch.
+    # The two directions cross, so they cannot share a batch (overlapping cutters
+    # in one batch break the boolean; see `modeling.cut_batch`).
     modeling.cut_batch(
         plate,
         [
@@ -216,22 +217,22 @@ def _cut_grid_grooves(
 def _cut_dark_squares(
     plate: bpy.types.Object, construction: bpy.types.Collection
 ) -> None:
-    """Recess half the squares, for paint or a filament change at that height."""
+    """Recess half the squares, for paint or a filament change at that height.
+
+    Each recess is inset by half a groove width so it stops at the engraved line.
+    """
     depth = shared.TILE_PLATE_DARK_SQUARE_DEPTH_MM
     half_span = (shared.SQUARE_SIZE_MM - shared.TILE_PLATE_GROOVE_WIDTH_MM) / 2.0
-    limit = shared.TILE_PLATE_SPAN_MM / 2.0
     z0 = TOP_Z_MM - depth
     z1 = TOP_Z_MM + shared.BOOLEAN_RECESS_OVERLAP_MM
     cutters = []
     for square in shared.BOARD_SQUARES.dark_squares:
         row, column = square.row, square.column
         x, y = square.centre_mm
-        x0, x1 = _edge_aware_span(x, half_span, limit)
-        y0, y1 = _edge_aware_span(y, half_span, limit)
         cutters.append(
             modeling.box_between(
                 f"Cutter_Dark_Square_{row:02d}_{column:02d}",
-                (x0, x1, y0, y1, z0, z1),
+                (x - half_span, x + half_span, y - half_span, y + half_span, z0, z1),
                 construction,
             )
         )
@@ -239,10 +240,15 @@ def _cut_dark_squares(
 
 
 def _cut_screws(plate: bpy.types.Object, construction: bpy.types.Collection) -> None:
-    """Through-holes with a recessed head, so nothing stands above the surface."""
+    """Through-holes with a recessed head, so nothing stands above the surface.
+
+    Positions are the shared plate screw positions, all on the case rim.
+    """
     head_depth = shared.TILE_PLATE_SCREW_HEAD_DEPTH_MM
     # The shaft and its head recess are concentric, so they go in separate
     # batches; within a batch the eight screws are far apart.
+    # Through holes use the larger `BOOLEAN_THROUGH_OVERLAP_MM` so both faces are
+    # fully pierced.
     modeling.cut_batch(
         plate,
         [
@@ -277,6 +283,58 @@ def _cut_screws(plate: bpy.types.Object, construction: bpy.types.Collection) -> 
     )
 
 
+def _cut_bezel(plate: bpy.types.Object, construction: bpy.types.Collection) -> None:
+    """Button holes and the display opening over the control strip.
+
+    Each hole sits in a shallow underside relief over its switch housing, and
+    the display window sits in the recess that holds the module. A feature and
+    its relief overlap, so they go in separate batches.
+    """
+    through = (
+        UNDERSIDE_Z_MM - shared.BOOLEAN_THROUGH_OVERLAP_MM,
+        TOP_Z_MM + shared.BOOLEAN_THROUGH_OVERLAP_MM,
+    )
+    underside = UNDERSIDE_Z_MM - shared.BOOLEAN_RECESS_OVERLAP_MM
+    relief = (
+        max(shared.PANEL_BUTTON_BODY_MM[:2])
+        + 2.0 * shared.PANEL_BUTTON_RELIEF_CLEARANCE_MM
+    ) / 2.0
+    window_x, window_y = (axis / 2.0 for axis in shared.PANEL_OLED_WINDOW_MM)
+    recess_x, recess_y = (axis / 2.0 for axis in shared.PANEL_OLED_RECESS_MM)
+    oled_x, oled_y = shared.PANEL_OLED_CENTER_MM
+    modeling.cut_batch(
+        plate,
+        [
+            modeling.box_between(
+                f"Cutter_Button_Relief_{index:02d}",
+                (
+                    button.x_mm - relief,
+                    button.x_mm + relief,
+                    button.y_mm - relief,
+                    button.y_mm + relief,
+                    underside,
+                    UNDERSIDE_Z_MM + shared.PANEL_BUTTON_RELIEF_DEPTH_MM,
+                ),
+                construction,
+            )
+            for index, button in enumerate(shared.PANEL_BUTTONS)
+        ]
+        + [
+            modeling.box_between(
+                "Cutter_Display_Recess",
+                (
+                    oled_x - recess_x,
+                    oled_x + recess_x,
+                    oled_y - recess_y,
+                    oled_y + recess_y,
+                    underside,
+                    UNDERSIDE_Z_MM + shared.PANEL_OLED_RECESS_DEPTH_MM,
+                ),
+                construction,
+            )
+        ],
+        "Cutter_All_Bezel_Reliefs",
+    )
 def _cut_orientation_notch(
     plate: bpy.types.Object, construction: bpy.types.Collection
 ) -> None:
