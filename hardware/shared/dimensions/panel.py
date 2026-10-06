@@ -109,13 +109,30 @@ PCB_STRIP_PLACEMENTS = MappingProxyType(
         # zone (y <= -166.5).
         "J2": BoardPlacement((-110.0, -158.5)),
         "U5": BoardPlacement((-70.0, -180.0)),
-        "C7": BoardPlacement((-58.0, -180.0)),
-        "R1": BoardPlacement((-50.0, -170.0)),
-        "R2": BoardPlacement((-50.0, -176.0)),
+        "C7": BoardPlacement((-66.5, -174.2)),
+        # S5: R9 terminates LED data beside U5; TP3/TP4 sit inline on the data and
+        # clock runs (no long probe stubs on the first LED links).
+        "R9": BoardPlacement((-79.0, -178.73)),
+        # S6 LED rail switch (interface H5), between U5 and the H18 boss: Q1
+        # (SO-8) with its source and drain via rows, Q2 and the gate drive.
+        "Q1": BoardPlacement((-55.0, -188.0)),
+        "C145": BoardPlacement((-55.0, -192.8)),
+        "R16": BoardPlacement((-60.0, -192.8)),
+        "Q2": BoardPlacement((-55.0, -179.5)),
+        "R13": BoardPlacement((-50.0, -183.0), 180.0),
+        "R14": BoardPlacement((-50.0, -179.0)),
+        "R15": BoardPlacement((-59.5, -176.0)),
+        # S6b (H6): U75 Schmitt OR below U5, its output facing U5's enable pins;
+        # C146 just south of its supply and ground pins.
+        "U75": BoardPlacement((-70.0, -190.0), 180.0),
+        "C146": BoardPlacement((-70.0, -193.0)),
         "TP1": BoardPlacement((-47.0, -165.0)),
         "TP2": BoardPlacement((-40.0, -165.0)),
-        "TP3": BoardPlacement((-33.0, -165.0)),
-        "TP4": BoardPlacement((-26.0, -165.0)),
+        "TP3": BoardPlacement((-87.5, -178.73)),
+        "TP4": BoardPlacement((-83.0, -182.5)),
+        # S6d: R17/R18 pull LED_DATA_5V/LED_CLK_5V down beside their test points.
+        "R17": BoardPlacement((-87.5, -182.5)),
+        "R18": BoardPlacement((-83.0, -185.5)),
         "TP5": BoardPlacement((-19.0, -165.0)),
         "TP6": BoardPlacement((-12.0, -165.0)),
         "TP7": BoardPlacement((-47.0, -196.0)),
