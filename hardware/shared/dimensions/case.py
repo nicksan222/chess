@@ -9,6 +9,8 @@ header transform and the bottom-side keep-outs from here. Values marked UNVERIFI
 also listed in `unverified.py`, which blocks PCB release until each is cleared.
 """
 
+from shared.components.power_switch import ROCKER_CUTOUT_MM, ROCKER_PANEL_RANGE_MM
+
 from .board import (
     PANEL_STRIP_DEPTH_MM,
     PCB_CENTER_OFFSET_Y_MM,
@@ -31,6 +33,8 @@ CASE_WALL_MM = 3.0
 CASE_FLOOR_MM = 3.0
 CASE_HEIGHT_MM = 30.0
 PCB_POCKET_CLEARANCE_MM = 0.5
+# The generated PCB has square edges; a 3D bevel here clips its bottom perimeter.
+PCB_POCKET_RADIUS_MM = 0.0
 PCB_POCKET_SIZE_MM = (
     PCB_SIZE_MM[0] + 2.0 * PCB_POCKET_CLEARANCE_MM,
     PCB_SIZE_MM[1] + 2.0 * PCB_POCKET_CLEARANCE_MM,
@@ -72,7 +76,7 @@ PCB_SUPPORT_POSITIONS_MM = tuple(
     (x, y) for y in PCB_SUPPORT_GRID_OFFSETS_MM for x in PCB_SUPPORT_GRID_OFFSETS_MM
 ) + tuple(
     (x, -PLAYING_SPAN_MM / 2.0 - PANEL_STRIP_DEPTH_MM / 2.0)
-    for x in PCB_SUPPORT_GRID_OFFSETS_MM
+    for x in (-144.0, -48.0, 48.0, 144.0)
 )
 
 # Raspberry Pi Zero 2 W hangs component side up under the board, its male
@@ -186,8 +190,8 @@ CASE_JACK_BAY_DEPTH_MM = 30.0
 # E-Switch RA11131100 snap-in rocker, RA1 series sheet (11.3.2022) p2, 2-position
 # non-illuminated: recommended cutout 13.00 high and 19.4 wide for a 1.25-2.00 mm
 # panel. A printed hole closes up, so each side gets a small allowance.
-CASE_ROCKER_CUTOUT_MM = (19.4, 13.0)
-CASE_ROCKER_PANEL_RANGE_MM = (1.25, 2.00)
+CASE_ROCKER_CUTOUT_MM = ROCKER_CUTOUT_MM
+CASE_ROCKER_PANEL_RANGE_MM = ROCKER_PANEL_RANGE_MM
 CASE_ROCKER_PRINT_ALLOWANCE_MM = 0.1
 CASE_ROCKER_APERTURE_MM = (
     CASE_ROCKER_CUTOUT_MM[0] + 2.0 * CASE_ROCKER_PRINT_ALLOWANCE_MM,

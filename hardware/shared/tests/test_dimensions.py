@@ -13,6 +13,28 @@ from types import MappingProxyType
 from shared import dimensions
 
 
+class DisplayDrawingTest(unittest.TestCase):
+    def test_mc242gw_matches_supplier_dimension_drawing(self):
+        self.assertEqual(dimensions.PANEL_OLED_SCREEN_OFFSET_MM, (0.005, 2.685))
+        self.assertEqual(
+            dimensions.PANEL_OLED_MOUNT_HOLES_MM,
+            ((-34.0, 19.5), (34.0, 19.5), (-34.0, -19.1), (34.0, -19.1)),
+        )
+        self.assertEqual(
+            dimensions.PANEL_OLED_PAD_POSITIONS_MM,
+            (
+                (-33.5, -3.81),
+                (-33.5, -1.27),
+                (-33.5, 1.27),
+                (-33.5, 3.81),
+                (-33.5, 6.35),
+            ),
+        )
+        self.assertEqual(dimensions.PANEL_OLED_FRAME_MM, (62.1, 38.8, 2.85))
+        self.assertEqual(dimensions.PANEL_OLED_PCB_THICKNESS_MM, 1.2)
+        self.assertEqual(dimensions.PANEL_OLED_UNDERSIDE_HEIGHT_MM, 2.2)
+
+
 class SharedPlacementTest(unittest.TestCase):
     def test_every_one_off_pcb_position_is_inside_the_board(self):
         half_width = dimensions.PCB_SIZE_MM[0] / 2.0
@@ -27,15 +49,15 @@ class SharedPlacementTest(unittest.TestCase):
                 self.assertLessEqual(y, y_max)
 
     def test_oled_window_matches_the_selected_module_viewing_area(self):
-        self.assertEqual(dimensions.PANEL_OLED_WINDOW_MM, (23.7, 12.9))
+        self.assertEqual(dimensions.PANEL_OLED_SCREEN_SIZE_MM, (55.01, 27.49))
         self.assertLess(
-            dimensions.PANEL_OLED_WINDOW_MM[0], dimensions.PANEL_OLED_MODULE_MM[0]
+            dimensions.PANEL_OLED_SCREEN_SIZE_MM[0], dimensions.PANEL_OLED_MODULE_MM[0]
         )
         self.assertLess(
-            dimensions.PANEL_OLED_WINDOW_MM[1], dimensions.PANEL_OLED_MODULE_MM[1]
+            dimensions.PANEL_OLED_SCREEN_SIZE_MM[1], dimensions.PANEL_OLED_MODULE_MM[1]
         )
-        self.assertEqual(dimensions.PANEL_OLED_RECESS_CLEARANCE_XY_MM, 0.5)
-        self.assertEqual(dimensions.PANEL_OLED_RECESS_MM, (28.0, 28.0))
+        self.assertEqual(dimensions.PANEL_OLED_BEZEL_CLEARANCE_XY_MM, 0.5)
+        self.assertEqual(dimensions.PANEL_OLED_BEZEL_INNER_MM, (73.0, 44.0))
 
     def test_every_strip_placement_is_stable(self):
         # Golden table of (reference, centre, rotation, bottom side). A change here must be

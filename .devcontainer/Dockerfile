@@ -23,6 +23,7 @@ RUN apt-get update \
         debianutils \
         diffstat \
         file \
+        fonts-dejavu-core \
         gawk \
         gcc-aarch64-linux-gnu \
         git \
@@ -86,6 +87,7 @@ RUN apt-get update \
 
 RUN pip3 install --break-system-packages --no-cache-dir \
         basedpyright==1.40.0 \
+        cadquery==2.6.1 \
         blender-python-stubs==4.5.8.1 \
         kas==5.2 \
         pytest==8.3.5 \

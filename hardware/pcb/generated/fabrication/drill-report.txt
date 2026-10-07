@@ -1,5 +1,5 @@
 Drill report for chess-board.kicad_pcb
-Created on 2026-10-07T07:59:11+0000
+Created on 2026-10-07T17:00:07+0000
 
 Copper Layer Stackup:
     =============================================================
@@ -16,13 +16,13 @@ Copper Layer Stackup:
 Drill file 'chess-board-PTH.drl' contains
     plated through holes:
     =============================================================
-    T1  0.400mm  0.0157"  (774 holes)
+    T1  0.400mm  0.0157"  (780 holes)
     T2  0.900mm  0.0354"  (4 holes)
     T3  1.000mm  0.0394"  (48 holes)
     T4  1.020mm  0.0402"  (40 holes)
     T5  1.650mm  0.0650"  (4 holes)
 
-    Total plated holes count 870
+    Total plated holes count 876
 
 
 Drill file 'chess-board-NPTH.drl' contains

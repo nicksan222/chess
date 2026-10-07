@@ -11,7 +11,11 @@ import re
 from collections.abc import Iterable
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
+from http.client import HTTPResponse
+from typing import cast
+from urllib.error import HTTPError
 from urllib.parse import urljoin, urlsplit
+from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 
 @dataclass(frozen=True, slots=True)
@@ -23,7 +27,7 @@ class DatasheetResult:
 
 
 def validate_response(
-    status: int, content_type: str, body: bytes, *, pdf: bool
+    status: int, content_type: str, body: bytes, *, pdf: bool, text: bool = False
 ) -> None:
     """Reject error statuses, empty responses, false PDFs and soft-404 titles."""
     if status not in (200, 206):
@@ -33,6 +37,15 @@ def validate_response(
     if pdf or "application/pdf" in content_type:
         if not body.lstrip().startswith(b"%PDF-"):
             raise ValueError("expected a PDF document, received another response")
+        return
+    if text:
+        if "text/plain" not in content_type:
+            raise ValueError("expected a plain-text document")
+        document = body.decode("utf-8", errors="replace")
+        if re.search(
+            r"<html|<!doctype|404|not found|access denied", document, re.IGNORECASE
+        ):
+            raise ValueError("text document returned an error page")
         return
     if "text/html" not in content_type and "application/xhtml+xml" not in content_type:
         raise ValueError(f"unexpected document content type: {content_type}")
@@ -54,6 +67,21 @@ def validate_response(
         raise ValueError(f"document page unavailable: {title[1].strip()}")
 
 
+class _NoRedirect(HTTPRedirectHandler):
+    """Let check_url validate each redirect before requesting its target."""
+
+    def redirect_request(
+        self,
+        req: Request,
+        fp: object,
+        code: int,
+        msg: str,
+        headers: object,
+        newurl: str,
+    ) -> None:
+        return None
+
+
 def check_url(url: str, *, timeout_seconds: float = 8) -> str:
     """GET at most 64 KiB, follow up to four redirects, and return the final URL."""
     current = url
@@ -63,43 +91,41 @@ def check_url(url: str, *, timeout_seconds: float = 8) -> str:
             raise ValueError("datasheet needs an HTTP(S) URL")
         if parsed.username or parsed.password:
             raise ValueError("datasheet URL must not contain credentials")
-        connection_type = (
-            http.client.HTTPSConnection
-            if parsed.scheme == "https"
-            else http.client.HTTPConnection
-        )
-        connection = connection_type(
-            parsed.hostname, parsed.port, timeout=timeout_seconds
+        # Respect standard HTTP(S)_PROXY settings (including the devcontainer's
+        # trusted network gateway), while keeping redirects explicitly checked.
+        opener = build_opener(_NoRedirect())
+        request = Request(
+            current,
+            headers={
+                "User-Agent": "Chess-Datasheet-Check/1.0",
+                "Accept": "application/pdf,text/html,application/xhtml+xml,text/plain",
+            },
         )
         try:
-            path = parsed.path or "/"
-            if parsed.query:
-                path += "?" + parsed.query
-            connection.request(
-                "GET",
-                path,
-                headers={
-                    "User-Agent": "Chess-Datasheet-Check/1.0",
-                    "Accept": "application/pdf,text/html,application/xhtml+xml",
-                },
+            response = cast(
+                HTTPResponse | HTTPError, opener.open(request, timeout=timeout_seconds)
             )
-            response = connection.getresponse()
-            if response.status in (301, 302, 303, 307, 308):
-                location = response.getheader("Location")
+        except HTTPError as error:
+            response = error
+        with response:
+            status = response.status
+            if status is None:
+                raise ValueError("document response has no HTTP status")
+            if status in (301, 302, 303, 307, 308):
+                location = response.headers.get("Location")
                 if not location:
                     raise ValueError("redirect has no Location")
                 current = urljoin(current, location)
                 continue
             validate_response(
-                response.status,
-                response.getheader("Content-Type") or "",
+                status,
+                response.headers.get("Content-Type") or "",
                 response.read(65536),
+                text=urlsplit(url).path.lower().endswith(".txt"),
                 pdf=parsed.path.lower().endswith(".pdf")
                 or urlsplit(url).path.lower().endswith(".pdf"),
             )
             return current
-        finally:
-            connection.close()
     raise ValueError("too many datasheet redirects")
 
 

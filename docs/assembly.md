@@ -20,21 +20,19 @@ The generator exports fabrication files for review; it does not approve assembly
 
 ## What to order
 
-`hardware/pcb/generated/bom.md` is generated from the approved exact-MPN catalog and
-reviewed netlist; its off-board rows (marked `off-board`) are the parts that do not
-solder onto the PCB: the Pi Zero 2 W and its male header, the OLED module, the GST18A05-P1J
-5 V 3 A supply, the Switchcraft 722A panel jack, the RA11131100 panel rocker and the
-harness wire, housings, contacts and FASTON receptacles.
-[`harness.md`](../hardware/pcb/generated/harness.md) lists the harness parts per
-harness.
+`hardware/pcb/generated/assembly-bom.csv` lists grouped on-board parts. Use
+`assembly-smd.csv` and `assembly-through-hole.csv` for their separate placement lists.
+`harness-bom.csv` lists wire, housings, contacts, receptacles and the unique far-end
+parts (OLED module, panel jack and rocker). `harness.md` specifies each connection.
+The Pi Zero 2 W, its male header and GST18A05-P1J 5 V supply are separate catalog
+purchases; they are not included in these PCB/harness BOM exports.
 
-You will also need the two printed parts (an open-tub case and the tile plate with its
-control bezel), a chess set with a king base no larger than 32 mm, and magnets for
+You will also need the open-tub case, tile plate with its control bezel, and twelve printed button caps, a chess set with a king base no larger than 32 mm, and magnets for
 the pieces.
 
 ## Board notes
 
-- Eight copper layers, 1.6 mm finished thickness, 320 x 360 mm.
+- Eight copper layers, 1.6 mm finished thickness, 320 x 380 mm.
 - 0.31 mm signal traces, 1.5 mm input-power traces, and 0.30 mm clearance.
 - Dedicated GND, +5 V, and +3.3 V planes; three internal signal layers.
 - SMD assembly on the top side only. Through-hole parts: the TL1105CF100Q buttons on
@@ -69,8 +67,8 @@ the pieces.
 2. Confirm +3.3 V is absent until the Pi is installed; it is supplied by the Pi
    header.
 3. Before fitting the OLED module, measure its SDA and SCL to VCC with a meter: the
-   board has no I²C pull-ups of its own (only the Pi's 1.8 kΩ), so the module's must
-   be 4.7 kΩ or higher, or absent. Power down, install the Pi, then verify TCA9554DWR addresses 0x20-0x27 and the
+   approved MC242GW has 4.7 kΩ pull-ups per its schematic, alongside the Pi's 1.8 kΩ
+   (the PCB has none). Verify the supplied variant before fitting. Power down, install the Pi, then verify TCA9554DWR addresses 0x20-0x27 and the
    display at 0x3C. Follow [polled register setup](host.md#reading-the-board);
    never configure a Hall input as an output. INT pin 13 is deliberately NC on
    every bank; no IRQ pull-up/testpoint is fitted.

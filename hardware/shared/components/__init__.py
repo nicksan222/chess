@@ -21,26 +21,23 @@ from .efuse_passives import (
 )
 from .fuse_2a import FUSE_2A
 from .hall_sensor import HALL_SENSOR
-from .harness import (
-    OLED_HARNESS_CONTACT,
-    OLED_HARNESS_HOUSING,
-    OLED_HARNESS_WIRES,
-    PI_MALE_HEADER,
-    POWER_HARNESS_CONTACT,
-    POWER_HARNESS_HOUSING,
-    POWER_HARNESS_WIRES,
-    ROCKER_RECEPTACLE,
-)
+from .harness import OLED_HARNESS_WIRES, POWER_HARNESS_WIRES
 from .led_switch import LED_ENABLE_GATE, LED_SWITCH, LED_SWITCH_DRIVER
 from .micro_sd import MICRO_SD
+from .oled_harness_contact import OLED_HARNESS_CONTACT
+from .oled_harness_housing import OLED_HARNESS_HOUSING
 from .oled_header import OLED_HEADER
 from .oled_module import OLED_MODULE
+from .pi_male_header import PI_MALE_HEADER
 from .pi_zero_2_w import PI_ZERO_2_W
 from .pi_zero_header import PI_ZERO_HEADER
+from .power_harness_contact import POWER_HARNESS_CONTACT
+from .power_harness_housing import POWER_HARNESS_HOUSING
 from .power_header import POWER_HEADER
 from .power_supply import POWER_SUPPLY
 from .power_switch import POWER_SWITCH
 from .res_56 import RES_56
+from .rocker_receptacle import ROCKER_RECEPTACLE
 from .sk9822 import SK9822
 from .spec import ComponentSpec, part
 from .tca9554 import TCA9554

@@ -22,7 +22,6 @@ gpiocdev = "0.8.0"
 logger = { path = "../../../crates/logger", features = ["std"] }
 menu = { path = "../../../crates/menu" }
 nmrs = "3.5.2"
-ssd1306 = "0.10.0"
 tokio = { version = "1.53.1", features = ["rt", "sync", "time"] }
 
 # This manifest deliberately starts a small, nested workspace so Cargo resolves

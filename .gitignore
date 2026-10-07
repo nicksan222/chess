@@ -18,8 +18,7 @@
 # Keep the complete generated PCB project and fabrication package in Git.
 !/hardware/pcb/generated/*.kicad_pcb
 !/hardware/pcb/generated/*.kicad_pro
-# CAD regeneration remains local unless its already tracked files are updated.
-/hardware/cad/generated/
+# CAD models, renders and validation manifests are versioned with their sources.
 *.blend1
 *.blend2
 __pycache__/

@@ -10,6 +10,7 @@ from pcb.harness import (
     ComponentDefinition,
     Courtyard,
     LandPattern,
+    MatedZone,
     Net,
     NoConnect,
     PackageRouting,
@@ -20,6 +21,7 @@ from pcb.harness import (
     Product,
 )
 from shared.components import OLED_HEADER
+from shared.components.oled_header import OLED_HEADER_MATED_ZONES
 from shared.electronics.connectors import OledHeaderPin
 
 OLED_HEADER_DEFINITION = ComponentDefinition(
@@ -40,6 +42,11 @@ OLED_HEADER_DEFINITION = ComponentDefinition(
         power_by_pin=tuple(
             (str(pin), 0.4 if int(pin) % 2 else 2.9) for pin in OledHeaderPin
         ),
+    ),
+    # Mated housing and wire exit from the cited JST drawing.
+    mated_zones=tuple(
+        MatedZone(start, end, width, height, role=role)
+        for start, end, width, height, role in OLED_HEADER_MATED_ZONES
     ),
     land_pattern=LandPattern(
         OledHeaderPin,

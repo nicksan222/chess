@@ -1,5 +1,5 @@
 chess-board: local fabrication export
-Size: 320.0 x 360.0 mm
+Size: 320.0 x 380.0 mm
 Thickness: 1.6 mm
 Copper order, top to bottom: F.Cu, In1.Cu, In2.Cu, In3.Cu, In4.Cu, In5.Cu, In6.Cu, B.Cu
 Gerbers: RS-274X. Drills: Excellon, millimetres, absolute origin, separate PTH/NPTH.

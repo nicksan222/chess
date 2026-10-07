@@ -20,8 +20,9 @@ quality:
 
 # Validate dimensions and run CAD unit tests.
 test:
-    cd "{{ root }}" && PYTHONPATH=hardware python3 hardware/cad/core/dimensions.py
-    cd "{{ root }}" && PYTHONPATH=hardware python3 -m unittest discover -s hardware/cad/tests
+    cd "{{ root }}" && PYTHONPATH=hardware python3 -m shared.dimensions
+    cd "{{ root }}" && PYTHONPATH=hardware python3 -m pytest hardware/cad/board/tests
+    cd "{{ root }}" && PYTHONPATH=hardware python3 -m unittest discover -s hardware/cad/harness -t hardware -p '*_test.py'
 
 # Provide the pinned Blender toolchain when BLENDER_BIN and /opt/blender are absent.
 setup:
@@ -44,7 +45,7 @@ setup:
     printf '%s  %s\n' '{{ blender_sha256 }}' "$archive" | sha256sum --check --status
     tar -xf "$archive" -C "{{ cache }}"
 
-# Regenerate every Blender model and render in declared generation order.
+# Regenerate printable components and assemble their exact saved meshes.
 generate: setup
     #!/usr/bin/env bash
     set -euo pipefail
@@ -52,7 +53,7 @@ generate: setup
     blender="${BLENDER_BIN:-}"
     if [[ -z "$blender" && -x /opt/blender/blender ]]; then blender=/opt/blender/blender; fi
     if [[ -z "$blender" ]]; then blender="{{ cached_blender }}"; fi
-    PYTHONPATH=hardware python3 -m cad.build "$blender"
+    PYTHONPATH=hardware python3 -m cad.board.generate "$blender"
 
 # Run checks without invoking Blender.
 check-fast: quality test

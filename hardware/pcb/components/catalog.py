@@ -12,22 +12,9 @@ from pcb.components.capacitors.capacitor_100_nanofarad import CAP_100N_DEFINITIO
 from pcb.components.capacitors.polarized_capacitor_560_microfarad import (
     CAP_560U_DEFINITION,
 )
-from pcb.components.connectors.host_gpio_male_header_40_pin import (
-    HostGpioMaleHeader40Pin,
-)
 from pcb.components.connectors.host_gpio_socket_40_pin import PI_ZERO_HEADER_DEFINITION
 from pcb.components.connectors.oled_connector_4_pin import OLED_HEADER_DEFINITION
-from pcb.components.connectors.oled_harness_crimp_contact import OledHarnessCrimpContact
-from pcb.components.connectors.oled_harness_housing_4_pin import OledHarnessHousing4Pin
-from pcb.components.connectors.panel_dc_barrel_jack import PanelDcBarrelJack
 from pcb.components.connectors.power_connector_4_pin import POWER_HEADER_DEFINITION
-from pcb.components.connectors.power_harness_crimp_contact import (
-    PowerHarnessCrimpContact,
-)
-from pcb.components.connectors.power_harness_housing_4_pin import (
-    PowerHarnessHousing4Pin,
-)
-from pcb.components.connectors.rocker_switch_receptacle import RockerSwitchReceptacle
 from pcb.components.connectors.test_point import TEST_POINT_DEFINITION
 from pcb.components.gpio_expanders.gpio_expander_8_bit import TCA9554_DEFINITION
 from pcb.components.hall_sensors.hall_sensor import HALL_SENSOR_DEFINITION
@@ -38,16 +25,12 @@ from pcb.components.level_shifters.logic_level_shifter_4_channel import (
 from pcb.components.logic_gates.led_enable_logic_gate import (
     LED_ENABLE_GATE_DEFINITION,
 )
-from pcb.components.modules.microsd_card_32_gigabyte import MicroSdCard32Gigabyte
-from pcb.components.modules.oled_display_module import OledDisplayModule
-from pcb.components.modules.raspberry_pi_zero_2_w import RaspberryPiZero2W
 from pcb.components.mosfets.led_power_mosfet import LED_SWITCH_DEFINITION
 from pcb.components.mosfets.led_switch_driver_mosfet import (
     LED_SWITCH_DRIVER_DEFINITION,
 )
 from pcb.components.power.electronic_fuse import EFUSE_DEFINITION
 from pcb.components.power.fuse_2_ampere import FUSE_2A_DEFINITION
-from pcb.components.power.power_supply_5_volt_3_ampere import PowerSupply5Volt3Ampere
 from pcb.components.resistors.precision_resistor_169_kilohm import (
     RES_169K_PRECISION_DEFINITION,
 )
@@ -60,9 +43,22 @@ from pcb.components.resistors.resistor_10_kilohm import RES_10K_DEFINITION
 from pcb.components.resistors.resistor_56_ohm import RES_56_DEFINITION
 from pcb.components.resistors.resistor_100_kilohm import RES_100K_DEFINITION
 from pcb.components.resistors.resistor_261_kilohm import RES_261K_DEFINITION
-from pcb.components.switches.panel_power_rocker_switch import PanelPowerRockerSwitch
 from pcb.components.switches.tactile_button import BUTTON_DEFINITION
 from pcb.components.tvs_diodes.bidirectional_tvs_12_volt import TVS_12V0_DEFINITION
+from shared.components import (
+    BARREL_JACK,
+    MICRO_SD,
+    OLED_HARNESS_CONTACT,
+    OLED_HARNESS_HOUSING,
+    OLED_MODULE,
+    PI_MALE_HEADER,
+    PI_ZERO_2_W,
+    POWER_HARNESS_CONTACT,
+    POWER_HARNESS_HOUSING,
+    POWER_SUPPLY,
+    POWER_SWITCH,
+    ROCKER_RECEPTACLE,
+)
 
 PCB_DEFINITIONS = (
     AHCT125_DEFINITION,
@@ -97,16 +93,16 @@ PCB_DEFINITIONS = (
 )
 
 ASSEMBLY_PRODUCTS = (
-    RaspberryPiZero2W.product,
-    OledDisplayModule.product,
-    PowerSupply5Volt3Ampere.product,
-    MicroSdCard32Gigabyte.product,
-    PanelDcBarrelJack.product,
-    PanelPowerRockerSwitch.product,
-    HostGpioMaleHeader40Pin.product,
-    PowerHarnessHousing4Pin.product,
-    PowerHarnessCrimpContact.product,
-    RockerSwitchReceptacle.product,
-    OledHarnessHousing4Pin.product,
-    OledHarnessCrimpContact.product,
+    PI_ZERO_2_W,
+    OLED_MODULE,
+    POWER_SUPPLY,
+    MICRO_SD,
+    BARREL_JACK,
+    POWER_SWITCH,
+    PI_MALE_HEADER,
+    POWER_HARNESS_HOUSING,
+    POWER_HARNESS_CONTACT,
+    ROCKER_RECEPTACLE,
+    OLED_HARNESS_HOUSING,
+    OLED_HARNESS_CONTACT,
 )

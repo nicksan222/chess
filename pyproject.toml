@@ -15,5 +15,5 @@ known-first-party = ["blocks", "components", "pcb", "shared"]
 
 [tool.pytest.ini_options]
 pythonpath = ["hardware"]
-testpaths = ["hardware/pcb/board/tests"]
+testpaths = ["hardware/pcb/board/tests", "hardware/cad/board/tests"]
 python_files = ["*_test.py", "test_*.py"]

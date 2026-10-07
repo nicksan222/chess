@@ -45,8 +45,8 @@ the stack.
 | **Sense** | 64 DRV5032FC Hall sensors, eight compact polled TCA9554 banks |
 | **Glow** | 64 individually addressable SK9822 RGB LEDs |
 | **Think** | Raspberry Pi Zero 2 W targeting Rust on a Yocto Linux image |
-| **Interact** | 12 tactile buttons and a 1.3-inch OLED |
-| **Build** | One 320 × 360 mm PCB and two generated printable parts |
+| **Interact** | 12 labelled physical buttons and a 2.42-inch monochrome I²C OLED |
+| **Build** | One 320 × 380 mm PCB, case, plate and twelve printable button caps |
 | **Design** | Python contracts → KiCad 9 + Blender 4.5 + firmware mappings |
 
 ## Peek under the board
@@ -74,7 +74,7 @@ The visuals are review artifacts, not hand-drawn diagrams. Open the
 [Blender assembly](hardware/cad/generated/board-assembly.blend), inspect the
 [KiCad board](hardware/pcb/generated/chess-board.kicad_pcb), browse the
 [generated schematic](hardware/pcb/generated/schematic/chess-board.svg), or
-check every exact part in the [generated BOM](hardware/pcb/generated/bom.md).
+check every exact part in the [generated BOM](hardware/pcb/generated/bom.csv).
 
 ## Why this is fun to hack on
 
@@ -149,7 +149,8 @@ demand; provider permissions remain on by default.
 > [!IMPORTANT]
 > **The current design is ready for review, not yet physically proven.** The
 > mechanical design and `D-PROTOTYPE` PCB generate successfully, and automated
-> ERC, DRC, connectivity, schematic-parity, and firmware checks pass. No
+> DRC, connectivity, schematic parity and modeled electrical checks pass;
+> meaningful ERC still requires declared electrical pin roles. No
 > complete board has been built yet. Prototype one sensor/LED square before
 > ordering the full PCB.
 

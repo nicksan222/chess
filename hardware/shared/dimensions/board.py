@@ -90,10 +90,10 @@ EXPANDER_POSITIONS_BY_BANK_MM = MappingProxyType(
 )
 
 # --- Printed circuit board --------------------------------------------------
-# One board spans the playing area plus a 40 mm control strip along the front,
+# One board spans the playing area plus a 60 mm control strip along the front,
 # so the buttons and display face up and solder flat like everything else.
 PCB_THICKNESS_MM = 1.6
-PANEL_STRIP_DEPTH_MM = 40.0
+PANEL_STRIP_DEPTH_MM = 60.0
 PCB_SIZE_MM = (
     PLAYING_SPAN_MM,
     PLAYING_SPAN_MM + PANEL_STRIP_DEPTH_MM,

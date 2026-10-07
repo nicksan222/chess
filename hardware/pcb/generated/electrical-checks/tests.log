@@ -1,6 +1,6 @@
 .......................                                                  [100%]
 ==================================== PASSES ====================================
-- generated xml file: /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/electrical-checks/junit.xml -
+- generated xml file: /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/electrical-checks/junit.xml -
 =========================== short test summary info ============================
 PASSED hardware/pcb/board/tests/button_bounce_test.py::test_bounce_then_held_press_then_release[10000.0]
 PASSED hardware/pcb/board/tests/button_bounce_test.py::test_bounce_then_held_press_then_release[50000.0]
@@ -25,4 +25,4 @@ PASSED hardware/pcb/board/tests/piece_detection_test.py::PieceDetectionTest::tes
 PASSED hardware/pcb/board/tests/piece_detection_test.py::PieceDetectionTest::test_moving_a_piece_between_banks_releases_the_old_square
 PASSED hardware/pcb/board/tests/piece_detection_test.py::PieceDetectionTest::test_placing_then_lifting_a_piece_changes_only_that_square
 PASSED hardware/pcb/board/tests/piece_detection_test.py::PieceDetectionTest::test_swapped_bank_inputs_are_caught_by_the_simulation
-23 passed in 23.85s
+23 passed in 23.93s

@@ -14,3 +14,6 @@ POWER_SUPPLY = part(
     "GST18A05-P1J",
     datasheet="https://www.meanwell.com/Upload/PDF/GST18A/GST18A-SPEC.PDF",
 )
+
+POWER_SUPPLY_OUTPUT_VOLTS = 5.0
+POWER_SUPPLY_RATED_AMPERES = 3.0

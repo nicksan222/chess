@@ -1,0 +1,1321 @@
+{
+  "source_digest": "4c797046742137027cf266659e481524759166f03500fb3b1b43c8480f92f092",
+  "toolchain": {
+    "cadquery": "2.6.1",
+    "cadquery-ocp": "7.8.1.1.post1",
+    "kicad": "9.0.9"
+  },
+  "pcb_sha256": "7fa44d5675fb3f6a45116cdbffc620d956f0a74e3aae6fafb3ed84ea20587ec8",
+  "glb_sha256": "c6c190d6288ea61382d4e574459e82f881c1f73690c48e2c16b7d2b87598903f",
+  "snapshot_sha256": "e7347781e583180f880c63b802f7759829ef34cfc128d86f7d489972f593088c",
+  "components": {
+    "C1": {
+      "model": "models/CAP_560U.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C10": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C100": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C101": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C102": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C103": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C104": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C105": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C106": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C107": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C108": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C109": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C11": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C110": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C111": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C112": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C113": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C114": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C115": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C116": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C117": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C118": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C119": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C12": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C120": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C121": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C122": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C123": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C124": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C125": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C126": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C127": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C128": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C129": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C13": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C130": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C131": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C132": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C133": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C134": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C135": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C136": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C137": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C138": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C139": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C14": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C140": {
+      "model": "models/CAP_560U.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C141": {
+      "model": "models/CAP_1U.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C142": {
+      "model": "models/CAP_10N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C143": {
+      "model": "models/CAP_1N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C144": {
+      "model": "models/CAP_10N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C145": {
+      "model": "models/CAP_10N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C146": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C15": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C16": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C17": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C18": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C19": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C2": {
+      "model": "models/CAP_10U.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C20": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C21": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C22": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C23": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C24": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C25": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C26": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C27": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C28": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C29": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C3": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C30": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C31": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C32": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C33": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C34": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C35": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C36": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C37": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C38": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C39": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C4": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C40": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C41": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C42": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C43": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C44": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C45": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C46": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C47": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C48": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C49": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C5": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C50": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C51": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C52": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C53": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C54": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C55": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C56": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C57": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C58": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C59": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C6": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C60": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C61": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C62": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C63": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C64": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C65": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C66": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C67": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C68": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C69": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C7": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C70": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C71": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C72": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C73": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C74": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C75": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C76": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C77": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C78": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C79": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C8": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C80": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C81": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C82": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C83": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C84": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C85": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C86": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C87": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C88": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C89": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C9": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C90": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C91": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C92": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C93": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C94": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C95": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C96": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C97": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C98": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "C99": {
+      "model": "models/CAP_100N.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "D1": {
+      "model": "models/TVS_12V0.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "F1": {
+      "model": "models/FUSE_2A.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS1": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS10": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS11": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS12": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS13": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS14": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS15": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS16": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS17": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS18": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS19": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS2": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS20": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS21": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS22": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS23": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS24": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS25": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS26": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS27": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS28": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS29": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS3": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS30": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS31": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS32": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS33": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS34": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS35": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS36": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS37": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS38": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS39": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS4": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS40": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS41": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS42": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS43": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS44": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS45": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS46": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS47": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS48": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS49": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS5": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS50": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS51": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS52": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS53": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS54": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS55": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS56": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS57": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS58": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS59": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS6": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS60": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS61": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS62": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS63": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS64": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS7": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS8": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "HS9": {
+      "model": "models/HALL_SENSOR.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "J1": {
+      "model": "models/PI_ZERO_HEADER.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "J2": {
+      "model": "models/OLED_HEADER.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "J4": {
+      "model": "models/POWER_HEADER.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "Q1": {
+      "model": "models/LED_SWITCH.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "Q2": {
+      "model": "models/LED_SWITCH_DRIVER.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "R10": {
+      "model": "models/RES_56.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "R11": {
+      "model": "models/RES_56.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "R12": {
+      "model": "models/RES_56.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "R13": {
+      "model": "models/RES_1K.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "R14": {
+      "model": "models/RES_100K.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "R15": {
+      "model": "models/RES_10K.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "R16": {
+      "model": "models/RES_100K.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "R17": {
+      "model": "models/RES_10K.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "R18": {
+      "model": "models/RES_10K.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "R3": {
+      "model": "models/RES_1K65.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "R4": {
+      "model": "models/RES_604K_PRECISION.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "R5": {
+      "model": "models/RES_169K_PRECISION.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "R6": {
+      "model": "models/RES_604K_PRECISION.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "R7": {
+      "model": "models/RES_261K.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "R8": {
+      "model": "models/RES_1K.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "R9": {
+      "model": "models/RES_56.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "SW1": {
+      "model": "models/BUTTON.step",
+      "fidelity": "datasheet dimensions; simplified housing and actuator"
+    },
+    "SW10": {
+      "model": "models/BUTTON.step",
+      "fidelity": "datasheet dimensions; simplified housing and actuator"
+    },
+    "SW11": {
+      "model": "models/BUTTON.step",
+      "fidelity": "datasheet dimensions; simplified housing and actuator"
+    },
+    "SW12": {
+      "model": "models/BUTTON.step",
+      "fidelity": "datasheet dimensions; simplified housing and actuator"
+    },
+    "SW2": {
+      "model": "models/BUTTON.step",
+      "fidelity": "datasheet dimensions; simplified housing and actuator"
+    },
+    "SW3": {
+      "model": "models/BUTTON.step",
+      "fidelity": "datasheet dimensions; simplified housing and actuator"
+    },
+    "SW4": {
+      "model": "models/BUTTON.step",
+      "fidelity": "datasheet dimensions; simplified housing and actuator"
+    },
+    "SW5": {
+      "model": "models/BUTTON.step",
+      "fidelity": "datasheet dimensions; simplified housing and actuator"
+    },
+    "SW6": {
+      "model": "models/BUTTON.step",
+      "fidelity": "datasheet dimensions; simplified housing and actuator"
+    },
+    "SW7": {
+      "model": "models/BUTTON.step",
+      "fidelity": "datasheet dimensions; simplified housing and actuator"
+    },
+    "SW8": {
+      "model": "models/BUTTON.step",
+      "fidelity": "datasheet dimensions; simplified housing and actuator"
+    },
+    "SW9": {
+      "model": "models/BUTTON.step",
+      "fidelity": "datasheet dimensions; simplified housing and actuator"
+    },
+    "TP1": {
+      "model": "models/TEST_POINT.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "TP2": {
+      "model": "models/TEST_POINT.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "TP3": {
+      "model": "models/TEST_POINT.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "TP4": {
+      "model": "models/TEST_POINT.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "TP5": {
+      "model": "models/TEST_POINT.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "TP6": {
+      "model": "models/TEST_POINT.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "TP7": {
+      "model": "models/TEST_POINT.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "U1": {
+      "model": "models/TCA9554.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "U10": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U11": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U12": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U13": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U14": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U15": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U16": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U17": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U18": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U19": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U2": {
+      "model": "models/TCA9554.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "U20": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U21": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U22": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U23": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U24": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U25": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U26": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U27": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U28": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U29": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U3": {
+      "model": "models/TCA9554.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "U30": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U31": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U32": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U33": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U34": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U35": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U36": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U37": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U38": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U39": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U4": {
+      "model": "models/TCA9554.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "U40": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U41": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U42": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U43": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U44": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U45": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U46": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U47": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U48": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U49": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U5": {
+      "model": "models/AHCT125.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "U50": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U51": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U52": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U53": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U54": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U55": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U56": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U57": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U58": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U59": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U6": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U60": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U61": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U62": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U63": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U64": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U65": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U66": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U67": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U68": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U69": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U7": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U70": {
+      "model": "models/TCA9554.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "U71": {
+      "model": "models/TCA9554.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "U72": {
+      "model": "models/TCA9554.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "U73": {
+      "model": "models/TCA9554.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "U74": {
+      "model": "models/EFUSE.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "U75": {
+      "model": "models/LED_ENABLE_GATE.step",
+      "fidelity": "dimension-based envelope"
+    },
+    "U8": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    },
+    "U9": {
+      "model": "models/SK9822.step",
+      "fidelity": "datasheet body envelope"
+    }
+  }
+}

@@ -1,6 +1,5 @@
 //! Driver for the display installed in the board.
 
-use ::ssd1306::mode::DisplayConfig;
 use display_interface::DisplayError;
 use embedded_graphics::{
     Pixel,
@@ -10,7 +9,7 @@ use embedded_graphics::{
 };
 use embedded_hal::i2c::I2c;
 
-mod ssd1306;
+mod ssd1309;
 
 /// Width of the installed display in pixels.
 pub const WIDTH: u8 = 128;
@@ -25,14 +24,14 @@ pub const I2C_ADDRESS: u8 = 0x3C;
 /// first frame. Drawing changes the in-memory frame; call [`Self::flush`] to
 /// send it to the panel.
 pub struct Display<I2C> {
-    controller: ssd1306::Controller<I2C>,
+    controller: ssd1309::Controller<I2C>,
 }
 
 impl<I2C: I2c> Display<I2C> {
     /// Creates the board display around an exclusive I2C bus handle.
     pub fn new(i2c: I2C) -> Self {
         Self {
-            controller: ssd1306::new(i2c),
+            controller: ssd1309::new(i2c),
         }
     }
 

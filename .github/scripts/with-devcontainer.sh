@@ -2,7 +2,8 @@
 set -euo pipefail
 
 # Start the prebuilt development image with the Dev Container CLI and run one
-# command. Used by CI after the prebuild job; DEVCONTAINER_IMAGE is required.
+# command. DEVCONTAINER_PREPARE=false reuses the same job config/container.
+# Used by CI after the prebuild job; DEVCONTAINER_IMAGE is required.
 
 repository_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "${repository_root}"
@@ -13,7 +14,8 @@ if [[ $# -eq 0 ]]; then
 fi
 
 image="${DEVCONTAINER_IMAGE:?DEVCONTAINER_IMAGE is not set}"
-config_dir="$(mktemp -d "${TMPDIR:-/tmp}/chess-devcontainer.XXXXXX")"
+config_dir="${RUNNER_TEMP:-${TMPDIR:-/tmp}}/chess-ci-devcontainer"
+mkdir -p "${config_dir}"
 config="${config_dir}/devcontainer.json"
 
 python3 - "${config}" "${image}" "${GITHUB_RUN_ID:-}" "${GITHUB_SERVER_URL:-}" <<'PY'
@@ -48,11 +50,13 @@ path.write_text(
 )
 PY
 
-docker pull "${image}"
-devcontainer up \
-    --workspace-folder "${repository_root}" \
-    --config "${config}" \
-    --skip-post-create
+if [[ "${DEVCONTAINER_PREPARE:-true}" == true ]]; then
+    docker pull "${image}"
+    devcontainer up \
+        --workspace-folder "${repository_root}" \
+        --config "${config}" \
+        --skip-post-create
+fi
 devcontainer exec \
     --workspace-folder "${repository_root}" \
     --config "${config}" \

@@ -1,12 +1,5 @@
-# Generated CAD artefacts
+# Generated CAD
 
-Build output. Do not edit anything here by hand; rerun the tool instead:
+Source: `cad.board.board.Board()`. Regenerate with `just --justfile hardware/cad/justfile generate`.
 
-```sh
-just --justfile hardware/cad/justfile generate
-```
-
-Every project writes `<project>.blend` plus one PNG per view, named
-`<project>.png` or `<project>-<view>.png`. The build publishes the complete set
-from a sibling staging directory, so failures preserve this directory and a
-successful run removes artifacts no longer produced by any project.
+Owning case, plate and button-cap models and their exact assembled meshes; PCB geometry is imported from KiCad’s checked `chess-board.glb` export. `manifest.json` records mesh and fit checks. Electronic bodies are envelopes, not detailed supplier models. These checks do not prove physical fit, shrinkage or manufacturing approval.

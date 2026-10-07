@@ -1040,7 +1040,7 @@ def _layout[BoardNet: Net](
     labels = [
         Label("CHESS BOARD", _layout_point(116, -165), 1.5),
         Label("J4: 1 DC-IN 2 GND 3 FUSED 4 RUN", _layout_point(-105, 125.9), 0.8),
-        Label("U5 SPI 3V3 -> LED 5V", _layout_point(-30, -181), 0.8),
+        Label("U5 SPI 3V3 -> LED 5V", _layout_point(-60, -165), 0.8),
         Label("LED DATA + CLK IN", _layout_point(-127, -118), 0.8),
     ]
     for reference, text, dx, dy in (

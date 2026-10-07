@@ -9,7 +9,7 @@ code or hardware areas. Component-local instructions stay with their component.
 - [`fabrication.md`](fabrication.md) — how Gerbers are generated, and what the
   toolchain does and does not verify
 - [`power.md`](power.md) — the 5 V rail and where the current goes
-- [`cad.md`](cad.md) — the two printed parts and mechanical conventions
+- [`cad.md`](cad.md) — printed parts and mechanical conventions
 - [`host.md`](host.md) — the software on the Raspberry Pi, including WiFi setup
 - [`assembly.md`](assembly.md) — what to order and the order to solder it in
 - [`bring-up.md`](bring-up.md) — the ordered first-article checklist for the board

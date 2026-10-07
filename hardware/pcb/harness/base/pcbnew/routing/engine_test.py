@@ -120,8 +120,83 @@ class EngineTest(unittest.TestCase):
                 ctx,
                 (NetRoute(Nets.POWER, launch=PinLaunch("U1", (CopperLayer.BOTTOM,))),),
             )
-        endpoint = cast(pcbnew.VECTOR2I, router.call_args_list[0].args[3])
+        endpoint = cast(pcbnew.VECTOR2I, router.call_args_list[-1].args[3])
         self.assertEqual(
             (endpoint.x, endpoint.y), (primary.GetPosition().x, primary.GetPosition().y)
         )
         self.assertGreater(len(list(ctx.board.GetTracks())), 0)
+
+    def test_duplicate_connector_pads_route_around_foreign_copper(self) -> None:
+        import pcbnew
+
+        from pcb.harness import CopperLayer, NetRoute, PinLaunch
+
+        from . import copper
+        from .engine import footprint
+        from .launch import route_launched_nets
+
+        ctx = self.fixture(duplicate_receiver_pad=True)
+        receiver = footprint(ctx.board, "U2")
+        pads = {pad.GetNumber(): pad for pad in receiver.Pads()}
+        pads["1b"].SetPosition(
+            pcbnew.VECTOR2I(pads["1"].GetPosition().x, pcbnew.FromMM(2))
+        )
+        # The old unchecked straight join would cross this foreign trace.
+        copper.add_trace(
+            ctx.board,
+            ctx.nets_by_name[Nets.GROUND.label],
+            pcbnew.VECTOR2I(pcbnew.FromMM(12), pcbnew.FromMM(3.5)),
+            pcbnew.VECTOR2I(pcbnew.FromMM(16), pcbnew.FromMM(3.5)),
+        )
+        route_launched_nets(
+            ctx,
+            (NetRoute(Nets.POWER, launch=PinLaunch("U1", (CopperLayer.BOTTOM,))),),
+        )
+        for track in ctx.board.GetTracks():
+            if (
+                isinstance(track, pcbnew.PCB_VIA)
+                or track.GetNetname() != Nets.POWER.label
+            ):
+                continue
+            if track.GetLayer() == pcbnew.F_Cu:
+                start, end = track.GetStart(), track.GetEnd()
+                self.assertFalse(
+                    start.x == end.x == pads["1"].GetPosition().x
+                    and min(start.y, end.y) < pcbnew.FromMM(3.5) < max(start.y, end.y)
+                )
+
+    def test_later_reserved_escapes_exist_before_connector_routing(self) -> None:
+        import pcbnew
+
+        from pcb.harness import CopperLayer, NetRoute, PinLaunch
+
+        from .engine import route_plan
+
+        ctx = self.fixture()
+        with (
+            patch(f"{__package__}.launch.route_launched_nets") as connector,
+            patch(f"{__package__}.engine.route_nets"),
+        ):
+
+            def check_reserved(*_args: object) -> None:
+                self.assertTrue(
+                    any(
+                        isinstance(track, pcbnew.PCB_VIA)
+                        and track.GetNetname() == Nets.POWER.label
+                        for track in ctx.board.GetTracks()
+                    )
+                )
+
+            connector.side_effect = check_reserved
+            route_plan(
+                ctx,
+                (
+                    NetRoute(
+                        Nets.GROUND,
+                        priority=1,
+                        launch=PinLaunch("U1", (CopperLayer.BOTTOM,)),
+                    ),
+                    NetRoute(Nets.POWER, priority=2, reserve_group=True),
+                ),
+            )
+            connector.assert_called_once()

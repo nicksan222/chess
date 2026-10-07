@@ -12,12 +12,16 @@ from pathlib import Path
 
 from build_support import staged_output
 
+from pcb.board.assembly import PcbSnapshot
 from pcb.board.board import Board
 from pcb.harness.base.pcbnew.design_rules import write_rules
+from pcb.harness.base.pcbnew.model_export import source_digest
+from pcb.harness.base.pcbnew.render.assembly import write_assembly
 from pcb.harness.base.pcbnew.render.bom import write_bom
 from pcb.harness.base.pcbnew.render.connections import write_connections
 from pcb.harness.base.pcbnew.render.fabrication import write_fabrication
 from pcb.harness.base.pcbnew.render.fill import fill_planes
+from pcb.harness.base.pcbnew.render.models import attach_models, record_export
 from pcb.harness.base.pcbnew.render.preview import prepare_svg
 from pcb.harness.base.pcbnew.render.project import write_schematic_project
 from pcb.harness.base.pcbnew.render.report import write_report
@@ -27,6 +31,7 @@ from pcb.harness.checks.pcbnew.reports import (
     check_routed_copper,
     check_schematic_parity,
 )
+from shared import dimensions
 
 GENERATED = Path(__file__).resolve().parents[1] / "generated"
 NAME = "chess-board"
@@ -45,6 +50,7 @@ def run(directory: Path, *arguments: str) -> None:
 
 def generate(destination: Path = GENERATED) -> Path:
     """Publish the complete export set, preserving previous output on failure."""
+    expected_source = source_digest()
     declaration = Board()
     declaration.route()
     with staged_output(destination) as stage:
@@ -73,6 +79,7 @@ def generate(destination: Path = GENERATED) -> Path:
         apply_netlist(declaration, netlist_path, board_path, stage / "netlist.json")
         write_rules(declaration, declaration.design_rules, stage, NAME)
         fill_planes(board_path)
+        attach_models(declaration, board_path)
         write_connections(declaration, board_path, stage / "board-connections.svg")
         run(
             stage,
@@ -188,6 +195,30 @@ def generate(destination: Path = GENERATED) -> Path:
             stage,
             "kicad-cli",
             "pcb",
+            "export",
+            "glb",
+            "--user-origin",
+            f"{dimensions.PCB_SIZE_MM[0] / 2}x{dimensions.PCB_SIZE_MM[1] / 2}mm",
+            "--include-tracks",
+            "--include-pads",
+            "--include-zones",
+            "--include-silkscreen",
+            "--include-soldermask",
+            "-o",
+            str(stage / f"{NAME}.glb"),
+            str(board_path),
+        )
+        record_export(
+            declaration,
+            board_path,
+            stage / f"{NAME}.glb",
+            PcbSnapshot.from_board(declaration),
+            expected_source,
+        )
+        run(
+            stage,
+            "kicad-cli",
+            "pcb",
             "render",
             "--rotate",
             "-35,0,25",
@@ -209,12 +240,17 @@ def generate(destination: Path = GENERATED) -> Path:
             str(stage / "positions.csv"),
             str(board_path),
         )
+        write_assembly(declaration, stage)
         write_fabrication(
             declaration, board_path, stage, NAME, declaration.fabrication_pending, run
         )
         write_report(
             declaration, stage, NAME, declaration.fabrication_pending, electrical_checks
         )
+        if source_digest() != expected_source:
+            raise RuntimeError(
+                "PCB source changed during generation; refusing publication"
+            )
     return destination / f"{NAME}.kicad_pro"
 
 

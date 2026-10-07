@@ -2,7 +2,7 @@
 
 Role: the plate's own measurements, all derived from the PCB size so it always covers the
 board with a fixed overhang. `case.py` sizes the plate rebate from it, and
-`hardware/cad/projects/tile-plate` generates the part from these constants. Every feature
+`hardware/cad/components/printable/tile_plate.py` generates the part from these constants. Every feature
 size is chosen for FDM printing (nozzle widths, minimum walls), not for appearance.
 """
 
@@ -26,19 +26,31 @@ TILE_PLATE_SIZE_MM = (
 TILE_PLATE_CENTER_Y_MM = PCB_CENTER_OFFSET_Y_MM
 # The rebate is as deep as the plate is thick, so the plate sits flush with the rim.
 TILE_PLATE_REBATE_DEPTH_MM = TILE_PLATE_THICKNESS_MM
-# Thick enough that a dark-square recess cut into the top still leaves two
+# The pocket roof surrounds an open emitter window. Thick enough that a
+# dark-square recess cut into the top still leaves two
 # nozzle widths of material over the LED pocket below.
 TILE_PLATE_DIFFUSER_SKIN_MM = 1.2
-# LED pocket footprint and depth: the depth leaves the diffuser skin above it.
+# LED package clearance below the open window, with a supported roof around it.
 TILE_PLATE_LED_POCKET_MM = (
     6.2,
     6.2,
     TILE_PLATE_THICKNESS_MM - TILE_PLATE_DIFFUSER_SKIN_MM,
 )
 # Two nozzle widths: a narrower slot will not resolve when printed.
+TILE_PLATE_LED_WINDOW_MM = (4.6, 4.6)
 TILE_PLATE_GROOVE_WIDTH_MM = 0.8
 TILE_PLATE_GROOVE_DEPTH_MM = 0.6
 TILE_PLATE_DARK_SQUARE_DEPTH_MM = 0.4
+# Square ring channels with full-height center islands above the Hall sensors.
+# Future pieces have matching square ring feet, locating them in position and
+# orientation without a latch; they lift out freely.
+TILE_PLATE_PIECE_SEAT_SIDE_MM = 18.0
+TILE_PLATE_PIECE_SEAT_INNER_SIDE_MM = 14.0
+TILE_PLATE_PIECE_SEAT_DEPTH_MM = 0.8
+TILE_PLATE_PIECE_SEAT_SUPPORT_SIDE_MM = 19.6
+PIECE_LOCATING_FOOT_SIDE_MM = 17.5
+PIECE_LOCATING_FOOT_INNER_SIDE_MM = 14.5
+PIECE_LOCATING_FOOT_HEIGHT_MM = 0.6
 # One pocket per square on the underside, leaving ribs on the grid lines. It
 # does two jobs: it removes most of a 320 mm solid sheet's volume, which is a
 # real line on a print-service quote and a warping risk, and it is also the

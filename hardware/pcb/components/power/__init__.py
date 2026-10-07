@@ -1,1 +1,1 @@
-"""Concrete board and assembly power; import each component from its file."""
+"""Concrete board power components; import each component from its file."""

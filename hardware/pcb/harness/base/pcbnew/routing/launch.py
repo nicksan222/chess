@@ -9,7 +9,7 @@ from ..render.route import LAYER_IDS
 from . import copper as native
 from . import paths as grid_router
 from .definition import NetRoute
-from .engine import RoutingContext, find_route, footprint, route_options
+from .engine import RoutingContext, find_route, footprint, route_between, route_options
 
 
 def launch_keepouts(
@@ -80,12 +80,12 @@ def route_launched_nets(
         primary = receiver_pads[numbers[0]]
         net = net_by_name[name]
         for number in numbers[1:]:
-            native.add_trace(
-                board,
+            route_between(
+                ctx,
                 net,
                 primary.GetPosition(),
                 receiver_pads[number].GetPosition(),
-                width=declaration.width_mm,
+                **route_options(ctx, declaration),
             )
         try:
             route = find_route(

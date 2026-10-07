@@ -21,7 +21,8 @@ PYTHONPATH=hardware python3 -m pcb.board.generate
 
 Open `generated/chess-board.kicad_pro` in KiCad. Generation writes the PCB,
 connection schematics, BOM, expanded netlist, placement CSV, PDF/SVG/PNG previews,
-ERC/DRC findings, a manifest, and `chess-board-fabrication.zip`. The ZIP contains
+ERC/DRC findings, a native `chess-board.glb` assembly, portable component STEP
+models, `3d-models.json` provenance/fidelity, a manifest, and `chess-board-fabrication.zip`. The ZIP contains
 all eight copper layers, masks, silkscreens, outline, paste layers and separate
 plated/non-plated Excellon drill files. It validates exported schematic pin maps and
 schematic/PCB parity before atomically replacing previous output.
@@ -62,8 +63,8 @@ Automatic checks live in [harness/checks/](harness/checks/README.md). Documentat
 checks use real HTTP requests. Shared products, dimensions and electrical
 contracts in `hardware/shared/` remain authoritative.
 
-Pin electrical roles, reassessed manufacturing constraints, component 3D models,
-active-device simulations and physical evidence are still
+Pin electrical roles, reassessed manufacturing constraints,
+detailed supplier geometry, active-device simulations and physical evidence are still
 pending. Previous engineering assumptions are retained in
 [engineering assumptions](../../docs/pcb-assumptions.md) for reassessment, not as proof of
 the new design. Fabrication files are generated locally for review; manufacturing
@@ -85,3 +86,26 @@ board.wiring = tuple(
     for route in board.wiring
 )
 ```
+
+
+The 3D pipeline is owned by the PCB harness. `ComponentDefinition.model_3d`
+optionally declares package-local colored solids. Other products receive an
+explicitly labeled envelope from their existing body dimensions. CadQuery writes
+one STEP per product; the harness attaches `${KIPRJMOD}/models/...` references to
+native footprints. KiCad then supplies board-side placement, rotation, mounting
+height, holes, copper and artwork in the GLB. Missing component meshes fail the
+export. CAD imports that exact artifact instead of maintaining electronic bodies.
+These models do not claim supplier detail or physical manufacturing validation.
+
+The PCB export also owns `pcb-components.json`: component bodies, mating envelopes,
+contact positions and named sensor/LED/control groups for the Blender bridge.
+`3d-models.json` binds that snapshot, native PCB and GLB to source and exporter
+version fingerprints. Portable `Model3D`, `Solid3D` and `MatedZone` values are
+available through `pcb.harness`; native conversion stays under `pcbnew`.
+
+Assembly review outputs include `assembly-bom.csv` (grouped quantities, MPNs and
+mounting types), `assembly-smd.csv` and `assembly-through-hole.csv` (disjoint
+placement lists). `positions.csv` retains native XY/rotation conventions and adds
+package identity from component definitions. `harness.md` and `harness-bom.csv`
+cover the separate off-board wire assemblies. See `generated/assembly.md` for
+assembler interpretation and the outstanding release requirements.

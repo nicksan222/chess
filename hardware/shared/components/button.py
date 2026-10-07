@@ -13,3 +13,7 @@ BUTTON = part(
     (6.0, 6.0, 8.0),
     "https://www.e-switch.com/wp-content/uploads/2022/06/TL1105.pdf",
 )
+
+# Intrinsic TL1105 "C" geometry from the same catalogue drawing.
+BUTTON_HOUSING_MM = (*BUTTON.require_body_mm()[:2], 3.6)
+BUTTON_ACTUATOR_DIAMETER_MM = 3.5

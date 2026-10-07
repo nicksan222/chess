@@ -1,59 +1,402 @@
-kicad-cli sch export netlist --format kicadxml -o /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/netlist.xml /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/chess-board.kicad_sch
-kicad-cli sch erc --format json --severity-all -o /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/erc.json /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/chess-board.kicad_sch
-Found 924 violations
-Saved ERC Report to /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/erc.json
-kicad-cli pcb drc --format json --severity-all --schematic-parity -o /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/drc.json /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/chess-board.kicad_pcb
+kicad-cli sch export netlist --format kicadxml -o /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/netlist.xml /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/chess-board.kicad_sch
+kicad-cli sch erc --format json --severity-all -o /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/erc.json /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/chess-board.kicad_sch
+Found 1251 violations
+Saved ERC Report to /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/erc.json
+kicad-cli pcb drc --format json --severity-all --schematic-parity -o /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/drc.json /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/chess-board.kicad_pcb
 Found 0 violations
 Found 0 unconnected items
 Found 0 schematic parity issues
-Saved DRC Report to /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/drc.json
-kicad-cli sch export pdf -o /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic.pdf /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/chess-board.kicad_sch
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic.pdf'.
+Saved DRC Report to /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/drc.json
+kicad-cli sch export pdf -o /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/schematic.pdf /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/chess-board.kicad_sch
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/schematic.pdf'.
 Done.
-kicad-cli sch export svg -o /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/chess-board.kicad_sch
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board.svg'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-01.svg'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-02.svg'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-03.svg'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-04.svg'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-05.svg'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-06.svg'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-07.svg'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-08.svg'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-09.svg'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-10.svg'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-11.svg'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-12.svg'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-13.svg'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-14.svg'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-15.svg'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-16.svg'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-17.svg'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-18.svg'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-19.svg'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-20.svg'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-21.svg'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-22.svg'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-23.svg'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-24.svg'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-25.svg'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-26.svg'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-27.svg'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-28.svg'.
+kicad-cli sch export svg -o /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/schematic /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/chess-board.kicad_sch
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/schematic/chess-board.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/schematic/chess-board-components-01.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/schematic/chess-board-components-02.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/schematic/chess-board-components-03.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/schematic/chess-board-components-04.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/schematic/chess-board-components-05.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/schematic/chess-board-components-06.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/schematic/chess-board-components-07.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/schematic/chess-board-components-08.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/schematic/chess-board-components-09.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/schematic/chess-board-components-10.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/schematic/chess-board-components-11.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/schematic/chess-board-components-12.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/schematic/chess-board-components-13.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/schematic/chess-board-components-14.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/schematic/chess-board-components-15.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/schematic/chess-board-components-16.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/schematic/chess-board-components-17.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/schematic/chess-board-components-18.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/schematic/chess-board-components-19.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/schematic/chess-board-components-20.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/schematic/chess-board-components-21.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/schematic/chess-board-components-22.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/schematic/chess-board-components-23.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/schematic/chess-board-components-24.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/schematic/chess-board-components-25.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/schematic/chess-board-components-26.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/schematic/chess-board-components-27.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/schematic/chess-board-components-28.svg'.
 Done.
-kicad-cli pcb export svg --mode-single --page-size-mode 2 --fit-page-to-board --exclude-drawing-sheet --layers F.Cu,F.SilkS,F.Fab,Edge.Cuts -o /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/board-top.svg /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/chess-board.kicad_pcb
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/board-top.svg'.
+kicad-cli pcb export svg --mode-single --page-size-mode 2 --fit-page-to-board --exclude-drawing-sheet --layers F.Cu,F.SilkS,F.Fab,Edge.Cuts -o /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/board-top.svg /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/chess-board.kicad_pcb
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/board-top.svg'.
 Done.
-kicad-cli pcb export svg --mode-single --page-size-mode 2 --fit-page-to-board --exclude-drawing-sheet --mirror --layers B.Cu,B.SilkS,B.Fab,Edge.Cuts -o /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/board-bottom.svg /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/chess-board.kicad_pcb
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/board-bottom.svg'.
+kicad-cli pcb export svg --mode-single --page-size-mode 2 --fit-page-to-board --exclude-drawing-sheet --mirror --layers B.Cu,B.SilkS,B.Fab,Edge.Cuts -o /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/board-bottom.svg /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/chess-board.kicad_pcb
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/board-bottom.svg'.
 Done.
-kicad-cli pcb export svg --mode-single --page-size-mode 2 --fit-page-to-board --exclude-drawing-sheet --layers F.Cu,B.Cu,In4.Cu,In5.Cu,F.SilkS,Edge.Cuts -o /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/board-routing.svg /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/chess-board.kicad_pcb
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/board-routing.svg'.
+kicad-cli pcb export svg --mode-single --page-size-mode 2 --fit-page-to-board --exclude-drawing-sheet --layers F.Cu,B.Cu,In4.Cu,In5.Cu,F.SilkS,Edge.Cuts -o /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/board-routing.svg /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/chess-board.kicad_pcb
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/board-routing.svg'.
 Done.
-rsvg-convert --width 1600 -o /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/board-top.png /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/board-top.svg
-rsvg-convert --width 1600 -o /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/board-bottom.png /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/board-bottom.svg
-rsvg-convert --width 1600 -o /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/board-routing.png /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/board-routing.svg
-kicad-cli pcb render --rotate -35,0,25 -o /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/board-3d.png /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/chess-board.kicad_pcb
+rsvg-convert --width 1600 -o /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/board-top.png /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/board-top.svg
+rsvg-convert --width 1600 -o /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/board-bottom.png /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/board-bottom.svg
+rsvg-convert --width 1600 -o /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/board-routing.png /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/board-routing.svg
+kicad-cli pcb export glb --user-origin 160.0x190.0mm --include-tracks --include-pads --include-zones --include-silkscreen --include-soldermask -o /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/chess-board.glb /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/chess-board.kicad_pcb
+Determining PCB data.
+Build Binary GLTF data.
+Adding component HS18.
+Adding component C125.
+Adding component TP6.
+Adding component C17.
+Adding component U19.
+Adding component HS37.
+Adding component C7.
+Adding component C121.
+Adding component C136.
+Adding component C109.
+Adding component C85.
+Adding component C32.
+Adding component U38.
+Adding component C115.
+Adding component F1.
+Adding component U46.
+Adding component HS34.
+Adding component C126.
+Adding component HS55.
+Adding component C27.
+Adding component HS12.
+Adding component U56.
+Adding component U50.
+Adding component U59.
+Adding component R17.
+Adding component C133.
+Adding component HS7.
+Adding component U48.
+Adding component C70.
+Adding component C58.
+Adding component HS46.
+Adding component U72.
+Adding component U21.
+Adding component C65.
+Adding component R6.
+Adding component C50.
+Adding component U23.
+Adding component HS14.
+Adding component HS43.
+Adding component U4.
+Adding component C41.
+Adding component HS25.
+Adding component C134.
+Adding component C75.
+Adding component C62.
+Adding component U28.
+Adding component HS33.
+Adding component U36.
+Adding component U9.
+Adding component C31.
+Adding component HS50.
+Adding component C77.
+Adding component C19.
+Adding component C119.
+Adding component U20.
+Adding component R9.
+Adding component C82.
+Adding component C93.
+Adding component C4.
+Adding component SW10.
+Adding component C47.
+Adding component C6.
+Adding component U27.
+Adding component HS39.
+Adding component C21.
+Adding component TP1.
+Adding component R15.
+Adding component HS21.
+Adding component HS24.
+Adding component R10.
+Adding component U45.
+Adding component C10.
+Adding component HS4.
+Adding component U12.
+Adding component U40.
+Adding component C78.
+Adding component C101.
+Adding component HS1.
+Adding component U57.
+Adding component HS9.
+Adding component C13.
+Adding component C25.
+Adding component C120.
+Adding component C33.
+Adding component C53.
+Adding component U37.
+Adding component HS60.
+Adding component SW11.
+Adding component C129.
+Adding component U67.
+Adding component HS59.
+Adding component U71.
+Adding component U14.
+Adding component C45.
+Adding component C88.
+Adding component HS47.
+Adding component HS51.
+Adding component U47.
+Adding component C94.
+Adding component SW7.
+Adding component C117.
+Adding component SW12.
+Adding component R7.
+Adding component C142.
+Adding component C46.
+Adding component U33.
+Adding component C37.
+Adding component HS5.
+Adding component U3.
+Adding component HS61.
+Adding component C106.
+Adding component U66.
+Adding component U34.
+Adding component U60.
+Adding component HS11.
+Adding component C23.
+Adding component SW8.
+Adding component C44.
+Adding component HS13.
+Adding component HS63.
+Adding component U63.
+Adding component C146.
+Adding component U58.
+Adding component C95.
+Adding component C131.
+Adding component U73.
+Adding component U51.
+Adding component C34.
+Adding component C22.
+Adding component C74.
+Adding component U29.
+Adding component C40.
+Adding component C24.
+Adding component C2.
+Adding component U55.
+Adding component C89.
+Adding component U5.
+Adding component U35.
+Adding component R13.
+Adding component HS26.
+Adding component C107.
+Adding component HS23.
+Adding component R18.
+Adding component C139.
+Adding component C3.
+Adding component HS40.
+Adding component C96.
+Adding component U8.
+Adding component C103.
+Adding component C63.
+Adding component HS19.
+Adding component C48.
+Adding component SW9.
+Adding component HS31.
+Adding component C81.
+Adding component C87.
+Adding component C138.
+Adding component C68.
+Adding component C64.
+Adding component U49.
+Adding component U18.
+Adding component R4.
+Adding component C127.
+Adding component C54.
+Adding component HS15.
+Adding component U13.
+Adding component C130.
+Adding component C91.
+Adding component U10.
+Adding component Q1.
+Adding component HS49.
+Adding component C61.
+Adding component U68.
+Adding component C51.
+Adding component HS53.
+Adding component U61.
+Adding component U11.
+Adding component C69.
+Adding component HS16.
+Adding component C90.
+Adding component U39.
+Adding component SW3.
+Adding component R12.
+Adding component SW4.
+Adding component HS36.
+Adding component U75.
+Adding component HS38.
+Adding component U70.
+Adding component C59.
+Adding component SW6.
+Adding component U42.
+Adding component C114.
+Adding component HS8.
+Adding component C57.
+Adding component C97.
+Adding component C8.
+Adding component U53.
+Adding component C49.
+Adding component HS41.
+Adding component C29.
+Adding component HS20.
+Adding component HS62.
+Adding component C144.
+Adding component C39.
+Adding component C112.
+Adding component C36.
+Adding component HS6.
+Adding component U44.
+Adding component U69.
+Adding component HS45.
+Adding component C66.
+Adding component C123.
+Adding component C143.
+Adding component C110.
+Adding component U6.
+Adding component C84.
+Adding component C26.
+Adding component C5.
+Adding component SW1.
+Adding component HS27.
+Adding component U16.
+Adding component C72.
+Adding component U65.
+Adding component Q2.
+Adding component C122.
+Adding component C145.
+Adding component C11.
+Adding component C20.
+Adding component C108.
+Adding component C9.
+Adding component C79.
+Adding component HS58.
+Adding component U32.
+Adding component C56.
+Adding component C55.
+Adding component C76.
+Adding component U54.
+Adding component C73.
+Adding component U52.
+Adding component HS32.
+Adding component R3.
+Adding component U43.
+Adding component TP7.
+Adding component C60.
+Adding component TP3.
+Adding component C42.
+Adding component C15.
+Adding component C111.
+Adding component U25.
+Adding component U17.
+Adding component C71.
+Adding component U64.
+Adding component HS35.
+Adding component R8.
+Adding component C116.
+Adding component TP5.
+Adding component HS22.
+Adding component C102.
+Adding component C113.
+Adding component U2.
+Adding component U74.
+Adding component HS3.
+Adding component HS29.
+Adding component U15.
+Adding component U41.
+Adding component C99.
+Adding component HS17.
+Adding component C28.
+Adding component C16.
+Adding component HS52.
+Adding component C38.
+Adding component HS10.
+Adding component C92.
+Adding component C105.
+Adding component U62.
+Adding component C18.
+Adding component U22.
+Adding component HS28.
+Adding component C35.
+Adding component R16.
+Adding component C118.
+Adding component C132.
+Adding component C12.
+Adding component U30.
+Adding component TP4.
+Adding component U31.
+Adding component D1.
+Adding component HS56.
+Adding component R14.
+Adding component HS48.
+Adding component TP2.
+Adding component C80.
+Adding component C124.
+Adding component SW2.
+Adding component HS2.
+Adding component HS30.
+Adding component C98.
+Adding component HS57.
+Adding component C67.
+Adding component U7.
+Adding component C128.
+Adding component C14.
+Adding component HS44.
+Adding component R11.
+Adding component HS42.
+Adding component C86.
+Adding component C43.
+Adding component C100.
+Adding component C52.
+Adding component C30.
+Adding component C104.
+Adding component J2.
+Adding component U26.
+Adding component R5.
+Adding component C141.
+Adding component C137.
+Adding component HS54.
+Adding component SW5.
+Adding component U1.
+Adding component C135.
+Adding component U24.
+Adding component C83.
+Adding component HS64.
+Adding component C1.
+Adding component J4.
+Adding component J1.
+Adding component C140.
+Create PCB solid model.
+Board outline: found 4 initial points.
+Build board outlines (1 outlines) with 4 points.
+Build board cutouts and holes (1012 hole(s)).
+Subtracting holes for shapes
+Subtracting holes for pads
+Subtracting holes for vias
+Generate board full shape.
+Writing Binary GLTF file.
+Meshing model
+Binary GLTF file '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/chess-board.glb' created.
+
+Export time 7.488 s
+kicad-cli pcb render --rotate -35,0,25 -o /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/board-3d.png /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/chess-board.kicad_pcb
 Loading…
 Build board outline
 
@@ -125,29 +468,29 @@ Build BVH for holes and vias
 Load Raytracing: board
 Load Raytracing: layers
 Loading 3D models...
-Reload time 0.288 s
+Reload time 0.428 s
 Rendering: 100 %
-Rendering time 0.113 s
+Rendering time 0.114 s
 Successfully created 3D render image
-kicad-cli pcb export pos --format csv --units mm -o /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/positions.csv /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/chess-board.kicad_pcb
-Wrote position data to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/positions.csv'.
-kicad-cli pcb export gerbers --layers F.Cu,In1.Cu,In2.Cu,In3.Cu,In4.Cu,In5.Cu,In6.Cu,B.Cu,F.Mask,B.Mask,F.SilkS,B.SilkS,Edge.Cuts,F.Paste,B.Paste --no-x2 --no-protel-ext --subtract-soldermask -o /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/ /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/chess-board.kicad_pcb
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-F_Cu.gbr'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-In1_Cu.gbr'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-In2_Cu.gbr'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-In3_Cu.gbr'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-In4_Cu.gbr'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-In5_Cu.gbr'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-In6_Cu.gbr'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-B_Cu.gbr'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-F_Paste.gbr'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-B_Paste.gbr'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-F_Silkscreen.gbr'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-B_Silkscreen.gbr'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-F_Mask.gbr'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-B_Mask.gbr'.
-Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-Edge_Cuts.gbr'.
-kicad-cli pcb export drill --format excellon --excellon-units mm --excellon-separate-th --excellon-oval-format route --generate-report --report-path /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/drill-report.txt -o /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/ /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/chess-board.kicad_pcb
-Created file '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-PTH.drl'
-Created file '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-NPTH.drl'
+kicad-cli pcb export pos --format csv --units mm -o /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/positions.csv /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/chess-board.kicad_pcb
+Wrote position data to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/positions.csv'.
+kicad-cli pcb export gerbers --layers F.Cu,In1.Cu,In2.Cu,In3.Cu,In4.Cu,In5.Cu,In6.Cu,B.Cu,F.Mask,B.Mask,F.SilkS,B.SilkS,Edge.Cuts,F.Paste,B.Paste --no-x2 --no-protel-ext --subtract-soldermask -o /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/fabrication/ /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/chess-board.kicad_pcb
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/fabrication/chess-board-F_Cu.gbr'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/fabrication/chess-board-In1_Cu.gbr'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/fabrication/chess-board-In2_Cu.gbr'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/fabrication/chess-board-In3_Cu.gbr'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/fabrication/chess-board-In4_Cu.gbr'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/fabrication/chess-board-In5_Cu.gbr'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/fabrication/chess-board-In6_Cu.gbr'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/fabrication/chess-board-B_Cu.gbr'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/fabrication/chess-board-F_Paste.gbr'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/fabrication/chess-board-B_Paste.gbr'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/fabrication/chess-board-F_Silkscreen.gbr'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/fabrication/chess-board-B_Silkscreen.gbr'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/fabrication/chess-board-F_Mask.gbr'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/fabrication/chess-board-B_Mask.gbr'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/fabrication/chess-board-Edge_Cuts.gbr'.
+kicad-cli pcb export drill --format excellon --excellon-units mm --excellon-separate-th --excellon-oval-format route --generate-report --report-path /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/fabrication/drill-report.txt -o /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/fabrication/ /workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/chess-board.kicad_pcb
+Created file '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/fabrication/chess-board-PTH.drl'
+Created file '/workspaces/chess/hardware/pcb/.hardware-build-cxaad7rs/generated/fabrication/chess-board-NPTH.drl'
 Done.
