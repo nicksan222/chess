@@ -97,10 +97,11 @@
         "fill-labs.dependi",
         "GitHub.vscode-github-actions",
         "ms-azuretools.vscode-containers",
-        "oven.bun-vscode",
         "ms-python.debugpy",
         "ms-python.python",
         "ms-python.vscode-pylance",
+        "nefrob.vscode-just-syntax",
+        "oven.bun-vscode",
         "redhat.vscode-yaml",
         "rust-lang.rust-analyzer",
         "tamasfe.even-better-toml",
@@ -128,11 +129,9 @@
           "**/target/**": true
         },
         "python.analysis.extraPaths": [
-          "hardware/cad",
-          "hardware/pcb",
-          "hardware/shared"
+          "hardware"
         ],
-        "python.defaultInterpreterPath": "/opt/pcb/bin/python",
+        "python.defaultInterpreterPath": "/usr/bin/python3",
         "python.languageServer": "Pylance",
         "rust-analyzer.check.command": "check",
         "rust-analyzer.linkedProjects": [
@@ -140,7 +139,24 @@
         ],
         "terminal.integrated.defaultProfile.linux": "bash",
         "typescript.tsdk": ".pi/node_modules/typescript/lib",
-        "typescript.enablePromptUseWorkspaceTsdk": true
+        "typescript.enablePromptUseWorkspaceTsdk": true,
+        "files.associations": {
+          "justfile": "just",
+          ".justfile": "just",
+          "*.just": "just",
+          "*.cir": "spice",
+          "*.sp": "spice",
+          "*.spice": "spice"
+        },
+        "[just]": {
+          "editor.defaultFormatter": "nefrob.vscode-just-syntax",
+          "editor.formatOnSave": true
+        },
+        "python.testing.pytestEnabled": true,
+        "python.testing.unittestEnabled": false,
+        "python.testing.pytestArgs": [
+          "hardware/pcb/board/tests"
+        ]
       }
     }
   }
