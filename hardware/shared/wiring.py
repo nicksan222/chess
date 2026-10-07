@@ -72,7 +72,7 @@ SPI_CLOCK_GPIO = 11
 # LED rail enable (header pin 37): BCM2835 peripherals 6.2 reset pull Low, so the
 # rail stays off while the Pi boots; firmware output, default low (S6 H5/F).
 LED_EN_GPIO = 26
-# Every GPIO the board uses; checked by hardware/pcb/tests/board/test_firmware_pins.py.
+# Every GPIO used by the board; firmware pin parity checks need reinstating.
 ASSIGNED_GPIO = (
     SDA_GPIO,
     SCL_GPIO,

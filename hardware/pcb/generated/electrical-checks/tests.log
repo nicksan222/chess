@@ -1,0 +1,28 @@
+.......................                                                  [100%]
+==================================== PASSES ====================================
+- generated xml file: /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/electrical-checks/junit.xml -
+=========================== short test summary info ============================
+PASSED hardware/pcb/board/tests/button_bounce_test.py::test_bounce_then_held_press_then_release[10000.0]
+PASSED hardware/pcb/board/tests/button_bounce_test.py::test_bounce_then_held_press_then_release[50000.0]
+PASSED hardware/pcb/board/tests/button_bounce_test.py::test_bounce_then_held_press_then_release[100000.0]
+PASSED hardware/pcb/board/tests/button_chord_test.py::test_three_buttons_then_release_only_one[pressed0]
+PASSED hardware/pcb/board/tests/button_chord_test.py::test_three_buttons_then_release_only_one[pressed1]
+PASSED hardware/pcb/board/tests/button_chord_test.py::test_all_buttons_can_be_pressed_without_a_shared_input
+PASSED hardware/pcb/board/tests/button_press_test.py::test_press_changes_only_the_assigned_input[UP]
+PASSED hardware/pcb/board/tests/button_press_test.py::test_press_changes_only_the_assigned_input[DOWN]
+PASSED hardware/pcb/board/tests/button_press_test.py::test_press_changes_only_the_assigned_input[LEFT]
+PASSED hardware/pcb/board/tests/button_press_test.py::test_press_changes_only_the_assigned_input[RIGHT]
+PASSED hardware/pcb/board/tests/button_press_test.py::test_press_changes_only_the_assigned_input[OK]
+PASSED hardware/pcb/board/tests/button_press_test.py::test_press_changes_only_the_assigned_input[RESET]
+PASSED hardware/pcb/board/tests/button_press_test.py::test_press_changes_only_the_assigned_input[PASS]
+PASSED hardware/pcb/board/tests/button_press_test.py::test_press_changes_only_the_assigned_input[F1]
+PASSED hardware/pcb/board/tests/button_press_test.py::test_press_changes_only_the_assigned_input[F2]
+PASSED hardware/pcb/board/tests/button_press_test.py::test_press_changes_only_the_assigned_input[F3]
+PASSED hardware/pcb/board/tests/button_press_test.py::test_press_changes_only_the_assigned_input[F4]
+PASSED hardware/pcb/board/tests/button_press_test.py::test_press_changes_only_the_assigned_input[F5]
+PASSED hardware/pcb/board/tests/piece_detection_test.py::PieceDetectionTest::test_each_square_pulls_only_its_own_bank_input_low
+PASSED hardware/pcb/board/tests/piece_detection_test.py::PieceDetectionTest::test_local_bypasses_charge_when_the_logic_supply_rises
+PASSED hardware/pcb/board/tests/piece_detection_test.py::PieceDetectionTest::test_moving_a_piece_between_banks_releases_the_old_square
+PASSED hardware/pcb/board/tests/piece_detection_test.py::PieceDetectionTest::test_placing_then_lifting_a_piece_changes_only_that_square
+PASSED hardware/pcb/board/tests/piece_detection_test.py::PieceDetectionTest::test_swapped_bank_inputs_are_caught_by_the_simulation
+23 passed in 23.85s

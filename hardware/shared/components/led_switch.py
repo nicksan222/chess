@@ -30,7 +30,7 @@ LED_SWITCH_DRIVER = part(
     "onsemi",
     "BSS138LT1G",
     (2.9, 2.4, 1.0),  # D x HE x A, case 318 Issue AU.
-    "https://www.onsemi.com/pdf/datasheet/bss138lt1-d.pdf",  # Rev 15
+    "https://www.farnell.com/datasheets/1596366.pdf",  # Rev 6
 )
 LED_ENABLE_GATE = part(
     "LED_ENABLE_GATE",

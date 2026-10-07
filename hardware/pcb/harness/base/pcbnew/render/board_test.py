@@ -75,6 +75,52 @@ def sample_board(*, pattern: bool = True, outline: bool = True) -> Circuit[Nets]
 class RenderBoardTest(unittest.TestCase):
     """Inspect native KiCad objects without running the DRC checker."""
 
+    def test_inner_trace_requires_an_enabled_layer(self) -> None:
+        from pcb.harness.base.pcbnew.render.board import render_board
+
+        circuit = sample_board()
+        circuit.trace(
+            Trace(Nets.POWER, Point(-1, 0), Point(-4, 0), CopperLayer.INNER_4, 0.31)
+        )
+        with self.assertRaisesRegex(ValueError, "enabled layers"):
+            render_board(circuit)
+
+    def test_inner_copper_planes_and_mounts_survive_serialization(self) -> None:
+        """Internal traces must stay internal and mounting holes stay out of BOM."""
+        import pcbnew
+
+        from pcb.harness.base.pcbnew.layout import (
+            BoardLayout,
+            Label,
+            MountingHole,
+            Plane,
+        )
+        from pcb.harness.base.pcbnew.render.board import write_board
+
+        circuit = sample_board()
+        circuit.layout = BoardLayout(
+            copper_layers=8,
+            planes=(Plane(Nets.GROUND, CopperLayer.INNER_1),),
+            holes=(MountingHole("H1", Point(7, 2), 2),),
+            labels=(Label("POWER", Point(-6, 2)),),
+        )
+        circuit.trace(
+            Trace(Nets.POWER, Point(-1, 0), Point(-4, 0), CopperLayer.INNER_4, 0.31)
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "multilayer.kicad_pcb"
+            write_board(circuit, path)
+            native = pcbnew.LoadBoard(str(path))
+            self.assertEqual(next(iter(native.GetTracks())).GetLayer(), pcbnew.In4_Cu)
+            self.assertEqual(next(iter(native.Zones())).GetNetname(), "GND")
+            hole = native.FindFootprintByReference("H1")
+            self.assertIsNotNone(hole)
+            assert hole is not None
+            pad = next(iter(hole.Pads()))
+            self.assertEqual(pad.GetAttribute(), pcbnew.PAD_ATTRIB_NPTH)
+            self.assertEqual(pad.GetDrillSize().x, pcbnew.FromMM(2))
+            self.assertTrue(hole.IsExcludedFromBOM())
+
     def test_board_has_outline_footprint_and_typed_nets(self) -> None:
         """The board includes edge graphics, a footprint, and declared pad nets."""
         from pcb.harness.base.pcbnew.render.board import render_board

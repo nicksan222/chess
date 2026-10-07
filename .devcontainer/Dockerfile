@@ -12,6 +12,7 @@ RUN apt-get update \
     && export DEBIAN_FRONTEND=noninteractive \
     && apt-get install --yes --no-install-recommends \
         bash-completion \
+        bat \
         bzip2 \
         ca-certificates \
         chrpath \
@@ -25,8 +26,10 @@ RUN apt-get update \
         gawk \
         gcc-aarch64-linux-gnu \
         git \
+        gerbv \
         gh \
         iputils-ping \
+        jq \
         libc6-dev-arm64-cross \
         libdecor-0-0 \
         libdecor-0-plugin-1-cairo \
@@ -37,6 +40,7 @@ RUN apt-get update \
         libice6 \
         libsm6 \
         liblz4-tool \
+        librsvg2-bin \
         libudev-dev \
         libusb-1.0-0-dev \
         libx11-6 \
@@ -50,12 +54,14 @@ RUN apt-get update \
         ngspice \
         software-properties-common \
         pkg-config \
+        poppler-utils \
         python3 \
         python3-git \
         python3-jinja2 \
         python3-pexpect \
         python3-pip \
         python3-venv \
+        ripgrep \
         shellcheck \
         socat \
         texinfo \
@@ -82,6 +88,7 @@ RUN pip3 install --break-system-packages --no-cache-dir \
         basedpyright==1.40.0 \
         blender-python-stubs==4.5.8.1 \
         kas==5.2 \
+        pytest==8.3.5 \
         ruff==0.16.5
 
 RUN archive="blender-${BLENDER_VERSION}-linux-x64.tar.xz" \

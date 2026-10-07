@@ -71,10 +71,10 @@ class VoltageSource:
     """Drive a chosen voltage between two named circuit nets.
 
     The positive and negative nets are actual intended board nets. The SPICE
-    converter attaches an ideal source between them in the simulated circuit;
+    converter attaches a source between them in the simulated circuit;
     declaring a source does not add a physical board component. An ideal source
-    has no output resistance or current limit, so it may be more capable than a
-    real supply.
+    has no current limit. A declared output resistance models an external
+    source impedance; it does not add a purchased resistor to the PCB.
     """
 
     name: str
@@ -82,9 +82,15 @@ class VoltageSource:
     negative_net: Net
     waveform: VoltageWaveform
     ac_magnitude_volts: float | None = None
+    output_resistance_ohms: float = 0.0
 
     def __post_init__(self) -> None:
         """Keep a source identifiable and connected across two distinct nets."""
+        if (
+            not math.isfinite(self.output_resistance_ohms)
+            or self.output_resistance_ohms < 0
+        ):
+            raise ValueError("source resistance must be finite and nonnegative")
         if not self.name.strip():
             raise ValueError("voltage source needs a name")
         if not isinstance(cast(object, self.positive_net), Net) or not isinstance(

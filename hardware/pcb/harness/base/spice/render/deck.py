@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from dataclasses import replace
 from pathlib import Path
 
 from ...connections import Endpoint, NetConnection
@@ -14,6 +15,7 @@ from .model import render_model
 from .nodes import NodeMap
 from .number import spice_number
 from .source import render_source
+from .state import render_state
 
 
 def render_deck(board: BoardRegistry, scenario_name: str) -> str:
@@ -44,10 +46,59 @@ def render_deck(board: BoardRegistry, scenario_name: str) -> str:
         f".temp {spice_number(scenario.temperature_celsius)}",
         *(render_source(source, nodes) for source in scenario.sources),
     ]
-    for component in board.components():
+    selected = board.components()
+    if scenario.component_references is not None:
+        references = set(scenario.component_references)
+        if not references or len(references) != len(scenario.component_references):
+            raise ValueError(
+                "simulation component selection must be nonempty and unique"
+            )
+        if references - {part.reference for part in selected}:
+            raise ValueError("simulation selection contains unknown components")
+        selected = tuple(part for part in selected if part.reference in references)
+        rows.append(
+            "* Explicit component scope: "
+            + ", ".join(part.reference for part in selected)
+        )
+    states = {state.reference: state for state in scenario.states}
+    if len(states) != len(scenario.states) or states.keys() - {
+        part.reference for part in selected
+    }:
+        raise ValueError("state stimuli must uniquely name selected components")
+    overrides = {
+        (override.reference, override.parameter.name): override.parameter
+        for override in scenario.model_overrides
+    }
+    if len(overrides) != len(scenario.model_overrides) or any(
+        reference not in {part.reference for part in selected}
+        for reference, _ in overrides
+    ):
+        raise ValueError("parameter corners must uniquely name selected components")
+    for component in selected:
         model = component.simulation_model()
         if model is None:
             raise ValueError(f"{component.reference}: no SPICE model declared")
+        if any(
+            name not in {parameter.name for parameter in model.parameters}
+            for reference, name in overrides
+            if reference == component.reference
+        ):
+            raise ValueError("unknown model parameter corner")
+        model = replace(
+            model,
+            parameters=tuple(
+                overrides.get((component.reference, parameter.name), parameter)
+                for parameter in model.parameters
+            ),
+        )
+        if model.key in {"open_drain_sensor", "button_contact"}:
+            rows.append(
+                render_state(component.reference, states.get(component.reference))
+            )
+        elif component.reference in states:
+            raise ValueError(
+                f"{component.reference}: model does not support on/off stimuli"
+            )
         terminal_nets: list[Net] = []
         for pin in model.terminals:
             endpoint = Endpoint(component.reference, str(pin))
@@ -59,7 +110,9 @@ def render_deck(board: BoardRegistry, scenario_name: str) -> str:
         rows.append(
             render_model(component.reference, model, tuple(terminal_nets), nodes)
         )
-    rows.extend((render_analysis(scenario.analysis), ".control", "run"))
+    rows.extend(
+        (render_analysis(scenario.analysis), ".control", "set numdgt=15", "run")
+    )
     controls: list[str] = []
     seen: set[str] = set()
     for reference, requirement in board.spice_requirements():

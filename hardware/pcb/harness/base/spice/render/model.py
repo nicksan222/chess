@@ -22,6 +22,51 @@ def render_model(
     """
     if len(nets) != len(model.terminals):
         raise ValueError(f"{reference}: model terminal/net count differs")
+    if model.key in {
+        "open_drain_sensor",
+        "input_pullup_bank",
+        "button_contact",
+    } and not re.fullmatch(r"[A-Za-z][A-Za-z0-9_]*", reference):
+        raise ValueError("unsafe component model reference")
+    if model.key == "button_contact":
+        if len(nets) != 2:
+            raise ValueError("button contact needs two terminals")
+        first, second = (nodes.node(net) for net in nets)
+        resistance = _parameter(model, "on_resistance", "ohm", positive=True)
+        return (
+            f"Scontact_{reference} {first} {second} state_{reference} 0 SW_{reference}\n"
+            f".model SW_{reference} SW(Ron={spice_number(resistance)} Roff=1e12 Vt=0.5 Vh=0)"
+        )
+    if model.key == "open_drain_sensor":
+        if len(nets) != 3:
+            raise ValueError(
+                "open-drain sensor needs output, supply and ground terminals"
+            )
+        output, supply, ground = (nodes.node(net) for net in nets)
+        resistance = _parameter(model, "on_resistance", "ohm", positive=True)
+        leakage = _parameter(model, "off_leakage", "ampere", positive=False)
+        return (
+            f"Soutput_{reference} {output} {ground} state_{reference} 0 SW_{reference}\n"
+            f".model SW_{reference} SW(Ron={spice_number(resistance)} Roff=1e12 Vt=0.5 Vh=0)\n"
+            f"Ileak_{reference} {output} {ground} {spice_number(leakage)}\n"
+            f"Rbias_{reference} {supply} {ground} 1e12"
+        )
+    if model.key == "input_pullup_bank":
+        if len(nets) != 10:
+            raise ValueError(
+                "input bank needs supply, ground and eight input terminals"
+            )
+        supply, ground, *inputs = (nodes.node(net) for net in nets)
+        resistance = _parameter(model, "pullup_resistance", "ohm", positive=True)
+        leakage = _parameter(model, "input_leakage", "ampere", positive=False)
+        return "\n".join(
+            row
+            for index, pin in enumerate(inputs)
+            for row in (
+                f"Rpull_{reference}_{index} {pin} {supply} {spice_number(resistance)}",
+                f"Ileak_{reference}_{index} {pin} {ground} {spice_number(leakage)}",
+            )
+        )
     if model.key in {"resistor", "capacitor", "diode", "button_static"}:
         if len(nets) != 2:
             raise ValueError(f"{model.key} model needs two terminals")
@@ -56,7 +101,9 @@ def render_model(
 
 def _parameter(model: SpiceModel, name: str, unit: str, *, positive: bool) -> float:
     """Return one validated parameter; reject extras and mismatched units."""
-    expected_count = 3 if model.key == "diode" else 1
+    expected_count = {"diode": 3, "open_drain_sensor": 2, "input_pullup_bank": 2}.get(
+        model.key, 1
+    )
     if len(model.parameters) != expected_count:
         raise ValueError(f"{model.key} model needs {expected_count} parameters")
     matches = [value for value in model.parameters if value.name == name]

@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from enum import StrEnum
 from typing import cast
 
-from .pad import Pad
+from .pad import Pad, PadKind
 
 
 @dataclass(frozen=True, slots=True)
@@ -30,6 +30,9 @@ class LandPattern[Pin: StrEnum]:
 
     pin_type: type[Pin]
     pads: tuple[Pad[Pin], ...]
+    # A mating header can fix hole positions in the board-top view, even
+    # when its body is mounted underneath. Normal package drawings flip.
+    board_top_view: bool = False
 
     def __post_init__(self) -> None:
         """Require complete logical coverage and unique physical pad numbers.
@@ -54,6 +57,10 @@ class LandPattern[Pin: StrEnum]:
         ):
             raise ValueError("land pattern pads must use its pin enum")
         object.__setattr__(self, "pads", tuple(self.pads))
+        if self.board_top_view and any(
+            pad.kind is not PadKind.THROUGH_HOLE for pad in self.pads
+        ):
+            raise ValueError("board-top drawing requires through-hole pads")
         missing = set(self.pin_type) - {pad.pin for pad in self.pads}
         if missing:
             raise ValueError(

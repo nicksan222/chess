@@ -1,0 +1,78 @@
+{
+  "planned": 23,
+  "passed": 23,
+  "blocked": 0,
+  "failed": 0,
+  "complete": true,
+  "cases": {
+    "hardware.pcb.board.tests.button_bounce_test.test_bounce_then_held_press_then_release[10000.0]": {
+      "status": "passed"
+    },
+    "hardware.pcb.board.tests.button_bounce_test.test_bounce_then_held_press_then_release[50000.0]": {
+      "status": "passed"
+    },
+    "hardware.pcb.board.tests.button_bounce_test.test_bounce_then_held_press_then_release[100000.0]": {
+      "status": "passed"
+    },
+    "hardware.pcb.board.tests.button_chord_test.test_three_buttons_then_release_only_one[pressed0]": {
+      "status": "passed"
+    },
+    "hardware.pcb.board.tests.button_chord_test.test_three_buttons_then_release_only_one[pressed1]": {
+      "status": "passed"
+    },
+    "hardware.pcb.board.tests.button_chord_test.test_all_buttons_can_be_pressed_without_a_shared_input": {
+      "status": "passed"
+    },
+    "hardware.pcb.board.tests.button_press_test.test_press_changes_only_the_assigned_input[UP]": {
+      "status": "passed"
+    },
+    "hardware.pcb.board.tests.button_press_test.test_press_changes_only_the_assigned_input[DOWN]": {
+      "status": "passed"
+    },
+    "hardware.pcb.board.tests.button_press_test.test_press_changes_only_the_assigned_input[LEFT]": {
+      "status": "passed"
+    },
+    "hardware.pcb.board.tests.button_press_test.test_press_changes_only_the_assigned_input[RIGHT]": {
+      "status": "passed"
+    },
+    "hardware.pcb.board.tests.button_press_test.test_press_changes_only_the_assigned_input[OK]": {
+      "status": "passed"
+    },
+    "hardware.pcb.board.tests.button_press_test.test_press_changes_only_the_assigned_input[RESET]": {
+      "status": "passed"
+    },
+    "hardware.pcb.board.tests.button_press_test.test_press_changes_only_the_assigned_input[PASS]": {
+      "status": "passed"
+    },
+    "hardware.pcb.board.tests.button_press_test.test_press_changes_only_the_assigned_input[F1]": {
+      "status": "passed"
+    },
+    "hardware.pcb.board.tests.button_press_test.test_press_changes_only_the_assigned_input[F2]": {
+      "status": "passed"
+    },
+    "hardware.pcb.board.tests.button_press_test.test_press_changes_only_the_assigned_input[F3]": {
+      "status": "passed"
+    },
+    "hardware.pcb.board.tests.button_press_test.test_press_changes_only_the_assigned_input[F4]": {
+      "status": "passed"
+    },
+    "hardware.pcb.board.tests.button_press_test.test_press_changes_only_the_assigned_input[F5]": {
+      "status": "passed"
+    },
+    "hardware.pcb.board.tests.piece_detection_test.PieceDetectionTest.test_each_square_pulls_only_its_own_bank_input_low": {
+      "status": "passed"
+    },
+    "hardware.pcb.board.tests.piece_detection_test.PieceDetectionTest.test_local_bypasses_charge_when_the_logic_supply_rises": {
+      "status": "passed"
+    },
+    "hardware.pcb.board.tests.piece_detection_test.PieceDetectionTest.test_moving_a_piece_between_banks_releases_the_old_square": {
+      "status": "passed"
+    },
+    "hardware.pcb.board.tests.piece_detection_test.PieceDetectionTest.test_placing_then_lifting_a_piece_changes_only_that_square": {
+      "status": "passed"
+    },
+    "hardware.pcb.board.tests.piece_detection_test.PieceDetectionTest.test_swapped_bank_inputs_are_caught_by_the_simulation": {
+      "status": "passed"
+    }
+  }
+}

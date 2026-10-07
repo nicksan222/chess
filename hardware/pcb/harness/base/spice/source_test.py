@@ -51,3 +51,17 @@ class SourceTest(unittest.TestCase):
             VoltageSource(
                 "V1", Nets.POWER, Nets.GROUND, DcVoltage(0), ac_magnitude_volts=0
             )
+
+    def test_source_resistance_rejects_nonphysical_values(self) -> None:
+        for resistance in (-1.0, float("inf"), float("nan")):
+            with (
+                self.subTest(resistance=resistance),
+                self.assertRaisesRegex(ValueError, "resistance"),
+            ):
+                VoltageSource(
+                    "V1",
+                    Nets.POWER,
+                    Nets.GROUND,
+                    DcVoltage(3.3),
+                    output_resistance_ohms=resistance,
+                )

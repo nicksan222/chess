@@ -10,5 +10,5 @@ TEST_POINT = part(
     "Harwin",
     "S1751-46R",
     (3.25, 1.65, 2.0),
-    "https://cdn.harwin.com/pdfs/S1751R.pdf",
+    "https://content.harwin.com/asset/e4e6a5e1-de35-4a2b-8b49-ff06562cba9d/DRG-02202-Technical-Drawing-Datasheet-S1751R-pdf.pdf",
 )

@@ -1,0 +1,153 @@
+kicad-cli sch export netlist --format kicadxml -o /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/netlist.xml /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/chess-board.kicad_sch
+kicad-cli sch erc --format json --severity-all -o /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/erc.json /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/chess-board.kicad_sch
+Found 924 violations
+Saved ERC Report to /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/erc.json
+kicad-cli pcb drc --format json --severity-all --schematic-parity -o /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/drc.json /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/chess-board.kicad_pcb
+Found 0 violations
+Found 0 unconnected items
+Found 0 schematic parity issues
+Saved DRC Report to /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/drc.json
+kicad-cli sch export pdf -o /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic.pdf /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/chess-board.kicad_sch
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic.pdf'.
+Done.
+kicad-cli sch export svg -o /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/chess-board.kicad_sch
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-01.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-02.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-03.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-04.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-05.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-06.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-07.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-08.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-09.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-10.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-11.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-12.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-13.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-14.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-15.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-16.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-17.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-18.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-19.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-20.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-21.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-22.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-23.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-24.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-25.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-26.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-27.svg'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/schematic/chess-board-components-28.svg'.
+Done.
+kicad-cli pcb export svg --mode-single --page-size-mode 2 --fit-page-to-board --exclude-drawing-sheet --layers F.Cu,F.SilkS,F.Fab,Edge.Cuts -o /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/board-top.svg /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/chess-board.kicad_pcb
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/board-top.svg'.
+Done.
+kicad-cli pcb export svg --mode-single --page-size-mode 2 --fit-page-to-board --exclude-drawing-sheet --mirror --layers B.Cu,B.SilkS,B.Fab,Edge.Cuts -o /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/board-bottom.svg /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/chess-board.kicad_pcb
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/board-bottom.svg'.
+Done.
+kicad-cli pcb export svg --mode-single --page-size-mode 2 --fit-page-to-board --exclude-drawing-sheet --layers F.Cu,B.Cu,In4.Cu,In5.Cu,F.SilkS,Edge.Cuts -o /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/board-routing.svg /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/chess-board.kicad_pcb
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/board-routing.svg'.
+Done.
+rsvg-convert --width 1600 -o /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/board-top.png /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/board-top.svg
+rsvg-convert --width 1600 -o /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/board-bottom.png /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/board-bottom.svg
+rsvg-convert --width 1600 -o /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/board-routing.png /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/board-routing.svg
+kicad-cli pcb render --rotate -35,0,25 -o /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/board-3d.png /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/chess-board.kicad_pcb
+Loading…
+Build board outline
+
+Create layers
+Create tracks and vias
+Create zones
+Build Tech layers
+Build Tech layer 11
+Build Tech layer 9
+Build Tech layer 15
+Build Tech layer 13
+Build Tech layer 7
+Build Tech layer 5
+Build Tech layer 3
+Build Tech layer 1
+Build Tech layer 17
+Build Tech layer 19
+Build Tech layer 21
+Build Tech layer 23
+Build Tech layer 39
+Build Tech layer 41
+Build Tech layer 43
+Build Tech layer 45
+Build Tech layer 47
+Build Tech layer 49
+Build Tech layer 51
+Build Tech layer 53
+Build Tech layer 55
+Build Tech layer 57
+Build Tech layer 59
+Build Tech layer 61
+Build Tech layer 63
+Build Tech layer 65
+Build Tech layer 67
+Build Tech layer 69
+Build Tech layer 71
+Build Tech layer 73
+Build Tech layer 75
+Build Tech layer 77
+Build Tech layer 79
+Build Tech layer 81
+Build Tech layer 83
+Build Tech layer 85
+Build Tech layer 87
+Build Tech layer 89
+Build Tech layer 91
+Build Tech layer 93
+Build Tech layer 95
+Build Tech layer 97
+Build Tech layer 99
+Build Tech layer 101
+Build Tech layer 103
+Build Tech layer 105
+Build Tech layer 107
+Build Tech layer 109
+Build Tech layer 111
+Build Tech layer 113
+Build Tech layer 115
+Build Tech layer 117
+Build Tech layer 119
+Build Tech layer 121
+Build Tech layer 123
+Build Tech layer 125
+Build Tech layer 127
+Simplifying copper layer polygons
+Calculating plated copper
+Simplify holes contours
+Build BVH for holes and vias
+Load Raytracing: board
+Load Raytracing: layers
+Loading 3D models...
+Reload time 0.288 s
+Rendering: 100 %
+Rendering time 0.113 s
+Successfully created 3D render image
+kicad-cli pcb export pos --format csv --units mm -o /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/positions.csv /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/chess-board.kicad_pcb
+Wrote position data to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/positions.csv'.
+kicad-cli pcb export gerbers --layers F.Cu,In1.Cu,In2.Cu,In3.Cu,In4.Cu,In5.Cu,In6.Cu,B.Cu,F.Mask,B.Mask,F.SilkS,B.SilkS,Edge.Cuts,F.Paste,B.Paste --no-x2 --no-protel-ext --subtract-soldermask -o /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/ /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/chess-board.kicad_pcb
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-F_Cu.gbr'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-In1_Cu.gbr'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-In2_Cu.gbr'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-In3_Cu.gbr'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-In4_Cu.gbr'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-In5_Cu.gbr'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-In6_Cu.gbr'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-B_Cu.gbr'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-F_Paste.gbr'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-B_Paste.gbr'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-F_Silkscreen.gbr'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-B_Silkscreen.gbr'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-F_Mask.gbr'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-B_Mask.gbr'.
+Plotted to '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-Edge_Cuts.gbr'.
+kicad-cli pcb export drill --format excellon --excellon-units mm --excellon-separate-th --excellon-oval-format route --generate-report --report-path /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/drill-report.txt -o /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/ /workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/chess-board.kicad_pcb
+Created file '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-PTH.drl'
+Created file '/workspaces/chess/hardware/pcb/.hardware-build-kowne1nh/generated/fabrication/chess-board-NPTH.drl'
+Done.

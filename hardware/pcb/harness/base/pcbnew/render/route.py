@@ -1,6 +1,6 @@
 """Materialise explicit copper route declarations as native board objects.
 
-``Trace`` records one straight segment on the top or bottom outer copper face;
+``Trace`` records one straight segment on an enabled copper layer;
 ``Via`` records one plated through-hole joining those faces. The renderer
 does not invent intermediate corners, choose a path around obstacles, or
 infer endpoint connectivity. Those limits keep routing declarative and make
@@ -16,6 +16,17 @@ from ..outline import BoardOutline
 from ..route import CopperLayer, Trace, Via
 from .units import native_point
 
+LAYER_IDS = {
+    CopperLayer.TOP: pcbnew.F_Cu,
+    CopperLayer.BOTTOM: pcbnew.B_Cu,
+    CopperLayer.INNER_1: pcbnew.In1_Cu,
+    CopperLayer.INNER_2: pcbnew.In2_Cu,
+    CopperLayer.INNER_3: pcbnew.In3_Cu,
+    CopperLayer.INNER_4: pcbnew.In4_Cu,
+    CopperLayer.INNER_5: pcbnew.In5_Cu,
+    CopperLayer.INNER_6: pcbnew.In6_Cu,
+}
+
 
 def render_trace[BoardNet: Net](
     board: pcbnew.BOARD,
@@ -25,7 +36,7 @@ def render_trace[BoardNet: Net](
 ) -> pcbnew.PCB_TRACK:
     """Add one straight native track with declared endpoints, width, and net.
 
-    The layer enum selects front or back copper. The converter does not check
+    The layer enum selects the requested outer or inner copper layer. The converter does not check
     whether either endpoint touches a pad or another segment, whether the
     segment crosses an obstacle, or whether its width meets a design rule.
     """
@@ -35,7 +46,7 @@ def render_trace[BoardNet: Net](
     native.SetStart(native_point(route.start, outline))
     native.SetEnd(native_point(route.end, outline))
     native.SetWidth(pcbnew.FromMM(route.width_mm))
-    native.SetLayer(pcbnew.F_Cu if route.layer is CopperLayer.TOP else pcbnew.B_Cu)
+    native.SetLayer(LAYER_IDS[route.layer])
     native.SetNet(net)
     board.Add(native)
     return native

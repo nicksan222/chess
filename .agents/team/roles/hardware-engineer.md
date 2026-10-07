@@ -18,7 +18,7 @@ Hall acquisition is polled across eight TCA9554 banks. Check exact parts/mapping
 shared code rather than copying numbers from documentation.
 
 Author `hardware/shared/{components,electronics,hall_banks,wiring}` and
-`hardware/pcb/definition/` only as assigned. Native board pads/nets are the electrical
+`hardware/pcb/board/` only as assigned. Native board pads/nets are the electrical
 source, not a parallel schematic model; schematic/netlist/BOM are derived output.
 Coordinate shared dimensions with mechanical engineer and hand-maintained Pi pin
 identities/acquisition behavior with firmware engineer. Do not edit their files or
@@ -32,5 +32,5 @@ startup, approved/full-white load, fault cases and logic thresholds where releva
 Report datasheet passages, assumptions, calculations, source paths, changed interfaces,
 commands and remaining bench measurements. A schematic that passes checks is not proof
 of power safety, Hall/magnet margin or a working physical prototype. Never fabricate
-measurements, bypass `definition/evidence/`, release fabrication or order boards. Stop
+measurements, bypass `board/evidence/`, release fabrication or order boards. Stop
 for missing datasheet/physical evidence or cross-domain decisions; send one report to lead.

@@ -1,0 +1,328 @@
+Reference,Product,Manufacturer,Part number,Package,Datasheet,Purpose
+C1,CAP_560U,Rubycon,10ZLJ560M8X11.5,radial 8 mm,https://www.rubycon.co.jp/wp-content/uploads/catalog-aluminum/ZLJ.pdf,LED rail bulk capacitor
+C10,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C100,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C101,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C102,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C103,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C104,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C105,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C106,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C107,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C108,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C109,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C11,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C110,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C111,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C112,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C113,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C114,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C115,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C116,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C117,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C118,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C119,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C12,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C120,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C121,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C122,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C123,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C124,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C125,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C126,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C127,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C128,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C129,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C13,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C130,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C131,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C132,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C133,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C134,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C135,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C136,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Expander decoupling capacitor
+C137,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Expander decoupling capacitor
+C138,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Expander decoupling capacitor
+C139,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Expander decoupling capacitor
+C14,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C140,CAP_560U,Rubycon,10ZLJ560M8X11.5,radial 8 mm,https://www.rubycon.co.jp/wp-content/uploads/catalog-aluminum/ZLJ.pdf,LED rail bulk capacitor
+C141,CAP_1U,Yageo,CC0603KRX7R8BB105,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R8BB105,eFuse input bypass
+C142,CAP_10N,Yageo,CC0603KRX7R9BB103,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB103,eFuse dVdt
+C143,CAP_1N,Yageo,CC0603KRX7R9BB102,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB102,eFuse ITIMER
+C144,CAP_10N,Yageo,CC0603KRX7R9BB103,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB103,OVLO spike filter
+C145,CAP_10N,Yageo,CC0603KRX7R9BB103,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB103,Q1 gate-to-drain ramp capacitor
+C146,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,U75 decoupling capacitor
+C15,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C16,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C17,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C18,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C19,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C2,CAP_10U,Yageo,CC0805KKX5R6BB106,0805 (2012 metric),https://www.yageogroup.com/download/specsheet/CC0805KKX5R6BB106,Rail decoupling capacitor
+C20,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C21,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C22,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C23,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C24,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C25,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C26,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C27,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C28,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C29,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C3,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Expander decoupling capacitor
+C30,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C31,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C32,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C33,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C34,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C35,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C36,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C37,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C38,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C39,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C4,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Expander decoupling capacitor
+C40,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C41,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C42,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C43,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C44,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C45,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C46,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C47,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C48,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C49,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C5,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Expander decoupling capacitor
+C50,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C51,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C52,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C53,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C54,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C55,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C56,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C57,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C58,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C59,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C6,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Expander decoupling capacitor
+C60,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C61,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C62,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C63,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C64,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C65,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C66,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C67,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C68,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C69,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C7,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Buffer decoupling capacitor
+C70,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C71,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C72,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C73,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C74,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C75,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C76,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C77,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C78,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C79,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C8,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C80,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C81,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C82,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C83,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C84,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C85,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C86,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C87,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C88,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C89,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C9,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local LED decoupling capacitor
+C90,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C91,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C92,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C93,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C94,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C95,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C96,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C97,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C98,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+C99,CAP_100N,Yageo,CC0603KRX7R9BB104,0603 (1608 metric),https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB104,Local Hall-sensor decoupling capacitor
+D1,TVS_12V0,Littelfuse,SMBJ12CA,SMB (DO-214AA),https://docs.rs-online.com/72ea/0900766b814f6468.pdf,Bidirectional transient suppressor on the eFuse input
+F1,FUSE_2A,Littelfuse,0453002.MR,2410 fuse,https://atta.szlcsc.com/upload/public/pdf/source/20171109/C48467_15102201734031103760.pdf,Input over-current protection on the jack tip
+HS1,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS10,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS11,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS12,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS13,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS14,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS15,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS16,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS17,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS18,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS19,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS2,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS20,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS21,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS22,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS23,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS24,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS25,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS26,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS27,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS28,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS29,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS3,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS30,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS31,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS32,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS33,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS34,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS35,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS36,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS37,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS38,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS39,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS4,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS40,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS41,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS42,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS43,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS44,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS45,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS46,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS47,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS48,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS49,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS5,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS50,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS51,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS52,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS53,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS54,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS55,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS56,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS57,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS58,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS59,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS6,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS60,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS61,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS62,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS63,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS64,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS7,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS8,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+HS9,HALL_SENSOR,Texas Instruments,DRV5032FCDBZR,SOT-23-3,https://www.ti.com/lit/ds/symlink/drv5032.pdf,Omnipolar active-low Hall-effect square sensor
+J1,PI_ZERO_HEADER,Sullins Connector Solutions,PPPC202LFBN-RC,2x20 2.54 mm THT,https://www.sullinscorp.com/pdfs/catalog.pdf,Raspberry Pi Zero 2 W GPIO socket
+J2,OLED_HEADER,JST,SM04B-SRSS-TB,SH 4P side entry SMD,https://www.jst-mfg.com/product/pdf/eng/eSH.pdf,OLED harness header (module wired by its pad labels)
+J4,POWER_HEADER,JST,B4PS-VH,VH 4P side entry THT,https://www.jst-mfg.com/product/pdf/eng/eVH.pdf,Power entry: jack and rocker harness
+Q1,LED_SWITCH,Vishay Siliconix,Si4403DDY-T1-GE3,SO-8 1.27 mm,https://www.vishay.com/docs/70094/si4403ddy.pdf,"LED rail switch, +5V to LED_5V"
+Q2,LED_SWITCH_DRIVER,onsemi,BSS138LT1G,SOT-23 (TO-236),https://www.farnell.com/datasheets/1596366.pdf,LED_EN inverter driving the LED switch gate and buffer enables
+R10,RES_56,Yageo,RC0603FR-0756RL,0603 (1608 metric),https://www.yageogroup.com/content/datasheet/asset/file/PYU-RC_GROUP_51_ROHS_L,LED rank-turn data source termination
+R11,RES_56,Yageo,RC0603FR-0756RL,0603 (1608 metric),https://www.yageogroup.com/content/datasheet/asset/file/PYU-RC_GROUP_51_ROHS_L,LED rank-turn data source termination
+R12,RES_56,Yageo,RC0603FR-0756RL,0603 (1608 metric),https://www.yageogroup.com/content/datasheet/asset/file/PYU-RC_GROUP_51_ROHS_L,LED rank-turn data source termination
+R13,RES_1K,Yageo,RC0603FR-071KL,0603 (1608 metric),https://www.yageogroup.com/content/datasheet/asset/file/PYU-RC_GROUP_51_ROHS_L,LED_EN series to Q2 gate
+R14,RES_100K,Yageo,RC0603FR-07100KL,0603 (1608 metric),https://www.yageogroup.com/content/datasheet/asset/file/PYU-RC_GROUP_51_ROHS_L,Q2 gate pull-down (LED rail off)
+R15,RES_10K,Yageo,RC0603FR-0710KL,0603 (1608 metric),https://www.yageogroup.com/content/datasheet/asset/file/PYU-RC_GROUP_51_ROHS_L,LED_EN_N pull-up
+R16,RES_100K,Yageo,RC0603FR-07100KL,0603 (1608 metric),https://www.yageogroup.com/content/datasheet/asset/file/PYU-RC_GROUP_51_ROHS_L,Q1 gate drive (turn-on ramp)
+R17,RES_10K,Yageo,RC0603FR-0710KL,0603 (1608 metric),https://www.yageogroup.com/content/datasheet/asset/file/PYU-RC_GROUP_51_ROHS_L,LED_DATA_5V pull-down while the buffer is Hi-Z
+R18,RES_10K,Yageo,RC0603FR-0710KL,0603 (1608 metric),https://www.yageogroup.com/content/datasheet/asset/file/PYU-RC_GROUP_51_ROHS_L,LED_CLK_5V pull-down while the buffer is Hi-Z
+R3,RES_1K65,Yageo,RC0603FR-071K65L,0603 (1608 metric),https://www.yageogroup.com/content/datasheet/asset/file/PYU-RC_GROUP_51_ROHS_L,eFuse current limit (ILM)
+R4,RES_604K_PRECISION,Yageo,RT0603BRD07604KL,0603 (1608 metric),https://www.yageogroup.com/content/datasheet/asset/file/PYU-RT_1-TO-0-01_ROHS_L,"OVLO divider, top"
+R5,RES_169K_PRECISION,Yageo,RT0603BRD07169KL,0603 (1608 metric),https://www.yageogroup.com/content/datasheet/asset/file/PYU-RT_1-TO-0-01_ROHS_L,"OVLO divider, bottom"
+R6,RES_604K_PRECISION,Yageo,RT0603BRD07604KL,0603 (1608 metric),https://www.yageogroup.com/content/datasheet/asset/file/PYU-RT_1-TO-0-01_ROHS_L,"EN divider from RUN, top"
+R7,RES_261K,Yageo,RC0603FR-07261KL,0603 (1608 metric),https://www.yageogroup.com/content/datasheet/asset/file/PYU-RC_GROUP_51_ROHS_L,"EN divider, bottom"
+R8,RES_1K,Yageo,RC0603FR-071KL,0603 (1608 metric),https://www.yageogroup.com/content/datasheet/asset/file/PYU-RC_GROUP_51_ROHS_L,Rocker contact wetting load
+R9,RES_56,Yageo,RC0603FR-0756RL,0603 (1608 metric),https://www.yageogroup.com/content/datasheet/asset/file/PYU-RC_GROUP_51_ROHS_L,LED data source termination
+SW1,BUTTON,E-Switch,TL1105CF100Q,6x6 mm THT,https://www.e-switch.com/wp-content/uploads/2022/06/TL1105.pdf,"Momentary panel button, 8.0 mm round stem"
+SW10,BUTTON,E-Switch,TL1105CF100Q,6x6 mm THT,https://www.e-switch.com/wp-content/uploads/2022/06/TL1105.pdf,"Momentary panel button, 8.0 mm round stem"
+SW11,BUTTON,E-Switch,TL1105CF100Q,6x6 mm THT,https://www.e-switch.com/wp-content/uploads/2022/06/TL1105.pdf,"Momentary panel button, 8.0 mm round stem"
+SW12,BUTTON,E-Switch,TL1105CF100Q,6x6 mm THT,https://www.e-switch.com/wp-content/uploads/2022/06/TL1105.pdf,"Momentary panel button, 8.0 mm round stem"
+SW2,BUTTON,E-Switch,TL1105CF100Q,6x6 mm THT,https://www.e-switch.com/wp-content/uploads/2022/06/TL1105.pdf,"Momentary panel button, 8.0 mm round stem"
+SW3,BUTTON,E-Switch,TL1105CF100Q,6x6 mm THT,https://www.e-switch.com/wp-content/uploads/2022/06/TL1105.pdf,"Momentary panel button, 8.0 mm round stem"
+SW4,BUTTON,E-Switch,TL1105CF100Q,6x6 mm THT,https://www.e-switch.com/wp-content/uploads/2022/06/TL1105.pdf,"Momentary panel button, 8.0 mm round stem"
+SW5,BUTTON,E-Switch,TL1105CF100Q,6x6 mm THT,https://www.e-switch.com/wp-content/uploads/2022/06/TL1105.pdf,"Momentary panel button, 8.0 mm round stem"
+SW6,BUTTON,E-Switch,TL1105CF100Q,6x6 mm THT,https://www.e-switch.com/wp-content/uploads/2022/06/TL1105.pdf,"Momentary panel button, 8.0 mm round stem"
+SW7,BUTTON,E-Switch,TL1105CF100Q,6x6 mm THT,https://www.e-switch.com/wp-content/uploads/2022/06/TL1105.pdf,"Momentary panel button, 8.0 mm round stem"
+SW8,BUTTON,E-Switch,TL1105CF100Q,6x6 mm THT,https://www.e-switch.com/wp-content/uploads/2022/06/TL1105.pdf,"Momentary panel button, 8.0 mm round stem"
+SW9,BUTTON,E-Switch,TL1105CF100Q,6x6 mm THT,https://www.e-switch.com/wp-content/uploads/2022/06/TL1105.pdf,"Momentary panel button, 8.0 mm round stem"
+TP1,TEST_POINT,Harwin,S1751-46R,SMD test point,https://content.harwin.com/asset/e4e6a5e1-de35-4a2b-8b49-ff06562cba9d/DRG-02202-Technical-Drawing-Datasheet-S1751R-pdf.pdf,5 V test point
+TP2,TEST_POINT,Harwin,S1751-46R,SMD test point,https://content.harwin.com/asset/e4e6a5e1-de35-4a2b-8b49-ff06562cba9d/DRG-02202-Technical-Drawing-Datasheet-S1751R-pdf.pdf,Ground test point
+TP3,TEST_POINT,Harwin,S1751-46R,SMD test point,https://content.harwin.com/asset/e4e6a5e1-de35-4a2b-8b49-ff06562cba9d/DRG-02202-Technical-Drawing-Datasheet-S1751R-pdf.pdf,Buffered LED data test point
+TP4,TEST_POINT,Harwin,S1751-46R,SMD test point,https://content.harwin.com/asset/e4e6a5e1-de35-4a2b-8b49-ff06562cba9d/DRG-02202-Technical-Drawing-Datasheet-S1751R-pdf.pdf,Buffered LED clock test point
+TP5,TEST_POINT,Harwin,S1751-46R,SMD test point,https://content.harwin.com/asset/e4e6a5e1-de35-4a2b-8b49-ff06562cba9d/DRG-02202-Technical-Drawing-Datasheet-S1751R-pdf.pdf,3.3 V test point
+TP6,TEST_POINT,Harwin,S1751-46R,SMD test point,https://content.harwin.com/asset/e4e6a5e1-de35-4a2b-8b49-ff06562cba9d/DRG-02202-Technical-Drawing-Datasheet-S1751R-pdf.pdf,I2C clock test point
+TP7,TEST_POINT,Harwin,S1751-46R,SMD test point,https://content.harwin.com/asset/e4e6a5e1-de35-4a2b-8b49-ff06562cba9d/DRG-02202-Technical-Drawing-Datasheet-S1751R-pdf.pdf,I2C data test point
+U1,TCA9554,Texas Instruments,TCA9554DWR,SOIC-16W 1.27 mm,https://www.ti.com/lit/ds/symlink/tca9554.pdf,Polled 8-bit I2C GPIO expander
+U10,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U11,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U12,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U13,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U14,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U15,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U16,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U17,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U18,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U19,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U2,TCA9554,Texas Instruments,TCA9554DWR,SOIC-16W 1.27 mm,https://www.ti.com/lit/ds/symlink/tca9554.pdf,Polled 8-bit I2C GPIO expander
+U20,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U21,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U22,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U23,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U24,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U25,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U26,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U27,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U28,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U29,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U3,TCA9554,Texas Instruments,TCA9554DWR,SOIC-16W 1.27 mm,https://www.ti.com/lit/ds/symlink/tca9554.pdf,Polled 8-bit I2C GPIO expander
+U30,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U31,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U32,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U33,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U34,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U35,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U36,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U37,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U38,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U39,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U4,TCA9554,Texas Instruments,TCA9554DWR,SOIC-16W 1.27 mm,https://www.ti.com/lit/ds/symlink/tca9554.pdf,Polled 8-bit I2C GPIO expander
+U40,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U41,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U42,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U43,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U44,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U45,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U46,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U47,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U48,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U49,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U5,AHCT125,Texas Instruments,SN74AHCT125DR,SOIC-14 1.27 mm,https://www.ti.com/lit/ds/symlink/sn74ahct125.pdf,Quad 5 V buffer accepts 3.3 V SPI clock and data
+U50,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U51,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U52,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U53,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U54,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U55,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U56,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U57,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U58,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U59,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U6,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U60,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U61,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U62,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U63,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U64,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U65,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U66,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U67,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U68,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U69,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U7,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U70,TCA9554,Texas Instruments,TCA9554DWR,SOIC-16W 1.27 mm,https://www.ti.com/lit/ds/symlink/tca9554.pdf,Polled 8-bit I2C GPIO expander
+U71,TCA9554,Texas Instruments,TCA9554DWR,SOIC-16W 1.27 mm,https://www.ti.com/lit/ds/symlink/tca9554.pdf,Polled 8-bit I2C GPIO expander
+U72,TCA9554,Texas Instruments,TCA9554DWR,SOIC-16W 1.27 mm,https://www.ti.com/lit/ds/symlink/tca9554.pdf,Polled 8-bit I2C GPIO expander
+U73,TCA9554,Texas Instruments,TCA9554DWR,SOIC-16W 1.27 mm,https://www.ti.com/lit/ds/symlink/tca9554.pdf,Polled 8-bit I2C GPIO expander
+U74,EFUSE,Texas Instruments,TPS259474ARPWR,VQFN-HR-10 RPW 2x2 mm,https://www.ti.com/lit/ds/symlink/tps25947.pdf,"Input eFuse: inrush, OVLO, reverse blocking, circuit breaker"
+U75,LED_ENABLE_GATE,Texas Instruments,SN74LVC1G97DBVR,SOT-23-6 (DBV),https://www.ti.com/lit/ds/symlink/sn74lvc1g97.pdf,LED_OE_N = Schmitt(Q1 gate) OR LED_EN_N: buffer on only once LED_5V is up
+U8,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED
+U9,SK9822,Opsco Optoelectronics,SK9822-A,PLCC-6 5050,https://www.rose-lighting.com/wp-content/uploads/sites/53/2020/05/SK9822-A-REV.01-EN-5050-RGB-27K-HZ-PWM-30M-bps-speed.pdf,Clocked 5050 RGB LED

@@ -274,6 +274,13 @@ class BoardRegistry:
             else:
                 raise ValueError(f"{reference}: unknown measurement kind")
             for point in points:
+                if (
+                    scenario.component_references is not None
+                    and point.reference not in scenario.component_references
+                ):
+                    raise ValueError(
+                        f"{reference}: measurement is outside the selected component scope"
+                    )
                 if point not in assignments or isinstance(
                     assignments[point], NoConnect
                 ):

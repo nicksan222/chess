@@ -12,4 +12,5 @@ PI_ZERO_2_W = part(
     "Raspberry Pi",
     "SC0510",
     (65.0, 30.0, 5.2),
+    datasheet="https://datasheets.raspberrypi.com/rpizero2/raspberry-pi-zero-2-w-product-brief.pdf",
 )

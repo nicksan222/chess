@@ -77,11 +77,20 @@ def render_footprint[Pin: StrEnum](
     )
     board.Add(native)
     if component.placement.side is Side.BOTTOM:
+        positions = [
+            (pad, pcbnew.VECTOR2I(pad.GetPosition().x, pad.GetPosition().y))
+            for pad in native.Pads()
+        ]
         native.Flip(native.GetPosition(), pcbnew.FLIP_DIRECTION_LEFT_RIGHT)
         # KiCad's flip leaves an unrotated mounting-side package at native
         # orientation 180°. A positive author rotation is counterclockwise
         # when viewing that mounting face, hence the opposite native sign.
-        native.SetOrientationDegrees(180 - component.placement.rotation_degrees)
+        if pattern.board_top_view:
+            for pad, position in positions:
+                pad.SetPosition(position)
+            native.SetOrientationDegrees(180 + component.placement.rotation_degrees)
+        else:
+            native.SetOrientationDegrees(180 - component.placement.rotation_degrees)
     else:
         native.SetOrientationDegrees(component.placement.rotation_degrees)
     return native

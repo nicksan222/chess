@@ -14,5 +14,5 @@ BARREL_JACK = part(
     "Switchcraft",
     "722A",
     (15.4, 11.0, 11.0),
-    "https://www.switchcraft.com/assets/1/24/712A%20722A%20732A_CD.PDF",
+    "https://docs.rs-online.com/33bc/0900766b8141ad6e.pdf",
 )

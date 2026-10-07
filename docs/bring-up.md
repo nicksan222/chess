@@ -4,7 +4,7 @@
 
 This is the ordered first-article checklist for the D-PROTOTYPE board. Each step names
 what to do, the pass threshold, and which `ASSUMPTIONS` entry it closes
-(`hardware/pcb/definition/verification.py`, plus `CAD …` entries from
+(`docs/pcb-assumptions.md`, plus `CAD …` entries from
 `hardware/shared/dimensions/unverified.py`). Electrical figures come from
 [power](power.md) and are datasheet, calculated or simulated values, not measurements.
 
@@ -14,7 +14,7 @@ Rules:
 - Record the instrument, the value, the board serial and the date.
 - Never write a value that was not measured.
 - A threshold marked TBD has no owner value yet, and that step cannot pass.
-- Only measured results, with provenance, go into `hardware/pcb/definition/evidence/`.
+- Only measured results, with provenance, go into `hardware/pcb/board/evidence/`.
 
 Probe points:
 
@@ -39,7 +39,7 @@ These two steps gate the board order.
 | # | Do | Pass | Closes |
 |---|---|---|---|
 | 0.1 | **Loose SK9822-A power-up.** Take 5-10 LEDs from the lot to be ordered, each with 100 nF, chained CKO→CKI and SDO→SDI. Feed them from a current-limited lab supply (0.1 A per LED). Ramp 0→5.0 V 20 times, and also switch 5.0 V on fast (about 1 ms, e.g. a MOSFET) 20 times. Hold the first LED's CKI and SDI through 10 kΩ to GND, as R17/R18 do on the board. An extra run with them floating is an optional stress case | No LED lights in any of the 40 starts (or 80 with the optional run); supply current < 5 mA per LED with no frame sent | `LED power-up state` (part; step 6.1 finishes it). **A fail blocks the order**: the board boot-loops with a lit chain |
-| 0.2 | **Incoming PSU.** Measure the GST12A05-P1J output at no load and at 2.0 A (electronic load) | 4.75-5.25 V at both loads; **reject any unit above 5.25 V**. Ripple ≤ 80 mV p-p at 2.0 A (20 MHz bandwidth), as the models assume. Record the no-load margin to the OVLO low corner, **5.342 V** (the modelled peak, 5.25 V + 40 mV, leaves 52 mV) | `GST12A05 output` (part) |
+| 0.2 | **Incoming PSU.** Measure the GST18A05-P1J output at no load and at 2.0 A (electronic load) | 4.75-5.25 V at both loads; **reject any unit above 5.25 V**. Ripple ≤ 80 mV p-p at 2.0 A (20 MHz bandwidth), as the models assume. Record the no-load margin to the OVLO low corner, **5.342 V** (the modelled peak, 5.25 V + 40 mV, leaves 52 mV) | `GST18A05 output` (part) |
 
 ## Step 1: fab and assembly records
 
@@ -69,7 +69,7 @@ These two steps gate the board order.
 | 3.3 | Crimp pull test (VH and SH), one sacrificial crimp of each | Meets the JST crimp specification's pull force; read that value from the spec, not from here | `Harness parts` |
 | 3.4 | OLED module, before fitting: SDA→VCC and SCL→VCC | ≥ 4.7 kΩ or open | `OLED pull-ups` (module) |
 | 3.5 | J2 cavity 1 → module GND pad | Continuity | `J2 circuit 1` (wiring) |
-| 3.6 | 722A contacts: 4-wire at 100 mA, centre and sleeve, from a Switchcraft S760 5.5 x 2.1 test plug's solder tail to the jack lug. Then the GST12A05 plug, 20 insertions, with a spring gauge | Each contact **≤ 0.01 Ω** (Switchcraft panel-mount DC jack spec: 0.01 Ω initial, 0.02 Ω after durability). GST plug insertion **≤ 13.3 N (3 lb)**, withdrawal **≥ 1.1 N (4 oz)** (same spec; applying it to the GST plug is our acceptance choice). The jack also states a 0.125 in (3.18 mm) maximum panel | `Jack/plug fit` |
+| 3.6 | 722A contacts: 4-wire at 100 mA, centre and sleeve, from a Switchcraft S760 5.5 x 2.1 test plug's solder tail to the jack lug. Then the GST18A05 plug, 20 insertions, with a spring gauge | Each contact **≤ 0.01 Ω** (Switchcraft panel-mount DC jack spec: 0.01 Ω initial, 0.02 Ω after durability). GST plug insertion **≤ 13.3 N (3 lb)**, withdrawal **≥ 1.1 N (4 oz)** (same spec; applying it to the GST plug is our acceptance choice). The jack also states a 0.125 in (3.18 mm) maximum panel | `Jack/plug fit` |
 | 3.7 | Mechanical, on the printed case | Rocker snaps into the panel and its cutout. 722A nut and washer (caliper) leave the 2.0 mm wall within thread. Both bays are deep enough. The mated VHR-4N clears the bottom keep volume. The SD card reaches its slot | `J4 back offset`; CAD `CASE_ROCKER_PANEL_THICKNESS_MM`, `CASE_ROCKER_CUTOUT_MM`, `CASE_ROCKER_BAY_DEPTH_MM`, `CASE_JACK_NUT_AND_WASHER_MM`, `CASE_JACK_BAY_DEPTH_MM`, `PI_SD_SOCKET_ON_PI_MM`, `PI_SD_SOCKET_HEIGHT_MM` |
 
 ## Step 4: first power (no Pi, `LED_EN` held low)
@@ -101,7 +101,7 @@ fit the Pi for steps 4-6.**
 | 5.3 | **Running step.** Load `+5V` with 78 Ω (≥ 1 W) or a 64 mA CC e-load at TP1/TP2, matching the model's 64-LED static load. Rail on at 5.00 V, then step to 6.0 V in **≤ 50 µs** (a MOSFET between two supplies, or a programmable supply with that slew). Record the `DC_FUSED` edge | Trip delay (`DC_FUSED` crossing 5.9 V to `+5V` falling) **≤ 2.0 ms**; `+5V` above 5.5 V for **≤ 12 ms**; `LED_5V` < 0.1 V. Results of 2.0-3.5 ms or 12-21 ms are recorded and sent to hardware as a model discrepancy, not an automatic reject | `OVLO filter` |
 | 5.4 | Cold-plug 6.0 V and 7.0 V | `+5V` stays 0 V; D1 cold | `OVLO window` (wrong adapter) |
 | 5.5 | **Circuit breaker, one trip.** Supply 5.00 V / ≥ 3 A. Step a CC e-load on `+5V` (C1/C140 leads) 0→**2.5 A**, then off after the first retry. 2.5 A exceeds ILIM (1.80-2.20 A) at every corner and stays below the 3.6 A fast trip. Its I²t per trip is ≤ 0.010 A²s, 1.9 % of F1's 0.530 A²s (ITIMER C143 1 nF). Optional, to find ILIM: a CC staircase from 1.70 to 2.30 A in 50 mA steps, each held ≥ 5 ms | `+5V` stays up while the load draws the full 2.5 A (the TPS259474A passes the full load until the timer expires; it does not limit at ILIM). It turns off **0.46-1.6 ms** after the step; auto-retry after about **110 ms** (tRST). Staircase: the first step that trips is within **1.80-2.20 A** | `eFuse model` (breaker) |
-| 5.6 | **Hot plug.** Plug the real GST12A05 in 20 times, then switch on with the rocker 20 times | `+5V` comes up 40/40 with no OVLO latch; `+5V` peak ≤ 5.5 V; `DC_FUSED` ring and inrush recorded | `Cord inductance`, `eFuse model` (inrush), `OVLO window` (plug-in) |
+| 5.6 | **Hot plug.** Plug the real GST18A05 in 20 times, then switch on with the rocker 20 times | `+5V` comes up 40/40 with no OVLO latch; `+5V` peak ≤ 5.5 V; `DC_FUSED` ring and inrush recorded | `Cord inductance`, `eFuse model` (inrush), `OVLO window` (plug-in) |
 | 5.7 | F1 drop at 1.0 A (e-load), cold | ≤ 55 mV (1.5 x 36.7 mΩ) | `Fuse resistance` |
 | 5.8 | Rocker on/off 100 times. Before and after, measure the closed contact 4-wire at its tabs, harness unplugged, by the low-level method (EIA-364-23: ≤ 20 mV open circuit, ≤ 100 mA) | Contact **≤ 30 mΩ** before and after (E-Switch RA1 catalogue: 30 mΩ max, 10,000-cycle life). `+5V` comes up 100/100. At 5 mA wetting, 30 mΩ is 0.15 mV, so `RUN` follows `DC_FUSED` | `Rocker dry circuit` |
 
@@ -116,14 +116,14 @@ it is a redesign item. Do not fit the Pi.
 | 6.1 | Raise `LED_EN`, 20 times, with no SPI | No LED lights; supply current rises < 0.32 A (64 x 5 mA); no eFuse trip; `+5V` ≥ 4.5 V. `LED_5V` 10-90 % rise about 0.95 ms. `LED_OE_N` falls only after `LED_5V` ≥ 4.605 V (simulated 1.78-3.05 ms after `LED_EN`), **then stays low while `LED_5V` is up** | `LED power-up state` |
 | 6.2 | Lower `LED_EN` | `LED_OE_N` goes high within 0.61-0.83 µs [simulated]; `LED_5V` decays | — |
 
-## Step 7: with the Pi (real GST12A05, firmware with the blank-frame contract)
+## Step 7: with the Pi (real GST18A05, firmware with the blank-frame contract)
 
 | # | Do | Pass | Closes |
 |---|---|---|---|
 | 7.1 | Boot 10 times | No reset loop; `vcgencmd get_throttled` recorded | — |
 | 7.1a | Board input current at 5.00 V with `LED_EN` low (LEDs off): Pi idle, then full CPU load (`stress-ng --cpu 4`) with `iperf3` Wi-Fi traffic, 2 min each. DC meter plus a scope current probe for peaks | Average ≤ **0.45 A** in both states (the model's host-and-logic budget). Peaks recorded. A higher average goes to hardware: the 4.5 V margins in 7.3 assume 0.45 A | `Host and logic current` |
 | 7.2 | Walking LED and a 10 min animation at the cap (3/31), at the firmware SPI clock and at 10 MHz | 64/64 correct, no glitch. Scope TP3/TP4, U6 CKI/SDI and `LED_D16` (rank turn): edges cross 0.7/0.3 x VDD cleanly; ringing recorded | `SK9822 input levels`, `LED line drivers` |
-| 7.3 | Lab supply at 4.75 V at the jack, Wi-Fi traffic, full white at the cap, 30 min | `+5V` (TP1) and `LED_5V` at the chain-end LED ≥ **4.5 V**; no reboot; `get_throttled` recorded (the Zero may not flag) | `Pi low voltage`, `GST12A05 output` (low corner) |
+| 7.3 | Lab supply at 4.75 V at the jack, Wi-Fi traffic, full white at the cap, 30 min | `+5V` (TP1) and `LED_5V` at the chain-end LED ≥ **4.5 V**; no reboot; `get_throttled` recorded (the Zero may not flag) | `Pi low voltage`, `GST18A05 output` (low corner) |
 | 7.4 | Lab supply at 5.30 V, LEDs at the cap, 10 min | No flicker or colour error. 5.34-5.5 V cannot be held below the OVLO low corner and stays a residual | `LED supply window` (to 5.30 V only) |
 | 7.5 | `i2cdetect`: 8 expanders at the `test_contract` addresses, plus the OLED. 1000-read soak. Scope TP6/TP7 at the farthest expander | 0 NACK; rise ≤ 1000 ns at 100 kHz (≤ 300 ns at 400 kHz, UM10204); VOL ≤ 0.4 V; OLED shows | `OLED pull-ups`, `OLED harness`, `J2 circuit 1` |
 | 7.6 | 12 buttons, press and release | Idle high, one event per press | `Pi GPIO pull-ups` |

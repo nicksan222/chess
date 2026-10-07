@@ -11,18 +11,19 @@ Plan the reflow accordingly.
 Build one DRV5032FC sensor, its 100 nF bypass capacitor, one SK9822-A, and one
 TCA9554DWR at the final CAD stack height. Verify reliable operate and release with
 both magnet poles, exercise a full eight-sensor bank while updating LEDs,
-and record the result in `hardware/pcb/definition/evidence/`.
+and record the result in `hardware/pcb/board/evidence/`.
 
-Run `just --justfile hardware/pcb/justfile release` in the reproducible KiCad container. Fabrication output is
-withheld unless tests, ERC, DRC, schematic parity, routing, prototype evidence and
-the open-assumptions list (`hardware/pcb/definition/verification.py`) all pass. Also review the fabricator's rendering before payment.
+Run `just --justfile hardware/pcb/justfile release` in the reproducible KiCad container. Manufacturing approval is
+withheld while electrical pin-role ERC, manufacturing reassessment, prototype
+evidence and open assumptions (`docs/pcb-assumptions.md`) remain unresolved.
+The generator exports fabrication files for review; it does not approve assembly. Also review the fabricator's rendering before payment.
 
 ## What to order
 
 `hardware/pcb/generated/bom.md` is generated from the approved exact-MPN catalog and
 reviewed netlist; its off-board rows (marked `off-board`) are the parts that do not
-solder onto the PCB: the Pi Zero 2 W and its male header, the OLED module, the GST12A05-P1J
-5 V 2 A supply, the Switchcraft 722A panel jack, the RA11131100 panel rocker and the
+solder onto the PCB: the Pi Zero 2 W and its male header, the OLED module, the GST18A05-P1J
+5 V 3 A supply, the Switchcraft 722A panel jack, the RA11131100 panel rocker and the
 harness wire, housings, contacts and FASTON receptacles.
 [`harness.md`](../hardware/pcb/generated/harness.md) lists the harness parts per
 harness.

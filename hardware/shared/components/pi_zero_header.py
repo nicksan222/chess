@@ -8,4 +8,5 @@ PI_ZERO_HEADER = part(
     "2x20 2.54 mm THT",
     "Sullins Connector Solutions",
     "PPPC202LFBN-RC",
+    datasheet="https://www.sullinscorp.com/pdfs/catalog.pdf",
 )

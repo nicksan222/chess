@@ -10,6 +10,7 @@ from .circuit_check import CircuitCheck
 from .component import RegisteredComponent
 from .connections import NetConnection
 from .net import Net
+from .pcbnew.layout import BoardLayout
 from .pcbnew.outline import BoardOutline
 from .pcbnew.route import Trace, Via
 from .registry import BoardRegistry
@@ -43,6 +44,7 @@ class Circuit[BoardNet: Net](BoardRegistry):
             raise ValueError("circuit outline must be a BoardOutline")
         super().__init__(outline=outline)
         self.net_type = net_type
+        self.layout: BoardLayout[BoardNet] = BoardLayout()
         self._traces: list[Trace[BoardNet]] = []
         self._vias: list[Via[BoardNet]] = []
 
@@ -126,12 +128,17 @@ class Circuit[BoardNet: Net](BoardRegistry):
         return part
 
     def check(
-        self, name: str, *, ground: BoardNet, purpose: str
+        self,
+        name: str,
+        *,
+        ground: BoardNet,
+        purpose: str,
+        components: tuple[RegisteredComponent, ...] | None = None,
     ) -> CircuitCheck[BoardNet]:
         """Begin one named electrical check with its conditions and expectations."""
         if type(ground) is not self.net_type:
             raise ValueError("check ground must use the board Net enum")
-        return CircuitCheck(self, name, ground, purpose)
+        return CircuitCheck(self, name, ground, purpose, components)
 
     def deck(self, check_name: str) -> str:
         """Render the selected check to ngspice text without exposing its syntax."""
@@ -140,12 +147,12 @@ class Circuit[BoardNet: Net](BoardRegistry):
         self._require_check(check_name)
         return render_deck(self, check_name)
 
-    def run(self, check_name: str) -> dict[str, float]:
+    def run(self, check_name: str, *, output: Path | None = None) -> dict[str, float]:
         """Run the selected check with ngspice and return measured values."""
         from .spice.render.run import run_deck
 
         self._require_check(check_name)
-        return run_deck(self, check_name)
+        return run_deck(self, check_name, output=output)
 
     def _require_check(self, name: str) -> None:
         """Translate an internal scenario lookup into the public check language."""

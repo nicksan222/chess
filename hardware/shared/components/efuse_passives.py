@@ -27,6 +27,14 @@ def _resistor(key: str, ohms: str, mpn: str, film: str) -> ComponentSpec:
         "Yageo",
         mpn,
         _RESISTOR_BODY,
+        datasheet=(
+            "https://www.yageogroup.com/content/datasheet/asset/file/"
+            + (
+                "PYU-RT_1-TO-0-01_ROHS_L"
+                if film == "thin-film"
+                else "PYU-RC_GROUP_51_ROHS_L"
+            )
+        ),
     )
 
 
@@ -49,6 +57,7 @@ CAP_10N = part(
     "Yageo",
     "CC0603KRX7R9BB103",
     _CAPACITOR_BODY,
+    datasheet="https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB103",
 )
 CAP_1N = part(
     "CAP_1N",
@@ -57,6 +66,7 @@ CAP_1N = part(
     "Yageo",
     "CC0603KRX7R9BB102",
     _CAPACITOR_BODY,
+    datasheet="https://www.yageogroup.com/download/specsheet/CC0603KRX7R9BB102",
 )
 CAP_1U = part(
     "CAP_1U",
@@ -65,4 +75,5 @@ CAP_1U = part(
     "Yageo",
     "CC0603KRX7R8BB105",
     _CAPACITOR_BODY,
+    datasheet="https://www.yageogroup.com/download/specsheet/CC0603KRX7R8BB105",
 )

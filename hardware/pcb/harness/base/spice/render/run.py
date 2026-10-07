@@ -43,7 +43,11 @@ def parse_output(output: str, expected: dict[str, Limit]) -> dict[str, float]:
 
 
 def run_deck(
-    board: BoardRegistry, scenario_name: str, executable: str = "ngspice"
+    board: BoardRegistry,
+    scenario_name: str,
+    executable: str = "ngspice",
+    *,
+    output: Path | None = None,
 ) -> dict[str, float]:
     """Render, execute and check one scenario using an installed ngspice binary.
 
@@ -64,6 +68,22 @@ def run_deck(
     if len(names) != len(requirements):
         raise ValueError("rendered result count differs from SPICE requirements")
     expected = dict(zip(names, requirements, strict=True))
+    if output is not None:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(deck)
+        process = subprocess.run(
+            (resolved, "-b", output.name),
+            cwd=output.parent,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        transcript = process.stdout + process.stderr
+        output.with_suffix(".log").write_text(transcript)
+        if process.returncode != 0:
+            raise ValueError(f"ngspice exited {process.returncode}:\n{transcript}")
+        return parse_output(transcript, expected)
     with tempfile.TemporaryDirectory(prefix="chess-harness-spice-") as directory:
         path = Path(directory) / "scenario.cir"
         path.write_text(deck)
@@ -75,7 +95,7 @@ def run_deck(
             text=True,
             timeout=30,
         )
-    output = process.stdout + process.stderr
+    transcript = process.stdout + process.stderr
     if process.returncode != 0:
-        raise ValueError(f"ngspice exited {process.returncode}:\n{output}")
-    return parse_output(output, expected)
+        raise ValueError(f"ngspice exited {process.returncode}:\n{transcript}")
+    return parse_output(transcript, expected)
