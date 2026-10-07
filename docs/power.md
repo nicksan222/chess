@@ -97,18 +97,11 @@ not measurements.
 | Raspberry Pi Zero 2 W | about 0.4 A (included above) |
 | Eight expanders and the buffer | small; not separately budgeted |
 
-Full white is therefore not allowed. `hardware/pcb/definition/manufacturing.json`
-sets the approved LED limit at a global brightness of 3/31 (the SK9822-A has a
-five-bit brightness field per LED), and `tests/board/test_power_budget.py` checks that
-limit against the 2 A board operating budget and fuse rating. Capping brightness is part of the
-protocol, not something the application has to remember.
-
-Copper is sized for the 2 A fuse rating: input traces are 1.5 mm and each plane entry
-is checked at 2 A (IPC-2221 steady state, 10 °C rise, `tests/board/test_ampacity.py`).
-A resistor-mesh SPICE model of the +5V and ground planes puts the worst-LED drop at
-1.44 mV at the approved limit and 7.9 mV at full white against a 50 mV budget
-(`tests/spice/plane_mesh.py`). These are calculations and simulations, not
-measurements.
+Full white is therefore not allowed. The prior electrical design used a global
+brightness cap of 3/31 against the 2 A operating budget. The previous power,
+ampacity and plane-mesh tests have been removed; these limits, routing dimensions
+and voltage-drop calculations must be revalidated for the new routed board.
+The generated project does not yet prove this power budget.
 
 The protection analysis above covers supply-to-Pi voltage, inrush against the fuse's
 I²t and the fault cases. Until the bench items below are done, the power path is not
@@ -164,7 +157,7 @@ Related signal-integrity items (I²C rise time, LED line edges) are in
 [hardware](hardware.md#buses-and-led-lines-s5).
 
 No automated check proves any of these; they stay in `ASSUMPTIONS`
-(`hardware/pcb/definition/verification.py`) until measured:
+(`docs/pcb-assumptions.md`) until measured:
 
 - enabling `LED_EN` into an uninitialised (possibly lit) chain, and the blank-frame timing (10 ms blanking, 2-3 ms buffer delay);
 - the real supply: actual output voltage and tolerance, plug-in overshoot and hiccup;

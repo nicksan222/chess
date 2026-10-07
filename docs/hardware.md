@@ -13,13 +13,12 @@ bottom side. There is no microcontroller and no separate schematic source tree.
 - [`hardware/shared/dimensions/board.py`](../hardware/shared/dimensions/board.py) owns
   the playing grid and PCB envelope; the neighboring case, panel, and tile-plate
   modules own their physical measurements.
-- [`hardware/pcb/definition/board.py`](../hardware/pcb/definition/board.py) composes
-  the reviewed typed component assemblies and connectivity.
+- [`hardware/pcb/board/board.py`](../hardware/pcb/board/board.py) composes
+  the component instances and their declared connectivity.
 - [`hardware/shared/electronics/harness.py`](../hardware/shared/electronics/harness.py)
   defines the off-board wiring harnesses (power entry, OLED) cavity by cavity.
-- [`hardware/pcb/generated/bom.md`](../hardware/pcb/generated/bom.md) is the
-  generated assembly manifest and
-  [`harness.md`](../hardware/pcb/generated/harness.md) the generated harness table.
+- [`hardware/pcb/generated/bom.csv`](../hardware/pcb/generated/bom.csv) lists the
+  PCB components. Off-board assembly output still needs migration.
 
 The PCB implementation supplies footprints, placement, routing, and fabrication
 output for those shared definitions. This avoids maintaining a drawing that can
@@ -91,15 +90,14 @@ just --justfile hardware/shared/justfile check
 just --justfile hardware/pcb/justfile review
 ```
 
-PCB tests verify package coverage, pad geometry against hand-typed datasheet
-tables, silkscreen and solder-mask spacing, decoupling distance, pin electrical
-types, copper ampacity, the Pi header geometry and bottom-side placement, the
-harness wiring, placement, fabrication rules, and connectivity including
-native-board/schematic parity; SPICE covers the buttons, Hall banks, power planes
-and movement scenarios. They are described in the
-[PCB README](../hardware/pcb/README.md#verification-layers).
+PCB checks cover component declarations, pin maps, package geometry, documentation
+URLs and native PCB checks. Generation requires zero routed-copper DRC violations,
+unconnected pads and schematic parity mismatches. Board pytest/SPICE scenarios
+cover Hall sensing, bypass charging and button presses, chords, bounce and release.
+Power-path, ampacity, bus timing and firmware pin parity checks still need migration;
+older calculated figures in these documents are retained assumptions, not current
+validation. See the [PCB README](../hardware/pcb/README.md).
 
-`just pcb-release` additionally requires real prototype evidence and an empty
-`ASSUMPTIONS` list (`hardware/pcb/definition/verification.py`) before fabrication
-export; a review pass is not physical approval, and every open item there still
-needs a bench measurement or a datasheet.
+`just pcb-release` currently refuses manufacturing approval. Review the
+[engineering assumptions](pcb-assumptions.md) and record real prototype evidence
+before treating the generated files as a physically validated design.

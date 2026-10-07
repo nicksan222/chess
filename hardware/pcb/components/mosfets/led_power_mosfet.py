@@ -9,8 +9,10 @@ from pcb.harness import (
     BoardRegistry,
     ComponentDefinition,
     Courtyard,
+    EscapeAxis,
     LandPattern,
     Net,
+    PackageRouting,
     Pad,
     PadShape,
     Placement,
@@ -32,6 +34,9 @@ LED_SWITCH_DEFINITION = ComponentDefinition(
             LED_SWITCH.require_body_mm()[2],
         ),
         datasheet=LED_SWITCH.datasheet,
+    ),
+    routing=PackageRouting(
+        power_mm=2.0, power_axis=EscapeAxis.HORIZONTAL, power_width_mm=0.6
     ),
     pin_type=PowerMosfetPin,
     courtyard=Courtyard(6.749, 5.5),

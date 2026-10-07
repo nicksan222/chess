@@ -17,7 +17,7 @@ the cap without operator approval. Start a missing role with `python3 .agents/te
 | lead | Requirements, interface decisions, integration and Git | Checkpoint, integration fixes |
 | developer | Portable chess/menu/core/persistence/logger logic | `crates/` and callers agreed with firmware |
 | firmware-engineer | Pi runtime, typed events, Linux device/network adapters | `apps/firmware/src/` and assigned tests |
-| hardware-engineer | Circuit/power/pins, native PCB/connectivity/routing | `hardware/pcb/definition/`, shared electrical contracts |
+| hardware-engineer | Circuit/power/pins, native PCB/connectivity/routing | `hardware/pcb/board/`, shared electrical contracts |
 | mechanical-engineer | Enclosure/tile plate, tolerance/optical/assembly stack | `hardware/cad/`, shared dimensions |
 | qa | Independent behavior/evidence verification | Reports; assigned validation execution |
 | reviewer | Read-only correctness/contracts/regression review | Reports |

@@ -9,9 +9,11 @@ from pcb.harness import (
     BoardRegistry,
     ComponentDefinition,
     Courtyard,
+    EscapeAxis,
     LandPattern,
     Net,
     NoConnect,
+    PackageRouting,
     Pad,
     PadShape,
     Placement,
@@ -36,6 +38,12 @@ AHCT125_DEFINITION = ComponentDefinition(
     ),
     pin_type=Ahct125Pin,
     courtyard=Courtyard(7.45, 9.2),
+    routing=PackageRouting(
+        signal_axis=EscapeAxis.HORIZONTAL,
+        signal_by_pin=tuple((str(pin), 2.0 + (int(pin) - 1) % 4) for pin in Ahct125Pin),
+        power_mm=1.2,
+        power_axis=EscapeAxis.HORIZONTAL,
+    ),
     land_pattern=LandPattern(
         Ahct125Pin,
         (

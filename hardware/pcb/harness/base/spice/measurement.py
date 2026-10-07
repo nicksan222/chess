@@ -102,11 +102,16 @@ class SpiceRequirement:
     observation: Observation
     allowed: Limit
     rationale: str
+    at_seconds: float | None = None
 
     def __post_init__(self) -> None:
         """Keep each requested proof identifiable and explainable."""
         if not self.scenario.strip() or not self.rationale.strip():
             raise ValueError("SPICE requirement needs a scenario and rationale")
+        if self.at_seconds is not None and (
+            not math.isfinite(self.at_seconds) or self.at_seconds < 0
+        ):
+            raise ValueError("sample time must be finite and nonnegative")
         if not isinstance(
             cast(object, self.measurement), (VoltageAt, VoltageBetween, CurrentThrough)
         ):

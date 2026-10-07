@@ -5,7 +5,7 @@ from __future__ import annotations
 from enum import StrEnum
 from typing import TYPE_CHECKING, Self
 
-from .component import BoardComponent
+from .component import BoardComponent, RegisteredComponent
 from .connections import Endpoint
 from .net import Net
 from .spice.analysis import AcSweep, Analysis, OperatingPoint, Transient
@@ -17,8 +17,10 @@ from .spice.measurement import (
     VoltageAt,
     VoltageBetween,
 )
+from .spice.model import ModelOverride, ModelParameter
 from .spice.scenario import SpiceScenario
 from .spice.source import CurrentSource, DcVoltage, PulseVoltage, Source, VoltageSource
+from .spice.state import ComponentState, StateChange
 
 if TYPE_CHECKING:
     from .circuit import Circuit
@@ -37,7 +39,12 @@ class CircuitCheck[BoardNet: Net]:
     """
 
     def __init__(
-        self, board: Circuit[BoardNet], name: str, ground: BoardNet, purpose: str
+        self,
+        board: Circuit[BoardNet],
+        name: str,
+        ground: BoardNet,
+        purpose: str,
+        components: tuple[RegisteredComponent, ...] | None = None,
     ) -> None:
         """Hold a check until its context exits successfully."""
         self._board = board
@@ -48,6 +55,71 @@ class CircuitCheck[BoardNet: Net]:
         self._sources: list[Source] = []
         self._expectations: list[tuple[str | None, SpiceRequirement]] = []
         self._closed = False
+        self._components = board.components() if components is None else components
+        if (components is not None and not self._components) or len(
+            {part.reference for part in self._components}
+        ) != len(self._components):
+            raise ValueError("check needs a nonempty unique component selection")
+        if any(
+            not any(known is part for known in board.components())
+            for part in self._components
+        ):
+            raise ValueError("check components must belong to this circuit")
+        self._scoped = components is not None
+        self._states: list[ComponentState] = []
+        self._model_overrides: list[ModelOverride] = []
+
+    @property
+    def _selected_components(self) -> tuple[RegisteredComponent, ...]:
+        return self._components if self._scoped else self._board.components()
+
+    def parameter(
+        self, component: RegisteredComponent, name: str, *, value: float
+    ) -> None:
+        """Set one numeric model corner for this check; nominal facts stay intact."""
+        self._ensure_open()
+        if not any(known is component for known in self._selected_components):
+            raise ValueError("parameter corner needs a selected component")
+        model = component.simulation_model()
+        parameter = (
+            next(
+                (parameter for parameter in model.parameters if parameter.name == name),
+                None,
+            )
+            if model
+            else None
+        )
+        if parameter is None:
+            raise ValueError(f"{component.reference}: unknown model parameter {name}")
+        if any(
+            override.reference == component.reference
+            and override.parameter.name == name
+            for override in self._model_overrides
+        ):
+            raise ValueError("duplicate model parameter corner")
+        self._model_overrides.append(
+            ModelOverride(
+                component.reference, ModelParameter(name, value, parameter.unit)
+            )
+        )
+
+    def drive_state(
+        self,
+        component: RegisteredComponent,
+        *,
+        initial: bool,
+        changes: tuple[StateChange, ...] = (),
+    ) -> None:
+        """Apply physical on/off events to a selected component's model."""
+        self._ensure_open()
+        if not any(known is component for known in self._selected_components):
+            raise ValueError("state stimulus needs a selected component")
+        if any(state.reference == component.reference for state in self._states):
+            raise ValueError("duplicate component state stimulus")
+        model = component.simulation_model()
+        if model is None or model.key not in {"open_drain_sensor", "button_contact"}:
+            raise ValueError("component model does not support on/off stimuli")
+        self._states.append(ComponentState(component.reference, initial, changes))
 
     def __enter__(self) -> Self:
         """Allow a readable ``with board.check(...) as check`` block."""
@@ -85,15 +157,18 @@ class CircuitCheck[BoardNet: Net]:
         *,
         volts: float,
         ac_volts: float | None = None,
+        output_resistance_ohms: float = 0.0,
     ) -> VoltageSource:
-        """Drive a fixed voltage between two board nets for this check."""
+        """Drive a fixed voltage, optionally through a declared source resistance."""
         self._ensure_open()
         if (
             type(positive) is not self._board.net_type
             or type(negative) is not self._board.net_type
         ):
             raise ValueError("supply must use the board Net enum")
-        source = VoltageSource(name, positive, negative, DcVoltage(volts), ac_volts)
+        source = VoltageSource(
+            name, positive, negative, DcVoltage(volts), ac_volts, output_resistance_ohms
+        )
         self._sources.append(source)
         return source
 
@@ -110,7 +185,7 @@ class CircuitCheck[BoardNet: Net]:
         fall_seconds: float,
         high_seconds: float,
         period_seconds: float,
-    ) -> None:
+    ) -> VoltageSource:
         """Drive a repeating low-to-high voltage for a time-domain check."""
         self._ensure_open()
         if (
@@ -127,7 +202,9 @@ class CircuitCheck[BoardNet: Net]:
             high_seconds,
             period_seconds,
         )
-        self._sources.append(VoltageSource(name, positive, negative, waveform))
+        source = VoltageSource(name, positive, negative, waveform)
+        self._sources.append(source)
+        return source
 
     def inject_current(
         self, name: str, from_net: BoardNet, to_net: BoardNet, *, amperes: float
@@ -148,10 +225,11 @@ class CircuitCheck[BoardNet: Net]:
         *,
         between: tuple[float, float],
         because: str,
+        at_seconds: float | None = None,
     ) -> None:
         """Require one component pin's ground-relative voltage in a pass band."""
         self._ensure_open()
-        if not any(known is component for known in self._board.components()):
+        if not any(known is component for known in self._selected_components):
             raise ValueError("voltage check needs a component on this board")
         if not isinstance(pin, component.definition.pin_type):
             raise ValueError("voltage check pin must belong to the component kind")
@@ -161,6 +239,7 @@ class CircuitCheck[BoardNet: Net]:
             self._observation(),
             Limit(*between),
             because,
+            at_seconds,
         )
         self._expectations.append((component.reference, requirement))
 
@@ -202,6 +281,7 @@ class CircuitCheck[BoardNet: Net]:
         *,
         between: tuple[float, float],
         because: str,
+        at_seconds: float | None = None,
     ) -> None:
         """Require the total signed current through this check's voltage supply.
 
@@ -217,6 +297,7 @@ class CircuitCheck[BoardNet: Net]:
             self._observation(),
             Limit(*between),
             because,
+            at_seconds,
         )
         self._expectations.append((None, requirement))
 
@@ -242,6 +323,22 @@ class CircuitCheck[BoardNet: Net]:
         """Register one complete simulation setup and its assertions."""
         if not self._expectations:
             raise ValueError("electrical check needs at least one expectation")
+        for state in self._states:
+            if state.changes and (
+                not isinstance(self._analysis, Transient)
+                or state.changes[-1].seconds > self._analysis.duration_seconds
+            ):
+                raise ValueError(
+                    "state changes need a transient and must fit its duration"
+                )
+        for _, requirement in self._expectations:
+            if requirement.at_seconds is not None and (
+                not isinstance(self._analysis, Transient)
+                or requirement.at_seconds > self._analysis.duration_seconds
+            ):
+                raise ValueError(
+                    "sample time needs a transient and must fit its duration"
+                )
         SpiceScenario(
             self._board,
             self._name,
@@ -249,6 +346,13 @@ class CircuitCheck[BoardNet: Net]:
             self._ground,
             self._analysis,
             tuple(self._sources),
+            component_references=tuple(
+                part.reference for part in self._selected_components
+            )
+            if self._scoped
+            else None,
+            states=tuple(self._states),
+            model_overrides=tuple(self._model_overrides),
         )
         for reference, requirement in self._expectations:
             if reference is None:

@@ -26,6 +26,17 @@ from .base.pcbnew import (
     Trace,
     Via,
 )
+from .base.pcbnew.escape import EscapeAxis, PackageRouting
+from .base.pcbnew.package_copper import PackageClearance, PackagePath, PackageVia
+from .base.pcbnew.routing.definition import (
+    Bend,
+    CopperPath,
+    DirectLink,
+    NetRoute,
+    PinLaunch,
+    RouteStage,
+    RoutingPlan,
+)
 from .base.product import Product
 from .base.registry import BoardRegistry
 from .base.spice import (
@@ -47,39 +58,53 @@ from .base.spice import (
     VoltageSource,
 )
 from .base.spice.render import render_deck, run_deck, write_deck
+from .base.spice.state import StateChange
 
 __all__ = (
     "AcSweep",
+    "Bend",
     "BoardComponent",
     "BoardOutline",
     "BoardRegistry",
     "Circuit",
     "ComponentDefinition",
     "CopperLayer",
+    "CopperPath",
     "Courtyard",
     "CurrentSource",
     "CurrentThrough",
     "DcVoltage",
+    "DirectLink",
     "Endpoint",
+    "EscapeAxis",
     "LandPattern",
     "Limit",
     "ModelParameter",
     "Net",
     "NetConnection",
+    "NetRoute",
     "NoConnect",
     "Observation",
     "OperatingPoint",
+    "PackageClearance",
+    "PackagePath",
+    "PackageRouting",
+    "PackageVia",
     "Pad",
     "PadKind",
     "PadShape",
+    "PinLaunch",
     "Placement",
     "Point",
     "Product",
     "PulseVoltage",
+    "RouteStage",
+    "RoutingPlan",
     "Side",
     "SpiceModel",
     "SpiceRequirement",
     "SpiceScenario",
+    "StateChange",
     "Trace",
     "Transient",
     "Via",

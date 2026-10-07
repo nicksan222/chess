@@ -42,6 +42,13 @@ def render_source(source: Source, nodes: NodeMap) -> str:
             value = "PULSE(" + " ".join(spice_number(number) for number in values) + ")"
         else:
             raise ValueError(f"{source.name}: unsupported voltage waveform")
+        if source.output_resistance_ohms:
+            internal = f"source_{source.name}"
+            return (
+                f"{source.name} {internal} {negative} {value}\n"
+                f"Rsource_{source.name} {internal} {positive} "
+                f"{spice_number(source.output_resistance_ohms)}"
+            )
         return f"{source.name} {positive} {negative} {value}"
     if isinstance(cast(object, source), CurrentSource):
         if not re.fullmatch(r"I[A-Za-z0-9_]+", source.name):

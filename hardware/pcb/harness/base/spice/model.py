@@ -61,3 +61,11 @@ class SpiceModel:
         names = [parameter.name for parameter in self.parameters]
         if len(set(names)) != len(names):
             raise ValueError("SPICE model parameter names must be unique")
+
+
+@dataclass(frozen=True, slots=True)
+class ModelOverride:
+    """One scenario's documented parameter corner, without changing the part."""
+
+    reference: str
+    parameter: ModelParameter

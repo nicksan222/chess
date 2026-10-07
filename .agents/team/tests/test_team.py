@@ -485,7 +485,7 @@ class LauncherTests(unittest.TestCase):
             "eight TCA9554",
             "hand-maintained Pi pin",
             "bench measurements",
-            "definition/evidence/",
+            "board/evidence/",
         ):
             self.assertIn(requirement, brief)
         argv = self.fleet.herdr_command.call_args.args

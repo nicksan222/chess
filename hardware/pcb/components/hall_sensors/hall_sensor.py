@@ -1,7 +1,7 @@
 """20 Hz omnipolar active-low Hall-effect sensor (DRV5032FCDBZR).
 
 Package geometry follows the reviewed production definition for HALL_SENSOR.
-Electrical simulation is unavailable unless a model is explicitly declared.
+The declared model is an ideal occupancy-controlled open-drain output.
 """
 
 from pcb.harness import (
@@ -10,13 +10,16 @@ from pcb.harness import (
     ComponentDefinition,
     Courtyard,
     LandPattern,
+    ModelParameter,
     Net,
     NoConnect,
+    PackageRouting,
     Pad,
     PadShape,
     Placement,
     Point,
     Product,
+    SpiceModel,
 )
 from shared.components import HALL_SENSOR
 from shared.electronics.hall_sensor import HallSensorPin
@@ -32,6 +35,17 @@ HALL_SENSOR_DEFINITION = ComponentDefinition(
     ),
     pin_type=HallSensorPin,
     courtyard=Courtyard(3.9, 3.3),
+    routing=PackageRouting(signal_mm=3.0),
+    # DRV5032 SLVSDC7H §6.5: VOL <= 0.3 V at 1 mA, IOZ <= 100 nA.
+    # Occupancy is an ideal physical stimulus; this does not model magnet margin.
+    spice_model=SpiceModel(
+        "open_drain_sensor",
+        (HallSensorPin.ACTIVE_LOW_OUTPUT, HallSensorPin.SUPPLY, HallSensorPin.GROUND),
+        (
+            ModelParameter("on_resistance", 300, "ohm"),
+            ModelParameter("off_leakage", 100e-9, "ampere"),
+        ),
+    ),
     land_pattern=LandPattern(
         HallSensorPin,
         (

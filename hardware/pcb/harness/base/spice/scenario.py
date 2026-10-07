@@ -9,7 +9,9 @@ from typing import TYPE_CHECKING, cast
 
 from ..net import Net
 from .analysis import AcSweep, Analysis, OperatingPoint, Transient
+from .model import ModelOverride
 from .source import Source
+from .state import ComponentState
 
 if TYPE_CHECKING:
     from ..registry import BoardRegistry
@@ -35,6 +37,9 @@ class SpiceScenario:
     analysis: Analysis
     sources: tuple[Source, ...]
     temperature_celsius: float = 25.0
+    component_references: tuple[str, ...] | None = None
+    states: tuple[ComponentState, ...] = ()
+    model_overrides: tuple[ModelOverride, ...] = ()
 
     def __post_init__(self) -> None:
         """Reject ambiguous setup before it enters the board's scenario list."""

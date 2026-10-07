@@ -1,7 +1,7 @@
 """8-bit I2C GPIO expander with input pull-ups (TCA9554DWR).
 
 Package geometry follows the reviewed production definition for TCA9554.
-Electrical simulation is unavailable unless a model is explicitly declared.
+The declared model covers the eight pulled-up sensing inputs.
 """
 
 from pcb.harness import (
@@ -9,14 +9,18 @@ from pcb.harness import (
     BoardRegistry,
     ComponentDefinition,
     Courtyard,
+    EscapeAxis,
     LandPattern,
+    ModelParameter,
     Net,
     NoConnect,
+    PackageRouting,
     Pad,
     PadShape,
     Placement,
     Point,
     Product,
+    SpiceModel,
 )
 from shared.components import TCA9554
 from shared.electronics.tca9554 import Tca9554Pin
@@ -32,6 +36,37 @@ TCA9554_DEFINITION = ComponentDefinition(
     ),
     pin_type=Tca9554Pin,
     courtyard=Courtyard(11.8, 11.0),
+    routing=PackageRouting(
+        signal_axis=EscapeAxis.HORIZONTAL,
+        signal_by_pin=tuple((str(pin), 2.0 + (int(pin) - 1) % 4) for pin in Tca9554Pin),
+        power_axis=EscapeAxis.HORIZONTAL,
+        power_by_pin=tuple(
+            (str(pin), 0.0 if str(pin) in ("8", "16") else 2.0 + (int(pin) - 1) % 4)
+            for pin in Tca9554Pin
+        ),
+    ),
+    # TCA9554 SCPS233E §8.3: typical input pull-up 100 kOhm;
+    # §6.5: high input leakage <= 1 uA. This is the input sensing model,
+    # not an I2C protocol or output-driver model.
+    spice_model=SpiceModel(
+        "input_pullup_bank",
+        (
+            Tca9554Pin.SUPPLY,
+            Tca9554Pin.GROUND,
+            Tca9554Pin.P0,
+            Tca9554Pin.P1,
+            Tca9554Pin.P2,
+            Tca9554Pin.P3,
+            Tca9554Pin.P4,
+            Tca9554Pin.P5,
+            Tca9554Pin.P6,
+            Tca9554Pin.P7,
+        ),
+        (
+            ModelParameter("pullup_resistance", 100e3, "ohm"),
+            ModelParameter("input_leakage", 1e-6, "ampere"),
+        ),
+    ),
     land_pattern=LandPattern(
         Tca9554Pin,
         (

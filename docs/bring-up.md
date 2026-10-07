@@ -4,7 +4,7 @@
 
 This is the ordered first-article checklist for the D-PROTOTYPE board. Each step names
 what to do, the pass threshold, and which `ASSUMPTIONS` entry it closes
-(`hardware/pcb/definition/verification.py`, plus `CAD …` entries from
+(`docs/pcb-assumptions.md`, plus `CAD …` entries from
 `hardware/shared/dimensions/unverified.py`). Electrical figures come from
 [power](power.md) and are datasheet, calculated or simulated values, not measurements.
 
@@ -14,7 +14,7 @@ Rules:
 - Record the instrument, the value, the board serial and the date.
 - Never write a value that was not measured.
 - A threshold marked TBD has no owner value yet, and that step cannot pass.
-- Only measured results, with provenance, go into `hardware/pcb/definition/evidence/`.
+- Only measured results, with provenance, go into `hardware/pcb/board/evidence/`.
 
 Probe points:
 

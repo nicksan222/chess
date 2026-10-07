@@ -20,6 +20,7 @@ from ...connections import NetConnection
 from ...net import Net
 from .footprint import render_footprint
 from .identity import normalize_board_uuids
+from .layout import configure_board, render_layout
 from .outline import render_outline
 from .route import render_trace, render_via
 
@@ -76,7 +77,28 @@ def render_board[BoardNet: Net](circuit: Circuit[BoardNet]) -> pcbnew.BOARD:
             or abs(route.center.y_mm) + radius > outline.height_mm / 2
         ):
             raise ValueError("via copper exceeds board edge")
+    from ..route import CopperLayer
+
+    inner_layers = (
+        CopperLayer.INNER_1,
+        CopperLayer.INNER_2,
+        CopperLayer.INNER_3,
+        CopperLayer.INNER_4,
+        CopperLayer.INNER_5,
+        CopperLayer.INNER_6,
+    )
+    available = {
+        CopperLayer.TOP,
+        CopperLayer.BOTTOM,
+        *inner_layers[: circuit.layout.copper_layers - 2],
+    }
+    if any(route.layer not in available for route in circuit.traces()) or any(
+        plane.layer not in available or type(plane.net) is not circuit.net_type
+        for plane in circuit.layout.planes
+    ):
+        raise ValueError("copper must use the board's enabled layers and typed nets")
     board = pcbnew.BOARD()
+    configure_board(board, circuit.layout)
     render_outline(board, outline)
     nets: dict[str, pcbnew.NETINFO_ITEM] = {}
     for name in sorted(declared, key=lambda item: item.label):
@@ -91,6 +113,7 @@ def render_board[BoardNet: Net](circuit: Circuit[BoardNet]) -> pcbnew.BOARD:
         render_via(board, route, outline, nets[route.net.label])
     from pcb.harness.checks.pcbnew.board import validate_board
 
+    render_layout(board, circuit.layout, outline)
     validate_board(circuit, board)
     return board
 

@@ -9,9 +9,11 @@ from pcb.harness import (
     BoardRegistry,
     ComponentDefinition,
     Courtyard,
+    EscapeAxis,
     LandPattern,
     Net,
     NoConnect,
+    PackageRouting,
     Pad,
     PadShape,
     Placement,
@@ -32,6 +34,9 @@ LED_ENABLE_GATE_DEFINITION = ComponentDefinition(
     ),
     pin_type=LogicGatePin,
     courtyard=Courtyard(4.2, 3.55),
+    routing=PackageRouting(
+        power_axis=EscapeAxis.HORIZONTAL, power_by_pin=(("2", 2.4),)
+    ),
     land_pattern=LandPattern(
         LogicGatePin,
         (

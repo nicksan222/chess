@@ -1,7 +1,7 @@
 """6 mm tactile switch, Ø3.5 mm round stem, 8.0 mm overall (TL1105CF100Q).
 
 Package geometry follows the reviewed production definition for BUTTON.
-Electrical simulation is unavailable unless a model is explicitly declared.
+Simulation uses an ideal normally open contact, not a mechanical bounce model.
 """
 
 from pcb.harness import (
@@ -10,6 +10,7 @@ from pcb.harness import (
     ComponentDefinition,
     Courtyard,
     LandPattern,
+    ModelParameter,
     Net,
     NoConnect,
     Pad,
@@ -18,6 +19,7 @@ from pcb.harness import (
     Placement,
     Point,
     Product,
+    SpiceModel,
 )
 from shared.components import BUTTON
 from shared.electronics.tactile_switch import TactileSwitchPin
@@ -33,6 +35,11 @@ BUTTON_DEFINITION = ComponentDefinition(
     ),
     pin_type=TactileSwitchPin,
     courtyard=Courtyard(8.8, 6.8),
+    spice_model=SpiceModel(
+        "button_contact",
+        (TactileSwitchPin.SIGNAL, TactileSwitchPin.GROUND),
+        (ModelParameter("on_resistance", 0.1, "ohm"),),
+    ),
     land_pattern=LandPattern(
         TactileSwitchPin,
         (

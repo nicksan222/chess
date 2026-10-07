@@ -1,9 +1,8 @@
-"""Completeness and native parity against the production board contract."""
+"""Concrete catalog completeness against the authoritative purchasing contract."""
 
 import unittest
 
 from pcb.components.catalog import ASSEMBLY_PRODUCTS, PCB_DEFINITIONS
-from pcb.definition.parts.catalog import PCB_PARTS
 from shared.components import COMPONENTS
 
 
@@ -20,6 +19,3 @@ class CatalogTest(unittest.TestCase):
             if not key.startswith(("POWER_HARNESS_WIRE_", "OLED_HARNESS_WIRE_"))
         }
         self.assertEqual(set(keys), component_keys)
-        self.assertEqual(
-            {definition.product.key for definition in PCB_DEFINITIONS}, set(PCB_PARTS)
-        )

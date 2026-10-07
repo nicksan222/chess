@@ -17,7 +17,7 @@ from shared.components.cap_100n import CAP_100N
 # Match the production board's Murata JEMCGC-2701X p25 Table 2 reflow land:
 # 0.65 x 0.7 mm pads with a 0.7 mm gap and 0.25 mm courtyard margin.
 # Using Murata's land for this Yageo part remains an existing unverified
-# assumption in definition/verification.py; no Yageo land drawing is on file.
+# assumption in docs/pcb-assumptions.md; no Yageo land drawing is on file.
 CAP_100N_DEFINITION = ComponentDefinition(
     product=Product(
         key=CAP_100N.key,

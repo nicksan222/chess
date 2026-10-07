@@ -59,6 +59,15 @@ def render_measurement(
     else:
         raise ValueError("unsupported measurement kind")
     observation = requirement.observation
+    if requirement.at_seconds is not None:
+        if (
+            not isinstance(analysis, Transient)
+            or requirement.at_seconds > analysis.duration_seconds
+        ):
+            raise ValueError(
+                "sample time needs a transient and must be within its duration"
+            )
+        return f"meas tran {name} FIND {expression} AT={spice_number(requirement.at_seconds)}"
     if isinstance(analysis, OperatingPoint):
         # An operating point has a single solved value, not a time or frequency
         # series from which a minimum, maximum, or final sample could be chosen.

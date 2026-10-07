@@ -74,8 +74,16 @@ def stable_uuid_map(board: pcbnew.BOARD) -> dict[str, str]:
     for drawing in board.GetDrawings():
         if isinstance(drawing, pcbnew.PCB_SHAPE):
             add(drawing, segment_key(drawing, pcbnew.VECTOR2I(0, 0)))
+        elif isinstance(drawing, pcbnew.PCB_TEXT):
+            point = drawing.GetPosition()
+            add(
+                drawing,
+                f"text:{drawing.GetLayer()}:{drawing.GetText()}:{point.x}:{point.y}",
+            )
         else:
             raise ValueError("unsupported board drawing for stable identity")
+    for zone in board.Zones():
+        add(zone, f"plane:{zone.GetNetname()}:{zone.GetLayer()}")
     return identities
 
 

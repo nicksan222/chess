@@ -8,16 +8,19 @@ validate.
 
 from __future__ import annotations
 
+import math
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import StrEnum
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Protocol, cast
 
 from .connections import Endpoint, NetConnection, NoConnect, PinConnection
-from .geometry import Courtyard, Placement
+from .geometry import Courtyard, Placement, Side
 from .net import Net
+from .pcbnew.escape import PackageRouting
 from .pcbnew.land_pattern import LandPattern
+from .pcbnew.point import Point
 from .product import Product
 from .spice.measurement import SpiceRequirement
 from .spice.model import SpiceModel
@@ -46,6 +49,7 @@ class ComponentDefinition[Pin: StrEnum]:
     courtyard: Courtyard
     spice_model: SpiceModel | None = None
     land_pattern: LandPattern[Pin] | None = None
+    routing: PackageRouting = field(default_factory=PackageRouting)
 
     def __post_init__(self) -> None:
         """Reject empty pinouts and simulation terminals from another kind."""
@@ -60,6 +64,11 @@ class ComponentDefinition[Pin: StrEnum]:
             or self.product.body_mm[1] > self.courtyard.height_mm
         ):
             raise ValueError("product body must fit inside its courtyard")
+        if any(
+            not isinstance(path.pin, self.pin_type)
+            for path in (*self.routing.paths, *self.routing.vias)
+        ):
+            raise ValueError("package paths must use component pins")
         if self.spice_model is not None and any(
             not isinstance(pin, self.pin_type) for pin in self.spice_model.terminals
         ):
@@ -147,6 +156,64 @@ class BoardComponent[Pin: StrEnum]:
                 raise ValueError(f"{self.reference}: invalid pin connection")
         object.__setattr__(self, "pins", MappingProxyType(normalized))
         self.registry.register_component(self)
+
+    def local_point(self, x_mm: float, y_mm: float) -> Point:
+        """Transform package geometry through this instance's side and rotation."""
+        placement = self.placement
+        angle = math.radians(placement.rotation_degrees)
+        if placement.side is Side.BOTTOM:
+            x_mm = -x_mm
+            angle = -angle
+        cosine, sine = math.cos(angle), math.sin(angle)
+        return Point(
+            placement.x_mm + x_mm * cosine - y_mm * sine,
+            placement.y_mm + x_mm * sine + y_mm * cosine,
+        )
+
+    def pin_position(self, pin: Pin) -> Point:
+        """Position of a logical pin's primary physical pad in board coordinates."""
+        self.endpoint(pin)
+        pattern = self.definition.land_pattern
+        if pattern is None:
+            raise ValueError("pin position requires a land pattern")
+        pads = sorted(
+            (pad for pad in pattern.pads if pad.pin == pin),
+            key=lambda pad: (pad.physical_number != str(pin), pad.physical_number),
+        )
+        point = pads[0].center
+        if pattern.board_top_view and self.placement.side is Side.BOTTOM:
+            angle = math.radians(self.placement.rotation_degrees)
+            return Point(
+                self.placement.x_mm
+                + point.x_mm * math.cos(angle)
+                - point.y_mm * math.sin(angle),
+                self.placement.y_mm
+                + point.x_mm * math.sin(angle)
+                + point.y_mm * math.cos(angle),
+            )
+        return self.local_point(point.x_mm, point.y_mm)
+
+    def port(self, name: str) -> Point:
+        """A package-defined routing junction transformed with its placement."""
+        try:
+            point = dict(self.definition.routing.ports)[name]
+        except KeyError as error:
+            raise ValueError(f"unknown package port: {name}") from error
+        return self.local_point(point.x_mm, point.y_mm)
+
+    def endpoint(self, pin: Pin) -> Endpoint:
+        """Select this instance's named physical contact as a routing anchor."""
+        if not isinstance(pin, self.definition.pin_type):
+            raise ValueError("pin must belong to this component")
+        return Endpoint(self.reference, str(pin))
+
+    def net(self, pin: Pin) -> Net:
+        """Read the connected net from this instance's authoritative pin map."""
+        self.endpoint(pin)
+        connection = cast(PinConnection, self.pins[pin])
+        if not isinstance(connection, NetConnection):
+            raise ValueError(f"{self.reference}/{pin} is intentionally unconnected")
+        return connection.net
 
     def pin_connections(self) -> tuple[tuple[Endpoint, PinConnection], ...]:
         """Return the one authoritative assignment of every numbered pin.

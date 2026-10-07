@@ -12,6 +12,7 @@ from pcb.harness import (
     LandPattern,
     Net,
     NoConnect,
+    PackageRouting,
     Pad,
     PadShape,
     Placement,
@@ -32,6 +33,7 @@ TVS_12V0_DEFINITION = ComponentDefinition(
     ),
     pin_type=TvsDiodePin,
     courtyard=Courtyard(7.12, 4.099998),
+    routing=PackageRouting(power_width_mm=1.0, power_via_count=3),
     land_pattern=LandPattern(
         TvsDiodePin,
         (

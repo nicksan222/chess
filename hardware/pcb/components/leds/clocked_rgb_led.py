@@ -9,9 +9,11 @@ from pcb.harness import (
     BoardRegistry,
     ComponentDefinition,
     Courtyard,
+    EscapeAxis,
     LandPattern,
     Net,
     NoConnect,
+    PackageRouting,
     Pad,
     PadShape,
     Placement,
@@ -32,6 +34,7 @@ SK9822_DEFINITION = ComponentDefinition(
     ),
     pin_type=Sk9822Pin,
     courtyard=Courtyard(7.5, 5.5),
+    routing=PackageRouting(power_mm=1.25, power_axis=EscapeAxis.VERTICAL),
     land_pattern=LandPattern(
         Sk9822Pin,
         (

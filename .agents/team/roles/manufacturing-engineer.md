@@ -1,7 +1,7 @@
 # Manufacturing engineer — DFM, sourcing and prototype evidence (on demand)
 
 Read `hardware/pcb/README.md`, `hardware/cad/README.md`, `docs/fabrication.md`,
-`docs/assembly.md`, `docs/power.md` and `hardware/pcb/definition/evidence/` before work.
+`docs/assembly.md`, `docs/power.md` and `hardware/pcb/board/evidence/` before work.
 Check current component/dimension/rule sources; generated BOM and layout are evidence
 for that build, not authoring inputs or proof of physical correctness.
 

@@ -19,7 +19,6 @@ There are three distinct suites:
 | Catalog completeness and uniqueness | `test_catalog.py` | All PCB definitions and assembly products against the authoritative shared catalog |
 | Datasheet coverage and availability | `test_datasheets.py` | Every purchasing product, including wire spools, and every PCB product reference |
 | Native pad coverage, net assignments, closed courtyards, copper containment and save/reload preservation | `pcbnew/test_components.py` | Every PCB definition rendered and reopened on both sides at 0°, 90°, 180° and 270° |
-| Copper shape, pad dimensions, drills, mask and thermal parity | `pcbnew/test_production_parity.py` | Every PCB definition against the production part being replaced |
 
 `catalog.py` is the board-specific adapter. Reusable checks take explicit inputs:
 `datasheets.check_all(references)` checks unique URLs once;
@@ -29,11 +28,22 @@ returning or saving a board. Registry validation also checks declared courtyard
 overlap, board-edge containment, complete pin assignments and explicit peer
 connections. An intentional unused pin must have an explained `NoConnect`.
 
+During generation, `pcbnew.netlist.apply_netlist` compares KiCad’s exported
+physical terminal map with the circuit, including repeated pads and intentional
+no-connects. A mismatch fails before any PCB edits. It then copies KiCad’s unused
+pin net names onto their PCB pads. `pcbnew.reports.check_schematic_parity` checks
+the saved project against KiCad’s DRC parity results before previews are exported.
+
+Board electrical scenarios were removed; new checks will use the harness. Generic behavioral-program
+execution and coverage reporting live in `harness/base/spice/render/`; their
+negative controls ensure missing measurements, exceeded limits and unavailable
+fixtures cannot pass silently. `pcbnew.routing.require_routed_copper` blocks
+models that need routes or filled planes when those inputs are absent.
+
 The catalog native sweep exercises each footprint in isolation. It checks that
 pads receive their declared nets; it cannot prove that traces connect pads on a
 complete routed board. Production KiCad DRC remains the gate for unrouted pads
-and copper clearances. The parity check is transitional and remains until the
-whole-board migration has equivalent regression coverage.
+and copper clearances. The previous-implementation parity test was removed with that implementation.
 
 Harness negative controls deliberately remove or duplicate footprints, corrupt pad
 numbers and nets, connect an intentional no-connect, erase pad copper, move pads
@@ -61,7 +71,7 @@ just --justfile hardware/pcb/justfile check
 ```
 
 The first two commands need no external network. `component-checks` includes live
-documentation requests. `check` runs all three suites, lint/type checks and the
-existing production dimensions tests; review, CI and the commit gate use it too.
-Root `PYTHONPATH=hardware python3 -m unittest discover` also discovers all three
+documentation requests. `check` runs the three suites, board-specific tests from `board/tests/`, lint/type checks and the
+composed board declaration; review, CI and the commit gate use it too.
+Root `PYTHONPATH=hardware python3 -m unittest discover` also discovers these
 suites once. The normal gate requires KiCad and ngspice from the devcontainer.

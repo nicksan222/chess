@@ -12,7 +12,7 @@ from typing import cast
 
 import pcbnew
 
-from pcb.harness import BoardComponent, BoardRegistry
+from pcb.harness import BoardComponent, BoardRegistry, Circuit, Net
 from pcb.harness.base.connections import NetConnection
 from pcb.harness.base.geometry import Side
 
@@ -23,8 +23,25 @@ def validate_board(circuit: BoardRegistry, board: pcbnew.BOARD) -> None:
     footprints = list(board.GetFootprints())
     native = {footprint.GetReference(): footprint for footprint in footprints}
     declared = {component.reference for component in circuit.components()}
-    if len(native) != len(footprints) or set(native) != declared:
+    holes = (
+        cast(Circuit[Net], circuit).layout.holes if isinstance(circuit, Circuit) else ()
+    )
+    hole_references = {hole.reference for hole in holes}
+    if len(native) != len(footprints) or set(native) != declared | hole_references:
         raise ValueError("native footprints must match the circuit registry exactly")
+    for hole in holes:
+        footprint = native[hole.reference]
+        pads = list(footprint.Pads())
+        if (
+            len(pads) != 1
+            or pads[0].GetAttribute() != pcbnew.PAD_ATTRIB_NPTH
+            or pads[0].GetNetCode()
+            or pads[0].GetDrillSize().x != pcbnew.FromMM(hole.diameter_mm)
+            or not footprint.IsExcludedFromBOM()
+        ):
+            raise ValueError(
+                f"{hole.reference}: native mounting hole differs from declaration"
+            )
     for component in circuit.components():
         if not isinstance(component, BoardComponent):
             raise ValueError("native checks require BoardComponent instances")

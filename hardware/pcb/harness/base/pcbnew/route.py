@@ -19,10 +19,16 @@ from .point import Point
 
 
 class CopperLayer(StrEnum):
-    """The top and bottom outer copper faces available to route declarations."""
+    """Outer copper faces and up to six explicitly enabled inner layers."""
 
     TOP = "top"
     BOTTOM = "bottom"
+    INNER_1 = "inner_1"
+    INNER_2 = "inner_2"
+    INNER_3 = "inner_3"
+    INNER_4 = "inner_4"
+    INNER_5 = "inner_5"
+    INNER_6 = "inner_6"
 
 
 @dataclass(frozen=True, slots=True)
@@ -30,7 +36,7 @@ class Trace[BoardNet: Net]:
     """One straight copper segment for an electrical net on one board face.
 
     The start and end are board-centred coordinates in millimetres. The layer
-    selects the top or bottom outer copper face, and ``width_mm`` is the copper
+    selects one enabled copper layer, and ``width_mm`` is the copper
     track width. This describes exactly one straight segment; it does not route
     around obstacles or create connections at either end. A native board
     renderer can draw it, while connectivity and clearance checks must inspect

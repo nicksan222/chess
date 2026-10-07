@@ -11,6 +11,10 @@ and `drain`, then assigns all three internally joined source pins and all four
 drain pins itself. Callers do not write a separate pin map or wiring layer.
 References, purposes and placements belong to each instance; purchased part
 numbers, values and land patterns are fixed by its component file.
+`PackageRouting` beside the land pattern defines package escape distances,
+directions, power fanout, exact package paths and scoped clearance rules.
+Named package ports expose where board wiring resumes after an escape. The
+harness transforms this geometry through each instance’s placement and rotation.
 
 `catalog.py` explicitly lists all 29 PCB declarations and 12 off-board assembly
 products, including the Raspberry Pi Zero 2 W, display, supply and microSD card.
@@ -19,54 +23,27 @@ inventing PCB lands or unknown terminal order. Wire spools and harness assembly
 instructions remain in the authoritative shared purchasing and harness contracts;
 they are not component wrappers here.
 
-Shared products and pin identities remain authoritative. The existing production
-board generator still uses `definition/parts`; its migration is separate. The harness-owned
-catalog checks compare native copper and pad process settings against those parts.
-The Pi socket's courtyard includes the shared body envelope, oriented along its
-40-pin land pattern. Capacitor land assumptions remain unverified as documented
-in `definition/verification.py`.
+Shared products and pin identities remain authoritative. `board/board.py`
+composes these components using the harness; component and automatic catalog
+checks no longer depend on the removed implementation. The Pi socket's courtyard
+includes the shared body envelope. Capacitor land assumptions remain unverified
+as documented in `docs/pcb-assumptions.md`.
 
-Resistors and ceramic capacitors use the harness's ideal simulation models. The
-polarized bulk capacitor has an ideal capacitance model only. Other components
-have no simulation model: requesting SPICE for them fails explicitly.
+Resistors and capacitors have ideal simulation models. Hall sensors have an ideal
+occupancy-controlled open-drain model; GPIO expanders model their pulled-up
+sensing inputs. These do not model magnetic margins or I2C protocol behavior.
+Other unsupported components reject simulation explicitly.
 
-Run `PYTHONPATH=hardware python3 -m unittest discover -s hardware/pcb/components
--p '*_test.py' -t hardware`, or use the PCB package's `check` recipe.
+Harness behavior tests live beside their implementation. Component-specific
+checks live beside definitions; automatic catalog and native KiCad checks live
+in [harness/checks/](../harness/checks/README.md). Datasheet checks require network
+access and reject missing or unavailable documentation URLs.
 
-## Automatic checks
+## Current status
 
-Checks applying to all components live in
-[`../harness/checks/`](../harness/checks/README.md), including its dedicated
-`pcbnew/` suite. This folder keeps the transparent definitions and their specific
-pin-map/value/geometry tests. The normal PCB gate runs both suites, and new catalog
-entries automatically receive the common checks.
-
-All approved products now have documentation URLs, including the wire spools in
-the shared purchasing catalog. Missing URLs and unavailable documents fail the
-automatic documentation gate. Run `just --justfile hardware/pcb/justfile datasheets`
-for an audit; it performs real GET requests and therefore needs network access.
-URLs come from the authoritative shared product records, so a repaired link is not
-copied into every component definition. The [availability audit](datasheet-audit.md)
-records the checked URLs and document revision limitations.
-
-## Migration status
-
-All 29 PCB part kinds and 12 off-board products have concrete declarations here.
-The production board is **not migrated**: `definition/board.py` still composes the
-legacy assemblies and `build.py` routes and exports that native design.
-
-Remaining work:
-
-- Express the full board's instances, placements and inter-component connections
-  as a harness circuit, including squares, Hall banks, LED chain and controls.
-- Preserve the production layer stack, zones, mechanical features, design rules,
-  footprint fields, fabrication markings and routing behavior in the new path.
-- Connect the new design to schematic/BOM/netlist output, native ERC/DRC,
-  existing board/SPICE regressions and release evidence gates; compare the full
-  generated design before retiring the legacy part and assembly implementations.
-- Add appropriate active-device simulation models where useful. Currently only
-  passive ideal models are available; off-board classes describe product facts
-  and interfaces, not a connected assembly simulation.
-- Reconcile document/product revisions. The OLED vendor document linked during the audit describes a
-  28x33 mm module while the shared product records 27x27 mm; geometry remains
-  unchanged pending reconciliation.
+All PCB component instances and their connections are composed by `Board`.
+KiCad project, schematic, BOM, netlist and previews are generated from it.
+Manufacturing reassessment, component 3D models, assembly
+outputs and electrical/physical validation still need implementation. The old
+board/test implementation has been removed; its unresolved engineering assumptions
+were retained for reassessment.

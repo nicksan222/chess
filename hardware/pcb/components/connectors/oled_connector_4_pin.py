@@ -12,6 +12,7 @@ from pcb.harness import (
     LandPattern,
     Net,
     NoConnect,
+    PackageRouting,
     Pad,
     PadShape,
     Placement,
@@ -32,6 +33,14 @@ OLED_HEADER_DEFINITION = ComponentDefinition(
     ),
     pin_type=OledHeaderPin,
     courtyard=Courtyard(7.3, 6.175),
+    routing=PackageRouting(
+        signal_by_pin=tuple(
+            (str(pin), 2.0 if int(pin) % 2 else 3.5) for pin in OledHeaderPin
+        ),
+        power_by_pin=tuple(
+            (str(pin), 0.4 if int(pin) % 2 else 2.9) for pin in OledHeaderPin
+        ),
+    ),
     land_pattern=LandPattern(
         OledHeaderPin,
         (
