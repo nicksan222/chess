@@ -18,47 +18,56 @@ permissions:
   packages: read
 
 jobs:
-  cad:
-    name: CAD
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: ./.github/actions/run-in-devcontainer
-        with:
-          image: ${{ inputs.image }}
-          command: just --justfile hardware/cad/justfile check
-      - uses: actions/upload-artifact@v7
-        if: ${{ !cancelled() }}
-        with:
-          name: cad-generated
-          path: hardware/cad/generated
-
-  pcb:
-    name: PCB
+  board:
+    name: PCB → CAD
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
+      - name: Prepare hardware container
+        uses: ./.github/actions/run-in-devcontainer
+        with:
+          image: ${{ inputs.image }}
+          command: "true"
       - name: Review PCB
+        id: pcb_review
         if: ${{ inputs.base-ref == '' }}
         uses: ./.github/actions/run-in-devcontainer
         with:
           image: ${{ inputs.image }}
+          prepare: "false"
           command: just --justfile hardware/pcb/justfile review
       - name: Review PCB and generate pull-request report
+        id: pcb_pr_review
         if: ${{ inputs.base-ref != '' }}
         uses: ./.github/actions/run-in-devcontainer
         with:
           image: ${{ inputs.image }}
+          prepare: "false"
           command: just --justfile hardware/pcb/justfile pr-report ${{ inputs.base-ref }}
-      - uses: actions/upload-artifact@v7
-        if: ${{ !cancelled() }}
+      - name: Check CAD using the reviewed PCB model
+        id: cad
+        uses: ./.github/actions/run-in-devcontainer
         with:
+          image: ${{ inputs.image }}
+          prepare: "false"
+          command: just --justfile hardware/cad/justfile check
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() && (steps.pcb_review.outcome == 'success' || steps.pcb_pr_review.outcome == 'success') }}
+        with:
+          if-no-files-found: error
           name: pcb-generated
           path: hardware/pcb/generated
       - uses: actions/upload-artifact@v7
-        if: ${{ !cancelled() && inputs.base-ref != '' }}
+        if: ${{ !cancelled() && steps.cad.outcome == 'success' }}
         with:
+          if-no-files-found: error
+          name: cad-generated
+          path: hardware/cad/generated
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() && steps.pcb_pr_review.outcome == 'success' }}
+        with:
+          if-no-files-found: error
           name: pcb-pr-report
           path: pcb-pr-report.md

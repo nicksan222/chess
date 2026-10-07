@@ -1,111 +1,141 @@
 # Mechanical design
 
-Blender is the source of truth for printable parts. Every project is generated
-from Python; derived manufacturing files are not source models.
+CAD follows the PCB domain: concrete components, one composed board, a reusable
+harness and generated output. Shared dimensions remain in `hardware/shared`.
 
-Revision B is **two printed parts**: an open-tub case that holds one PCB and
-the Raspberry Pi, and a single tile plate that covers the whole board, laying
-the checkerboard over the playing area and forming the control bezel over the
-strip. Revision A needed 129 prints to cover a board — 64 tile
-lids, 64 trays and a tray — and all of that is gone.
+```
+components/  one physical component per file; printable parts and electronics
+board/       Board definition, the single generate.py entry point, specific tests
+harness/     registry, Blender geometry/rendering, validation and automatic checks
+generated/   owning .blend models, assembly, PNGs and verification manifest
+```
 
-Both parts are larger than a desktop printer bed, so they are quoted from an FDM
-print service. `REFERENCE_DESKTOP_BUILD_VOLUME_MM` exists to state that fact
-rather than to gate anything.
+`board/board.py` owns the case, plate, imported PCB assembly, off-board host and
+OLED, rear jack, rocker, mating plug envelopes and all eight harness conductors. Repeated PCB parts remain individually selectable by square or control name:
+`board.sensors["A1"]`, `board.leds["H8"]`, `board.buttons["OK"]`.
+The PCB generator attaches package-local STEP models and exports `chess-board.glb`.
+Blender imports that file's substrate, holes, copper, artwork and component meshes;
+it does not rebuild PCB electronics. Component references survive as `PCB_SW1`,
+`PCB_SW1_Body`, etc. Package geometry and model fidelity belong to PCB definitions.
+Most models are explicitly dimension-based envelopes; the switch has its declared
+housing and actuator. Detailed supplier CAD and physical validation remain pending.
 
-Regenerate everything from the repository root with:
+Shared supplier dimensions, mounting interfaces and layout measurements remain
+readable source definitions. CAD uses them for enclosure fits and off-board
+parts; it does not infer these values from imported Blender mesh bounds.
+
+There are fourteen printed parts: twelve button caps plus the case and plate. `components/printable/board_case.py` owns the
+344 × 404 × 30 mm open case; `tile_plate.py` owns the 335 × 395 mm checkerboard
+and control bezel, including its raised screen and underside mounting ledges. Their cuts, supports, screw positions and assembly coordinates
+retain their positions. Each square has an 18 × 18 mm square ring channel,
+0.8 mm deep, surrounding a 14 × 14 mm island at the square's original surface
+height. A solid 19.6 × 19.6 mm underside support covers the Hall sensor and
+reinforces the channel floor. Future pieces use a matching square ring foot:
+17.5 mm outside, 14.5 mm inside, projecting 0.6 mm below the base. Both interfaces
+come from `shared/dimensions/tile_plate.py` and include clearance on both sides.
+
+Each LED has a 4.6 mm square through-window above its actual emitter position.
+Controls use a left D-pad, separate OK, a right function group (F1-F5 and PASS),
+and an isolated Reset. Positions and render legends read the same shared button
+identities used by the PCB and GPIO mapping; moving switches requires regenerating
+both PCB and CAD; CAD generation automatically refreshes a stale PCB export.
+
+The 60 mm control strip is recessed 1 mm. A 2.42-inch MC242GW monochrome OLED
+uses the same four-wire I²C interface and 128 × 64 graphics API. The module's
+supplied pin header is omitted: solder the harness directly, leaving RES open
+for the module's onboard reset circuit. Its screen sits above the panel in a
+bezel, with four carrier mounting ledges and blind screw pilots and four top access holes. Carrier, glass,
+mounting holes and underside envelopes follow the supplier drawing. Screw size,
+print tolerances and retention still require a physical prototype.
+
+Twelve separate printable caps fit the existing TL1105 switch stems. Their
+labels are recessed into the actual panel mesh. D-pad, OK, function buttons,
+PASS and RESET share their coordinates with the PCB and GPIO definitions.
+The four OLED conductors remain 180 mm long with dressing/service slack.
+Square faces and locating channels use charcoal and ivory presentation materials.
+The assembly imports those exact meshes rather than rebuilding
+them. Coordinates are centered on the playing area; PCB coordinates are translated
+once on the imported KiCad assembly, converting glTF metres to our millimetre scene.
+
+## Generate and check
 
 ```sh
-just --justfile hardware/cad/justfile generate
+just --justfile hardware/cad/justfile check-fast  # lint, types and Python tests
+just --justfile hardware/cad/justfile generate    # complete models and renders
+just --justfile hardware/cad/justfile check      # both
 ```
 
-## Layout
+`board/generate.py` checks PCB/shared source fingerprints, actual exporter versions,
+and hashes of the saved PCB, GLB and PCB-owned `pcb-components.json`. CAD source
+provenance includes its `justfile` and the shared `hardware/build_support.py` publisher.
+The selected Blender executable is queried directly and publication verifies that the
+worker recorded the same runtime version. Missing, altered or stale output triggers the full checked PCB pipeline.
+All expected component references must have meshes in the GLB. The current export,
+its `3d-models.json` fidelity/provenance report, and its validated metadata snapshot
+cross the host Python / Blender Python 3.11 boundary. Run inside the devcontainer,
+which supplies KiCad, CadQuery 2.6.1 for STEP generation, and Blender 4.5.
 
-This directory has the same shape as `hardware/pcb`: generated output
-in `generated/`, everything that produces it in a subdirectory.
+`just generate` and CI run PCB review before CAD, using the same checked export.
+The standalone CAD command refreshes that dependency only when needed. CI runs
+one sequential hardware job and retains separate successful PCB and CAD outputs.
 
-```
-generated/    .blend models and PNG renders, one set per project
-core/         dimensions, modeling, materials, presentation, validation
-blocks/       reusable groups of geometry
-projects/     one directory per model, each with generate.py
-tests/
-references/   inspiration and measurement references, not source
-```
+The generator builds the case, builds the plate, assembles their saved models,
+checks fit, renders the finished/open views and writes `manifest.json`. It publishes
+one complete artifact set atomically; a failed model, render, check or missing output
+leaves previous output untouched. Do not hand-edit generated files.
 
-Never edit anything in `generated/`; rerun the build instead. Generation uses a
-sibling staging directory and publishes the complete artifact set only after all
-projects succeed, so a failed model or render leaves the previous set untouched.
+Board-specific dimension/instance tests live in `board/tests`. Generic registry,
+publication and clearance checks live in `harness`, including negative regressions.
+Every build checks actual PCB body heights, connector mating envelopes, case/bay
+clearance, positive/manifold printable meshes, build volume and seated assembly fit.
+The fit manifest records measured mesh dimensions, volumes and intersection results.
+`board/tests/blender` runs inside the generation worker on the actual seated meshes,
+checking all 64 square seats and LED windows, the lowered strip, button protrusion,
+display sight line and render visibility. Electronics tests check actual positions,
+rotations, mounting sides and body dimensions of every PCB instance, plus the
+shared host/display dimensions, plus native PCB mounting holes and artwork.
+The importer welds coincident shading vertices without moving the surface and
+requires closed positive-volume solids before intersection checks. The worker saves
+the finished inspection view, reopens that exact `.blend`, and only then runs the
+native tests. Host pytest skips these native tests; every generation must run them
+without skips before it publishes.
 
-## Adding a project
+## Blender harness
 
-Add a directory under `projects/` with a `generate.py` that defines `build()`.
-The runner discovers it. A project may include a `generation-order` file
-containing a non-negative integer when it depends on another project's output;
-projects without one default to 100. Lower numbers run first.
+`harness/base/blender` owns mesh operations, materials, studio setup, saving and
+rendering. Boolean batches require disjoint cutters, and bevel radii must stay
+below half the thinnest dimension: these prevent silent invalid geometry.
+Materials are presentation choices rather than manufacturing specifications.
 
-A generator receives one output directory and writes `<NAME>.blend` plus one PNG
-per view, named `<project>.png` or `<project>-<view>.png`.
+The pinned Blender toolchain uses a private Xvfb display when available. The
+`setup` recipe can download a checksum-verified build into `.cache` outside the
+container; `BLENDER_BIN` selects an existing installation. Ruff and strict
+Basedpyright use Blender stubs; normal declarations and checks run without Blender.
 
-## Shared modules
+Both printed parts exceed desktop printer beds and are intended for an FDM service.
+Mesh checks do not prove shrinkage, supports, layer adhesion or physical operation.
+Calibrated prints and physical clearance review remain pending; generated models
+are review artifacts and do not constitute manufacturing approval.
 
-`../shared/dimensions/` owns measurements shared across projects, with one
-module per physical object. It derives the playing span from square size and grid count, derives
-the plate size from the board outline, and validates the vertical stack, the control
-panel layout, the board support positions and the plate fixings. Project READMEs
-describe intent rather than duplicating those values. Dimension tests run the
-same validation without Blender; the package's `generate` recipe then generates
-with it.
+The PCB generator owns the metadata snapshot as well as the meshes. CAD only
+copies and reads the checked bundle; it validates the copied files and retries
+once if concurrent PCB publication interrupts the copy. The frozen input GLB is
+retained with the CAD outputs so the assembly can be reviewed independently.
+`manifest.json` fingerprints CAD/shared source inputs and hashes every output,
+including the snapshot. Atomic publication rejects missing or altered artifacts.
 
-Coordinates are centred on the **playing area**, not the case. The control strip
-extends in negative Y, so the case carries `CASE_CENTER_OFFSET_Y_MM` while square
-centres, LED positions and Hall-sensor positions stay symmetric about the origin.
+Rear power components and mating plugs use simplified dimension envelopes.
+Every harness conductor retains its connector cavity, net, cut length and
+proposed route length. Mesh checks cover enclosure, PCB and off-board collisions,
+except same-reference solids and declared mating interfaces. An AABB broadphase
+selects possible collision pairs before mesh booleans; remaining checks use a
+0.01 mm³ numerical-noise tolerance, with connector endpoint allowances applied only
+at their declared mating interfaces.
+Unmodeled service slack, actual solder-pad locations on the OLED, cable bend radii,
+connector latches and final wire dressing remain physical assembly checks.
 
-Both printable parts are generated in **assembly coordinates**: the case floor at
-z = 0 and the plate occupying the top 3 mm. `board-assembly` therefore moves
-neither of them, so a gap between case and plate is a real dimension error rather
-than a positioning mistake in a view.
-
-`core/materials.py` owns procedural presentation materials. They make review
-renders readable but do not specify purchased material, finish, or process.
-
-`core/validation.py` checks generated meshes for positive volume, manifold
-edges, millimetre-scale bounding boxes, and fit inside their reference build
-volumes.
-
-`core/modeling.py` and `core/presentation.py` hold shared mesh operations,
-studio setup and library loading. `blocks/pcb_proxy.py` builds a presentation
-stand-in for the populated circuit board; `hardware/pcb` owns the real
-design.
-
-Every printable model has one owning generator. `board-assembly` imports those
-exact generated objects rather than redefining printable geometry.
-
-### Two boolean traps worth knowing
-
-Both cost real debugging time, and both fail silently rather than reporting an
-error, so `core/modeling.py` guards against them:
-
-- **A bevel radius must be under half the box's thinnest dimension.** Wider than
-  that, the bevel folds through itself and Blender produces an invalid mesh
-  without complaining. `rounded_box` now refuses it outright. The studio floor
-  had been quietly invalid for exactly this reason.
-- **Cutters batched into one operand must be disjoint.** `cut_batch` joins
-  meshes, which is concatenation and not a union, so overlapping members give the
-  exact solver a self-intersecting operand and it deletes the body entirely.
-  Crossing grid grooves, and a screw shaft with its own head recess, therefore go
-  in separate batches.
-
-## Toolchain
-
-The CAD `justfile` downloads a checksum-verified Blender build into the ignored
-`.cache` directory if one is not already there. Set `BLENDER_BIN` to use an
-existing install instead, which is required on platforms without a published
-Linux x86_64 build. Manufacturing exports remain deliberately separate.
-
-CAD Python is linted and format-checked with Ruff and strictly type-checked with
-Basedpyright using Blender 4.5 stubs. Explicit and inferred dynamic types are
-rejected. A few member/attribute diagnostics are disabled because Blender's
-generated API stubs cannot model RNA's runtime-refined object data; the code
-narrows those boundaries with checked helpers instead. The root recipes,
-pre-commit hook, and CI compose the same capabilities.
+The OLED mount uses four [M2.5 × 3 DIN 912 socket screws](https://www.newstarfastenings.com/en-gb/products/m25-x-3-socket-cap-screw-din-912-steel-129-self-finish),
+with 4.5 mm heads and a 2 mm hex driver. The bezel's 5 mm access holes allow
+installation from above. Calibrate/drill and tap the printed 2 mm pilots to M2.5
+before installing the carrier; verify thread holding and screw-tip clearance on
+a prototype. Screw models are not included in the electronics envelope render.

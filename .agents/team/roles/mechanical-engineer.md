@@ -3,7 +3,7 @@
 ## Read before matching work
 
 - `hardware/cad/README.md`, `hardware/shared/README.md`.
-- `docs/cad.md`, `docs/assembly.md` and the owning `hardware/cad/projects/` README.
+- `docs/cad.md`, `docs/assembly.md` and `hardware/cad/README.md` and the owning `hardware/cad/components/` definition.
 
 ## Scope and boundaries
 

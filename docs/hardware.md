@@ -33,7 +33,7 @@ SPI chain beginning at A1, powered from a switchable `LED_5V` rail that is off a
 chain through a 74AHCT125 buffer (U5, held off by a SN74LVC1G97 gate, U75, until the LED rail is up) and a 56 Ω series resistor (R9) that damps the
 first link. Later LED links run over a plane reference, and the three left rank-turn
 data links carry their own 56 Ω series resistors (R10-R12). Twelve E-Switch TL1105CF100Q panel buttons
-connect to dedicated Pi GPIO lines, and an SSD1306 OLED module on the shared I²C
+connect to dedicated Pi GPIO lines, and an SSD1309 OLED module on the shared I²C
 bus is wired to a JST SH header (J2) and sits in the tile plate's bezel.
 
 `hardware/shared/hall_banks.py` defines bank membership, input order, address
@@ -57,12 +57,14 @@ capacitors. Everything else is top side.
 
 ## Buses and LED lines (S5)
 
-- **I²C:** the only pull-ups are the Pi's own 1.8 kΩ (the board's R1/R2 were removed).
-  SPICE and a capacitance estimate give a rise time of 374 ns on SDA (243 pF) and
-  355 ns on SCL (230-243 pF), so the bus is good at the Pi's default **100 kHz only**
-  (1000 ns limit); 400 kHz fails on SDA against its 300 ns limit. The firmware image
-  sets no baud rate, so it runs at 100 kHz. The OLED module's own pull-ups must be
-  4.7 kΩ or higher, or absent (measure before fitting; see [assembly](assembly.md)).
+- **I²C:** the PCB has no pull-ups (R1/R2 removed). The Pi supplies 1.8 kΩ;
+  the approved MC242GW module adds 4.7 kΩ on each line to its 3.3 V logic rail
+  ([supplier schematic](https://www.lcdwiki.com/res/MC242GX/2.42inch_IIC_Module_MC242GX_Schematic.pdf)).
+  Their nominal parallel resistance is 1.30 kΩ: the existing capacitance estimates
+  of 243 pF SDA / 230 pF SCL imply about 268 / 254 ns rise time using 0.8473RC,
+  with about 2.23 mA sink current at 0.4 V. These are estimates, not measured bus
+  timing. Firmware retains the Pi's default **100 kHz**; this change does not qualify
+  400 kHz. Verify the supplied module variant and measure the populated bus.
 - **LED lines:** the LED rail is an inner plane, so the outer-layer links are
   referenced to it. The first data link (through R9) and the clock stay within the
   SK9822's input range at 4.5 V and 5.25 V in simulation (lossless-line model, assumed

@@ -1,0 +1,17 @@
+Product,Quantity,Manufacturer,Manufacturer Part Number,Package,Purchase Unit,Kit Usage
+BARREL_JACK,1,Switchcraft,722A,panel mount 5/16-32 bushing,each,1
+OLED_HARNESS_CONTACT,4,JST,SSH-003T-P0.2-H,SH crimp contact,each,4
+OLED_HARNESS_HOUSING,1,JST,SHR-04V-S-B,SH 4P housing,each,1
+OLED_HARNESS_WIRE_BLACK,1,Alpha Wire,2842/7 BK005,28 AWG PTFE wire,100 ft spool,1 x 180 mm
+OLED_HARNESS_WIRE_BLUE,1,Alpha Wire,2842/7 BL005,28 AWG PTFE wire,100 ft spool,1 x 180 mm
+OLED_HARNESS_WIRE_RED,1,Alpha Wire,2842/7 RD005,28 AWG PTFE wire,100 ft spool,1 x 180 mm
+OLED_HARNESS_WIRE_YELLOW,1,Alpha Wire,2842/7 YL005,28 AWG PTFE wire,100 ft spool,1 x 180 mm
+OLED_MODULE,1,Qdtech / LCDWIKI,MC242GW,"72x43 mm module, direct-solder harness",each,1
+POWER_HARNESS_CONTACT,4,JST,SVH-21T-P1.1,VH crimp contact,each,4
+POWER_HARNESS_HOUSING,1,JST,VHR-4N,VH 4P housing,each,1
+POWER_HARNESS_WIRE_BLACK,1,Alpha Wire,3055 BK005,18 AWG UL1007 wire,100 ft spool,1 x 200 mm
+POWER_HARNESS_WIRE_ORANGE,1,Alpha Wire,3055 OR005,18 AWG UL1007 wire,100 ft spool,1 x 200 mm
+POWER_HARNESS_WIRE_RED,1,Alpha Wire,3055 RD005,18 AWG UL1007 wire,100 ft spool,1 x 200 mm
+POWER_HARNESS_WIRE_WHITE,1,Alpha Wire,3055 WH005,18 AWG UL1007 wire,100 ft spool,1 x 200 mm
+POWER_SWITCH,1,E-Switch,RA11131100,panel snap-in rocker,each,1
+ROCKER_RECEPTACLE,2,TE Connectivity,2-520275-2,FASTON 187 receptacle,each,2

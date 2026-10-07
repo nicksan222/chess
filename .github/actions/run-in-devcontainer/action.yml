@@ -1,5 +1,5 @@
 name: Run in development container
-description: Pull the prebuilt image and run one command through the Dev Container CLI
+description: Prepare or reuse the job container and execute a command through the Dev Container CLI
 
 inputs:
   image:
@@ -9,19 +9,27 @@ inputs:
     description: Command to run inside the container
     required: true
 
+  prepare:
+    description: Prepare the job container before executing (false reuses it)
+    required: false
+    default: "true"
+
 runs:
   using: composite
   steps:
     - uses: docker/login-action@v4
+      if: ${{ inputs.prepare == 'true' }}
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ github.token }}
     - name: Install Dev Container CLI
+      if: ${{ inputs.prepare == 'true' }}
       shell: bash
       run: npm install --global @devcontainers/cli
     - name: Run
       shell: bash
       env:
         DEVCONTAINER_IMAGE: ${{ inputs.image }}
+        DEVCONTAINER_PREPARE: ${{ inputs.prepare }}
       run: .github/scripts/with-devcontainer.sh ${{ inputs.command }}

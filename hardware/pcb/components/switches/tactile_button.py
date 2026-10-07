@@ -10,6 +10,7 @@ from pcb.harness import (
     ComponentDefinition,
     Courtyard,
     LandPattern,
+    Model3D,
     ModelParameter,
     Net,
     NoConnect,
@@ -19,8 +20,10 @@ from pcb.harness import (
     Placement,
     Point,
     Product,
+    Solid3D,
     SpiceModel,
 )
+from shared import dimensions
 from shared.components import BUTTON
 from shared.electronics.tactile_switch import TactileSwitchPin
 
@@ -32,6 +35,36 @@ BUTTON_DEFINITION = ComponentDefinition(
         package=BUTTON.package,
         body_mm=BUTTON.require_body_mm(),
         datasheet=BUTTON.datasheet,
+    ),
+    panel_passage="Actuator",
+    model_3d=Model3D(
+        (
+            Solid3D(
+                "Body",
+                dimensions.PANEL_BUTTON_BODY_MM,
+                (0, 0, dimensions.PANEL_BUTTON_BODY_MM[2] / 2),
+            ),
+            Solid3D(
+                "Actuator",
+                (
+                    dimensions.PANEL_BUTTON_ACTUATOR_DIAMETER_MM,
+                    dimensions.PANEL_BUTTON_ACTUATOR_DIAMETER_MM,
+                    dimensions.PANEL_BUTTON_HEIGHT_MM
+                    - dimensions.PANEL_BUTTON_BODY_MM[2],
+                ),
+                (
+                    0,
+                    0,
+                    (
+                        dimensions.PANEL_BUTTON_HEIGHT_MM
+                        + dimensions.PANEL_BUTTON_BODY_MM[2]
+                    )
+                    / 2,
+                ),
+                shape="cylinder",
+            ),
+        ),
+        fidelity="datasheet dimensions; simplified housing and actuator",
     ),
     pin_type=TactileSwitchPin,
     courtyard=Courtyard(8.8, 6.8),

@@ -88,10 +88,15 @@ fn initialization_uses_the_board_address_and_controller_commands() {
     assert!(!writes.is_empty());
     assert!(writes.iter().all(|(address, _)| *address == I2C_ADDRESS));
     let commands = command_bytes(&writes);
-    assert!(commands.starts_with(&[0xAE]));
-    assert!(commands.windows(2).any(|pair| pair == [0x20, 0x00]));
-    assert!(commands.contains(&0x8D));
-    assert!(commands.ends_with(&[0xAF]));
+    // Supplier SSD1309 sequence plus explicit page mode: flush selects pages,
+    // so a horizontal-address-mode regression would corrupt real hardware.
+    assert_eq!(
+        commands,
+        [
+            0xAE, 0xFD, 0x12, 0x20, 0x02, 0x00, 0x10, 0x40, 0x81, 0xBF, 0xA1, 0xA6, 0xA8, 0x3F,
+            0xC8, 0xD3, 0x00, 0xD5, 0xA0, 0xD9, 0xF1, 0xDA, 0x12, 0xDB, 0x34, 0xA4, 0xA6, 0xAF,
+        ]
+    );
     save_screenshot("initialized", &SimulatorDisplay::new(panel_size()));
 }
 
@@ -453,4 +458,32 @@ fn save_screenshot(name: &str, display: &SimulatorDisplay<BinaryColor>) {
         .to_rgb_output_image(&settings)
         .save_png(directory.join(format!("{name}.png")))
         .unwrap();
+}
+
+#[test]
+fn flush_addresses_every_page_before_its_data() {
+    let bus = CapturingI2C::default();
+    let mut display = initialized_display(&bus);
+    display.flush().unwrap();
+    let writes = bus.writes.borrow();
+    assert_eq!(writes.len(), 8 * 5);
+    for (page, packets) in writes.as_chunks::<5>().0.iter().enumerate() {
+        assert_eq!(packets[0].1, [COMMAND, 0xB0 | page as u8, 0x00, 0x10]);
+        assert!(
+            packets[1..]
+                .iter()
+                .all(|(_, bytes)| bytes.len() == 33 && bytes[0] == DATA)
+        );
+    }
+}
+
+#[test]
+fn construction_and_drawing_perform_no_bus_io() {
+    let bus = CapturingI2C::default();
+    let mut display = Display::new(bus.clone());
+    Pixel(Point::new(127, 63), BinaryColor::On)
+        .draw(&mut display)
+        .unwrap();
+    display.clear_buffer();
+    assert!(bus.writes.borrow().is_empty());
 }

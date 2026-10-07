@@ -53,7 +53,7 @@ bridge core or the shared crates.
 
 One PCB carries the sensors, LEDs, buttons and display connector; two printed parts
 enclose it: an open-tub case that holds the board and the Pi, and a tile plate over the
-whole board that also forms the control bezel. The 5 V supply enters through a panel
+whole board that also forms the control bezel. Twelve printed caps sit on the PCB switches. The 5 V supply enters through a panel
 jack and rocker in the case's rear wall, wired to the board. See [`cad.md`](cad.md) and
 [`power.md`](power.md).
 

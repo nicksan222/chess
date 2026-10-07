@@ -21,7 +21,7 @@ def main() -> None:
             "Fabrication release is unavailable: manufacturing reassessment, electrical checks and physical evidence are pending.\n",
         )
     if args.command in ("check", "review"):
-        check(Board())
+        check(Board(), electrical=args.command == "check")
     if args.command in ("generate", "review"):
         print(generate())
 

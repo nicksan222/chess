@@ -12,7 +12,9 @@ from pcb.harness.base.spice.render.suite import run_suite
 PCB_ROOT = Path(__file__).resolve().parents[2]
 
 
-def check[BoardNet: Net](declaration: Circuit[BoardNet]) -> None:
+def check[BoardNet: Net](
+    declaration: Circuit[BoardNet], *, electrical: bool = True
+) -> None:
     declaration.validate()
     for command in (
         ("ruff", "check", str(PCB_ROOT)),
@@ -44,6 +46,8 @@ def check[BoardNet: Net](declaration: Circuit[BoardNet]) -> None:
             ),
             check=True,
         )
+    if not electrical:
+        return
     with TemporaryDirectory(prefix="pcb-board-tests-") as temporary:
         result = run_suite(PCB_ROOT / "board/tests", Path(temporary))
         if result["complete"] is not True:

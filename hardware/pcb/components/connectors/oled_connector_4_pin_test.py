@@ -4,7 +4,10 @@ import unittest
 
 import pcbnew
 
-from pcb.components.connectors.oled_connector_4_pin import OledConnector4Pin
+from pcb.components.connectors.oled_connector_4_pin import (
+    OLED_HEADER_DEFINITION,
+    OledConnector4Pin,
+)
 from pcb.harness import BoardOutline, Circuit, Net, Placement
 from pcb.harness.base.pcbnew.render.board import render_board
 
@@ -15,6 +18,18 @@ class Nets(Net):
 
 
 class OledConnector4PinTest(unittest.TestCase):
+    def test_shared_mating_geometry_is_adapted_to_the_pcb_definition(self) -> None:
+        self.assertEqual(
+            tuple(
+                (zone.start_mm, zone.end_mm, zone.width_mm, zone.height_mm, zone.role)
+                for zone in OLED_HEADER_DEFINITION.mated_zones
+            ),
+            (
+                (3.24, 5.25, 6.0, 2.95, "housing"),
+                (5.25, 7.25, 6.0, 1.95, "wire_exit"),
+            ),
+        )
+
     def test_product_pin_mapping_and_native_lands(self) -> None:
         circuit = Circuit(Nets, outline=BoardOutline(160, 160))
         component = circuit.place(

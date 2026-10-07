@@ -44,6 +44,13 @@ class PanelButton:
     header_pin: RaspberryPiHeaderPin
 
     @property
+    def legend_position_mm(self) -> Point:
+        """Recessed panel legend, independent of the switch net and GPIO."""
+        return self.position_mm[0], self.position_mm[1] + (
+            8 if self.name == "UP" else -10
+        )
+
+    @property
     def gpio(self) -> int:
         """BCM GPIO number, parsed from the typed pin name (e.g. "...GPIO5" -> 5).
 
@@ -113,14 +120,13 @@ class PanelLayout:
             raise ValueError("Panel fallback layer indices must select layers 0-2")
 
 
-# Two rows of six on the front control strip (y = -172 mm and -188 mm, 16 mm
-# apart in x). SW1-SW12 follow reading order; routing priorities
-# are a separate order that only drives routing, not layout.
+# D-pad left, OK beside the centered display, functions right, and isolated Reset.
+# Electrical identities and routing priorities stay independent of these positions.
 PANEL_BUTTONS = PanelLayout(
     (
         PanelButton(
             name="UP",
-            position_mm=(0.0, -172.0),
+            position_mm=(-116.0, -178.0),
             switch_reference="SW1",
             routing_priority=11,
             header_launch_x_offset_mm=0.8,
@@ -129,7 +135,7 @@ PANEL_BUTTONS = PanelLayout(
         ),
         PanelButton(
             name="DOWN",
-            position_mm=(16.0, -172.0),
+            position_mm=(-116.0, -202.0),
             switch_reference="SW2",
             routing_priority=10,
             header_launch_x_offset_mm=-0.8,
@@ -138,7 +144,7 @@ PANEL_BUTTONS = PanelLayout(
         ),
         PanelButton(
             name="LEFT",
-            position_mm=(32.0, -172.0),
+            position_mm=(-130.0, -190.0),
             switch_reference="SW3",
             routing_priority=9,
             header_launch_x_offset_mm=0.8,
@@ -147,7 +153,7 @@ PANEL_BUTTONS = PanelLayout(
         ),
         PanelButton(
             name="RIGHT",
-            position_mm=(48.0, -172.0),
+            position_mm=(-102.0, -190.0),
             switch_reference="SW4",
             routing_priority=8,
             header_launch_x_offset_mm=-0.8,
@@ -156,7 +162,7 @@ PANEL_BUTTONS = PanelLayout(
         ),
         PanelButton(
             name="OK",
-            position_mm=(64.0, -172.0),
+            position_mm=(-84.0, -202.0),
             switch_reference="SW5",
             routing_priority=7,
             header_launch_x_offset_mm=0.8,
@@ -165,7 +171,7 @@ PANEL_BUTTONS = PanelLayout(
         ),
         PanelButton(
             name="RESET",
-            position_mm=(80.0, -172.0),
+            position_mm=(148.0, -204.0),
             switch_reference="SW6",
             routing_priority=3,
             header_launch_x_offset_mm=0.8,
@@ -174,7 +180,7 @@ PANEL_BUTTONS = PanelLayout(
         ),
         PanelButton(
             name="PASS",
-            position_mm=(0.0, -188.0),
+            position_mm=(120.0, -202.0),
             switch_reference="SW7",
             routing_priority=4,
             header_launch_x_offset_mm=-0.8,
@@ -183,7 +189,7 @@ PANEL_BUTTONS = PanelLayout(
         ),
         PanelButton(
             name="F1",
-            position_mm=(16.0, -188.0),
+            position_mm=(68.0, -178.0),
             switch_reference="SW8",
             routing_priority=5,
             header_launch_x_offset_mm=0.8,
@@ -192,7 +198,7 @@ PANEL_BUTTONS = PanelLayout(
         ),
         PanelButton(
             name="F2",
-            position_mm=(32.0, -188.0),
+            position_mm=(94.0, -178.0),
             switch_reference="SW9",
             routing_priority=6,
             header_launch_x_offset_mm=-0.8,
@@ -201,7 +207,7 @@ PANEL_BUTTONS = PanelLayout(
         ),
         PanelButton(
             name="F3",
-            position_mm=(48.0, -188.0),
+            position_mm=(120.0, -178.0),
             switch_reference="SW10",
             routing_priority=0,
             header_launch_x_offset_mm=0.8,
@@ -210,7 +216,7 @@ PANEL_BUTTONS = PanelLayout(
         ),
         PanelButton(
             name="F4",
-            position_mm=(64.0, -188.0),
+            position_mm=(68.0, -202.0),
             switch_reference="SW11",
             routing_priority=1,
             header_launch_x_offset_mm=0.8,
@@ -219,7 +225,7 @@ PANEL_BUTTONS = PanelLayout(
         ),
         PanelButton(
             name="F5",
-            position_mm=(80.0, -188.0),
+            position_mm=(94.0, -202.0),
             switch_reference="SW12",
             routing_priority=2,
             header_launch_x_offset_mm=-0.8,

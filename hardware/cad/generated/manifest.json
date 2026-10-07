@@ -1,0 +1,261 @@
+{
+  "checks_passed": true,
+  "pcb_geometry_source": "chess-board.glb",
+  "pcb_geometry_rebuilt": false,
+  "pcb_model_report": "3d-models.json",
+  "native_board_tests": 26,
+  "native_tests_reopened_artifact": "board-assembly.blend",
+  "blender_runtime": {
+    "version": "4.5.13 LTS",
+    "build_hash": "daeeeca98fb0",
+    "version_cycle": "release",
+    "python_version": "3.11.15"
+  },
+  "components": 31,
+  "pcb_components": 327,
+  "printed_parts": [
+    {
+      "reference": "Printable_Board_Case",
+      "dimensions_mm": [
+        344.0,
+        404.0,
+        30.0
+      ],
+      "volume_mm3": 905885.43,
+      "boundary_edges": 0,
+      "non_manifold_edges": 0
+    },
+    {
+      "reference": "Printable_Tile_Plate",
+      "dimensions_mm": [
+        335.0,
+        395.0,
+        8.15000057220459
+      ],
+      "volume_mm3": 284744.84,
+      "boundary_edges": 0,
+      "non_manifold_edges": 0
+    },
+    {
+      "reference": "Cap_SW1",
+      "dimensions_mm": [
+        10.0,
+        10.0,
+        2.799999952316284
+      ],
+      "volume_mm3": 239.37,
+      "boundary_edges": 0,
+      "non_manifold_edges": 0
+    },
+    {
+      "reference": "Cap_SW2",
+      "dimensions_mm": [
+        10.0,
+        10.0,
+        2.799999952316284
+      ],
+      "volume_mm3": 239.37,
+      "boundary_edges": 0,
+      "non_manifold_edges": 0
+    },
+    {
+      "reference": "Cap_SW3",
+      "dimensions_mm": [
+        10.0,
+        10.0,
+        2.799999952316284
+      ],
+      "volume_mm3": 239.37,
+      "boundary_edges": 0,
+      "non_manifold_edges": 0
+    },
+    {
+      "reference": "Cap_SW4",
+      "dimensions_mm": [
+        10.0,
+        10.0,
+        2.799999952316284
+      ],
+      "volume_mm3": 239.37,
+      "boundary_edges": 0,
+      "non_manifold_edges": 0
+    },
+    {
+      "reference": "Cap_SW5",
+      "dimensions_mm": [
+        10.0,
+        10.0,
+        2.799999952316284
+      ],
+      "volume_mm3": 239.37,
+      "boundary_edges": 0,
+      "non_manifold_edges": 0
+    },
+    {
+      "reference": "Cap_SW6",
+      "dimensions_mm": [
+        10.0,
+        10.0,
+        2.799999952316284
+      ],
+      "volume_mm3": 239.37,
+      "boundary_edges": 0,
+      "non_manifold_edges": 0
+    },
+    {
+      "reference": "Cap_SW7",
+      "dimensions_mm": [
+        10.0,
+        10.0,
+        2.799999952316284
+      ],
+      "volume_mm3": 239.37,
+      "boundary_edges": 0,
+      "non_manifold_edges": 0
+    },
+    {
+      "reference": "Cap_SW8",
+      "dimensions_mm": [
+        10.0,
+        10.0,
+        2.799999952316284
+      ],
+      "volume_mm3": 239.37,
+      "boundary_edges": 0,
+      "non_manifold_edges": 0
+    },
+    {
+      "reference": "Cap_SW9",
+      "dimensions_mm": [
+        10.0,
+        10.0,
+        2.799999952316284
+      ],
+      "volume_mm3": 239.37,
+      "boundary_edges": 0,
+      "non_manifold_edges": 0
+    },
+    {
+      "reference": "Cap_SW10",
+      "dimensions_mm": [
+        10.0,
+        10.0,
+        2.799999952316284
+      ],
+      "volume_mm3": 239.37,
+      "boundary_edges": 0,
+      "non_manifold_edges": 0
+    },
+    {
+      "reference": "Cap_SW11",
+      "dimensions_mm": [
+        10.0,
+        10.0,
+        2.799999952316284
+      ],
+      "volume_mm3": 239.37,
+      "boundary_edges": 0,
+      "non_manifold_edges": 0
+    },
+    {
+      "reference": "Cap_SW12",
+      "dimensions_mm": [
+        10.0,
+        10.0,
+        2.799999952316284
+      ],
+      "volume_mm3": 239.37,
+      "boundary_edges": 0,
+      "non_manifold_edges": 0
+    }
+  ],
+  "assembly": {
+    "fit_checks": 843,
+    "largest_overlap_mm3": 0.0,
+    "fit_noise_tolerance_mm3": 0.01,
+    "interface_allowances": "same physical reference and declared connector mating endpoints"
+  },
+  "outputs": [
+    "board-case.blend",
+    "board-case.png",
+    "tile-plate.blend",
+    "tile-plate.png",
+    "button-cap-up.blend",
+    "button-cap-up.png",
+    "button-cap-down.blend",
+    "button-cap-down.png",
+    "button-cap-left.blend",
+    "button-cap-left.png",
+    "button-cap-right.blend",
+    "button-cap-right.png",
+    "button-cap-ok.blend",
+    "button-cap-ok.png",
+    "button-cap-reset.blend",
+    "button-cap-reset.png",
+    "button-cap-pass.blend",
+    "button-cap-pass.png",
+    "button-cap-f1.blend",
+    "button-cap-f1.png",
+    "button-cap-f2.blend",
+    "button-cap-f2.png",
+    "button-cap-f3.blend",
+    "button-cap-f3.png",
+    "button-cap-f4.blend",
+    "button-cap-f4.png",
+    "button-cap-f5.blend",
+    "button-cap-f5.png",
+    "pcb-components.json",
+    "chess-board.glb",
+    "3d-models.json",
+    "board-assembly.blend",
+    "board-assembly-finished.png",
+    "board-assembly-open.png",
+    "README.md"
+  ],
+  "manufacturing_approved": false,
+  "remaining": "Calibrated print, material shrinkage and physical clearance verification remain pending.",
+  "source_digest": "53736771a215fbaaee601e6d06602a7d2e15b4532ad9cce81c8057099dcb8333",
+  "artifact_sha256": {
+    "board-case.blend": "1ed548f2e5bf7fbc060627c6067e512ab8f1484b780498f72a44da9c631bb74a",
+    "board-case.png": "db05831a8eced452535299e7413ea9280c7c6f68c7b55233aa8eb903d5c8ed1d",
+    "tile-plate.blend": "a5c7cebdc53c997ad8cc7119a69a048d98b6d8adc69ed6cfdff90e852298c1bc",
+    "tile-plate.png": "98cf0e0679d43efb39be2a7b46d78b676fcfbc1cfeb872233378a22ec11feb80",
+    "button-cap-up.blend": "488da0141f8432e76f8e23c8e7fa2a4381ef7d98033361fce319b192e51112d4",
+    "button-cap-up.png": "53fbf71d967de547f33ce5fcbda382709d91a4db58805922f78678786c954ef6",
+    "button-cap-down.blend": "e7eb6e2eff85d5dc192278e5daf95e4a08fd5865438e1fa8182f6c1504956ef3",
+    "button-cap-down.png": "839997153ff60ecb10f26633bd4966f62756d996c4867355bedc5100b14dcc09",
+    "button-cap-left.blend": "cf6f3003d9593cb91ff94238020e049073239bd99c7620cf956aa0104e17e1f5",
+    "button-cap-left.png": "8d5df614c1b02a3bc632d38d356ee3aca99dcc1f9bd817045c652872b7ecfde4",
+    "button-cap-right.blend": "4b47046940ae4914ac862f1ae5098dababe240a97cefc219c6d2eb804d3e65ce",
+    "button-cap-right.png": "0e52b626119fd330aec455800e6a203e60b202363ae60effdee40072d40bb613",
+    "button-cap-ok.blend": "06c14d58d12749e6227f26583b5030b0e720ec30ad65fb4f56f6a48622329199",
+    "button-cap-ok.png": "e972c8a15bfcdd5d9482b383769179f462941d998c45d0db697f0d03a78861f6",
+    "button-cap-reset.blend": "419fd3f3e2e94cbfd57d34af61b9c30dded87d487a5e6793d590d706334bcf80",
+    "button-cap-reset.png": "6451a1574ec2e93353437e053779d141e63ad61183db6aa6c838362ecf585b46",
+    "button-cap-pass.blend": "1cda17b950e49fc2999cc3f8222189edec3635e74fed19c2f442ad477b058bd3",
+    "button-cap-pass.png": "b579ee1063ab0980b83f3ce4396df366cb0fb461dcde63f39154b50ca52e8d85",
+    "button-cap-f1.blend": "dc0253b1aab424ac141fbb11cc8f06e23ced9e5ef19ee99845e8833ceb274023",
+    "button-cap-f1.png": "e959f7fe51d0ed376351b44f6e977692f885da91f9e39347f4f1bb82b7d75109",
+    "button-cap-f2.blend": "3c7dc12427818e51930e333d8def135f5508b975745da6efd3cf0164e9fdb137",
+    "button-cap-f2.png": "2d11afeb32097f7495b86c324de36dc790fe6fbcb5cc1476e5989c38c78c27e9",
+    "button-cap-f3.blend": "645804eec87f56677c94d27e65ee164f2ba872bc756086e41267e60c0c1331e9",
+    "button-cap-f3.png": "eb256ecb4c4cc5582fac5d640750d47ecf5bcdc493be18e91848191f41a7f511",
+    "button-cap-f4.blend": "8d9c6209b6179c6520da565b355cd13940e604e87f0b28905079c079edb9669b",
+    "button-cap-f4.png": "3d801d19bbe227ccaed2314c70140bb5fdd17fea01f4726e490584d366e52a48",
+    "button-cap-f5.blend": "e6008bcba89ee0377c6b14f55474ebd3c394e495fedf0b019cc53aecba5bf419",
+    "button-cap-f5.png": "354e7eaadc2d4521d30df2ccbd89ce5e974a3df9fcd7534aeede75728208b04c",
+    "pcb-components.json": "e7347781e583180f880c63b802f7759829ef34cfc128d86f7d489972f593088c",
+    "chess-board.glb": "c6c190d6288ea61382d4e574459e82f881c1f73690c48e2c16b7d2b87598903f",
+    "3d-models.json": "2be7c41a2b7d3c2d71f4d398c1b64315278adc2f094fb678d9afe851bfa35032",
+    "board-assembly.blend": "cdfb07f0b16aed68f739a9e61b27c2b4372b15b80923b2d5fb0b309ba8a9a379",
+    "board-assembly-finished.png": "5a35e6f521b58427529c18ed44a37253ff5bbef21bf5a756edf1caf0523dab07",
+    "board-assembly-open.png": "d8b8577b055e39fec0befe504bc0c08c409c4cd1824b7700a4d02176028aa19a",
+    "README.md": "d4a4bc47241c80592335099661676c962ecd4fc98328e8a1584e94d2f9f02f3c"
+  },
+  "pcb_provenance": {
+    "source_digest": "4c797046742137027cf266659e481524759166f03500fb3b1b43c8480f92f092",
+    "pcb_sha256": "7fa44d5675fb3f6a45116cdbffc620d956f0a74e3aae6fafb3ed84ea20587ec8",
+    "glb_sha256": "c6c190d6288ea61382d4e574459e82f881c1f73690c48e2c16b7d2b87598903f",
+    "snapshot_sha256": "e7347781e583180f880c63b802f7759829ef34cfc128d86f7d489972f593088c"
+  }
+}

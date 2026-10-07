@@ -28,6 +28,8 @@ class RenderFootprintTest(unittest.TestCase):
         self.assertIsNotNone(footprint)
         assert footprint is not None
         # The two pads come from the land pattern; four graphics outline the courtyard.
+        self.assertEqual(str(footprint.GetFPID().GetLibItemName()), "TEST")
+        self.assertEqual(footprint.GetAttributes(), pcbnew.FP_SMD)
         self.assertEqual(len(list(footprint.Pads())), 2)
         self.assertEqual(len(list(footprint.GraphicalItems())), 4)
         # A centred reference on silkscreen would print across these pads.

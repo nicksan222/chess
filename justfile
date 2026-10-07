@@ -18,8 +18,8 @@ check: _automation-format agents-check
     for package in {{ rust_packages }}; do just --justfile "$package/justfile" check; done
     just firmware-binary
     just --justfile hardware/shared/justfile check
-    just --justfile hardware/cad/justfile check
     just --justfile hardware/pcb/justfile review
+    just --justfile hardware/cad/justfile check
 
 # Fast commit gate: lint and tests; no renders, PCB regeneration or cross-build (CI runs them).
 precommit: _automation-format agents-check
@@ -59,8 +59,8 @@ test: agents-test
 
 # Regenerate CAD and PCB review output.
 generate:
-    just --justfile hardware/cad/justfile generate
     just --justfile hardware/pcb/justfile review
+    just --justfile hardware/cad/justfile generate
 
 # Regenerate CAD models and renders.
 cad:

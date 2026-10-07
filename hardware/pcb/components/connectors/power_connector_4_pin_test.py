@@ -4,7 +4,10 @@ import unittest
 
 import pcbnew
 
-from pcb.components.connectors.power_connector_4_pin import PowerConnector4Pin
+from pcb.components.connectors.power_connector_4_pin import (
+    POWER_HEADER_DEFINITION,
+    PowerConnector4Pin,
+)
 from pcb.harness import BoardOutline, Circuit, Net, Placement
 from pcb.harness.base.pcbnew.render.board import render_board
 
@@ -15,6 +18,18 @@ class Nets(Net):
 
 
 class PowerConnector4PinTest(unittest.TestCase):
+    def test_shared_mating_geometry_is_adapted_to_the_pcb_definition(self) -> None:
+        self.assertEqual(
+            tuple(
+                (zone.start_mm, zone.end_mm, zone.width_mm, zone.height_mm, zone.role)
+                for zone in POWER_HEADER_DEFINITION.mated_zones
+            ),
+            (
+                (-5.45, 16.05, 15.8, 10.5, "housing"),
+                (16.05, 19.55, 15.8, 10.5, "wire_exit"),
+            ),
+        )
+
     def test_product_pin_mapping_and_native_lands(self) -> None:
         circuit = Circuit(Nets, outline=BoardOutline(160, 160))
         component = circuit.place(

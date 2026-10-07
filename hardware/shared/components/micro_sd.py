@@ -14,3 +14,5 @@ MICRO_SD = part(
     "SDSQQNR-032G-GN6IA",
     datasheet="https://documents.sandisk.com/content/dam/asset-library/en_us/assets/public/sandisk/product/memory-cards/high-endurance-uhs-i-microsd/data-sheet-high-endurance-uhs-i-microsd.pdf",
 )
+
+MICRO_SD_CAPACITY_GIGABYTES = 32

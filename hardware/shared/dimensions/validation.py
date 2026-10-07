@@ -98,6 +98,10 @@ from .case import (
 from .panel import (
     PANEL_BUTTON_ACTUATOR_DIAMETER_MM,
     PANEL_BUTTON_BODY_MM,
+    PANEL_BUTTON_CAP_BOTTOM_Z_MM,
+    PANEL_BUTTON_CAP_SIZE_MM,
+    PANEL_BUTTON_CAP_SOCKET_DIAMETER_MM,
+    PANEL_BUTTON_CAP_SOCKET_TOP_Z_MM,
     PANEL_BUTTON_COUNT,
     PANEL_BUTTON_HEIGHT_MM,
     PANEL_BUTTON_HOLE_DIAMETER_MM,
@@ -105,12 +109,28 @@ from .panel import (
     PANEL_BUTTON_MIN_PROTRUSION_MM,
     PANEL_BUTTON_RELIEF_CLEARANCE_MM,
     PANEL_BUTTON_RELIEF_DEPTH_MM,
+    PANEL_OLED_BEZEL_CLEARANCE_XY_MM,
+    PANEL_OLED_BEZEL_INNER_MM,
+    PANEL_OLED_BEZEL_OUTER_MM,
+    PANEL_OLED_BEZEL_ROOF_MM,
+    PANEL_OLED_BEZEL_WALL_MM,
     PANEL_OLED_CENTER_MM,
+    PANEL_OLED_FASTENER_ACCESS_DIAMETER_MM,
+    PANEL_OLED_LEDGE_BOTTOM_Z_MM,
+    PANEL_OLED_LEDGE_WIDTH_MM,
     PANEL_OLED_MODULE_MM,
-    PANEL_OLED_RECESS_CLEARANCE_XY_MM,
-    PANEL_OLED_RECESS_DEPTH_MM,
-    PANEL_OLED_RECESS_MM,
-    PANEL_OLED_WINDOW_MM,
+    PANEL_OLED_MOUNT_HOLES_MM,
+    PANEL_OLED_PCB_BOTTOM_Z_MM,
+    PANEL_OLED_PCB_THICKNESS_MM,
+    PANEL_OLED_PILOT_DIAMETER_MM,
+    PANEL_OLED_PILOT_FLOOR_MM,
+    PANEL_OLED_SCREEN_SIZE_MM,
+    PANEL_OLED_SCREEN_Z_MM,
+    PANEL_OLED_SCREW_HEAD_DIAMETER_MM,
+    PANEL_OLED_SCREW_HEAD_HEIGHT_MM,
+    PANEL_OLED_SCREW_LENGTH_MM,
+    PANEL_OLED_WIRE_OPENING_MM,
+    PANEL_SURFACE_RECESS_MM,
 )
 from .printing import (
     FDM_MAX_FIT_CLEARANCE_MM,
@@ -123,12 +143,20 @@ from .printing import (
     meets,
 )
 from .tile_plate import (
+    PIECE_LOCATING_FOOT_HEIGHT_MM,
+    PIECE_LOCATING_FOOT_INNER_SIDE_MM,
+    PIECE_LOCATING_FOOT_SIDE_MM,
     TILE_PLATE_CENTER_Y_MM,
     TILE_PLATE_CLEARANCE_MM,
     TILE_PLATE_DARK_SQUARE_DEPTH_MM,
     TILE_PLATE_DIFFUSER_SKIN_MM,
     TILE_PLATE_GROOVE_WIDTH_MM,
     TILE_PLATE_LED_POCKET_MM,
+    TILE_PLATE_LED_WINDOW_MM,
+    TILE_PLATE_PIECE_SEAT_DEPTH_MM,
+    TILE_PLATE_PIECE_SEAT_INNER_SIDE_MM,
+    TILE_PLATE_PIECE_SEAT_SIDE_MM,
+    TILE_PLATE_PIECE_SEAT_SUPPORT_SIDE_MM,
     TILE_PLATE_RIB_WIDTH_MM,
     TILE_PLATE_SCREW_CLEARANCE_DIAMETER_MM,
     TILE_PLATE_SCREW_HEAD_DEPTH_MM,
@@ -155,7 +183,11 @@ def validate() -> None:
     if not isclose(PLAYING_SPAN_MM, SQUARE_SIZE_MM * GRID_COUNT):
         raise ValueError("Playing span must equal square size multiplied by grid count")
     for span in (CASE_WIDTH_MM, CASE_DEPTH_MM):
-        if not COMPACT_BOARD_MIN_SPAN_MM <= span <= COMPACT_BOARD_MAX_SPAN_MM:
+        if (
+            not COMPACT_BOARD_MIN_SPAN_MM
+            <= span - 2 * CASE_FRAME_WIDTH_MM
+            <= COMPACT_BOARD_MAX_SPAN_MM
+        ):
             raise ValueError("Case span is outside the compact product range")
     if CASE_HEIGHT_MM > COMPACT_BOARD_MAX_HEIGHT_MM:
         raise ValueError("Finished board is too tall for the compact product range")
@@ -218,7 +250,7 @@ def validate() -> None:
             raise ValueError(f"{name} is below the prototype printable minimum")
 
     if TILE_PLATE_LED_POCKET_MM[2] >= TILE_PLATE_THICKNESS_MM:
-        raise ValueError("LED pocket must leave a closed diffuser skin")
+        raise ValueError("LED pocket must retain a roof around the open window")
     if TILE_PLATE_UNDERSIDE_POCKET_DEPTH_MM >= (
         TILE_PLATE_THICKNESS_MM - FDM_MIN_FLOOR_MM
     ):
@@ -305,12 +337,12 @@ def validate() -> None:
             "display",
             PANEL_OLED_CENTER_MM[0],
             PANEL_OLED_CENTER_MM[1],
-            PANEL_OLED_RECESS_MM[0] / 2.0,
-            PANEL_OLED_RECESS_MM[1] / 2.0,
+            PANEL_OLED_BEZEL_OUTER_MM[0] / 2.0,
+            PANEL_OLED_BEZEL_OUTER_MM[1] / 2.0,
         ),
     )
     for name, x, y, half_x, half_y in panel_features:
-        if not strip_min_y <= y - half_y and y + half_y <= strip_max_y:
+        if not (strip_min_y <= y - half_y and y + half_y <= strip_max_y):
             raise ValueError(f"Control panel {name} extends off the control strip")
         if abs(x) + half_x > PLAYING_SPAN_MM / 2.0:
             raise ValueError(f"Control panel {name} extends off the board")
@@ -318,34 +350,87 @@ def validate() -> None:
         raise ValueError("Control panel must place every button")
     if len({button.position_mm for button in PANEL_BUTTONS}) != PANEL_BUTTON_COUNT:
         raise ValueError("Button positions must be unique")
-    if PANEL_OLED_RECESS_CLEARANCE_XY_MM <= 0.0:
+    if PANEL_OLED_BEZEL_CLEARANCE_XY_MM <= 0.0:
         raise ValueError("Display recess must include positive XY assembly clearance")
     if any(
         recess <= module
-        for recess, module in zip(PANEL_OLED_RECESS_MM, PANEL_OLED_MODULE_MM[:2])
+        for recess, module in zip(PANEL_OLED_BEZEL_INNER_MM, PANEL_OLED_MODULE_MM[:2])
     ):
         raise ValueError("Display recess must be larger than the module")
     if any(
         window >= module
-        for window, module in zip(PANEL_OLED_WINDOW_MM, PANEL_OLED_MODULE_MM[:2])
+        for window, module in zip(PANEL_OLED_SCREEN_SIZE_MM, PANEL_OLED_MODULE_MM[:2])
     ):
         raise ValueError("Display window must be smaller than the module behind it")
 
+    for aperture, emitter, pocket in zip(
+        TILE_PLATE_LED_WINDOW_MM, LED_EMITTER_WINDOW_MM, TILE_PLATE_LED_POCKET_MM[:2]
+    ):
+        if aperture < emitter + LED_PACKAGE_TOLERANCE_MM:
+            raise ValueError("LED window must expose the whole emitter")
+        if not meets((pocket - aperture) / 2, FDM_MIN_FEATURE_MM):
+            raise ValueError("LED window must retain a printable surrounding roof")
+
+    if not 0 < PANEL_SURFACE_RECESS_MM < TILE_PLATE_THICKNESS_MM:
+        raise ValueError("Control surface must be recessed within the plate")
+    screw_tip = (
+        PANEL_OLED_PCB_BOTTOM_Z_MM
+        + PANEL_OLED_PCB_THICKNESS_MM
+        - PANEL_OLED_SCREW_LENGTH_MM
+    )
+    if not meets(
+        screw_tip - (PANEL_OLED_LEDGE_BOTTOM_Z_MM + PANEL_OLED_PILOT_FLOOR_MM),
+        FDM_MIN_FIT_CLEARANCE_MM,
+    ):
+        raise ValueError("Display screw would bottom out in its blind pilot")
+    if not meets(
+        (PANEL_OLED_FASTENER_ACCESS_DIAMETER_MM - PANEL_OLED_SCREW_HEAD_DIAMETER_MM)
+        / 2,
+        FDM_MIN_FIT_CLEARANCE_MM,
+    ):
+        raise ValueError("Display access must clear the screw head")
+    if (
+        PANEL_OLED_PCB_BOTTOM_Z_MM
+        + PANEL_OLED_PCB_THICKNESS_MM
+        + PANEL_OLED_SCREW_HEAD_HEIGHT_MM
+        > PANEL_OLED_SCREEN_Z_MM + 0.1
+    ):
+        raise ValueError("Display screw head does not fit below the bezel roof")
+    for dx, dy in PANEL_OLED_MOUNT_HOLES_MM:
+        for center, span in zip((dx, dy), PANEL_OLED_BEZEL_OUTER_MM):
+            if not meets(
+                span / 2 - abs(center) - PANEL_OLED_FASTENER_ACCESS_DIAMETER_MM / 2,
+                FDM_MIN_FEATURE_MM,
+            ):
+                raise ValueError("Display access hole leaves too thin a bezel edge")
+    if not meets(
+        (PANEL_OLED_LEDGE_WIDTH_MM - PANEL_OLED_PILOT_DIAMETER_MM) / 2,
+        FDM_MIN_FEATURE_MM,
+    ):
+        raise ValueError("Display mounting pilot needs printable surrounding walls")
+    if (
+        PANEL_OLED_PCB_BOTTOM_Z_MM - PANEL_OLED_LEDGE_BOTTOM_Z_MM
+        <= PANEL_OLED_PILOT_FLOOR_MM
+    ):
+        raise ValueError("Display mounting pilot needs depth above its floor")
+    if not meets(PANEL_OLED_PILOT_FLOOR_MM, FDM_MIN_FLOOR_MM):
+        raise ValueError("Display mounting pilot must retain a printable floor")
+    if not meets(PANEL_OLED_BEZEL_WALL_MM, FDM_MIN_FEATURE_MM) or not meets(
+        PANEL_OLED_BEZEL_ROOF_MM, FDM_MIN_FEATURE_MM
+    ):
+        raise ValueError("Display bezel needs printable walls and roof")
+    if any(
+        wire >= body
+        for wire, body in zip(PANEL_OLED_WIRE_OPENING_MM, PANEL_OLED_MODULE_MM[:2])
+    ):
+        raise ValueError("Display wire opening must leave supporting material")
+    validate_piece_seats()
     validate_buttons()
     validate_rocker()
     validate_jack()
     validate_pi_bay()
     validate_bottom_keepouts()
     validate_sd_slot()
-    module_bottom_z = (
-        CASE_HEIGHT_MM
-        - TILE_PLATE_THICKNESS_MM
-        + PANEL_OLED_RECESS_DEPTH_MM
-        - PANEL_OLED_MODULE_MM[2]
-    )
-    if module_bottom_z < PCB_TOP_Z_MM:
-        raise ValueError("Display module in the plate recess would land on the PCB")
-
     if len(EXPANDER_POSITIONS_BY_BANK_MM) != 8:
         raise ValueError("Board composition must place eight GPIO expanders")
     if len(set(EXPANDER_POSITIONS_BY_BANK_MM.values())) != 8:
@@ -444,7 +529,11 @@ def validate_plate_rim() -> None:
 
 def validate_buttons() -> None:
     """Button stems stand proud of the bezel; housings clear the plate."""
-    protrusion = PCB_TOP_Z_MM + PANEL_BUTTON_HEIGHT_MM - CASE_HEIGHT_MM
+    protrusion = (
+        PCB_TOP_Z_MM
+        + PANEL_BUTTON_HEIGHT_MM
+        - (CASE_HEIGHT_MM - PANEL_SURFACE_RECESS_MM)
+    )
     if (
         not PANEL_BUTTON_MIN_PROTRUSION_MM
         <= protrusion
@@ -457,7 +546,10 @@ def validate_buttons() -> None:
     ):
         raise ValueError("A button housing would touch the plate")
     if not meets(
-        TILE_PLATE_THICKNESS_MM - PANEL_BUTTON_RELIEF_DEPTH_MM, FDM_MIN_FLOOR_MM
+        TILE_PLATE_THICKNESS_MM
+        - PANEL_SURFACE_RECESS_MM
+        - PANEL_BUTTON_RELIEF_DEPTH_MM,
+        FDM_MIN_FLOOR_MM,
     ):
         raise ValueError("Button relief leaves too thin a bezel")
     if not meets(
@@ -465,6 +557,21 @@ def validate_buttons() -> None:
         FDM_MIN_FIT_CLEARANCE_MM,
     ):
         raise ValueError("Button hole does not clear the stem")
+    if not meets(
+        (PANEL_BUTTON_CAP_SOCKET_DIAMETER_MM - PANEL_BUTTON_ACTUATOR_DIAMETER_MM) / 2,
+        FDM_MIN_FIT_CLEARANCE_MM,
+    ):
+        raise ValueError("Button cap socket does not clear the stem")
+    stem_top = PCB_TOP_Z_MM + PANEL_BUTTON_HEIGHT_MM
+    if not PANEL_BUTTON_CAP_BOTTOM_Z_MM < stem_top <= PANEL_BUTTON_CAP_SOCKET_TOP_Z_MM:
+        raise ValueError("Button cap socket must engage the stem")
+    if not meets(
+        PANEL_BUTTON_CAP_BOTTOM_Z_MM
+        + PANEL_BUTTON_CAP_SIZE_MM[2]
+        - PANEL_BUTTON_CAP_SOCKET_TOP_Z_MM,
+        FDM_MIN_FLOOR_MM,
+    ):
+        raise ValueError("Button cap socket leaves too thin a roof")
     relief = max(PANEL_BUTTON_BODY_MM[:2]) + 2.0 * PANEL_BUTTON_RELIEF_CLEARANCE_MM
     positions = [button.position_mm for button in PANEL_BUTTONS]
     for index, (x0, y0) in enumerate(positions):
@@ -598,3 +705,55 @@ def describe(domain: str = "Shared hardware") -> str:
         f"plate {TILE_PLATE_SIZE_MM[0]:g} x {TILE_PLATE_SIZE_MM[1]:g} mm; "
         f"board {PCB_SIZE_MM[0]:g} x {PCB_SIZE_MM[1]:g} mm"
     )
+
+
+def validate_piece_seats() -> None:
+    """Keep solid sensor covers and sufficient support around the locating holes."""
+    if not 0 < PIECE_LOCATING_FOOT_HEIGHT_MM < TILE_PLATE_PIECE_SEAT_DEPTH_MM:
+        raise ValueError(
+            "Piece locating foot must fit inside its seat without bottoming out"
+        )
+    if not 0 < TILE_PLATE_PIECE_SEAT_INNER_SIDE_MM < TILE_PLATE_PIECE_SEAT_SIDE_MM:
+        raise ValueError("Piece ring channel must retain a positive center island")
+    groove_width = (
+        TILE_PLATE_PIECE_SEAT_SIDE_MM - TILE_PLATE_PIECE_SEAT_INNER_SIDE_MM
+    ) / 2
+    foot_width = (PIECE_LOCATING_FOOT_SIDE_MM - PIECE_LOCATING_FOOT_INNER_SIDE_MM) / 2
+    if not meets(groove_width, FDM_MIN_FEATURE_MM) or not meets(
+        foot_width, FDM_MIN_FEATURE_MM
+    ):
+        raise ValueError("Piece ring channel and ring foot need printable widths")
+    inner_clearance = (
+        PIECE_LOCATING_FOOT_INNER_SIDE_MM - TILE_PLATE_PIECE_SEAT_INNER_SIDE_MM
+    ) / 2
+    if not FDM_MIN_FIT_CLEARANCE_MM <= inner_clearance <= FDM_MAX_FIT_CLEARANCE_MM:
+        raise ValueError("Piece ring foot must clear its center island")
+    clearance = (TILE_PLATE_PIECE_SEAT_SIDE_MM - PIECE_LOCATING_FOOT_SIDE_MM) / 2
+    if not FDM_MIN_FIT_CLEARANCE_MM <= clearance <= FDM_MAX_FIT_CLEARANCE_MM:
+        raise ValueError("Piece locating foot needs printable side clearance")
+    floor = (
+        TILE_PLATE_THICKNESS_MM
+        - TILE_PLATE_DARK_SQUARE_DEPTH_MM
+        - TILE_PLATE_PIECE_SEAT_DEPTH_MM
+    )
+    if not meets(floor, FDM_MIN_FLOOR_MM):
+        raise ValueError("Piece seat would break its solid floor above the sensor")
+    wall = (TILE_PLATE_PIECE_SEAT_SUPPORT_SIDE_MM - TILE_PLATE_PIECE_SEAT_SIDE_MM) / 2
+    if not meets(wall, FDM_MIN_FEATURE_MM):
+        raise ValueError("Piece seat needs a reinforced underside wall")
+    if TILE_PLATE_PIECE_SEAT_SUPPORT_SIDE_MM >= TILE_PLATE_UNDERSIDE_POCKET_SPAN_MM:
+        raise ValueError("Piece seat support must fit within its square pocket")
+    half_support = TILE_PLATE_PIECE_SEAT_SUPPORT_SIDE_MM / 2
+    for square in BOARD_SQUARES:
+        dx = max(
+            abs(square.led_position_mm[0] - square.centre_mm[0])
+            - TILE_PLATE_LED_POCKET_MM[0] / 2,
+            0,
+        )
+        dy = max(
+            abs(square.led_position_mm[1] - square.centre_mm[1])
+            - TILE_PLATE_LED_POCKET_MM[1] / 2,
+            0,
+        )
+        if dx <= half_support and dy <= half_support:
+            raise ValueError("Piece seat support overlaps the LED pocket")

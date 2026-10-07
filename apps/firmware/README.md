@@ -61,8 +61,10 @@ on a caller-selected Linux GPIO chip; the button adapter interprets a low level
 as pressed. `with_external_bias` leaves line bias to the board instead of
 requesting an internal pull-up. Callers do not inspect GPIO levels.
 
-`src/hardware/display/` constructs the externally maintained `ssd1306` crate's
-buffered driver for the installed 128×64 OLED at address `0x3C`. It is
+`src/hardware/display/` constructs a buffered SSD1309 driver for the installed MC242GW
+2.42-inch 128×64 OLED at address `0x3C`. The four-wire I²C module supplies
+power-on reset; allow 200 ms of stable power before initialization. Construction
+and drawing perform no I/O; initialize, clear, flush and power retain the same API. It is
 intentionally not attached to the runtime yet. Integration tests under
 `tests/display/` capture the exact data packets emitted through I2C, decode the
 transmitted frame, and compare it pixel-for-pixel with the externally maintained

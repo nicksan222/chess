@@ -1,5 +1,8 @@
 """Schematic conversion must retain declared nets and explained unused pins."""
 
+import json
+import shutil
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -52,3 +55,31 @@ class SchematicTest(unittest.TestCase):
             self.assertNotIn('(global_label "GND"', content)
             self.assertTrue((Path(directory) / "board.kicad_sym").is_file())
             self.assertTrue((Path(directory) / "sym-lib-table").is_file())
+
+    @unittest.skipUnless(shutil.which("kicad-cli"), "KiCad required")
+    def test_generated_footprint_id_agrees_with_schematic(self) -> None:
+        from .project import write_schematic_project
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_schematic_project(sample_board(), root, "fixture")
+            subprocess.run(
+                (
+                    "kicad-cli",
+                    "pcb",
+                    "drc",
+                    "--schematic-parity",
+                    "--format",
+                    "json",
+                    "-o",
+                    str(root / "drc.json"),
+                    str(root / "fixture.kicad_pcb"),
+                ),
+                capture_output=True,
+                check=True,
+                timeout=30,
+            )
+            report = cast(
+                dict[str, object], json.loads((root / "drc.json").read_text())
+            )
+            self.assertEqual(report["schematic_parity"], [])

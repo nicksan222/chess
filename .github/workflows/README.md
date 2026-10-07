@@ -19,6 +19,15 @@ Workflows invoke the same package-local `justfile` capabilities used by
 developers. Workflow YAML contains only scheduling, caching, artifact,
 permission, and release policy.
 
+`hardware.yml` runs PCB review followed by CAD checks in one `PCB → CAD` job.
+The job prepares one container from the pinned image and both steps execute in
+that same container and workspace. CAD consumes the
+checked native KiCad model produced by PCB review; PCB failure prevents CAD
+from starting. Separate `pcb-generated` and `cad-generated` artifacts are
+uploaded only when their generation steps succeed, so failed builds cannot
+publish the checkout's older generated files as new review output. Missing expected
+artifact files fail the upload instead of producing a successful warning.
+
 PR reports compare freshly generated PCB output with the pull request's base
 commit. CI calls the same `just --justfile hardware/pcb/justfile pr-report <ref>`
 recipe available locally. Reports include ERC/DRC results and links to complete

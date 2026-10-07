@@ -14,6 +14,7 @@ from .base.circuit import Circuit
 from .base.component import BoardComponent, ComponentDefinition
 from .base.connections import Endpoint, NetConnection, NoConnect
 from .base.geometry import Courtyard, Placement, Side
+from .base.model import MatedZone, Model3D, Solid3D
 from .base.net import Net
 from .base.pcbnew import (
     BoardOutline,
@@ -79,6 +80,8 @@ __all__ = (
     "EscapeAxis",
     "LandPattern",
     "Limit",
+    "MatedZone",
+    "Model3D",
     "ModelParameter",
     "Net",
     "NetConnection",
@@ -101,6 +104,7 @@ __all__ = (
     "RouteStage",
     "RoutingPlan",
     "Side",
+    "Solid3D",
     "SpiceModel",
     "SpiceRequirement",
     "SpiceScenario",

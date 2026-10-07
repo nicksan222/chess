@@ -18,6 +18,7 @@ from ...component import BoardComponent
 from ...connections import NetConnection, PinConnection
 from ...geometry import Side
 from ..outline import BoardOutline
+from ..pad import PadKind
 from ..point import Point
 from .pad import render_pad
 from .units import native_point
@@ -52,6 +53,12 @@ def render_footprint[Pin: StrEnum](
         raise ValueError(f"{component.reference}: courtyard exceeds board outline")
     centre = Point(component.placement.x_mm, component.placement.y_mm)
     native = pcbnew.FOOTPRINT(board)
+    native.SetFPID(pcbnew.LIB_ID("", component.definition.product.key))
+    kinds = {pad.kind for pad in pattern.pads}
+    native.SetAttributes(
+        (pcbnew.FP_SMD if PadKind.SURFACE in kinds else 0)
+        | (pcbnew.FP_THROUGH_HOLE if PadKind.THROUGH_HOLE in kinds else 0)
+    )
     native.SetReference(component.reference)
     native.SetValue(component.definition.product.key)
     # KiCad centres new reference text on the footprint. On small packages it

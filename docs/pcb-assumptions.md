@@ -12,7 +12,7 @@ These retained assumptions need reassessment against the current board. They are
 
 ## OLED harness
 
-J2 pins are GND/3V3/SCL/SDA and the harness is soldered to the module by its printed pad labels; the module's 3.3 V behaviour has no datasheet on file (pull-ups: see OLED pull-ups)
+J2 pins GND/3V3/SCL/SDA are soldered to MC242GW pins 1–4; optional RES is left open for onboard RC reset. The approved module supports 3.3 V per its supplier specification; omit its upright header.
 
 ## Jack/plug fit
 
@@ -112,7 +112,7 @@ PCBWay 8-layer regular 1.6 mm (1 oz, 2116/7628 prepreg, Dk 4.45-4.74) from the f
 
 ## OLED pull-ups
 
-the I2C pull-ups are the Pi's 1.8 kOhm (R1/R2 removed, S5); the OLED module's own pull-ups must be >= 4.7 kOhm or absent (3 mA at 0.4 V); module input 10 pF, harness 50 pF/m; assembly: measure SDA/SCL to VCC on the module before fitting
+The Pi's 1.8 kΩ and MC242GW's documented 4.7 kΩ (R2/R3 on its supplier schematic) give 1.30 kΩ nominal and 2.23 mA at 0.4 V; PCB R1/R2 remain omitted. Module input 10 pF and harness 50 pF/m remain estimates. Verify the delivered variant's resistors before fitting, then measure populated bus rise time and low voltage at the retained 100 kHz setting.
 
 ## LED line drivers
 

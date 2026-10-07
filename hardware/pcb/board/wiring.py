@@ -86,18 +86,21 @@ def wiring(board: Board) -> tuple[NetRoute, ...]:
         )
         for index, button in enumerate(PANEL_BUTTONS.routing_order)
     )
+    # Reserve I2C package escape vias before the long button routes can occupy them.
     buses = (
         NetRoute(
             BoardNet.I2C_SDA,
             layers=INNER_SIGNALS,
             preferred_layer=CopperLayer.INNER_4,
             priority=2,
+            reserve_group=True,
         ),
         NetRoute(
             BoardNet.I2C_SCL,
             layers=INNER_SIGNALS,
             preferred_layer=CopperLayer.INNER_5,
             priority=2,
+            reserve_group=True,
         ),
     )
     sensors: list[NetRoute] = []

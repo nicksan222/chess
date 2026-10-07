@@ -8,6 +8,7 @@ while the footprint keeps the drawing's chirality (pcb tests/board/test_harness)
 
 from __future__ import annotations
 
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 
 from shared.components import (
@@ -99,7 +100,7 @@ POWER_HARNESS = (
     ),
 )
 
-# Interface H2/M6: J2 to the AZ-Delivery module's labelled pads, soldered.
+# J2 to MC242GW's factory-I2C GND/VCC/SCL/SDA pads, soldered; RES stays open.
 OLED_HARNESS = tuple(
     HarnessWire(
         "J2",
@@ -183,3 +184,40 @@ def render_harness_table() -> str:
         )
         lines.append("")
     return "\n".join(lines)
+
+
+# Bought terminal roles, independent of the wire's declared net. RES and the
+# jack's switched sleeve deliberately have no harness connection.
+HARNESS_TERMINAL_NETS = {
+    ("BARREL_JACK", BarrelJackPin.CENTRE_POSITIVE): "DC_IN",
+    ("BARREL_JACK", BarrelJackPin.SLEEVE_GROUND): "GND",
+    ("POWER_SWITCH", PowerSwitchPin.FUSED_INPUT): "DC_FUSED",
+    ("POWER_SWITCH", PowerSwitchPin.RUN_OUTPUT): "RUN",
+    ("OLED_MODULE", "GND"): "GND",
+    ("OLED_MODULE", "VCC"): "+3V3",
+    ("OLED_MODULE", "SCL"): "I2C_SCL",
+    ("OLED_MODULE", "SDA"): "I2C_SDA",
+}
+
+
+def validate_harness_connections(
+    pin_nets: Mapping[tuple[str, str], str], wires: Iterable[HarnessWire]
+) -> None:
+    """Close each wire against the actual board pin and bought terminal role."""
+    cavities: set[tuple[str, str]] = set()
+    terminals: set[tuple[str, str]] = set()
+    for wire in wires:
+        cavity = (wire.connector, wire.cavity)
+        if cavity in cavities:
+            raise ValueError(f"duplicate harness cavity: {cavity}")
+        cavities.add(cavity)
+        if pin_nets.get(cavity) != wire.net:
+            raise ValueError(f"{cavity}: board net does not match {wire.net}")
+        terminal = (wire.far_part, wire.far_terminal)
+        if terminal in terminals:
+            raise ValueError(f"duplicate harness far terminal: {terminal}")
+        terminals.add(terminal)
+        if HARNESS_TERMINAL_NETS.get(terminal) != wire.net:
+            raise ValueError(f"{cavity}: far terminal does not carry {wire.net}")
+    if terminals != set(HARNESS_TERMINAL_NETS):
+        raise ValueError("harness far terminals are incomplete")

@@ -154,7 +154,7 @@ def write_schematic[BoardNet: Net](
                     (
                         ("Reference", component.reference),
                         ("Value", product.part_number),
-                        ("Footprint", ""),
+                        ("Footprint", product.key),
                         ("Datasheet", product.datasheet),
                         ("Description", component.purpose),
                     )

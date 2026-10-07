@@ -11,6 +11,7 @@ from pcb.harness import (
     Courtyard,
     EscapeAxis,
     LandPattern,
+    Model3D,
     Net,
     NoConnect,
     PackageRouting,
@@ -19,6 +20,7 @@ from pcb.harness import (
     Placement,
     Point,
     Product,
+    Solid3D,
 )
 from shared.components import SK9822
 from shared.electronics.sk9822 import Sk9822Pin
@@ -31,6 +33,17 @@ SK9822_DEFINITION = ComponentDefinition(
         package=SK9822.package,
         body_mm=SK9822.require_body_mm(),
         datasheet=SK9822.datasheet,
+    ),
+    model_3d=Model3D(
+        (
+            Solid3D(
+                "Body",
+                SK9822.require_body_mm(),
+                (0, 0, SK9822.require_body_mm()[2] / 2),
+                (0.78, 0.86, 0.92),
+            ),
+        ),
+        fidelity="datasheet body envelope",
     ),
     pin_type=Sk9822Pin,
     courtyard=Courtyard(7.5, 5.5),

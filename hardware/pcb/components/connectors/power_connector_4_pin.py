@@ -10,6 +10,7 @@ from pcb.harness import (
     ComponentDefinition,
     Courtyard,
     LandPattern,
+    MatedZone,
     Net,
     NoConnect,
     Pad,
@@ -20,6 +21,7 @@ from pcb.harness import (
     Product,
 )
 from shared.components import POWER_HEADER
+from shared.components.power_header import POWER_HEADER_MATED_ZONES
 from shared.electronics.power_header import PowerHeaderPin
 
 POWER_HEADER_DEFINITION = ComponentDefinition(
@@ -33,6 +35,11 @@ POWER_HEADER_DEFINITION = ComponentDefinition(
     ),
     pin_type=PowerHeaderPin,
     courtyard=Courtyard(16.28, 11.4),
+    # Mated housing and wire exit from the cited JST drawing.
+    mated_zones=tuple(
+        MatedZone(start, end, width, height, role=role)
+        for start, end, width, height, role in POWER_HEADER_MATED_ZONES
+    ),
     land_pattern=LandPattern(
         PowerHeaderPin,
         (

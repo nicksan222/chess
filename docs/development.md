@@ -31,9 +31,17 @@ fabrication output. There is no separate schematic domain.
 The PCB's reviewed sources are the typed assemblies composed by
 `hardware/pcb/board/board.py` and the shared component catalog. Generation
 validates every footprint and connection, then writes the expanded netlist,
-BOM, native schematic, board, and review reports under `hardware/pcb/generated/`. CAD and PCB
-both consume `hardware/shared`, preventing the mechanical and electrical layouts
-from independently copying dimensions or mappings.
+BOM, native schematic, board, and review reports under `hardware/pcb/generated/`.
+The PCB attaches component STEP models and exports its native board assembly as
+`chess-board.glb`, with component metadata and checked provenance. CAD imports
+that geometry rather than rebuilding the substrate or its mounted electronics.
+Both domains still use readable `hardware/shared` dimensions and mappings for
+mechanical interfaces and off-board parts.
+
+`just generate` reviews and generates the PCB first, then generates CAD using
+that exact export. Running CAD alone also checks the PCB dependency: a missing,
+stale or altered export is regenerated before Blender starts. A PCB generation
+failure stops CAD and preserves the previous CAD outputs.
 
 Generated hardware artifacts remain under each domain's `generated/` directory.
 The PCB composes typed components through its reusable harness, which renders
@@ -48,15 +56,21 @@ container; Yocto owns its caches under `.cache/yocto`.
 ## CI
 
 The `PR` workflow invokes package-local recipes for code quality, every Rust
-package, CAD, PCB, and firmware, and runs the Bun-managed `.pi` typecheck and
+package, hardware, and firmware, and runs the Bun-managed `.pi` typecheck and
 test suite with its frozen lockfile. In addition to host tests and Yocto metadata
 validation, `Firmware checks / AArch64 binary` performs a locked optimized build
 and links the real firmware executable for the Pi architecture. Cargo follows the
 firmware package's complete dependency graph automatically, including local
 workspace crates, target-specific code, build scripts, and native linkage. The
 resulting executable is retained as a seven-day workflow artifact. This takes a
-small fraction of a Linux image build and runs alongside CAD and PCB. Branch
+small fraction of a Linux image build and runs alongside hardware checks. Branch
 protection requires the `Required checks` job on this workflow.
+
+Hardware uses one sequential `PCB → CAD` job in both PR and main CI. PCB review
+(including the PR report when requested) runs before CAD in the same workspace;
+CAD reuses its validated model without a second PCB generation. The workflow
+retains separate `pcb-generated` and `cad-generated` artifacts and uploads each
+only after its generation step succeeds.
 
 Push `CI` on `main` runs the same Hardware, Quality, and Pi harness jobs without
 the pull-request firmware checks. Full Yocto image builds are isolated in the

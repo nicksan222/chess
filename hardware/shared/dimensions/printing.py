@@ -3,6 +3,12 @@
 from math import isclose
 
 from .case import CASE_OUTER_SIZE_MM
+from .panel import (
+    PANEL_BUTTON_CAP_BOTTOM_Z_MM,
+    PANEL_BUTTON_CAP_SIZE_MM,
+    PANEL_OLED_BEZEL_TOP_Z_MM,
+    PANEL_OLED_LEDGE_BOTTOM_Z_MM,
+)
 from .tile_plate import TILE_PLATE_SIZE_MM
 
 # Prototype FDM guardrails. These catch implausible geometry, but do not replace
@@ -10,7 +16,7 @@ from .tile_plate import TILE_PLATE_SIZE_MM
 #
 # Both parts are larger than a desktop printer bed, so they are quoted from an
 # FDM print service. The desktop figure is kept to document that fact rather than
-# to gate anything: a 380 mm case does not fit a 256 mm bed and never will.
+# to gate anything: a 404 mm case does not fit a 256 mm bed and never will.
 REFERENCE_DESKTOP_BUILD_VOLUME_MM = (256.0, 256.0, 256.0)
 REFERENCE_SERVICE_BUILD_VOLUME_MM = (420.0, 420.0, 420.0)
 PRINT_BED_EDGE_MARGIN_MM = 5.0
@@ -25,9 +31,19 @@ FDM_MAX_FIT_CLEARANCE_MM = 0.5
 BOOLEAN_RECESS_OVERLAP_MM = 0.2
 BOOLEAN_THROUGH_OVERLAP_MM = 0.4
 
-PRINTED_PART_SIZES_MM = (CASE_OUTER_SIZE_MM, TILE_PLATE_SIZE_MM)
+PRINTED_PART_SIZES_MM = (
+    CASE_OUTER_SIZE_MM,
+    (*TILE_PLATE_SIZE_MM[:2], PANEL_OLED_BEZEL_TOP_Z_MM - PANEL_OLED_LEDGE_BOTTOM_Z_MM),
+    PANEL_BUTTON_CAP_SIZE_MM,
+)
 LONGEST_PRINTED_PART_MM = max(max(part) for part in PRINTED_PART_SIZES_MM)
-BOARD_ASSEMBLED_ENVELOPE_MM = CASE_OUTER_SIZE_MM
+BOARD_ASSEMBLED_ENVELOPE_MM = (
+    *CASE_OUTER_SIZE_MM[:2],
+    max(
+        CASE_OUTER_SIZE_MM[2],
+        PANEL_BUTTON_CAP_BOTTOM_Z_MM + PANEL_BUTTON_CAP_SIZE_MM[2],
+    ),
+)
 
 
 def meets(value: float, minimum: float) -> bool:

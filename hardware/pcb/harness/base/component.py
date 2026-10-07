@@ -17,6 +17,7 @@ from typing import TYPE_CHECKING, Protocol, cast
 
 from .connections import Endpoint, NetConnection, NoConnect, PinConnection
 from .geometry import Courtyard, Placement, Side
+from .model import MatedZone, Model3D
 from .net import Net
 from .pcbnew.escape import PackageRouting
 from .pcbnew.land_pattern import LandPattern
@@ -41,7 +42,8 @@ class ComponentDefinition[Pin: StrEnum]:
     reusable electrical behavior and maps its ordered terminals to those pins.
     ``land_pattern``, when present, describes every numbered copper pad from
     the package drawing. No field contains a native footprint or raw SPICE
-    program.
+    program. ``model_3d`` optionally supplies package-local geometry for KiCad;
+    otherwise the STEP adapter uses the product’s declared body envelope.
     """
 
     product: Product
@@ -50,6 +52,9 @@ class ComponentDefinition[Pin: StrEnum]:
     spice_model: SpiceModel | None = None
     land_pattern: LandPattern[Pin] | None = None
     routing: PackageRouting = field(default_factory=PackageRouting)
+    model_3d: Model3D | None = None
+    panel_passage: str | None = None
+    mated_zones: tuple[MatedZone, ...] = ()
 
     def __post_init__(self) -> None:
         """Reject empty pinouts and simulation terminals from another kind."""
@@ -69,6 +74,11 @@ class ComponentDefinition[Pin: StrEnum]:
             for path in (*self.routing.paths, *self.routing.vias)
         ):
             raise ValueError("package paths must use component pins")
+        if self.panel_passage is not None and (
+            self.model_3d is None
+            or self.panel_passage not in {solid.name for solid in self.model_3d.solids}
+        ):
+            raise ValueError("Panel passage must name a declared model solid")
         if self.spice_model is not None and any(
             not isinstance(pin, self.pin_type) for pin in self.spice_model.terminals
         ):

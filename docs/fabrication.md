@@ -34,7 +34,7 @@ KiCad rules and restricts narrow copper to each package's courtyard margin.
 ## PCBWay handoff
 
 For **bare-board fabrication**, upload `chess-board-fabrication.zip` as a single
-Gerber/drill archive. The outline defines a 320 × 360 mm board, 8 copper layers,
+Gerber/drill archive. The outline defines a 320 × 380 mm board, 8 copper layers,
 1.6 mm thickness, with copper order F.Cu, In1.Cu through In6.Cu, then B.Cu.
 Use the outline's contour, not the Gerber-job bounding box including stroke width.
 The drill report lists 870 plated holes (including 774 through vias) and 20
@@ -55,7 +55,10 @@ the Gerber job's `Finish: None` is an unset field, not a request for bare copper
 The retained electrical calculations assume 1 oz copper and a PCBWay 8-layer
 stackup; confirm those assumptions with the fabricator before fabrication.
 
-For **assembled boards**, also supply the adjacent `bom.csv`, `positions.csv`,
-assembly instructions and off-board harness/part specifications. The PCB BOM
-covers placed board components; off-board purchasing/assembly output still needs
-migration. Do not treat the bare-board ZIP as a complete turnkey assembly order.
+For assembly review, use `hardware/pcb/generated/assembly-bom.csv` with
+`assembly-smd.csv`; through-hole/hybrid placements are separated in
+`assembly-through-hole.csv`. Raw `bom.csv` and enriched `positions.csv` remain
+available for engineering review. The generated `assembly.md` records the native
+KiCad coordinate conventions. Confirm origin, bottom-side rotation and polarized
+pin orientation with the assembler before ordering. Harnesses are listed
+separately in `harness.md` and `harness-bom.csv`.

@@ -20,7 +20,7 @@ It reaches the hardware through Linux character devices:
 | `/dev/gpiochip0` | twelve panel buttons (unchanged GPIO wiring) |
 
 Suggested crates: `linux-embedded-hal` over `i2cdev`, `spidev` and `gpiocdev`.
-The standalone SSD1306 driver exists, but it is not connected to a physical I2C
+The standalone SSD1309 driver exists, but it is not connected to a physical I2C
 adapter or the runtime yet; the TCA9554 acquisition worker is also pending. Note
 that `rppal`, the obvious first choice for Pi peripherals in Rust, was retired by
 its author in July 2025, so the maintained character-device crates are the better
@@ -75,11 +75,12 @@ weak-pull-up variation, slow edges, and LED-coupled noise need measurement at th
 furthest channels; a typical estimate is not a worst-case guarantee. Keep the
 DRV5032FC 3.3 V open-drain output and local 100 nF bypassing.
 
-The board has no SDA/SCL pull-ups of its own (R1/R2 were removed): the only ones are
-the Pi's approximately 1.8 kΩ to 3.3 V, plus any display-module pulls (measure the
-module before fitting; they must be 4.7 kΩ or higher, or absent). Simulation of the
-complete nine-target bus capacitance passes at the Pi's default 100 kHz only; 400 kHz
-fails the SDA rise-time limit, so do not raise the I²C rate (docs/hardware.md).
+The board has no SDA/SCL pull-ups (R1/R2 removed). The Pi's approximately
+1.8 kΩ to 3.3 V operates in parallel with the approved MC242GW's documented
+4.7 kΩ per line, giving 1.30 kΩ nominal. Verify the delivered module's resistors
+before fitting and measure the complete populated bus. The capacitance estimate
+now implies roughly 268 ns SDA rise time, but does not qualify 400 kHz operation;
+retain the Pi's default 100 kHz (see [bus assumptions](hardware.md#buses-and-led-lines-s5)).
 The retained stackup and local Hall routes do not prove signal integrity.
 
 These are the contract for future hardware workers, not an implemented driver

@@ -491,8 +491,13 @@ def route_plan(ctx: RoutingContext, declarations: tuple[NetRoute, ...]) -> None:
     """Reserve local exits early, then route priority groups in declaration order."""
     from .launch import route_launched_nets
 
-    local = tuple(route for route in declarations if route.area is not None)
-    reserved = reserve_routes(ctx, local)
+    # Reserve declared package exits before any priority group occupies their copper.
+    early = tuple(
+        route
+        for route in declarations
+        if route.launch is None and (route.area is not None or route.reserve_group)
+    )
+    reserved = reserve_routes(ctx, early)
     for priority in sorted({route.priority for route in declarations}):
         group = tuple(route for route in declarations if route.priority == priority)
         points = dict(reserved)

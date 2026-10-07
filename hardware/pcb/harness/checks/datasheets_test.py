@@ -17,6 +17,21 @@ class DatasheetsTest(unittest.TestCase):
                 pdf=False,
             )
 
+    def test_plain_text_reference_and_error_pages(self) -> None:
+        validate_response(
+            200,
+            "text/plain",
+            b"void OLED_Init(void) { /* SSD1309 */ }",
+            pdf=False,
+            text=True,
+        )
+        for content_type, body in (
+            ("text/html", b"<html>error</html>"),
+            ("text/plain", b"404 Not found"),
+        ):
+            with self.subTest(content_type=content_type), self.assertRaises(ValueError):
+                validate_response(200, content_type, body, pdf=False, text=True)
+
     def test_missing_page_is_rejected(self) -> None:
         with self.assertRaisesRegex(ValueError, "HTTP 404"):
             validate_response(404, "text/html", b"Not found", pdf=False)

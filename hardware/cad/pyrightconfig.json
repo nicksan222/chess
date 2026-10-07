@@ -2,21 +2,21 @@
   "include": [
     "*.py",
     "../build_support.py",
-    "blocks",
-    "core",
-    "projects",
-    "tests"
+    "board",
+    "components",
+    "harness"
   ],
   "extraPaths": [
     ".."
   ],
+  "stubPath": "../pcb/harness/typings",
   "pythonVersion": "3.12",
   "typeCheckingMode": "strict",
   "reportAny": "error",
   "reportExplicitAny": "error",
   "executionEnvironments": [
     {
-      "root": "blocks",
+      "root": "components",
       "extraPaths": [
         ".",
         ".."
@@ -27,7 +27,7 @@
       "reportUnknownVariableType": "none"
     },
     {
-      "root": "core",
+      "root": "harness/base/blender",
       "extraPaths": [
         ".",
         ".."
@@ -38,7 +38,7 @@
       "reportUnknownVariableType": "none"
     },
     {
-      "root": "projects",
+      "root": "board",
       "extraPaths": [
         ".",
         ".."
