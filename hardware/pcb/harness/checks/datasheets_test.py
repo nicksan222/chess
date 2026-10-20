@@ -1,13 +1,67 @@
 """Link availability checks and regressions for HTTP/PDF response validation."""
 
+import ssl
 import unittest
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from threading import Thread
+from unittest.mock import call, patch
+from urllib.error import URLError
 
 from pcb.harness.checks.datasheets import check_all, check_url, validate_response
 
 
 class DatasheetsTest(unittest.TestCase):
+    def test_transport_failures_retry_until_a_verified_document_is_available(
+        self,
+    ) -> None:
+        reference = "https://supplier.example/sheet.pdf"
+        failure = URLError(ssl.SSLCertVerificationError("certificate has expired"))
+        with (
+            patch(
+                "pcb.harness.checks.datasheets.check_url",
+                side_effect=[failure, failure, reference],
+            ) as check,
+            patch("pcb.harness.checks.datasheets.time.sleep") as sleep,
+        ):
+            result = check_all((("A", reference),))[0]
+        self.assertEqual(result.status, "valid")
+        self.assertEqual(result.detail, reference)
+        self.assertEqual(check.call_args_list, [call(reference)] * 3)
+        self.assertEqual(sleep.call_args_list, [call(0.25), call(0.5)])
+
+    def test_persistent_certificate_failures_still_fail_after_bounded_retries(
+        self,
+    ) -> None:
+        reference = "https://supplier.example/sheet.pdf"
+        failure = URLError(ssl.SSLCertVerificationError("certificate has expired"))
+        with (
+            patch(
+                "pcb.harness.checks.datasheets.check_url", side_effect=failure
+            ) as check,
+            patch("pcb.harness.checks.datasheets.time.sleep") as sleep,
+        ):
+            result = check_all((("A", reference),))[0]
+        self.assertEqual(result.status, "failed")
+        self.assertIn("certificate has expired", result.detail)
+        self.assertEqual(check.call_count, 5)
+        self.assertEqual(
+            sleep.call_args_list, [call(0.25), call(0.5), call(1.0), call(2.0)]
+        )
+
+    def test_invalid_documents_fail_without_retrying(self) -> None:
+        reference = "https://supplier.example/sheet.pdf"
+        with (
+            patch(
+                "pcb.harness.checks.datasheets.check_url",
+                side_effect=ValueError("expected a PDF document"),
+            ) as check,
+            patch("pcb.harness.checks.datasheets.time.sleep") as sleep,
+        ):
+            result = check_all((("A", reference),))[0]
+        self.assertEqual(result.status, "failed")
+        check.assert_called_once_with(reference)
+        sleep.assert_not_called()
+
     def test_access_challenge_without_a_title_is_rejected(self) -> None:
         with self.assertRaisesRegex(ValueError, "access challenge"):
             validate_response(

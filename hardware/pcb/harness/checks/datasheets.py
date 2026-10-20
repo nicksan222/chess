@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import http.client
 import re
+import time
 from collections.abc import Iterable
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
@@ -130,7 +131,7 @@ def check_url(url: str, *, timeout_seconds: float = 8) -> str:
 
 
 def check_all(references: Iterable[tuple[str, str]]) -> tuple[DatasheetResult, ...]:
-    """Check each unique URL once and identify every component using it."""
+    """Check unique URLs, retry transport failures, and identify their components."""
     urls: dict[str, list[str]] = {}
     missing: list[DatasheetResult] = []
     for component, reference in references:
@@ -148,11 +149,21 @@ def check_all(references: Iterable[tuple[str, str]]) -> tuple[DatasheetResult, .
 
     def check(reference: str) -> DatasheetResult:
         components = tuple(urls[reference])
-        try:
-            final_url = check_url(reference)
-        except (OSError, ValueError, http.client.HTTPException) as error:
-            return DatasheetResult(components, reference, "failed", str(error))
-        return DatasheetResult(components, reference, "valid", final_url)
+        for attempt in range(5):
+            try:
+                final_url = check_url(reference)
+            except (OSError, http.client.HTTPException) as error:
+                # A supplier can serve different certificate chains across its
+                # backends. Each retry still verifies TLS and document contents;
+                # a persistently broken source never becomes a valid result.
+                if attempt == 4:
+                    return DatasheetResult(components, reference, "failed", str(error))
+                time.sleep((0.25, 0.5, 1.0, 2.0)[attempt])
+            except ValueError as error:
+                return DatasheetResult(components, reference, "failed", str(error))
+            else:
+                return DatasheetResult(components, reference, "valid", final_url)
+        raise AssertionError("datasheet retry loop must return a result")
 
     with ThreadPoolExecutor(max_workers=8) as executor:
         checked = tuple(executor.map(check, sorted(urls)))

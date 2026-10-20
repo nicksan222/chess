@@ -21,7 +21,7 @@ There are three distinct suites:
 | Native pad coverage, net assignments, closed courtyards, copper containment and save/reload preservation | `pcbnew/test_components.py` | Every PCB definition rendered and reopened on both sides at 0°, 90°, 180° and 270° |
 
 `catalog.py` is the board-specific adapter. Reusable checks take explicit inputs:
-`datasheets.check_all(references)` checks unique URLs once;
+`datasheets.check_all(references)` checks each unique URL for all its consumers;
 `pcbnew.board.validate_board(registry, native_board)` compares a rendered board
 with its actual component registry. The native renderer calls the latter before
 returning or saving a board. Registry validation also checks declared courtyard
@@ -54,7 +54,12 @@ schemes, PDF-to-HTML redirects and error responses without external requests.
 The documentation gate performs GET requests with redirects, bounded concurrency
 and timeouts. Missing URLs, HTTP errors, empty responses, false PDFs, common
 soft-404 titles and access challenges fail. It never silently skips an inaccessible
-site. Some sources are manufacturer-authored PDFs hosted by distributors because
+site. Transport failures, including TLS verification failures, get at most five
+attempts with exponential delays of 0.25, 0.5, 1 and 2 seconds. This accommodates
+suppliers serving inconsistent certificates across backends; every successful
+attempt must still pass TLS and document validation. Persistent transport errors
+fail, and invalid documents and HTTP error responses fail without retries.
+Some sources are manufacturer-authored PDFs hosted by distributors because
 the manufacturer's site blocks automated access. Availability does not verify
 part identity or document revision; those still require engineering review.
 
