@@ -51,14 +51,12 @@ outside the courtyard, and break courtyard closure, size, side or edge order.
 Local HTTP fixtures exercise redirect loops, missing redirect targets, invalid
 schemes, PDF-to-HTML redirects and error responses without external requests.
 
-The documentation gate performs GET requests with redirects, bounded concurrency
-and timeouts. Missing URLs, HTTP errors, empty responses, false PDFs, common
-soft-404 titles and access challenges fail. It never silently skips an inaccessible
-site. Transport failures, including TLS verification failures, get at most five
-attempts with exponential delays of 0.25, 0.5, 1 and 2 seconds. This accommodates
-suppliers serving inconsistent certificates across backends; every successful
-attempt must still pass TLS and document validation. Persistent transport errors
-fail, and invalid documents and HTTP error responses fail without retries.
+The documentation gate requires an HTTP(S) URL for every component. It also
+checks each unique URL once with redirects, bounded concurrency and timeouts.
+All availability or response failures produce warnings, regardless of cause;
+they do not fail CI or the commit gate. The standalone audit also exits
+successfully when only live checks fail. Missing or malformed URL definitions
+still fail. No retries or transport-error classification are needed.
 Some sources are manufacturer-authored PDFs hosted by distributors because
 the manufacturer's site blocks automated access. Availability does not verify
 part identity or document revision; those still require engineering review.
