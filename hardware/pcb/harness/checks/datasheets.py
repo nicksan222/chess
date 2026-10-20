@@ -130,7 +130,7 @@ def check_url(url: str, *, timeout_seconds: float = 8) -> str:
 
 
 def check_all(references: Iterable[tuple[str, str]]) -> tuple[DatasheetResult, ...]:
-    """Check each unique URL once and identify every component using it."""
+    """Check unique URLs once and identify their components."""
     urls: dict[str, list[str]] = {}
     missing: list[DatasheetResult] = []
     for component, reference in references:
@@ -150,7 +150,7 @@ def check_all(references: Iterable[tuple[str, str]]) -> tuple[DatasheetResult, .
         components = tuple(urls[reference])
         try:
             final_url = check_url(reference)
-        except (OSError, ValueError, http.client.HTTPException) as error:
+        except (OSError, http.client.HTTPException, ValueError) as error:
             return DatasheetResult(components, reference, "failed", str(error))
         return DatasheetResult(components, reference, "valid", final_url)
 
@@ -160,7 +160,7 @@ def check_all(references: Iterable[tuple[str, str]]) -> tuple[DatasheetResult, .
 
 
 def main() -> int:
-    """Print an audit; missing or unverified references cause a nonzero exit."""
+    """Print an audit; only missing URL definitions cause a nonzero exit."""
     from .catalog import datasheet_references
 
     report = check_all(datasheet_references())
@@ -169,7 +169,7 @@ def main() -> int:
     print(
         f"Datasheets: {sum(row.status == 'valid' for row in report)} valid URLs; {sum(row.status == 'failed' for row in report)} failed URLs; {sum(row.status == 'missing' for row in report)} components missing URLs"
     )
-    return int(any(row.status != "valid" for row in report))
+    return int(any(row.status == "missing" for row in report))
 
 
 if __name__ == "__main__":

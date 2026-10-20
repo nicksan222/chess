@@ -3,11 +3,26 @@
 import unittest
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from threading import Thread
+from unittest.mock import patch
+from urllib.error import URLError
 
 from pcb.harness.checks.datasheets import check_all, check_url, validate_response
 
 
 class DatasheetsTest(unittest.TestCase):
+    def test_unavailable_documents_are_reported_without_retrying(self) -> None:
+        reference = "https://supplier.example/sheet.pdf"
+        for failure in (URLError("unavailable"), ValueError("invalid document")):
+            with (
+                self.subTest(failure=failure),
+                patch(
+                    "pcb.harness.checks.datasheets.check_url", side_effect=failure
+                ) as check,
+            ):
+                result = check_all((("A", reference),))[0]
+                self.assertEqual(result.status, "failed")
+                check.assert_called_once_with(reference)
+
     def test_access_challenge_without_a_title_is_rejected(self) -> None:
         with self.assertRaisesRegex(ValueError, "access challenge"):
             validate_response(
