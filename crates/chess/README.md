@@ -97,3 +97,10 @@ Release builds compile those checks away.
 Transport and persistence layers should exchange `HistoryStep` values and
 validate them through `Game::accept`. Authentication is intentionally external:
 the hash chain detects corruption and divergence but does not identify a peer.
+
+## Public corpus tests
+
+The offline [Lichess puzzle corpus](tests/lichess/README.md) checks published
+move sequences against independent position and legal-move expectations, plus
+history replay, synchronization, and invalid-move recovery. Run it with
+`cargo test --package chess --test lichess`; it also runs in the package check.
