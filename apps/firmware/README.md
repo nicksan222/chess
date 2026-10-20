@@ -32,8 +32,10 @@ fakes; the adapters themselves (NetworkManager through `nmrs`, GPIO through
 `gpiocdev`) run only on the board, where real Wi-Fi, GPIO and display behaviour is
 validated.
 The executable starts all twelve button pollers on `/dev/gpiochip0` with internal
-pull-ups. Startup fails with the button name and GPIO number if a line cannot be
-acquired or read; systemd can then restart the process. `ButtonPanel` owns the
+pull-ups. Opening logs the chip path and pull-up configuration, then reports the
+number of initialized inputs on success. If a line cannot be acquired or read,
+it logs an error and returns the chip path, button name, GPIO number and underlying
+cause; startup fails so systemd can restart the process. `ButtonPanel` owns the
 pollers and stops them when dropped. Its injected-reader constructor exercises the
 same panel startup and runtime delivery without GPIO hardware.
 

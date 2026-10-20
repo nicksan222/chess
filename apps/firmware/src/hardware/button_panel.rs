@@ -2,6 +2,8 @@
 
 use std::{fmt::Display, io};
 
+use logger::{error, info};
+
 use super::{
     HardwareEventBus,
     pins::{BoardPins, ButtonPin, ButtonSubscription, ReadLevel},
@@ -15,12 +17,36 @@ pub struct ButtonPanel {
 
 impl ButtonPanel {
     /// Requests the board's inputs with internal pull-ups on the selected chip.
+    /// Logs the startup outcome and returns an error with chip, button and GPIO
+    /// context if acquisition fails. No partial panel is returned.
     #[cfg(target_os = "linux")]
     pub fn open(chip: impl AsRef<std::path::Path>, events: &HardwareEventBus) -> io::Result<Self> {
-        Self::start(
-            || super::linux_gpio::LinuxGpioReader::new(chip.as_ref()),
-            events,
-        )
+        let chip = chip.as_ref();
+        info!(
+            "opening control-panel buttons on {} with internal pull-ups",
+            chip.display()
+        );
+        match Self::start(|| super::linux_gpio::LinuxGpioReader::new(chip), events) {
+            Ok(panel) => {
+                info!(
+                    "control-panel buttons ready on {}: {} inputs initialized, pollers started",
+                    chip.display(),
+                    panel._subscriptions.len()
+                );
+                Ok(panel)
+            }
+            Err(cause) => {
+                let error = io::Error::new(
+                    cause.kind(),
+                    format!(
+                        "opening control-panel buttons on {}: {cause}",
+                        chip.display()
+                    ),
+                );
+                error!("{error}; firmware startup cannot continue");
+                Err(error)
+            }
+        }
     }
 
     /// Starts the same panel with injected readers, one owned reader per button.
@@ -207,5 +233,10 @@ mod tests {
             .err()
             .expect("a missing chip must fail startup");
         assert!(error.to_string().contains("Up button on GPIO 5"));
+        assert!(
+            error
+                .to_string()
+                .contains("opening control-panel buttons on /dev/gpiochip-does-not-exist")
+        );
     }
 }

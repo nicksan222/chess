@@ -20,7 +20,6 @@ fn main() -> io::Result<()> {
         .block_on(async {
             let mut firmware = Firmware::start()?;
             let _buttons = ButtonPanel::open("/dev/gpiochip0", &firmware.events())?;
-            info!("control-panel buttons ready");
             firmware.wait().await
         })
 }
