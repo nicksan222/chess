@@ -83,6 +83,18 @@ impl<const BCM: u8> ButtonPin<BCM> {
     where
         R: ReadLevel + Send + 'static,
     {
+        self.start_with_level(reader, events, None)
+    }
+
+    pub(super) fn start_with_level<R>(
+        &self,
+        reader: R,
+        events: &HardwareEventBus,
+        initial: Option<Level>,
+    ) -> Result<ButtonSubscription, StartSubscriptionError>
+    where
+        R: ReadLevel + Send + 'static,
+    {
         let runtime = Handle::try_current().map_err(|_| StartSubscriptionError)?;
         let button_events = Bus::new();
         let event_subscription = button_events.subscribe();
@@ -92,6 +104,7 @@ impl<const BCM: u8> ButtonPin<BCM> {
             reader,
             events.clone(),
             button_events,
+            initial,
         ));
 
         Ok(ButtonSubscription {
@@ -151,12 +164,13 @@ async fn poll<R>(
     mut reader: R,
     hardware_events: HardwareEventBus,
     button_events: Bus<ButtonEvent>,
+    initial: Option<Level>,
 ) where
     R: ReadLevel,
 {
     let mut interval = tokio::time::interval(POLL_INTERVAL);
     interval.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip);
-    let mut debouncer: Option<Debouncer> = None;
+    let mut debouncer = initial.map(Debouncer::new);
     let mut read_failed = false;
 
     loop {

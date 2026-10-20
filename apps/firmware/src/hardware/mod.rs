@@ -1,5 +1,6 @@
 //! Thin adapters over the board's physical interfaces.
 
+pub mod button_panel;
 mod buttons;
 mod debounce;
 pub mod display;

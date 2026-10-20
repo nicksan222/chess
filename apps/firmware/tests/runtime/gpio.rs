@@ -9,7 +9,7 @@ use firmware::{
 };
 
 /// Feeds electrical levels to the button adapter; `None` simulates a read failure.
-/// Production GPIO device access is not wired up yet.
+/// The executable uses the same adapter through `ButtonPanel`.
 struct SequenceReader {
     samples: VecDeque<Option<Level>>,
     last: Level,
