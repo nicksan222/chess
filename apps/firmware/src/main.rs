@@ -1,6 +1,6 @@
 use std::{env, io};
 
-use firmware::runtime::Firmware;
+use firmware::{hardware::button_panel::ButtonPanel, runtime::Firmware};
 use logger::{LevelFilter, implementations::SystemdLogger, info, register};
 
 static LOGGER: SystemdLogger = SystemdLogger::new(LevelFilter::Info);
@@ -19,7 +19,8 @@ fn main() -> io::Result<()> {
         .build()?
         .block_on(async {
             let mut firmware = Firmware::start()?;
-            // Physical adapters will attach to firmware.events().
+            let _buttons = ButtonPanel::open("/dev/gpiochip0", &firmware.events())?;
+            info!("control-panel buttons ready");
             firmware.wait().await
         })
 }
