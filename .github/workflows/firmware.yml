@@ -35,30 +35,38 @@ jobs:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-24.04
     timeout-minutes: 360
+    # Bound every step so a cold build cannot consume the cache-save window.
+    # Step budgets total 354 minutes, leaving six minutes for runner overhead.
     steps:
       - uses: actions/checkout@v7
+        timeout-minutes: 5
         with:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       - uses: extractions/setup-just@v4
+        timeout-minutes: 5
         with:
           just-version: 1.40.0
       - name: Free disk space
+        timeout-minutes: 5
         run: |
           sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc
           docker system prune --all --force
       - id: cache
         name: Registry cache names
+        timeout-minutes: 1
         run: |
           package="${GITHUB_REPOSITORY#*/}/yocto-cache"
           echo "package=${package,,}" >> "$GITHUB_OUTPUT"
           echo "registry=ghcr.io/${GITHUB_REPOSITORY,,}/yocto-cache" >> "$GITHUB_OUTPUT"
       - id: cache-tools
         uses: oras-project/setup-oras@v1
+        timeout-minutes: 5
         continue-on-error: true
         with:
           version: 1.3.4
       - id: cache-login
         uses: docker/login-action@v4
+        timeout-minutes: 5
         continue-on-error: true
         with:
           registry: ghcr.io
@@ -66,6 +74,7 @@ jobs:
           password: ${{ github.token }}
       - id: cache-restore
         name: Restore Yocto registry cache
+        timeout-minutes: 15
         if: steps.cache-tools.outcome == 'success' && steps.cache-login.outcome == 'success'
         continue-on-error: true
         env:
@@ -74,6 +83,7 @@ jobs:
       # Bootstrap GHCR from the existing combined Actions archive, if it still
       # exists. No new Actions cache is saved; future runs use the registry.
       - name: Restore legacy cache during migration
+        timeout-minutes: 15
         if: steps.cache-restore.outcome != 'success'
         continue-on-error: true
         uses: actions/cache/restore@v6
@@ -84,18 +94,31 @@ jobs:
           key: ${{ runner.os }}-yocto-legacy-migration
           restore-keys: ${{ runner.os }}-yocto-
       - id: image
+        # A step timeout fails the build but still permits always() cache saving.
+        timeout-minutes: 240
         run: just --justfile apps/firmware/justfile image
+      - id: image-stop
+        name: Stop image builder before archiving caches
+        if: always() && steps.image.outcome != 'skipped'
+        timeout-minutes: 5
+        # Killing the Docker client at a step timeout can leave its container alive.
+        run: |
+          docker ps --quiet --filter label=io.chess.yocto-image=true \
+            | xargs --no-run-if-empty docker stop --time 60
       - id: cache-save
         name: Save Yocto registry cache
+        timeout-minutes: 45
         if: >-
           always() && github.ref == 'refs/heads/main' &&
           steps.image.outcome != 'skipped' &&
+          steps.image-stop.outcome == 'success' &&
           steps.cache-tools.outcome == 'success' && steps.cache-login.outcome == 'success'
         continue-on-error: true
         env:
           CACHE_REGISTRY: ${{ steps.cache.outputs.registry }}
         run: just --justfile apps/firmware/justfile cache-save "$CACHE_REGISTRY"
       - name: Prune old untagged cache manifests
+        timeout-minutes: 3
         if: always() && steps.cache-save.outcome == 'success'
         continue-on-error: true
         uses: actions/delete-package-versions@v5
@@ -105,6 +128,7 @@ jobs:
           min-versions-to-keep: 6
           delete-only-untagged-versions: 'true'
       - uses: actions/upload-artifact@v7
+        timeout-minutes: 5
         with:
           name: firmware-${{ github.event.workflow_run.head_sha || github.sha }}
           path: dist/firmware

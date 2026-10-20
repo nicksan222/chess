@@ -25,8 +25,12 @@ multiple chunks again, but application changes leave the toolchain group alone.
 Fresh runners still download and unpack all three groups.
 
 Only main builds update the shared cache. Cache failures are non-fatal; completed
-tasks are saved after failed builds too. Main builds run sequentially, preserving
-in-progress compilation. Cleanup retains the three tagged snapshots and six
+tasks are saved after failed builds too. CI limits the image step to four hours,
+then stops any remaining build container before archiving the cache. All step
+budgets together stay below the six-hour job limit, reserving up to 45 minutes
+for cache uploads. A timed-out build remains a failure and publishes no image;
+the next main run can reuse its completed tasks. Main builds run sequentially,
+preserving in-progress compilation. Cleanup retains the three tagged snapshots and six
 recent untagged versions. Files inside active snapshots are not age-pruned.
 The old Actions archive is a migration fallback and is no longer written.
 The first run seeds GHCR; cold compilation remains necessary if neither cache is

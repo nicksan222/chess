@@ -89,7 +89,7 @@ image: validate _docker
     #!/usr/bin/env bash
     set -euo pipefail
     mkdir -p "{{ cache }}"
-    docker run --rm --init --user root \
+    docker run --rm --init --user root --label io.chess.yocto-image=true \
         -e "USER_ID=$(id -u)" -e "GROUP_ID=$(id -g)" \
         -e KAS_WORK_DIR=/build -e "FIRMWARE_SOURCE_DIR={{ root }}" \
         -v "{{ root }}:{{ root }}" -v "{{ cache }}:/build" -w "{{ root }}" \
