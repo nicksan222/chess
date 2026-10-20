@@ -21,10 +21,13 @@ on:
 
 permissions:
   contents: read
+  packages: write
 
 concurrency:
-  group: firmware-${{ github.event.workflow_run.head_sha || github.sha }}
-  cancel-in-progress: true
+  # One writer per branch; do not discard hours of useful compilation when a
+  # newer main commit arrives. GitHub keeps only the latest pending build.
+  group: firmware-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -43,25 +46,64 @@ jobs:
         run: |
           sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc
           docker system prune --all --force
-      - id: yocto-cache
+      - id: cache
+        name: Registry cache names
+        run: |
+          package="${GITHUB_REPOSITORY#*/}/yocto-cache"
+          echo "package=${package,,}" >> "$GITHUB_OUTPUT"
+          echo "registry=ghcr.io/${GITHUB_REPOSITORY,,}/yocto-cache" >> "$GITHUB_OUTPUT"
+      - id: cache-tools
+        uses: oras-project/setup-oras@v1
+        continue-on-error: true
+        with:
+          version: 1.3.4
+      - id: cache-login
+        uses: docker/login-action@v4
+        continue-on-error: true
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+      - id: cache-restore
+        name: Restore Yocto registry cache
+        if: steps.cache-tools.outcome == 'success' && steps.cache-login.outcome == 'success'
+        continue-on-error: true
+        env:
+          CACHE_REGISTRY: ${{ steps.cache.outputs.registry }}
+        run: just --justfile apps/firmware/justfile cache-restore "$CACHE_REGISTRY"
+      # Bootstrap GHCR from the existing combined Actions archive, if it still
+      # exists. No new Actions cache is saved; future runs use the registry.
+      - name: Restore legacy cache during migration
+        if: steps.cache-restore.outcome != 'success'
+        continue-on-error: true
         uses: actions/cache/restore@v6
         with:
           path: |
             .cache/yocto/downloads
             .cache/yocto/sstate-cache
-          key: ${{ runner.os }}-yocto-${{ hashFiles('apps/firmware/yocto/kas/firmware.yml') }}-${{ github.run_id }}-${{ github.run_attempt }}
-          restore-keys: |
-            ${{ runner.os }}-yocto-${{ hashFiles('apps/firmware/yocto/kas/firmware.yml') }}-
-            ${{ runner.os }}-yocto-
-      - run: just --justfile apps/firmware/justfile image
-      - name: Save Yocto cache
-        if: always()
-        uses: actions/cache/save@v6
+          key: ${{ runner.os }}-yocto-legacy-migration
+          restore-keys: ${{ runner.os }}-yocto-
+      - id: image
+        run: just --justfile apps/firmware/justfile image
+      - id: cache-save
+        name: Save Yocto registry cache
+        if: >-
+          always() && github.ref == 'refs/heads/main' &&
+          steps.image.outcome != 'skipped' &&
+          steps.cache-tools.outcome == 'success' && steps.cache-login.outcome == 'success'
+        continue-on-error: true
+        env:
+          CACHE_REGISTRY: ${{ steps.cache.outputs.registry }}
+        run: just --justfile apps/firmware/justfile cache-save "$CACHE_REGISTRY"
+      - name: Prune old untagged cache manifests
+        if: always() && steps.cache-save.outcome == 'success'
+        continue-on-error: true
+        uses: actions/delete-package-versions@v5
         with:
-          path: |
-            .cache/yocto/downloads
-            .cache/yocto/sstate-cache
-          key: ${{ steps.yocto-cache.outputs.cache-primary-key }}
+          package-name: ${{ steps.cache.outputs.package }}
+          package-type: container
+          min-versions-to-keep: 6
+          delete-only-untagged-versions: 'true'
       - uses: actions/upload-artifact@v7
         with:
           name: firmware-${{ github.event.workflow_run.head_sha || github.sha }}
