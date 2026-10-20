@@ -63,6 +63,14 @@ verify-crates: update-crates
 validate:
     cd "{{ root }}" && python3 apps/firmware/yocto/validate_crates.py
 
+# Restore completed tasks and fetched sources from an OCI registry (requires ORAS).
+cache-restore registry:
+    cd "{{ root }}" && bash apps/firmware/yocto/cache.sh restore "{{ registry }}"
+
+# Save deterministic cache shards; registries reuse unchanged content-addressed blobs.
+cache-save registry:
+    cd "{{ root }}" && bash apps/firmware/yocto/cache.sh save "{{ registry }}"
+
 # Check the isolated, offline Yocto Cargo package without requiring Docker.
 yocto-check: validate
     cd "{{ root }}" && cargo check --locked --manifest-path apps/firmware/yocto/Cargo.toml
@@ -81,7 +89,7 @@ image: validate _docker
     #!/usr/bin/env bash
     set -euo pipefail
     mkdir -p "{{ cache }}"
-    docker run --rm --init --user root \
+    docker run --rm --init --user root --label io.chess.yocto-image=true \
         -e "USER_ID=$(id -u)" -e "GROUP_ID=$(id -g)" \
         -e KAS_WORK_DIR=/build -e "FIRMWARE_SOURCE_DIR={{ root }}" \
         -v "{{ root }}:{{ root }}" -v "{{ cache }}:/build" -w "{{ root }}" \
