@@ -45,6 +45,10 @@ path = "tests/perft/main.rs"
 name = "logging"
 path = "tests/logging/main.rs"
 
+[[test]]
+name = "lichess"
+path = "tests/lichess/main.rs"
+
 [[bench]]
 name = "perft"
 path = "benches/performance/perft.rs"
