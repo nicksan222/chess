@@ -66,7 +66,7 @@ resulting executable is retained as a seven-day workflow artifact. This takes a
 small fraction of a Linux image build and runs alongside hardware checks. Branch
 protection requires the `Required checks` job on this workflow.
 
-Hardware uses one sequential `PCB → CAD` job in both PR and main CI. PCB review
+Hardware uses one sequential `🧩 PCB → CAD` job in both PR and main CI. PCB review
 (including the PR report when requested) runs before CAD in the same workspace;
 CAD reuses its validated model without a second PCB generation. The workflow
 retains separate `pcb-generated` and `cad-generated` artifacts and uploads each

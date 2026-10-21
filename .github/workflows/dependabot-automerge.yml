@@ -14,11 +14,11 @@ permissions:
 
 jobs:
   enable-auto-merge:
-    name: Enable auto-merge
+    name: 🤝 Enable auto-merge
     if: github.actor == 'dependabot[bot]' && !github.event.pull_request.draft
     runs-on: ubuntu-latest
     steps:
-      - name: Enable squash auto-merge
+      - name: 🔀 Enable squash auto-merge
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_URL: ${{ github.event.pull_request.html_url }}
