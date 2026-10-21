@@ -18,7 +18,10 @@ pub struct Navigator {
 
 impl Navigator {
     pub fn start() -> Self {
-        let firmware = FirmwareHarness::start().unwrap();
+        Self::new(FirmwareHarness::start().unwrap())
+    }
+
+    pub fn new(firmware: FirmwareHarness) -> Self {
         let snapshot = firmware.snapshot();
         Self { firmware, snapshot }
     }

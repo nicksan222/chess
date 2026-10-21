@@ -54,9 +54,35 @@ headless `menu` crate's primitives into the Play, Connection, Pairing, Update,
 and Settings submenus. Leaf requests are typed but deliberately immediate and
 non-blocking until their external modules define completion and cancellation
 behavior; the menu crate remains product-neutral and performs no operation.
-Each request has one placeholder integration file under `src/menu/transitions/`,
-so future module ownership has an explicit location without entering the menu
-definition or runtime loop.
+Each request has one integration file under `src/menu/transitions/`, so module
+ownership has an explicit location without entering the menu definition or
+runtime loop; a blocking request's escape action lives with it. All but Check
+for Updates are still placeholders.
+
+Long-running requests use the menu crate's blocking items, and every
+integration follows one contract in `src/menu/transitions/`. Activation holds
+input; the transition starts its work and reports through a `Reporter` as a
+`TransitionEvent`: `progress` while running, `finished` when done. The runtime
+loop receives reports alongside hardware events and applies one generic rule:
+a finished report for the request blocking the menu releases it. Escape
+dispatches the item's escape action, which cancels the work and reports it
+finished. The report's `StatusUpdate` lands in `Snapshot::transitions`, and
+`Snapshot::blocking` names the operation holding input.
+
+A new integration adds its setting to `Config` (`device()` for the product,
+network-free `offline()` for `FirmwareHarness`), its field to
+`TransitionStatus`, its variant to `StatusUpdate`, its state to `Transitions`
+and its arms to `Transitions::handle`; the runtime and harness do not change.
+Tests drive the real menu, inject reports with `FirmwareHarness::report` like
+hardware with `trigger`, and wait for background results with `until`.
+
+Check for Updates asks the GitHub Releases API for this repository's latest
+stable release over HTTPS and reports `Snapshot::transitions.update`: `Checking`, then
+`Available` when its `v<version>` tag is newer than the running Cargo version,
+`UpToDate`, `NoRelease` (404), `Disabled` or `Failed` with the cause. It
+downloads nothing. TLS uses `rustls` on `ring` with the image's
+`ca-certificates`, so it needs a synchronised clock. No button is bound to
+escape yet, so a check ends with its result or a 15 s timeout.
 
 `src/hardware/buttons.rs` and `src/hardware/debounce.rs` own polling, active-low
 translation, and mechanical debounce. Call `start_subscription` with a GPIO
