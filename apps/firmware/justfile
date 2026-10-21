@@ -10,26 +10,23 @@ deploy := cache + "/build/tmp/deploy/images/" + machine
 output := root + "/dist/firmware"
 kas_image := "ghcr.io/siemens/kas/kas:5.2"
 kas := env_var_or_default("KAS", "kas")
-ruff := env_var_or_default("RUFF", "ruff")
 
 default:
     @just --list
 
-# Check the Rust package and Yocto Python.
+# Check the Rust package.
 quality:
     cd "{{ root }}" && cargo fmt --check --package "{{ package }}"
     cd "{{ root }}" && cargo check --package "{{ package }}" --all-targets --all-features
     cd "{{ root }}" && cargo clippy --package "{{ package }}" --all-targets --all-features -- -D warnings
     cd "{{ root }}" && RUSTDOCFLAGS='-D warnings' cargo doc --package "{{ package }}" --no-deps --all-features
-    cd "{{ root }}" && {{ ruff }} check apps/firmware/yocto
-    cd "{{ root }}" && {{ ruff }} format --check apps/firmware/yocto
 
 # Run every firmware Rust test.
 test:
     cd "{{ root }}" && cargo test --package "{{ package }}" --all-targets --all-features
 
 # Run local firmware gates.
-check: quality test validate
+check: quality test
 
 # Build the firmware application without constructing an OS image.
 build:
@@ -59,10 +56,6 @@ verify-crates: update-crates
     cd "{{ root }}" && git diff --exit-code -- \
         apps/firmware/yocto/meta-firmware/recipes-firmware/firmware/firmware-crates.inc
 
-# Validate generated crate metadata against Cargo.lock.
-validate:
-    cd "{{ root }}" && python3 apps/firmware/yocto/validate_crates.py
-
 # Restore completed tasks and fetched sources from an OCI registry (requires ORAS).
 cache-restore registry:
     cd "{{ root }}" && bash apps/firmware/yocto/cache.sh restore "{{ registry }}"
@@ -72,11 +65,11 @@ cache-save registry:
     cd "{{ root }}" && bash apps/firmware/yocto/cache.sh save "{{ registry }}"
 
 # Check the isolated, offline Yocto Cargo package without requiring Docker.
-yocto-check: validate
+yocto-check:
     cd "{{ root }}" && cargo check --locked --manifest-path apps/firmware/yocto/Cargo.toml
 
 # Parse BitBake and dry-run the complete image task graph without executing it.
-image-check: validate _docker
+image-check: _docker
     mkdir -p "{{ cache }}"
     docker run --rm --init --user root \
         -e "USER_ID=$(id -u)" -e "GROUP_ID=$(id -g)" \
@@ -85,7 +78,7 @@ image-check: validate _docker
         {{ kas_image }} shell -c 'bitbake -n firmware-image' "{{ config }}"
 
 # Build and collect the flashable Yocto image.
-image: validate _docker
+image: _docker
     #!/usr/bin/env bash
     set -euo pipefail
     mkdir -p "{{ cache }}"

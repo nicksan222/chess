@@ -57,15 +57,23 @@ repos:
 local_conf_header:
   firmware: |
     CONF_VERSION = "2"
+
+    # Keep downloads and sstate next to the build so they can be cached.
     DL_DIR = "${TOPDIR}/../downloads"
     SSTATE_DIR = "${TOPDIR}/../sstate-cache"
+    INHERIT += "rm_work"
+
+    # Buses used by the board's peripherals.
     ENABLE_I2C = "1"
     ENABLE_SPI_BUS = "1"
     KERNEL_MODULE_AUTOLOAD:rpi += "i2c-dev"
+
+    # systemd as the only init system, plus Wi-Fi.
     DISTRO_FEATURES:append = " systemd usrmerge wifi"
     DISTRO_FEATURES:remove = "sysvinit"
     DISTRO_FEATURES_OPTED_OUT += "sysvinit"
     VIRTUAL-RUNTIME_init_manager = "systemd"
     VIRTUAL-RUNTIME_initscripts = ""
-    INHERIT += "rm_work"
+
+    # Required by the Raspberry Pi Wi-Fi firmware package.
     LICENSE_FLAGS_ACCEPTED += "synaptics-killswitch"

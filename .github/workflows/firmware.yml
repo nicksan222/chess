@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 360
     # Bound every step so a cold build cannot consume the cache-save window.
-    # Step budgets total 354 minutes, leaving six minutes for runner overhead.
+    # Step budgets total 339 minutes, leaving 21 minutes for runner overhead.
     steps:
       - uses: actions/checkout@v7
         timeout-minutes: 5
@@ -80,19 +80,6 @@ jobs:
         env:
           CACHE_REGISTRY: ${{ steps.cache.outputs.registry }}
         run: just --justfile apps/firmware/justfile cache-restore "$CACHE_REGISTRY"
-      # Bootstrap GHCR from the existing combined Actions archive, if it still
-      # exists. No new Actions cache is saved; future runs use the registry.
-      - name: 🕰️ Restore legacy cache during migration
-        timeout-minutes: 15
-        if: steps.cache-restore.outcome != 'success'
-        continue-on-error: true
-        uses: actions/cache/restore@v6
-        with:
-          path: |
-            .cache/yocto/downloads
-            .cache/yocto/sstate-cache
-          key: ${{ runner.os }}-yocto-legacy-migration
-          restore-keys: ${{ runner.os }}-yocto-
       - id: image
         # A step timeout fails the build but still permits always() cache saving.
         timeout-minutes: 240
