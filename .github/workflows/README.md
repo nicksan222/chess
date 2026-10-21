@@ -2,7 +2,7 @@
 
 This directory owns GitHub Actions workflow definitions:
 
-- `ci.yml` runs Hardware, Quality, and Pi harness on `main` and `v*` tags, and
+- `ci.yml` runs Hardware and Quality on `main` and `v*` tags, and
   calls `firmware.yml` with publish enabled only for release tags;
 - `pr.yml` runs those same checks on pull requests, plus Firmware checks
   (Yocto metadata and the AArch64 binary), posts one updated comment when PCB

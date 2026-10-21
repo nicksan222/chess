@@ -12,7 +12,7 @@ welcome:
     @bash .devcontainer/welcome.sh
 
 # Complete repository validation and generation.
-check: _automation-format agents-check
+check: _automation-format
     #!/usr/bin/env bash
     set -euo pipefail
     for package in {{ rust_packages }}; do just --justfile "$package/justfile" check; done
@@ -22,7 +22,7 @@ check: _automation-format agents-check
     just --justfile hardware/cad/justfile check
 
 # Fast commit gate: lint and tests; no renders, PCB regeneration or cross-build (CI runs them).
-precommit: _automation-format agents-check
+precommit: _automation-format
     #!/usr/bin/env bash
     set -euo pipefail
     for package in {{ rust_packages }}; do just --justfile "$package/justfile" check; done
@@ -31,7 +31,7 @@ precommit: _automation-format agents-check
     just --justfile hardware/pcb/justfile quality
 
 # Formatting, linting, checking, and documentation.
-quality: _automation-format agents-check
+quality: _automation-format
     #!/usr/bin/env bash
     set -euo pipefail
     for package in {{ rust_packages }}; do just --justfile "$package/justfile" quality; done
@@ -49,7 +49,7 @@ _automation-format:
     done
 
 # All package tests, including hardware validation.
-test: agents-test
+test:
     #!/usr/bin/env bash
     set -euo pipefail
     for package in {{ rust_packages }}; do just --justfile "$package/justfile" test; done
@@ -89,46 +89,6 @@ firmware-check:
 # Build the flashable Yocto image.
 firmware:
     just --justfile apps/firmware/justfile image
-
-# Configure runtime Herdr hooks and the pinned review panel (no model calls).
-agents-setup:
-    python3 .agents/team/setup.py
-
-# Start the whole agent team (asks Claude Code or Pi).
-agents:
-    python3 .agents/team/agents.py up
-
-# Stop the whole agent team.
-agents-stop:
-    python3 .agents/team/agents.py down
-
-# Restart the whole agent team with new conversations; keeps the task handoff.
-agents-restart:
-    python3 .agents/team/agents.py restart
-
-# Check container tools and provider login without a model request.
-[positional-arguments]
-agents-doctor *args:
-    python3 .agents/team/agents.py doctor "$@"
-
-# Show all configured models, harnesses and roles without starting them.
-agents-list:
-    python3 .agents/team/agents.py list
-
-# Report local recorded Claude tokens, not remaining subscription allowance.
-[positional-arguments]
-agents-usage *args:
-    python3 .agents/team/usage.py "$@"
-
-# Lint, format-check and test agent tooling without provider/model requests.
-agents-check:
-    ruff check .agents/team
-    ruff format --check .agents/team
-    just agents-test
-
-# Offline regressions; optional native smoke tests use HERDR_TEST_BIN.
-agents-test:
-    python3 -m unittest discover -s .agents/team/tests -v
 
 # Remove package-local caches and transient output.
 clean:

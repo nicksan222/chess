@@ -1,0 +1,4 @@
+# Adapter for .agents/roles/developer.md; edit the shared role, not this file.
+name = "developer"
+description = "Implements one bounded slice (named files, acceptance criteria, stopping point) in the portable Rust crates: chess rules and state, menu navigation, shared core, persistence or logging, with focused tests. Use when the lead delegates a concrete, already-scoped crate change."
+developer_instructions = "Read `AGENTS.md` and `.agents/roles/developer.md` before acting. Follow the role's\nscope and the lead's brief. Do not delegate further.\n"

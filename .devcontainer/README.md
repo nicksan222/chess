@@ -17,13 +17,9 @@ devcontainer exec --workspace-folder . just check
 
 The image provides:
 
-- Node.js 22, Bun 1.4, and every agent harness: pinned Claude Code and Herdr in the
-  image, pinned [Pi](https://pi.dev/) and Codex installed during container creation
-  (creation fails if any is missing), plus Herdr's Claude/Codex/Pi status hooks and
-  the Reviewr panel; `just agents` asks whether the optional
-  [agent team](../.agents/team/README.md) runs in Claude Code or Pi;
-- a Bun-managed `.pi` TypeScript project with pinned Pi API types, workspace
-  IntelliSense, and `bun run --cwd .pi check` validation for project extensions;
+- Node.js 22 and the agent harnesses: pinned Claude Code in the image and pinned
+  Codex installed during container creation (creation fails if either is
+  missing). Both read the shared [agent tooling](../.agents/README.md);
 - stable Rust with `rustfmt`, Clippy, Just, and the AArch64 GNU target/linker;
 - Ruff for CAD, PCB, and shared Python;
 - KiCad 9 with `kicad-cli` and `pcbnew`;
@@ -38,23 +34,13 @@ CI prebuilds this image, pushes it to GHCR, then runs Python, CAD, PCB, and Rust
 parallel `devcontainer exec` jobs against that digest. Subsequent
 prebuilds reuse the image layers when the Dockerfile is unchanged.
 
-Container creation configures the repository pre-commit hook, installs Pi/Codex,
-and configures Herdr integrations without starting models. Claude Code is installed
-in the image. Separate `chess-claude`, `chess-codex` and `chess-herdr` volumes keep
-provider credentials and runtime configuration across rebuilds. Run
-`claude auth login` inside the container (or forward `CLAUDE_CODE_OAUTH_TOKEN`).
+Container creation configures the repository pre-commit hook and installs Codex
+without starting a model. Separate `chess-claude` and `chess-codex` volumes keep provider
+credentials and runtime configuration across rebuilds. Run `claude auth login`
+(or forward `CLAUDE_CODE_OAUTH_TOKEN`) and `codex login` inside the container.
 Accept workspace trust manually. Host API credentials may select API billing;
 unset `ANTHROPIC_API_KEY` before opening the container for subscription-only use.
 No host credential directories are mounted and no secrets are copied into the image.
-Credentials for every built-in Pi API-key provider are forwarded from matching
-host environment variables without writing secrets to the repository. Pi's
-`~/.pi/agent` directory uses the persistent `chess-pi-agent` Docker volume, so
-credentials created with `pi` and `/login` survive container rebuilds. The
-`pi-worktrees` package stores managed worktrees in the persistent
-`chess-pi-worktrees` volume, preserving uncommitted agent work across container
-recreation. Export provider variables on the host before opening the container; see Pi's
-[provider documentation](https://github.com/earendil-works/pi-mono/blob/main/packages/coding-agent/docs/providers.md)
-for the supported names and cloud-provider settings.
 
 Host-only fallback downloads (`.cache/blender`, `.cache/pcb`) exist for people
 who run the tools outside the container.
@@ -64,15 +50,9 @@ versions, which agents are signed in, and the commands below. Bring it back with
 `just welcome`.
 
 ```sh
-just welcome               # toolchain/login status and starter commands
-bun run --cwd .pi check    # type-check project Pi extensions
-pi                         # start the coding agent; use /login for OAuth
-claude auth login          # persistent Claude login; no automatic sign-in
-just agents-doctor         # tools/login check, no model request
-just agents                # start the eight-role team
-just agents-restart        # restart it, task handoff kept
-just agents-stop           # stop it
-just agents-test           # offline launcher/configuration tests
+just welcome                # toolchain/login status and starter commands
+claude auth login           # persistent Claude login; no automatic sign-in
+codex login                 # persistent Codex login
 just pcb                    # test, then generate PCB review output
 just cad                    # test, then generate CAD output
 just quality                # lint and format-check every package

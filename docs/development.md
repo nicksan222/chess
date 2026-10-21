@@ -56,8 +56,7 @@ container; Yocto owns its caches under `.cache/yocto`.
 ## CI
 
 The `PR` workflow invokes package-local recipes for code quality, every Rust
-package, hardware, and firmware, and runs the Bun-managed `.pi` typecheck and
-test suite with its frozen lockfile. In addition to host tests and Yocto metadata
+package, hardware, and firmware. In addition to host tests and Yocto metadata
 validation, `Firmware checks / AArch64 binary` performs a locked optimized build
 and links the real firmware executable for the Pi architecture. Cargo follows the
 firmware package's complete dependency graph automatically, including local
@@ -72,7 +71,7 @@ CAD reuses its validated model without a second PCB generation. The workflow
 retains separate `pcb-generated` and `cad-generated` artifacts and uploads each
 only after its generation step succeeds.
 
-Push `CI` on `main` runs the same Hardware, Quality, and Pi harness jobs without
+Push `CI` on `main` runs the same Hardware and Quality jobs without
 the pull-request firmware checks. Full Yocto image builds are isolated in the
 `Firmware` workflow. Every successful `main` CI run starts it as a sibling
 workflow after the normal checks, and it also runs weekly to detect ecosystem
