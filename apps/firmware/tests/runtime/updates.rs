@@ -18,6 +18,7 @@ use firmware::{
         Request,
         transitions::{Config, UpdateStatus},
     },
+    updater::Release,
 };
 
 use crate::Navigator;
@@ -60,10 +61,10 @@ async fn a_newer_release_reaches_the_snapshot() {
 
     assert_eq!(
         snapshot.transitions.update,
-        UpdateStatus::Available {
+        UpdateStatus::Available(Release {
             version: semver::Version::new(99, 0, 0),
             page: "https://example.invalid/v99.0.0".into(),
-        }
+        })
     );
     panel.firmware.shutdown().await.unwrap();
 }

@@ -75,13 +75,19 @@ finishes. `Snapshot::blocking` names the operation holding input. Tests drive
 the real menu, inject reports with `FirmwareHarness::report` as they inject
 hardware with `trigger`, and wait for background results with `until`.
 
-Check for Updates asks the GitHub Releases API for this repository's latest
-stable release over HTTPS and reports `Snapshot::transitions.update`:
-`Checking`, then `Available` when its `v<version>` tag is newer than the running Cargo version,
-`UpToDate`, `NoRelease` (404), `Disabled` or `Failed` with the cause. It
-downloads nothing. TLS uses `rustls` on `ring` with the image's
-`ca-certificates`, so it needs a synchronised clock. No button is bound to
-escape yet, so a check ends with its result or a 15 s timeout.
+`src/updater/` owns the local firmware and its updates, independent of menus
+and displays. `installed` names the running firmware and its Cargo version,
+used by `--version`, the startup log and the user agent. `Updater::check` asks
+the GitHub Releases API for this repository's latest stable release over HTTPS
+and compares its `v<version>` tag with the installed version: `NoRelease`
+(404), `UpToDate` or `Available(Release)`, or a typed `Error` with its cause
+chain. TLS uses `rustls` on `ring` with the image's `ca-certificates`, so it
+needs a synchronised clock. Installing an update is not implemented.
+
+The Check for Updates transition only runs that check and presents it as
+`Snapshot::transitions.update`: `Checking`, then the result, `Disabled` or
+`Failed`. No button is bound to escape yet, so a check ends with its result or
+a 15 s timeout.
 
 `src/hardware/buttons.rs` and `src/hardware/debounce.rs` own polling, active-low
 translation, and mechanical debounce. Call `start_subscription` with a GPIO

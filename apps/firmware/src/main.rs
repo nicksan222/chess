@@ -1,18 +1,18 @@
 use std::{env, io};
 
-use firmware::{hardware::button_panel::ButtonPanel, runtime::Firmware};
+use firmware::{hardware::button_panel::ButtonPanel, runtime::Firmware, updater::installed};
 use logger::{LevelFilter, implementations::SystemdLogger, info, register};
 
 static LOGGER: SystemdLogger = SystemdLogger::new(LevelFilter::Info);
 
 fn main() -> io::Result<()> {
     if env::args().nth(1).as_deref() == Some("--version") {
-        println!("firmware {}", env!("CARGO_PKG_VERSION"));
+        println!("{} {}", installed::NAME, installed::version());
         return Ok(());
     }
 
     register(&LOGGER).map_err(|_| io::Error::other("firmware logger already registered"))?;
-    info!("starting firmware {}", env!("CARGO_PKG_VERSION"));
+    info!("starting {} {}", installed::NAME, installed::version());
 
     tokio::runtime::Builder::new_current_thread()
         .enable_all()
