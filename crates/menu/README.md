@@ -58,3 +58,8 @@ snapshot. The application remains the source of truth.
 Navigation is non-wrapping and submenu history is allocation-free with a fixed
 depth of eight. Empty menus are valid. Presentation details such as fonts,
 scrolling, icons, and pixels belong in an external renderer.
+
+## Tests
+
+`tests/README.md` maps the unit, end-to-end and reference-model property
+suites. Run them with `just --justfile crates/menu/justfile check`.
