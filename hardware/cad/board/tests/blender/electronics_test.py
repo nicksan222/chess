@@ -8,8 +8,8 @@ import unittest
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
+from cad import dimensions
 from cad.harness.base.pcb import PcbSnapshot
-from shared import dimensions
 
 if TYPE_CHECKING:
     import bpy

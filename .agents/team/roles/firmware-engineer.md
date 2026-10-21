@@ -3,7 +3,7 @@
 ## Read before matching work
 
 - `apps/firmware/README.md`, `docs/host.md`, relevant module and crate READMEs.
-- `hardware/shared/README.md` and current wiring/Hall-bank contracts for device work.
+- `hardware/README.md` and the wiring/Hall-bank contracts in `hardware/pcb/spec/` for device work.
 
 ## Scope and boundaries
 

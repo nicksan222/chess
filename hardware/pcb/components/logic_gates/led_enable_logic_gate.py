@@ -20,8 +20,8 @@ from pcb.harness import (
     Point,
     Product,
 )
-from shared.components import LED_ENABLE_GATE
-from shared.electronics.mosfet import LogicGatePin
+from pcb.spec.components import LED_ENABLE_GATE
+from pcb.spec.electronics.mosfet import LogicGatePin
 
 LED_ENABLE_GATE_DEFINITION = ComponentDefinition(
     product=Product(

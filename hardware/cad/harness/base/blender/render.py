@@ -7,6 +7,7 @@ from typing import cast
 import bpy
 from mathutils import Vector
 
+from cad import dimensions
 from cad.harness.base.blender import (
     materials,
     modeling,
@@ -15,7 +16,6 @@ from cad.harness.base.blender import (
     validation,
 )
 from cad.harness.base.component import Component, PrintableComponent
-from shared import dimensions
 
 FIT_NOISE_TOLERANCE_MM3 = 0.01
 

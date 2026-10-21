@@ -3,8 +3,8 @@
 import pytest
 
 from pcb.board.board import Board, BoardNet
-from shared.electronics.tactile_switch import TactileSwitchPin
-from shared.panel_buttons import PANEL_BUTTONS
+from pcb.spec.electronics.tactile_switch import TactileSwitchPin
+from pcb.spec.panel_buttons import PANEL_BUTTONS
 
 
 @pytest.mark.parametrize("pressed", [button.name for button in PANEL_BUTTONS])

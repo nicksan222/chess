@@ -7,7 +7,7 @@ while test engineer authors fixtures/harnesses; request missing test states thro
 Read-only implementation scope unless lead explicitly assigns a test/documentation path.
 
 Choose evidence appropriate to risk: portable Rust tests, production runtime E2E/button/
-display behavior, shared contract/dimension checks, native ERC/DRC/parity and SPICE, CAD
+display behavior, PCB spec and CAD dimension checks, native ERC/DRC/parity and SPICE, CAD
 mesh/assembly views, Linux VM, AArch64 linkage or Yocto metadata. Do not duplicate every
 check. Obtain ownership before heavy generation, Docker/QEMU or image tasks; report exact
 commands, inputs, artifacts/results and remaining limitations. Validate negative/startup/

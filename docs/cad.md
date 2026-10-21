@@ -24,8 +24,8 @@ tray to hold them. The enclosure uses one case, one plate and twelve separately 
 - **`components/printable/board_case.py`** produces `Printable_Board_Case`, 344 x 404 x 30 mm,
   an open tub. The PCB drops straight into a pocket (outline plus 0.5 mm per
   side), rests on a ledge under its edge and on 20 bosses, and the Raspberry Pi
-  hangs underneath it, component side up, at the shared Pi transform
-  (`pi_header_pin_xy`) that also places J1. The power jack and rocker are
+  hangs underneath it, component side up, where the PCB places J1 and exports the
+  Pi's position (`hardware/pcb/spec/host.py`). The power jack and rocker are
   panel-mounted in the back wall and wired to J4 on the board's underside.
 - **`components/printable/tile_plate.py`** produces `Printable_Tile_Plate`, 335 x 395 mm,
   covering the whole board: the checkerboard engraved over the playing area with
@@ -58,13 +58,16 @@ carries `CASE_CENTER_OFFSET_Y_MM`.
 All printable parts are generated in **assembly coordinates**: the case floor at
 z = 0, the plate occupying the top 3 mm. `board-assembly` therefore moves neither
 of them. That is deliberate — if the plate ever stops meeting the case, it is a
-real error in `hardware/shared/dimensions/` rather than a positioning mistake in a view, and
+real error in `hardware/cad/dimensions/` rather than a positioning mistake in a view, and
 the render shows it.
 
-## Shared measurements
+## Measurements
 
-Shared CAD measurements live in `hardware/shared/dimensions/`, grouped by
-board, case, panel, and tile plate. The package validates itself on import. Among other things it checks that the internal stack
+CAD measurements live in `hardware/cad/dimensions/`, grouped by case, panel, tile
+plate and printing. `board.py` there reads the board the PCB exports in
+`hardware/pcb/generated/pcb-components.json`: the outline, squares, mounting holes,
+the hanging Pi and the panel products. To move one of those, change the PCB in
+`hardware/pcb/spec/` and regenerate it. The package validates itself on import. Among other things it checks that the internal stack
 — floor, Pi cavity, board, gap, plate — sums exactly to the case height, that
 the board fits its pocket and the ledge carries every edge however the board
 floats, that every plate screw lands on the rim rather than over the PCB, that
@@ -77,7 +80,7 @@ values rather than repeating physical measurements locally. Run the file directl
 to print the current scale summary:
 
 ```sh
-PYTHONPATH=hardware python3 -m shared.dimensions
+PYTHONPATH=hardware python3 -m cad.dimensions
 ```
 
 ## Scale

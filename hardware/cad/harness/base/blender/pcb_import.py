@@ -6,8 +6,8 @@ from typing import cast
 import bpy
 from mathutils import Matrix, Vector
 
+from cad import dimensions
 from cad.harness.base.pcb import PcbSnapshot
-from shared import dimensions
 
 from . import modeling, validation
 

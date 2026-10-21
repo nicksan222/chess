@@ -101,9 +101,8 @@ Read the [architecture notes](docs/architecture.md) for the boundaries and the
 |---|---|
 | [`apps/firmware`](apps/firmware) | The Raspberry Pi process, system integration, and Yocto image |
 | [`crates`](crates/README.md) | Chess rules, menu state, persistence, logging, and shared Rust code |
-| [`hardware/shared`](hardware/shared) | The source of truth for dimensions, parts, wiring, and mappings |
-| [`hardware/pcb`](hardware/pcb) | PCB definition, routing, validation, KiCad project, and BOM |
-| [`hardware/cad`](hardware/cad) | Parametric enclosure generators, Blender models, and renders |
+| [`hardware/pcb`](hardware/pcb) | Parts, wiring and board geometry; PCB routing, validation, KiCad project, and BOM |
+| [`hardware/cad`](hardware/cad) | Enclosure built from the PCB's export: generators, Blender models, and renders |
 | [`docs`](docs/README.md) | Architecture, fabrication, power, assembly, and development guides |
 
 ## Start hacking

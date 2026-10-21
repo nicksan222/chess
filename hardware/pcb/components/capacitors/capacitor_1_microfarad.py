@@ -18,7 +18,7 @@ from pcb.harness import (
     Product,
 )
 from pcb.harness.components.capacitor import Capacitor, CapacitorPin
-from shared.components import CAP_1U
+from pcb.spec.components import CAP_1U
 
 CAP_1U_DEFINITION = ComponentDefinition(
     product=Product(

@@ -1,12 +1,12 @@
 """The mechanical board assembly, composed from real named components.
 
-The main PCB and its mounted parts are imported from KiCad. Shared definitions
-keep dimensions and interfaces readable for both domains; CAD builds the
-enclosure and off-board assembly from those definitions.
+The main PCB and its mounted parts are imported from KiCad. The enclosure and
+off-board assembly are built from the board interface the PCB exports beside it.
 """
 
 from pathlib import Path
 
+from cad import dimensions
 from cad.board.wiring import wire_route
 from cad.components.electronics.connector_mate import ConnectorMate
 from cad.components.electronics.display_module import DisplayModule
@@ -22,8 +22,6 @@ from cad.components.printable.tile_plate import TilePlate
 from cad.harness.base.component import Component
 from cad.harness.base.pcb import PcbSnapshot
 from cad.harness.base.registry import ModelRegistry
-from shared.electronics.harness import HARNESSES
-from shared.panel_buttons import PANEL_BUTTONS
 
 
 class Board(ModelRegistry):
@@ -51,7 +49,7 @@ class Board(ModelRegistry):
         self.host = self.add(HostBoard())
         self.display = self.add(DisplayModule())
         self.button_caps = tuple(
-            self.add(ButtonCap(button)) for button in PANEL_BUTTONS
+            self.add(ButtonCap(button)) for button in dimensions.PANEL_BUTTONS
         )
         self.pcb_parts = {part.reference: part for part in self.pcb_definition.parts}
         self.sensors = {
@@ -88,8 +86,7 @@ class Board(ModelRegistry):
                     ),
                 )
             )
-            for wires in HARNESSES.values()
-            for wire in wires
+            for wire in self.pcb_definition.interface.harness
         )
         self.validate()
 

@@ -1,0 +1,26 @@
+"""Approved product: the rear-panel DC input jack (wired to J4, not on the PCB)."""
+
+from .spec import part
+
+# Switchcraft 722A, drawing "712A 722A 732A" rev J (06-11-21) and the 712A/722A
+# sheet: split centre pin Ø0.080 in (2.0 mm) for the 5.5 x 2.1 plug system,
+# 5 A 12 V DC, 0.01 ohm max contact (initial); 5/16-32 NEF bushing 0.215 in
+# (5.46), panel <= .125 in, Ø0.43 in (11.0) flange; 0.82 - 0.215 in (15.4 mm)
+# behind the flange to the lug ends. Lugs: CENTER PIN, SLEEVE, SLEEVE SHUNT.
+BARREL_JACK = part(
+    "BARREL_JACK",
+    "Panel-mount 5.5 x 2.1 mm DC jack, split Ø2.0 centre pin, 5 A, solder lugs",
+    "panel mount 5/16-32 bushing",
+    "Switchcraft",
+    "722A",
+    (15.4, 11.0, 11.0),
+    "https://docs.rs-online.com/33bc/0900766b8141ad6e.pdf",
+)
+
+# Intrinsic 722A geometry from the same drawing: the 5/16-32 NEF bushing, its
+# 0.215 in thread ahead of the flange that bears on the inside of the panel, and
+# the plf6 note "mounts in .313 inch diameter hole in panels up to .125 inches".
+JACK_BUSHING_DIAMETER_MM = 7.94
+JACK_THREAD_LENGTH_MM = 5.46
+JACK_FLANGE_DIAMETER_MM = 11.0
+JACK_MAX_PANEL_MM = 0.125 * 25.4

@@ -1,13 +1,13 @@
 {
-  "source_digest": "4c797046742137027cf266659e481524759166f03500fb3b1b43c8480f92f092",
+  "source_digest": "49a534aa94cb593dd6081fb6755ca7a1ed5d5622d906a7bff559f681bcd64599",
   "toolchain": {
     "cadquery": "2.6.1",
     "cadquery-ocp": "7.8.1.1.post1",
     "kicad": "9.0.9"
   },
   "pcb_sha256": "7fa44d5675fb3f6a45116cdbffc620d956f0a74e3aae6fafb3ed84ea20587ec8",
-  "glb_sha256": "c6c190d6288ea61382d4e574459e82f881c1f73690c48e2c16b7d2b87598903f",
-  "snapshot_sha256": "e7347781e583180f880c63b802f7759829ef34cfc128d86f7d489972f593088c",
+  "glb_sha256": "a1c8b640a4a58cdb4aa28a754dd63439fb11647352fcf9bd18d33310b7085c14",
+  "snapshot_sha256": "3dcfd5ec06435238b3f68590d5bb9d2a61a4cfa0447652a0e5a4d69c03e117aa",
   "components": {
     "C1": {
       "model": "models/CAP_560U.step",

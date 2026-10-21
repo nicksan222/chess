@@ -19,8 +19,8 @@ from pcb.harness import (
     Point,
     Product,
 )
-from shared.components import LED_SWITCH
-from shared.electronics.mosfet import PowerMosfetPin
+from pcb.spec.components import LED_SWITCH
+from pcb.spec.electronics.mosfet import PowerMosfetPin
 
 LED_SWITCH_DEFINITION = ComponentDefinition(
     product=Product(

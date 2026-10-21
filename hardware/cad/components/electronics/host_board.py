@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from cad import dimensions
 from cad.harness.base.component import Component
-from shared import dimensions
 
 if TYPE_CHECKING:
     import bpy

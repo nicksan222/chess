@@ -19,8 +19,8 @@ from pcb.harness import (
     Point,
     Product,
 )
-from shared.components import TVS_12V0
-from shared.electronics.passives import TvsDiodePin
+from pcb.spec.components import TVS_12V0
+from pcb.spec.electronics.passives import TvsDiodePin
 
 TVS_12V0_DEFINITION = ComponentDefinition(
     product=Product(

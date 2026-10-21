@@ -6,22 +6,25 @@ bottom side. There is no microcontroller and no separate schematic source tree.
 
 ## Sources of truth
 
-- [`hardware/shared/wiring.py`](../hardware/shared/wiring.py) owns net names,
+- [`hardware/pcb/spec/wiring.py`](../hardware/pcb/spec/wiring.py) owns net names,
   GPIO assignments, expander mapping, and LED chain order.
-- [`hardware/shared/components/`](../hardware/shared/components/) contains one
+- [`hardware/pcb/spec/components/`](../hardware/pcb/spec/components/) contains one
   approved-product file per part, with its identity and physical package metadata.
-- [`hardware/shared/dimensions/board.py`](../hardware/shared/dimensions/board.py) owns
-  the playing grid and PCB envelope; the neighboring case, panel, and tile-plate
-  modules own their physical measurements.
+- [`hardware/pcb/spec/layout.py`](../hardware/pcb/spec/layout.py) owns the playing
+  grid, PCB envelope, mounting holes and hand placements;
+  [`hardware/pcb/spec/host.py`](../hardware/pcb/spec/host.py) owns where the Pi hangs.
 - [`hardware/pcb/board/board.py`](../hardware/pcb/board/board.py) composes
   the component instances and their declared connectivity.
-- [`hardware/shared/electronics/harness.py`](../hardware/shared/electronics/harness.py)
+- [`hardware/pcb/spec/electronics/harness.py`](../hardware/pcb/spec/electronics/harness.py)
   defines the off-board wiring harnesses (power entry, OLED) cavity by cavity.
+- [`hardware/pcb/board/interface.py`](../hardware/pcb/board/interface.py) defines the
+  board interface exported to `generated/pcb-components.json`; the case and plate in
+  `hardware/cad/dimensions/` are built from that export only.
 - [`hardware/pcb/generated/bom.csv`](../hardware/pcb/generated/bom.csv) lists the
   PCB components. Off-board assembly output still needs migration.
 
 The PCB implementation supplies footprints, placement, routing, and fabrication
-output for those shared definitions. This avoids maintaining a drawing that can
+output for those definitions. This avoids maintaining a drawing that can
 drift from the board actually sent to fabrication.
 
 ## Architecture
@@ -36,10 +39,10 @@ data links carry their own 56 Ω series resistors (R10-R12). Twelve E-Switch TL1
 connect to dedicated Pi GPIO lines, and an SSD1309 OLED module on the shared I²C
 bus is wired to a JST SH header (J2) and sits in the tile plate's bezel.
 
-`hardware/shared/hall_banks.py` defines bank membership, input order, address
-straps, and labels once. Shared dimensions derive placement from bank geometry
+`hardware/pcb/spec/hall_banks.py` defines bank membership, input order, address
+straps, and labels once. The board layout derives placement from bank geometry
 and package/LED clearance; PCB generation composes and validates the typed electrical graph
-against that mapping. CAD depicts the same eight package obstructions.
+against that mapping. CAD depicts the same eight package obstructions from the export.
 
 Banks use 0x20–0x27; the OLED remains 0x3C. Acquisition is polled, with each INT
 and GPIO4 explicitly no-connect. See [host acquisition](host.md#reading-the-board)
@@ -88,8 +91,8 @@ length and footprint-centre distance rather than conflating them.
 Run:
 
 ```sh
-just --justfile hardware/shared/justfile check
 just --justfile hardware/pcb/justfile review
+just --justfile hardware/cad/justfile check-fast
 ```
 
 PCB checks cover component declarations, pin maps, package geometry, documentation

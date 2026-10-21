@@ -1,7 +1,9 @@
 # Mechanical design
 
 CAD follows the PCB domain: concrete components, one composed board, a reusable
-harness and generated output. Shared dimensions remain in `hardware/shared`.
+harness and generated output. Enclosure dimensions live in `dimensions/`; board
+facts (outline, squares, mounting holes, the hanging Pi, panel products and the
+harness) are read from the PCB export `hardware/pcb/generated/pcb-components.json`.
 
 ```
 components/  one physical component per file; printable parts and electronics
@@ -32,12 +34,12 @@ retain their positions. Each square has an 18 × 18 mm square ring channel,
 height. A solid 19.6 × 19.6 mm underside support covers the Hall sensor and
 reinforces the channel floor. Future pieces use a matching square ring foot:
 17.5 mm outside, 14.5 mm inside, projecting 0.6 mm below the base. Both interfaces
-come from `shared/dimensions/tile_plate.py` and include clearance on both sides.
+come from `dimensions/tile_plate.py` and include clearance on both sides.
 
 Each LED has a 4.6 mm square through-window above its actual emitter position.
 Controls use a left D-pad, separate OK, a right function group (F1-F5 and PASS),
-and an isolated Reset. Positions and render legends read the same shared button
-identities used by the PCB and GPIO mapping; moving switches requires regenerating
+and an isolated Reset. Positions and render legends read the button identities the
+PCB exports, the same ones its GPIO mapping uses; moving switches requires regenerating
 both PCB and CAD; CAD generation automatically refreshes a stale PCB export.
 
 The 60 mm control strip is recessed 1 mm. A 2.42-inch MC242GW monochrome OLED
@@ -60,14 +62,16 @@ once on the imported KiCad assembly, converting glTF metres to our millimetre sc
 ## Generate and check
 
 ```sh
+just --justfile hardware/cad/justfile pcb-export  # refresh a stale PCB export only
 just --justfile hardware/cad/justfile check-fast  # lint, types and Python tests
 just --justfile hardware/cad/justfile generate    # complete models and renders
-just --justfile hardware/cad/justfile check      # both
+just --justfile hardware/cad/justfile check      # refresh the export, then both
 ```
 
-`board/generate.py` checks PCB/shared source fingerprints, actual exporter versions,
+`board/generate.py` checks PCB source fingerprints, actual exporter versions,
 and hashes of the saved PCB, GLB and PCB-owned `pcb-components.json`. CAD source
-provenance includes its `justfile` and the shared `hardware/build_support.py` publisher.
+provenance includes its `justfile`, the PCB export reader and the
+`hardware/build_support.py` publisher.
 The selected Blender executable is queried directly and publication verifies that the
 worker recorded the same runtime version. Missing, altered or stale output triggers the full checked PCB pipeline.
 All expected component references must have meshes in the GLB. The current export,
@@ -93,7 +97,7 @@ The fit manifest records measured mesh dimensions, volumes and intersection resu
 checking all 64 square seats and LED windows, the lowered strip, button protrusion,
 display sight line and render visibility. Electronics tests check actual positions,
 rotations, mounting sides and body dimensions of every PCB instance, plus the
-shared host/display dimensions, plus native PCB mounting holes and artwork.
+exported host/display dimensions, plus native PCB mounting holes and artwork.
 The importer welds coincident shading vertices without moving the surface and
 requires closed positive-volume solids before intersection checks. The worker saves
 the finished inspection view, reopens that exact `.blend`, and only then runs the
@@ -121,7 +125,7 @@ The PCB generator owns the metadata snapshot as well as the meshes. CAD only
 copies and reads the checked bundle; it validates the copied files and retries
 once if concurrent PCB publication interrupts the copy. The frozen input GLB is
 retained with the CAD outputs so the assembly can be reviewed independently.
-`manifest.json` fingerprints CAD/shared source inputs and hashes every output,
+`manifest.json` fingerprints CAD source inputs and hashes every output,
 including the snapshot. Atomic publication rejects missing or altered artifacts.
 
 Rear power components and mating plugs use simplified dimension envelopes.

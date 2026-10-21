@@ -38,6 +38,10 @@ board-tests:
 component-tests:
     cd "{{ root }}" && PYTHONPATH=hardware python3 -m unittest discover -s hardware/pcb/components -t hardware -p '*_test.py'
 
+# Approved products, pins, wiring, board layout and host placement contracts.
+spec-tests:
+    cd "{{ root }}" && PYTHONPATH=hardware python3 -m unittest discover -s hardware/pcb/spec/tests -t hardware -p 'test_*.py'
+
 # Apply harness-owned catalog, documentation and native checks to all components.
 component-checks:
     cd "{{ root }}" && PYTHONPATH=hardware python3 -m unittest discover -s hardware/pcb/harness/checks -t hardware -p 'test_*.py'

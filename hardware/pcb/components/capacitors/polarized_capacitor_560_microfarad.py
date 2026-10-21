@@ -23,7 +23,7 @@ from pcb.harness import (
     Product,
     SpiceModel,
 )
-from shared.components import CAP_560U
+from pcb.spec.components import CAP_560U
 
 
 class PolarizedCapacitorPin(StrEnum):

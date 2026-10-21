@@ -7,7 +7,7 @@ from itertools import pairwise
 from typing import TYPE_CHECKING
 
 from cad.harness.base.component import Component
-from shared.electronics.harness import HarnessWire as WireDefinition
+from cad.harness.base.pcb import HarnessRun
 
 if TYPE_CHECKING:
     import bpy
@@ -19,7 +19,7 @@ class HarnessWire(Component):
     fit_check = True
 
     def __init__(
-        self, wire: WireDefinition, route: tuple[Point3D, ...], mates: tuple[str, ...]
+        self, wire: HarnessRun, route: tuple[Point3D, ...], mates: tuple[str, ...]
     ) -> None:
         super().__init__(f"Wire_{wire.connector}_{wire.cavity}")
         if (
@@ -45,11 +45,10 @@ class HarnessWire(Component):
         import bpy
 
         from cad.harness.base.blender import materials, modeling
-        from shared.components.harness import WIRE_OUTSIDE_DIAMETERS_MM
 
         curve = bpy.data.curves.new(self.reference, "CURVE")
         curve.dimensions = "3D"
-        curve.bevel_depth = WIRE_OUTSIDE_DIAMETERS_MM[self.wire.gauge_awg] / 2
+        curve.bevel_depth = self.wire.outside_diameter_mm / 2
         curve.bevel_resolution = 3
         curve.use_fill_caps = True
         spline = curve.splines.new("POLY")
@@ -78,7 +77,7 @@ class HarnessWire(Component):
         )
         obj["fit_mates"] = list(self.mates)
         obj["mating_points_mm"] = [*self.route[0], *self.route[-1]]
-        obj["mating_radius_mm"] = WIRE_OUTSIDE_DIAMETERS_MM[self.wire.gauge_awg] * 1.5
+        obj["mating_radius_mm"] = self.wire.outside_diameter_mm * 1.5
         obj["physical_reference"] = self.reference
         obj["connector"] = self.wire.connector
         obj["cavity"] = self.wire.cavity

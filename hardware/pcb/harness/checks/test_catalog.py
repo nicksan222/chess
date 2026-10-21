@@ -3,7 +3,7 @@
 import unittest
 
 from pcb.components.catalog import ASSEMBLY_PRODUCTS, PCB_DEFINITIONS
-from shared.components import COMPONENTS
+from pcb.spec.components import COMPONENTS
 
 
 class CatalogTest(unittest.TestCase):

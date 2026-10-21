@@ -18,7 +18,7 @@ from pcb.harness import (
     Product,
 )
 from pcb.harness.components.resistor import Resistor, ResistorPin
-from shared.components import RES_100K
+from pcb.spec.components import RES_100K
 
 RES_100K_DEFINITION = ComponentDefinition(
     product=Product(

@@ -45,7 +45,7 @@ from pcb.components.resistors.resistor_100_kilohm import RES_100K_DEFINITION
 from pcb.components.resistors.resistor_261_kilohm import RES_261K_DEFINITION
 from pcb.components.switches.tactile_button import BUTTON_DEFINITION
 from pcb.components.tvs_diodes.bidirectional_tvs_12_volt import TVS_12V0_DEFINITION
-from shared.components import (
+from pcb.spec.components import (
     BARREL_JACK,
     MICRO_SD,
     OLED_HARNESS_CONTACT,

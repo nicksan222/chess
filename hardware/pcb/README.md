@@ -53,6 +53,7 @@ debounce and electrical behavior outside the sensing/button circuits remain unte
 ```sh
 just --justfile hardware/pcb/justfile check          # lint, types, harness/catalog checks
 just --justfile hardware/pcb/justfile review         # check, then generate authoring output
+just --justfile hardware/pcb/justfile spec-tests
 just --justfile hardware/pcb/justfile harness-tests
 just --justfile hardware/pcb/justfile component-tests
 just --justfile hardware/pcb/justfile component-checks
@@ -60,8 +61,11 @@ just --justfile hardware/pcb/justfile pr-report main
 ```
 
 Automatic checks live in [harness/checks/](harness/checks/README.md). Documentation
-checks use real HTTP requests. Shared products, dimensions and electrical
-contracts in `hardware/shared/` remain authoritative.
+checks use real HTTP requests. Approved products, pins, wiring, Hall banks, board
+geometry and the Pi placement in `spec/` are authoritative. `board/interface.py`
+exports the board facts the enclosure needs into `generated/pcb-components.json`;
+CAD builds the case and plate from that file, so a board change reaches CAD only
+through regeneration.
 
 Pin electrical roles, reassessed manufacturing constraints,
 detailed supplier geometry, active-device simulations and physical evidence are still
@@ -78,7 +82,7 @@ changed for one sensor without defining another component or reconnecting it:
 
 ```python
 from dataclasses import replace
-from shared.electronics.hall_sensor import HallSensorPin
+from pcb.spec.electronics.hall_sensor import HallSensorPin
 
 sensor_net = board.sensors["A1"].net(HallSensorPin.ACTIVE_LOW_OUTPUT)
 board.wiring = tuple(

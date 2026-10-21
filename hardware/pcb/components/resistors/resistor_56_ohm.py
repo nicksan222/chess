@@ -12,7 +12,7 @@ from pcb.harness import (
     Product,
 )
 from pcb.harness.components.resistor import Resistor, ResistorPin
-from shared.components.res_56 import RES_56
+from pcb.spec.components.res_56 import RES_56
 
 # Yageo chip resistor mounting V.10 (2018-02-13), p4 Table 1, 0603:
 # 0.9 mm land length, 0.8 mm width and 0.8 mm gap. The courtyard

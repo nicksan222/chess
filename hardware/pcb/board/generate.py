@@ -31,7 +31,7 @@ from pcb.harness.checks.pcbnew.reports import (
     check_routed_copper,
     check_schematic_parity,
 )
-from shared import dimensions
+from pcb.spec import layout
 
 GENERATED = Path(__file__).resolve().parents[1] / "generated"
 NAME = "chess-board"
@@ -198,7 +198,7 @@ def generate(destination: Path = GENERATED) -> Path:
             "export",
             "glb",
             "--user-origin",
-            f"{dimensions.PCB_SIZE_MM[0] / 2}x{dimensions.PCB_SIZE_MM[1] / 2}mm",
+            f"{layout.PCB_SIZE_MM[0] / 2}x{layout.PCB_SIZE_MM[1] / 2}mm",
             "--include-tracks",
             "--include-pads",
             "--include-zones",

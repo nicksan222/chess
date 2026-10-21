@@ -59,9 +59,12 @@ jack and rocker in the case's rear wall, wired to the board. See [`cad.md`](cad.
 
 ## Where the contracts are
 
-- **The physical stack.** `hardware/shared/dimensions/case.py` decides the heights
-  that let the plate sit flush over the board, and validates that they sum
-  correctly on import.
+- **The board.** `hardware/pcb/spec/` owns parts, wiring and board geometry. The
+  PCB build exports the board interface the enclosure needs in
+  `hardware/pcb/generated/pcb-components.json`.
+- **The physical stack.** `hardware/cad/dimensions/case.py` decides the heights
+  that let the plate sit flush over the exported board, and validates that they
+  sum correctly on import.
 
 ## TODO
 

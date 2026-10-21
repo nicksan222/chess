@@ -24,7 +24,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol, cast
 
-from shared.json_values import parse_json
+from pcb.spec.json_values import parse_json
 
 # Where generated artifacts live, relative to the repo root; also the path used to
 # read the base ref's copies through `git show`.

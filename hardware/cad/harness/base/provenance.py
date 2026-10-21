@@ -14,7 +14,7 @@ def file_digest(path: Path) -> str:
 
 def source_digest() -> str:
     digest = hashlib.sha256()
-    for root in (HARDWARE / "cad", HARDWARE / "shared"):
+    for root in (HARDWARE / "cad",):
         for path in sorted(root.rglob("*.py")):
             relative = path.relative_to(HARDWARE)
             if (
@@ -27,6 +27,10 @@ def source_digest() -> str:
             digest.update(str(relative).encode())
             digest.update(path.read_bytes())
     for path in (
+        # The export reader is the PCB code that shapes CAD output; the rest of the
+        # PCB is covered by the recorded export provenance.
+        HARDWARE / "pcb/board/assembly.py",
+        HARDWARE / "pcb/board/interface.py",
         HARDWARE / "cad/justfile",
         HARDWARE / "build_support.py",
         HARDWARE.parent / ".devcontainer/Dockerfile",

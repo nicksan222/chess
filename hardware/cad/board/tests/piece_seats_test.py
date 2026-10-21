@@ -3,8 +3,8 @@
 import unittest
 from unittest.mock import patch
 
-from shared import dimensions
-from shared.dimensions import validation
+from cad import dimensions
+from cad.dimensions import validation
 
 
 class PieceSeatsTest(unittest.TestCase):

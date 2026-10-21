@@ -1,6 +1,6 @@
-"""Tests for physical scale and relationships shared by the Blender projects.
+"""Tests for physical scale and relationships across the Blender projects.
 
-`shared/dimensions/` validates its own internal consistency when imported. These
+`cad/dimensions/` validates its own internal consistency when imported. These
 tests cover what that cannot: product-level facts a reader would want stated, and
 the relationships between the two printed parts and the board between them.
 """
@@ -8,7 +8,7 @@ the relationships between the two printed parts and the board between them.
 import unittest
 from math import isclose
 
-from shared import dimensions as cad
+from cad import dimensions as cad
 
 
 class UnitContractTest(unittest.TestCase):
@@ -24,11 +24,30 @@ class UnitContractTest(unittest.TestCase):
             self.assertLess(inches, 16.0)
 
 
-class ProductScaleTest(unittest.TestCase):
-    def test_board_is_explicitly_compact(self) -> None:
-        self.assertEqual(cad.BOARD_FORMAT, "compact electronic")
-        self.assertLess(cad.SQUARE_SIZE_MM, cad.FIDE_REFERENCE_SQUARE_MIN_MM)
+class PcbExportTest(unittest.TestCase):
+    """The enclosure is built from the committed PCB export, so it must be current."""
 
+    def test_dimensions_read_the_current_pcb_export(self) -> None:
+        from cad.harness.base.pcb import PcbSnapshot
+
+        # The whole snapshot: buttons, switch bodies and connectors come from its
+        # parts, not only from the board interface.
+        self.assertEqual(
+            cad.PCB,
+            PcbSnapshot.current(),
+            "hardware/pcb/generated is stale: regenerate it with `just pcb` or "
+            "`just --justfile hardware/cad/justfile pcb-export`",
+        )
+
+    def test_every_button_and_harness_wire_comes_from_the_export(self) -> None:
+        self.assertEqual(
+            [button.switch_reference for button in cad.PANEL_BUTTONS],
+            list(cad.PCB.buttons.values()),
+        )
+        self.assertEqual(cad.HARNESS, cad.PCB.interface.harness)
+
+
+class ProductScaleTest(unittest.TestCase):
     def test_forty_millimetre_squares_suit_an_ordinary_chess_set(self) -> None:
         """A square wants to be about 1.25x the king's base diameter."""
         self.assertEqual(cad.SQUARE_SIZE_MM, 40.0)
@@ -216,14 +235,11 @@ class PerSquareFeatureTest(unittest.TestCase):
             edge = abs(offset) + cad.TILE_PLATE_LED_POCKET_MM[axis] / 2.0
             self.assertLess(edge, half)
 
-    def test_the_checkerboard_is_half_dark(self) -> None:
-        self.assertEqual(
-            len(cad.BOARD_SQUARES.dark_squares),
-            cad.GRID_COUNT * cad.GRID_COUNT // 2,
-        )
-        self.assertTrue(
-            all(square.is_dark for square in cad.BOARD_SQUARES.dark_squares)
-        )
+    def test_the_exported_checkerboard_is_half_dark(self) -> None:
+        dark = [square for square in cad.BOARD_SQUARES if square.is_dark]
+        self.assertEqual(len(dark), cad.GRID_COUNT * cad.GRID_COUNT // 2)
+        a1 = next(square for square in cad.BOARD_SQUARES if square.name == "A1")
+        self.assertTrue(a1.is_dark)
 
     def test_hall_sensor_dimensions_have_explicit_xy_and_height(self) -> None:
         self.assertEqual(cad.HALL_SENSOR_BODY_MM, (2.92, 1.30))

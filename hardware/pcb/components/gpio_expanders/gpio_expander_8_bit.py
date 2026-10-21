@@ -22,8 +22,8 @@ from pcb.harness import (
     Product,
     SpiceModel,
 )
-from shared.components import TCA9554
-from shared.electronics.tca9554 import Tca9554Pin
+from pcb.spec.components import TCA9554
+from pcb.spec.electronics.tca9554 import Tca9554Pin
 
 TCA9554_DEFINITION = ComponentDefinition(
     product=Product(

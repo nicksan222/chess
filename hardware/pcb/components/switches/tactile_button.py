@@ -23,9 +23,9 @@ from pcb.harness import (
     Solid3D,
     SpiceModel,
 )
-from shared import dimensions
-from shared.components import BUTTON
-from shared.electronics.tactile_switch import TactileSwitchPin
+from pcb.spec.components import BUTTON
+from pcb.spec.components.button import BUTTON_ACTUATOR_DIAMETER_MM, BUTTON_HOUSING_MM
+from pcb.spec.electronics.tactile_switch import TactileSwitchPin
 
 BUTTON_DEFINITION = ComponentDefinition(
     product=Product(
@@ -41,25 +41,20 @@ BUTTON_DEFINITION = ComponentDefinition(
         (
             Solid3D(
                 "Body",
-                dimensions.PANEL_BUTTON_BODY_MM,
-                (0, 0, dimensions.PANEL_BUTTON_BODY_MM[2] / 2),
+                BUTTON_HOUSING_MM,
+                (0, 0, BUTTON_HOUSING_MM[2] / 2),
             ),
             Solid3D(
                 "Actuator",
                 (
-                    dimensions.PANEL_BUTTON_ACTUATOR_DIAMETER_MM,
-                    dimensions.PANEL_BUTTON_ACTUATOR_DIAMETER_MM,
-                    dimensions.PANEL_BUTTON_HEIGHT_MM
-                    - dimensions.PANEL_BUTTON_BODY_MM[2],
+                    BUTTON_ACTUATOR_DIAMETER_MM,
+                    BUTTON_ACTUATOR_DIAMETER_MM,
+                    BUTTON.require_body_mm()[2] - BUTTON_HOUSING_MM[2],
                 ),
                 (
                     0,
                     0,
-                    (
-                        dimensions.PANEL_BUTTON_HEIGHT_MM
-                        + dimensions.PANEL_BUTTON_BODY_MM[2]
-                    )
-                    / 2,
+                    (BUTTON.require_body_mm()[2] + BUTTON_HOUSING_MM[2]) / 2,
                 ),
                 shape="cylinder",
             ),

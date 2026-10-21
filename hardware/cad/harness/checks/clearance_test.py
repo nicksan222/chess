@@ -3,8 +3,8 @@
 import unittest
 from dataclasses import replace
 
+from cad import dimensions as cad
 from cad.harness.base.pcb import PcbSnapshot
-from shared import dimensions as cad
 
 from .clearance import (
     bottom_side_problem,

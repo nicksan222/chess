@@ -30,7 +30,7 @@ foundation for new work.
 descriptors for every connected Raspberry Pi line. They record host identity,
 allowed direction and active-low behavior so drivers do not duplicate board
 knowledge. PCB-to-Rust generation was deliberately removed; coordinate changes
-to these descriptors with `hardware/shared/wiring.py` and the native PCB host
+to these descriptors with `hardware/pcb/spec/wiring.py` and the native PCB host
 connections.
 
 The LED frame needs no library. An SK9822 frame is a start frame of zero bytes,
@@ -51,7 +51,7 @@ register 0x01 must not be used to acquire sensors. Do not apply a different
 expander family's register map or enable outputs against the open-drain sensors.
 
 Scan addresses 0x20–0x27 in order; map P0–P7 with the bank contract in
-`hardware/shared/hall_banks.py` (four files by two ranks; left half P0–P3,
+`hardware/pcb/spec/hall_banks.py` (four files by two ranks; left half P0–P3,
 right half P4–P7). LOW means occupied. Eight sequential reads are **not an atomic
 64-square capture**. Begin at 100 kHz I²C, aiming for a complete scan every
 25 ms; this is a starting software target, not measured scheduling performance.

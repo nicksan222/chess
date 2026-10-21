@@ -22,8 +22,8 @@ from pcb.harness import (
     Point,
     Product,
 )
-from shared.components import EFUSE
-from shared.electronics.efuse import EfusePin
+from pcb.spec.components import EFUSE
+from pcb.spec.electronics.efuse import EfusePin
 
 # Bar contacts require two necks; bias contacts escape through narrow pin gaps.
 # All points are package-local, so every placed fuse carries its own geometry.

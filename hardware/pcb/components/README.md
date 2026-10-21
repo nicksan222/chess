@@ -17,17 +17,17 @@ Named package ports expose where board wiring resumes after an escape. The
 harness transforms this geometry through each instance’s placement and rotation.
 
 `catalog.py` explicitly lists all 29 PCB declarations and directly references the
-12 shared `ComponentSpec` records for off-board assembly products, including the
-Raspberry Pi Zero 2 W, display, supply and microSD card. Off-board products have
-no PCB wrapper classes: their purchasing identities and known interfaces stay in
-the shared contracts without invented PCB lands or terminal order. Wire spools
-and harness assembly instructions likewise remain in the authoritative shared
-purchasing and harness contracts.
+12 `ComponentSpec` records in `spec/components/` for off-board assembly products,
+including the Raspberry Pi Zero 2 W, display, supply and microSD card. Off-board
+products have no PCB wrapper classes: their purchasing identities and known
+interfaces stay in `spec/` without invented PCB lands or terminal order. Wire
+spools and harness assembly instructions likewise remain in the authoritative
+`spec/` purchasing and harness definitions.
 
-Shared products and pin identities remain authoritative. `board/board.py`
+Products and pin identities in `spec/` remain authoritative. `board/board.py`
 composes these components using the harness; component and automatic catalog
 checks no longer depend on the removed implementation. The Pi socket's courtyard
-includes the shared body envelope. Capacitor land assumptions remain unverified
+includes the approved body envelope. Capacitor land assumptions remain unverified
 as documented in `docs/pcb-assumptions.md`.
 
 Resistors and capacitors have ideal simulation models. Hall sensors have an ideal

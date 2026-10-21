@@ -1,24 +1,24 @@
-"""The concrete printable tile-plate; all dimensions belong to the shared contract."""
+"""The concrete printable tile-plate; all dimensions come from `cad.dimensions`."""
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from cad import dimensions as dims
 from cad.harness.base.component import PrintableComponent
-from shared import dimensions as shared
 
 if TYPE_CHECKING:
     import bpy
 
-TOP_Z_MM = shared.CASE_HEIGHT_MM
-UNDERSIDE_Z_MM = shared.CASE_HEIGHT_MM - shared.TILE_PLATE_THICKNESS_MM
+TOP_Z_MM = dims.CASE_HEIGHT_MM
+UNDERSIDE_Z_MM = dims.CASE_HEIGHT_MM - dims.TILE_PLATE_THICKNESS_MM
 
 
 class TilePlate(PrintableComponent):
     output_name = "tile-plate"
     scene_name = "Printable Tile Plate"
     camera_location = (300.0, -360.0, 320.0)
-    camera_target = (0.0, 0.0, shared.CASE_HEIGHT_MM)
+    camera_target = (0.0, 0.0, dims.CASE_HEIGHT_MM)
     volume_property = "plate_volume_mm3"
 
     def __init__(self) -> None:
@@ -52,11 +52,11 @@ def add_plate(
 
     plate = modeling.rounded_box(
         "Printable_Tile_Plate",
-        shared.TILE_PLATE_SIZE_MM,
+        dims.TILE_PLATE_SIZE_MM,
         (
             0.0,
-            shared.TILE_PLATE_CENTER_Y_MM,
-            UNDERSIDE_Z_MM + shared.TILE_PLATE_THICKNESS_MM / 2.0,
+            dims.TILE_PLATE_CENTER_Y_MM,
+            UNDERSIDE_Z_MM + dims.TILE_PLATE_THICKNESS_MM / 2.0,
         ),
         0.8,
         printable,
@@ -91,9 +91,9 @@ def _cut_underside_pockets(
     """
     from cad.harness.base.blender import modeling
 
-    depth = shared.TILE_PLATE_UNDERSIDE_POCKET_DEPTH_MM
-    half_span = shared.TILE_PLATE_UNDERSIDE_POCKET_SPAN_MM / 2.0
-    z0 = UNDERSIDE_Z_MM - shared.BOOLEAN_RECESS_OVERLAP_MM
+    depth = dims.TILE_PLATE_UNDERSIDE_POCKET_DEPTH_MM
+    half_span = dims.TILE_PLATE_UNDERSIDE_POCKET_SPAN_MM / 2.0
+    z0 = UNDERSIDE_Z_MM - dims.BOOLEAN_RECESS_OVERLAP_MM
     z1 = UNDERSIDE_Z_MM + depth
     cutters = [
         modeling.box_between(
@@ -108,7 +108,7 @@ def _cut_underside_pockets(
             ),
             construction,
         )
-        for square in shared.BOARD_SQUARES
+        for square in dims.BOARD_SQUARES
     ]
     modeling.cut_batch(plate, cutters, "Cutter_All_Underside_Pockets")
 
@@ -119,7 +119,7 @@ def _reinforce_piece_seats(
     """Solid square supports keep the locating holes from thinning sensor covers."""
     from cad.harness.base.blender import modeling
 
-    half = shared.TILE_PLATE_PIECE_SEAT_SUPPORT_SIDE_MM / 2
+    half = dims.TILE_PLATE_PIECE_SEAT_SUPPORT_SIDE_MM / 2
     modeling.union_batch(
         plate,
         [
@@ -132,12 +132,12 @@ def _reinforce_piece_seats(
                     square.centre_mm[1] + half,
                     UNDERSIDE_Z_MM,
                     UNDERSIDE_Z_MM
-                    + shared.TILE_PLATE_UNDERSIDE_POCKET_DEPTH_MM
-                    + shared.BOOLEAN_RECESS_OVERLAP_MM,
+                    + dims.TILE_PLATE_UNDERSIDE_POCKET_DEPTH_MM
+                    + dims.BOOLEAN_RECESS_OVERLAP_MM,
                 ),
                 construction,
             )
-            for square in shared.BOARD_SQUARES
+            for square in dims.BOARD_SQUARES
         ],
         "All_Piece_Seat_Supports",
     )
@@ -149,15 +149,15 @@ def _cut_piece_seats(
     """A square ring channel around a retained island, accepting a square ring foot."""
     from cad.harness.base.blender import modeling
 
-    half = shared.TILE_PLATE_PIECE_SEAT_SIDE_MM / 2
-    inner_half = shared.TILE_PLATE_PIECE_SEAT_INNER_SIDE_MM / 2
+    half = dims.TILE_PLATE_PIECE_SEAT_SIDE_MM / 2
+    inner_half = dims.TILE_PLATE_PIECE_SEAT_INNER_SIDE_MM / 2
     cutters = []
-    for square in shared.BOARD_SQUARES:
+    for square in dims.BOARD_SQUARES:
         x, y = square.centre_mm
         surface = TOP_Z_MM - (
-            shared.TILE_PLATE_DARK_SQUARE_DEPTH_MM if square.is_dark else 0
+            dims.TILE_PLATE_DARK_SQUARE_DEPTH_MM if square.is_dark else 0
         )
-        floor = surface - shared.TILE_PLATE_PIECE_SEAT_DEPTH_MM
+        floor = surface - dims.TILE_PLATE_PIECE_SEAT_DEPTH_MM
         ring = modeling.box_between(
             f"Cutter_Piece_Ring_{square.name}",
             (
@@ -166,7 +166,7 @@ def _cut_piece_seats(
                 y - half,
                 y + half,
                 floor,
-                TOP_Z_MM + shared.BOOLEAN_RECESS_OVERLAP_MM,
+                TOP_Z_MM + dims.BOOLEAN_RECESS_OVERLAP_MM,
             ),
             construction,
         )
@@ -177,8 +177,8 @@ def _cut_piece_seats(
                 x + inner_half,
                 y - inner_half,
                 y + inner_half,
-                floor - shared.BOOLEAN_RECESS_OVERLAP_MM,
-                TOP_Z_MM + 2 * shared.BOOLEAN_RECESS_OVERLAP_MM,
+                floor - dims.BOOLEAN_RECESS_OVERLAP_MM,
+                TOP_Z_MM + 2 * dims.BOOLEAN_RECESS_OVERLAP_MM,
             ),
             construction,
         )
@@ -197,10 +197,10 @@ def _cut_led_pockets(
     """
     from cad.harness.base.blender import modeling
 
-    depth = shared.TILE_PLATE_LED_POCKET_MM[2]
-    half_x = shared.TILE_PLATE_LED_POCKET_MM[0] / 2.0
-    half_y = shared.TILE_PLATE_LED_POCKET_MM[1] / 2.0
-    z0 = UNDERSIDE_Z_MM - shared.BOOLEAN_RECESS_OVERLAP_MM
+    depth = dims.TILE_PLATE_LED_POCKET_MM[2]
+    half_x = dims.TILE_PLATE_LED_POCKET_MM[0] / 2.0
+    half_y = dims.TILE_PLATE_LED_POCKET_MM[1] / 2.0
+    z0 = UNDERSIDE_Z_MM - dims.BOOLEAN_RECESS_OVERLAP_MM
     z1 = UNDERSIDE_Z_MM + depth
     cutters = [
         modeling.box_between(
@@ -215,7 +215,7 @@ def _cut_led_pockets(
             ),
             construction,
         )
-        for square in shared.BOARD_SQUARES
+        for square in dims.BOARD_SQUARES
     ]
     modeling.cut_batch(plate, cutters, "Cutter_All_LED_Pockets")
 
@@ -226,7 +226,7 @@ def _cut_led_windows(
     """Expose each real emitter through the plate, including the pocket roof."""
     from cad.harness.base.blender import modeling
 
-    half_x, half_y = (side / 2 for side in shared.TILE_PLATE_LED_WINDOW_MM)
+    half_x, half_y = (side / 2 for side in dims.TILE_PLATE_LED_WINDOW_MM)
     modeling.cut_batch(
         plate,
         [
@@ -237,12 +237,12 @@ def _cut_led_windows(
                     square.led_position_mm[0] + half_x,
                     square.led_position_mm[1] - half_y,
                     square.led_position_mm[1] + half_y,
-                    UNDERSIDE_Z_MM - shared.BOOLEAN_THROUGH_OVERLAP_MM,
-                    TOP_Z_MM + shared.BOOLEAN_THROUGH_OVERLAP_MM,
+                    UNDERSIDE_Z_MM - dims.BOOLEAN_THROUGH_OVERLAP_MM,
+                    TOP_Z_MM + dims.BOOLEAN_THROUGH_OVERLAP_MM,
                 ),
                 construction,
             )
-            for square in shared.BOARD_SQUARES
+            for square in dims.BOARD_SQUARES
         ],
         "Cutter_All_LED_Windows",
     )
@@ -257,14 +257,14 @@ def _cut_grid_grooves(
     """
     from cad.harness.base.blender import modeling
 
-    depth = shared.TILE_PLATE_GROOVE_DEPTH_MM
-    half_width = shared.TILE_PLATE_GROOVE_WIDTH_MM / 2.0
-    reach = shared.PLAYING_SPAN_MM / 2.0 + half_width
+    depth = dims.TILE_PLATE_GROOVE_DEPTH_MM
+    half_width = dims.TILE_PLATE_GROOVE_WIDTH_MM / 2.0
+    reach = dims.PLAYING_SPAN_MM / 2.0 + half_width
     z0 = TOP_Z_MM - depth
-    z1 = TOP_Z_MM + shared.BOOLEAN_RECESS_OVERLAP_MM
+    z1 = TOP_Z_MM + dims.BOOLEAN_RECESS_OVERLAP_MM
     offsets = [
-        -shared.PLAYING_SPAN_MM / 2.0 + index * shared.SQUARE_SIZE_MM
-        for index in range(shared.GRID_COUNT + 1)
+        -dims.PLAYING_SPAN_MM / 2.0 + index * dims.SQUARE_SIZE_MM
+        for index in range(dims.GRID_COUNT + 1)
     ]
     # The two directions cross, so they cannot share a batch (overlapping cutters
     # in one batch break the boolean; see `modeling.cut_batch`).
@@ -303,12 +303,12 @@ def _cut_dark_squares(
     """
     from cad.harness.base.blender import modeling
 
-    depth = shared.TILE_PLATE_DARK_SQUARE_DEPTH_MM
-    half_span = (shared.SQUARE_SIZE_MM - shared.TILE_PLATE_GROOVE_WIDTH_MM) / 2.0
+    depth = dims.TILE_PLATE_DARK_SQUARE_DEPTH_MM
+    half_span = (dims.SQUARE_SIZE_MM - dims.TILE_PLATE_GROOVE_WIDTH_MM) / 2.0
     z0 = TOP_Z_MM - depth
-    z1 = TOP_Z_MM + shared.BOOLEAN_RECESS_OVERLAP_MM
+    z1 = TOP_Z_MM + dims.BOOLEAN_RECESS_OVERLAP_MM
     cutters = []
-    for square in shared.BOARD_SQUARES.dark_squares:
+    for square in (s for s in dims.BOARD_SQUARES if s.is_dark):
         row, column = square.row, square.column
         x, y = square.centre_mm
         cutters.append(
@@ -328,7 +328,7 @@ def _cut_screws(plate: bpy.types.Object, construction: bpy.types.Collection) -> 
     """
     from cad.harness.base.blender import modeling
 
-    head_depth = shared.TILE_PLATE_SCREW_HEAD_DEPTH_MM
+    head_depth = dims.TILE_PLATE_SCREW_HEAD_DEPTH_MM
     # The shaft and its head recess are concentric, so they go in separate
     # batches; within a batch the eight screws are far apart.
     # Through holes use the larger `BOOLEAN_THROUGH_OVERLAP_MM` so both faces are
@@ -338,14 +338,14 @@ def _cut_screws(plate: bpy.types.Object, construction: bpy.types.Collection) -> 
         [
             modeling.cylinder_between(
                 f"Cutter_Plate_Screw_{index}",
-                shared.TILE_PLATE_SCREW_CLEARANCE_DIAMETER_MM,
+                dims.TILE_PLATE_SCREW_CLEARANCE_DIAMETER_MM,
                 (x, y),
-                UNDERSIDE_Z_MM - shared.BOOLEAN_THROUGH_OVERLAP_MM,
-                TOP_Z_MM + shared.BOOLEAN_THROUGH_OVERLAP_MM,
+                UNDERSIDE_Z_MM - dims.BOOLEAN_THROUGH_OVERLAP_MM,
+                TOP_Z_MM + dims.BOOLEAN_THROUGH_OVERLAP_MM,
                 construction,
                 vertices=24,
             )
-            for index, (x, y) in enumerate(shared.TILE_PLATE_SCREW_POSITIONS_MM)
+            for index, (x, y) in enumerate(dims.TILE_PLATE_SCREW_POSITIONS_MM)
         ],
         "Cutter_All_Plate_Screw_Shafts",
     )
@@ -354,14 +354,14 @@ def _cut_screws(plate: bpy.types.Object, construction: bpy.types.Collection) -> 
         [
             modeling.cylinder_between(
                 f"Cutter_Plate_Screw_Head_{index}",
-                shared.TILE_PLATE_SCREW_HEAD_DIAMETER_MM,
+                dims.TILE_PLATE_SCREW_HEAD_DIAMETER_MM,
                 (x, y),
                 TOP_Z_MM - head_depth,
-                TOP_Z_MM + shared.BOOLEAN_RECESS_OVERLAP_MM,
+                TOP_Z_MM + dims.BOOLEAN_RECESS_OVERLAP_MM,
                 construction,
                 vertices=24,
             )
-            for index, (x, y) in enumerate(shared.TILE_PLATE_SCREW_POSITIONS_MM)
+            for index, (x, y) in enumerate(dims.TILE_PLATE_SCREW_POSITIONS_MM)
         ],
         "Cutter_All_Plate_Screw_Heads",
     )
@@ -373,16 +373,16 @@ def _cut_control_surface(
     """One continuous recessed strip for buttons and display, with no raised island."""
     from cad.harness.base.blender import modeling
 
-    half_x, half_y = (side / 2 for side in shared.PANEL_SURFACE_SIZE_MM)
+    half_x, half_y = (side / 2 for side in dims.PANEL_SURFACE_SIZE_MM)
     recess = modeling.box_between(
         "Cutter_Control_Surface",
         (
             -half_x,
             half_x,
-            shared.PANEL_ORIGIN_Y_MM - half_y,
-            shared.PANEL_ORIGIN_Y_MM + half_y,
-            TOP_Z_MM - shared.PANEL_SURFACE_RECESS_MM,
-            TOP_Z_MM + shared.BOOLEAN_RECESS_OVERLAP_MM,
+            dims.PANEL_ORIGIN_Y_MM - half_y,
+            dims.PANEL_ORIGIN_Y_MM + half_y,
+            TOP_Z_MM - dims.PANEL_SURFACE_RECESS_MM,
+            TOP_Z_MM + dims.BOOLEAN_RECESS_OVERLAP_MM,
         ),
         construction,
     )
@@ -399,16 +399,15 @@ def _cut_bezel(plate: bpy.types.Object, construction: bpy.types.Collection) -> N
     from cad.harness.base.blender import modeling
 
     through = (
-        UNDERSIDE_Z_MM - shared.BOOLEAN_THROUGH_OVERLAP_MM,
-        TOP_Z_MM + shared.BOOLEAN_THROUGH_OVERLAP_MM,
+        UNDERSIDE_Z_MM - dims.BOOLEAN_THROUGH_OVERLAP_MM,
+        TOP_Z_MM + dims.BOOLEAN_THROUGH_OVERLAP_MM,
     )
-    underside = UNDERSIDE_Z_MM - shared.BOOLEAN_RECESS_OVERLAP_MM
+    underside = UNDERSIDE_Z_MM - dims.BOOLEAN_RECESS_OVERLAP_MM
     relief = (
-        max(shared.PANEL_BUTTON_BODY_MM[:2])
-        + 2.0 * shared.PANEL_BUTTON_RELIEF_CLEARANCE_MM
+        max(dims.PANEL_BUTTON_BODY_MM[:2]) + 2.0 * dims.PANEL_BUTTON_RELIEF_CLEARANCE_MM
     ) / 2.0
-    window_x, window_y = (axis / 2.0 for axis in shared.PANEL_OLED_WIRE_OPENING_MM)
-    oled_x, oled_y = shared.PANEL_OLED_CENTER_MM
+    window_x, window_y = (axis / 2.0 for axis in dims.PANEL_OLED_WIRE_OPENING_MM)
+    oled_x, oled_y = dims.PANEL_OLED_CENTER_MM
     modeling.cut_batch(
         plate,
         [
@@ -420,11 +419,11 @@ def _cut_bezel(plate: bpy.types.Object, construction: bpy.types.Collection) -> N
                     button.y_mm - relief,
                     button.y_mm + relief,
                     underside,
-                    UNDERSIDE_Z_MM + shared.PANEL_BUTTON_RELIEF_DEPTH_MM,
+                    UNDERSIDE_Z_MM + dims.PANEL_BUTTON_RELIEF_DEPTH_MM,
                 ),
                 construction,
             )
-            for index, button in enumerate(shared.PANEL_BUTTONS)
+            for index, button in enumerate(dims.PANEL_BUTTONS)
         ],
         "Cutter_All_Bezel_Reliefs",
     )
@@ -433,13 +432,13 @@ def _cut_bezel(plate: bpy.types.Object, construction: bpy.types.Collection) -> N
         [
             modeling.cylinder_between(
                 f"Cutter_Button_{index:02d}",
-                shared.PANEL_BUTTON_HOLE_DIAMETER_MM,
+                dims.PANEL_BUTTON_HOLE_DIAMETER_MM,
                 button.position_mm,
                 *through,
                 construction,
                 vertices=32,
             )
-            for index, button in enumerate(shared.PANEL_BUTTONS)
+            for index, button in enumerate(dims.PANEL_BUTTONS)
         ]
         + [
             modeling.box_between(
@@ -464,10 +463,10 @@ def _add_display_bezel(
     """A concealed-carrier bezel with a full viewing window and mounting ears."""
     from cad.harness.base.blender import modeling
 
-    x, y = shared.PANEL_OLED_CENTER_MM
-    outer_x, outer_y = (v / 2 for v in shared.PANEL_OLED_BEZEL_OUTER_MM)
-    inner_x, inner_y = (v / 2 for v in shared.PANEL_OLED_BEZEL_INNER_MM)
-    top = shared.PANEL_OLED_BEZEL_TOP_Z_MM
+    x, y = dims.PANEL_OLED_CENTER_MM
+    outer_x, outer_y = (v / 2 for v in dims.PANEL_OLED_BEZEL_OUTER_MM)
+    inner_x, inner_y = (v / 2 for v in dims.PANEL_OLED_BEZEL_INNER_MM)
+    top = dims.PANEL_OLED_BEZEL_TOP_Z_MM
     bezel = modeling.box_between(
         "Display_Bezel",
         (
@@ -475,7 +474,7 @@ def _add_display_bezel(
             x + outer_x,
             y - outer_y,
             y + outer_y,
-            TOP_Z_MM - shared.PANEL_SURFACE_RECESS_MM - 0.2,
+            TOP_Z_MM - dims.PANEL_SURFACE_RECESS_MM - 0.2,
             top,
         ),
         construction,
@@ -490,14 +489,14 @@ def _add_display_bezel(
             y - inner_y,
             y + inner_y,
             UNDERSIDE_Z_MM - 0.4,
-            shared.PANEL_OLED_SCREEN_Z_MM + 0.1,
+            dims.PANEL_OLED_SCREEN_Z_MM + 0.1,
         ),
         construction,
     )
     modeling.cut_batch(plate, [cavity], "Display module cavity")
-    screen_x = x + shared.PANEL_OLED_SCREEN_OFFSET_MM[0]
-    screen_y = y + shared.PANEL_OLED_SCREEN_OFFSET_MM[1]
-    hx, hy = (v / 2 + 0.5 for v in shared.PANEL_OLED_SCREEN_SIZE_MM)
+    screen_x = x + dims.PANEL_OLED_SCREEN_OFFSET_MM[0]
+    screen_y = y + dims.PANEL_OLED_SCREEN_OFFSET_MM[1]
+    hx, hy = (v / 2 + 0.5 for v in dims.PANEL_OLED_SCREEN_SIZE_MM)
     window = modeling.box_between(
         "Display_Viewing_Window",
         (
@@ -513,15 +512,15 @@ def _add_display_bezel(
     modeling.cut_batch(plate, [window], "Full OLED viewing window")
     # Four supplier mounting holes sit on printed ledges beneath the carrier.
     # Each ledge joins the outer wall, leaving the screen and SMD region clear.
-    bottom = shared.PANEL_OLED_LEDGE_BOTTOM_Z_MM
-    half_ledge = shared.PANEL_OLED_LEDGE_WIDTH_MM / 2
+    bottom = dims.PANEL_OLED_LEDGE_BOTTOM_Z_MM
+    half_ledge = dims.PANEL_OLED_LEDGE_WIDTH_MM / 2
     additions = []
     pilots = []
-    for i, (dx, dy) in enumerate(shared.PANEL_OLED_MOUNT_HOLES_MM):
+    for i, (dx, dy) in enumerate(dims.PANEL_OLED_MOUNT_HOLES_MM):
         cx, cy = x + dx, y + dy
         sign = 1 if dx > 0 else -1
-        outer_edge = x + sign * (outer_x + shared.PANEL_OLED_LEDGE_WALL_REACH_MM)
-        outside_module = x + sign * (inner_x - shared.BOOLEAN_RECESS_OVERLAP_MM)
+        outer_edge = x + sign * (outer_x + dims.PANEL_OLED_LEDGE_WALL_REACH_MM)
+        outside_module = x + sign * (inner_x - dims.BOOLEAN_RECESS_OVERLAP_MM)
         additions.append(
             modeling.box_between(
                 f"Display_ledge_{i}",
@@ -531,7 +530,7 @@ def _add_display_bezel(
                     cy - half_ledge,
                     cy + half_ledge,
                     bottom,
-                    shared.PANEL_OLED_PCB_BOTTOM_Z_MM,
+                    dims.PANEL_OLED_PCB_BOTTOM_Z_MM,
                 ),
                 construction,
             )
@@ -542,16 +541,16 @@ def _add_display_bezel(
                 (
                     min(
                         outside_module,
-                        outer_edge - sign * shared.BOOLEAN_RECESS_OVERLAP_MM,
+                        outer_edge - sign * dims.BOOLEAN_RECESS_OVERLAP_MM,
                     ),
                     max(
                         outside_module,
-                        outer_edge - sign * shared.BOOLEAN_RECESS_OVERLAP_MM,
+                        outer_edge - sign * dims.BOOLEAN_RECESS_OVERLAP_MM,
                     ),
-                    cy - half_ledge + shared.BOOLEAN_RECESS_OVERLAP_MM,
-                    cy + half_ledge - shared.BOOLEAN_RECESS_OVERLAP_MM,
-                    bottom + shared.BOOLEAN_RECESS_OVERLAP_MM,
-                    TOP_Z_MM - shared.PANEL_SURFACE_RECESS_MM + 0.1,
+                    cy - half_ledge + dims.BOOLEAN_RECESS_OVERLAP_MM,
+                    cy + half_ledge - dims.BOOLEAN_RECESS_OVERLAP_MM,
+                    bottom + dims.BOOLEAN_RECESS_OVERLAP_MM,
+                    TOP_Z_MM - dims.PANEL_SURFACE_RECESS_MM + 0.1,
                 ),
                 construction,
             )
@@ -559,10 +558,10 @@ def _add_display_bezel(
         pilots.append(
             modeling.cylinder_between(
                 f"Display_pilot_{i}",
-                shared.PANEL_OLED_PILOT_DIAMETER_MM,
+                dims.PANEL_OLED_PILOT_DIAMETER_MM,
                 (cx, cy),
-                bottom + shared.PANEL_OLED_PILOT_FLOOR_MM,
-                shared.PANEL_OLED_PCB_BOTTOM_Z_MM + 0.2,
+                bottom + dims.PANEL_OLED_PILOT_FLOOR_MM,
+                dims.PANEL_OLED_PCB_BOTTOM_Z_MM + 0.2,
                 construction,
                 vertices=24,
             )
@@ -578,16 +577,16 @@ def _add_display_bezel(
         [
             modeling.cylinder_between(
                 f"Display_screw_access_{i}",
-                shared.PANEL_OLED_FASTENER_ACCESS_DIAMETER_MM,
+                dims.PANEL_OLED_FASTENER_ACCESS_DIAMETER_MM,
                 (x + dx, y + dy),
-                shared.PANEL_OLED_PCB_BOTTOM_Z_MM
-                + shared.PANEL_OLED_PCB_THICKNESS_MM
-                - shared.BOOLEAN_RECESS_OVERLAP_MM,
-                top + shared.BOOLEAN_THROUGH_OVERLAP_MM,
+                dims.PANEL_OLED_PCB_BOTTOM_Z_MM
+                + dims.PANEL_OLED_PCB_THICKNESS_MM
+                - dims.BOOLEAN_RECESS_OVERLAP_MM,
+                top + dims.BOOLEAN_THROUGH_OVERLAP_MM,
                 construction,
                 vertices=32,
             )
-            for i, (dx, dy) in enumerate(shared.PANEL_OLED_MOUNT_HOLES_MM)
+            for i, (dx, dy) in enumerate(dims.PANEL_OLED_MOUNT_HOLES_MM)
         ],
         "Display screw access",
     )
@@ -601,26 +600,24 @@ def _engrave_control_labels(
 
     from cad.harness.base.blender import modeling
 
-    surface = TOP_Z_MM - shared.PANEL_SURFACE_RECESS_MM
+    surface = TOP_Z_MM - dims.PANEL_SURFACE_RECESS_MM
     font = bpy.data.fonts.load("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf")
     font.pack()
     cutters = []
-    for button in shared.PANEL_BUTTONS:
+    for button in dims.PANEL_BUTTONS:
         bpy.ops.object.text_add(
             location=(
                 *button.legend_position_mm,
                 surface
-                + (shared.BOOLEAN_RECESS_OVERLAP_MM - shared.PANEL_LEGEND_DEPTH_MM) / 2,
+                + (dims.BOOLEAN_RECESS_OVERLAP_MM - dims.PANEL_LEGEND_DEPTH_MM) / 2,
             )
         )
         label = modeling.active_object("engraving button legend")
         text = modeling.require_object_data(label, bpy.types.TextCurve)
         text.body, text.align_x = button.name, "CENTER"
         text.font = font
-        text.size = shared.PANEL_LEGEND_SIZE_MM
-        text.extrude = (
-            shared.PANEL_LEGEND_DEPTH_MM + shared.BOOLEAN_RECESS_OVERLAP_MM
-        ) / 2
+        text.size = dims.PANEL_LEGEND_SIZE_MM
+        text.extrude = (dims.PANEL_LEGEND_DEPTH_MM + dims.BOOLEAN_RECESS_OVERLAP_MM) / 2
         label.name = f"Cutter_Legend_{button.switch_reference}"
         bpy.ops.object.convert(target="MESH")
         # Font conversion separates face and wall vertices. Join their exact
@@ -650,8 +647,8 @@ def _color_squares(plate: bpy.types.Object) -> None:
     plate.data.materials.append(dark)
     bpy.context.view_layer.update()
     mesh = modeling.require_object_data(plate, bpy.types.Mesh)
-    half_square = shared.SQUARE_SIZE_MM / 2
-    half_board = shared.PLAYING_SPAN_MM / 2
+    half_square = dims.SQUARE_SIZE_MM / 2
+    half_board = dims.PLAYING_SPAN_MM / 2
     for face in mesh.polygons:
         face.material_index = 0
         # The large perimeter face can have its centroid inside the board, despite
@@ -664,7 +661,7 @@ def _color_squares(plate: bpy.types.Object) -> None:
         ):
             continue
         center = plate.matrix_world @ face.center
-        for square in shared.BOARD_SQUARES:
+        for square in dims.BOARD_SQUARES:
             if (
                 abs(center.x - square.centre_mm[0]) < half_square
                 and abs(center.y - square.centre_mm[1]) < half_square

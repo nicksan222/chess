@@ -23,25 +23,31 @@ package policy stay beside the code they operate on.
 
 ## Hardware domains
 
-`hardware/shared` contains tool-independent dimensions, component specifications,
-and wiring. `hardware/cad` adapts the physical contract into Blender models.
-`hardware/pcb` owns electrical connectivity, footprints, placement, routing, and
-fabrication output. There is no separate schematic domain.
+`hardware/pcb` owns the board's specification in `hardware/pcb/spec` (approved
+parts, typed pins, wiring, Hall banks, board geometry and the Pi placement) and
+its electrical connectivity, footprints, placement, routing, and fabrication
+output. `hardware/cad` owns the enclosure dimensions and adapts them, with the
+board the PCB exports, into Blender models. There is no separate schematic domain.
 
 The PCB's reviewed sources are the typed assemblies composed by
-`hardware/pcb/board/board.py` and the shared component catalog. Generation
+`hardware/pcb/board/board.py` and the component catalog in `hardware/pcb/spec`. Generation
 validates every footprint and connection, then writes the expanded netlist,
 BOM, native schematic, board, and review reports under `hardware/pcb/generated/`.
 The PCB attaches component STEP models and exports its native board assembly as
 `chess-board.glb`, with component metadata and checked provenance. CAD imports
 that geometry rather than rebuilding the substrate or its mounted electronics.
-Both domains still use readable `hardware/shared` dimensions and mappings for
-mechanical interfaces and off-board parts.
+The same `pcb-components.json` carries the board interface: outline, squares,
+mounting holes, the hanging Pi, the panel products and the harness. CAD builds the
+case, plate and off-board parts from it and never edits board facts itself.
 
 `just generate` reviews and generates the PCB first, then generates CAD using
-that exact export. Running CAD alone also checks the PCB dependency: a missing,
-stale or altered export is regenerated before Blender starts. A PCB generation
-failure stops CAD and preserves the previous CAD outputs.
+that exact export. Running CAD alone also checks the PCB dependency: `cad check`
+and `cad generate` regenerate a missing, stale or altered export before Blender
+starts (`just --justfile hardware/cad/justfile pcb-export` does only that step). A
+PCB generation failure stops CAD and preserves the previous CAD outputs. The fast
+CAD gates (`cad check-fast`, `cad test`) never regenerate: their tests fail when the
+committed export differs from the current PCB definition, and a missing or unreadable
+export fails on import.
 
 Generated hardware artifacts remain under each domain's `generated/` directory.
 The PCB composes typed components through its reusable harness, which renders
@@ -85,7 +91,10 @@ application, and `just firmware` constructs the complete image.
 
 The version-controlled Git hook and `.pre-commit-config.yaml` both invoke
 `just precommit`, which excludes expensive CAD renders and PCB fabrication
-output. The pre-commit configuration also checks the generated Yocto crate
+output. Because the enclosure is built from the committed PCB export, a change in
+`hardware/pcb/spec` or the board that alters the export fails precommit until it is
+regenerated with `just pcb` (or the CAD `pcb-export` recipe) and the generated files
+are committed with it. The pre-commit configuration also checks the generated Yocto crate
 metadata whenever its manifest, lockfile, or generated include changes; stale
 metadata fails with the regeneration command.
 

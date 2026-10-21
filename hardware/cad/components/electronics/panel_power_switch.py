@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from cad import dimensions as d
+from cad.dimensions import rear_panel as rear
 from cad.harness.base.component import Component
-from shared import dimensions as d
-from shared.dimensions import rear_panel as rear
 
 if TYPE_CHECKING:
     import bpy

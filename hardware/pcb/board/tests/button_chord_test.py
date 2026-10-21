@@ -4,7 +4,7 @@ import pytest
 
 from pcb.board.board import Board, BoardNet
 from pcb.harness import StateChange
-from shared.electronics.tactile_switch import TactileSwitchPin
+from pcb.spec.electronics.tactile_switch import TactileSwitchPin
 
 
 @pytest.mark.parametrize("pressed", [("UP", "LEFT", "OK"), ("RESET", "PASS", "F5")])

@@ -18,8 +18,8 @@ from pcb.harness import (
     Point,
     Product,
 )
-from shared.components import LED_SWITCH_DRIVER
-from shared.electronics.mosfet import SmallMosfetPin
+from pcb.spec.components import LED_SWITCH_DRIVER
+from pcb.spec.electronics.mosfet import SmallMosfetPin
 
 LED_SWITCH_DRIVER_DEFINITION = ComponentDefinition(
     product=Product(

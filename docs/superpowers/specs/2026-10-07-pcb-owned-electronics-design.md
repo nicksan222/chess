@@ -1,5 +1,12 @@
 # Shared specifications and PCB-dependent CAD generation
 
+> **Superseded on 2026-10-21.** `hardware/shared` has been removed. The PCB owns
+> approved parts, pins, wiring and board geometry in `hardware/pcb/spec` and exports
+> the board interface the enclosure needs (outline, squares, mounting holes, the
+> hanging Pi, panel products and harness) in `hardware/pcb/generated/pcb-components.json`.
+> CAD keeps its own dimensions in `hardware/cad/dimensions` and reads board facts only
+> from that export. The rest of this document records the earlier decision.
+
 ## Agreed direction
 
 Keep readable shared supplier dimensions, named mounting interfaces and layout

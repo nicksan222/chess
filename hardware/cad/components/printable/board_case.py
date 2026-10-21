@@ -1,11 +1,11 @@
-"""The concrete printable board-case; all dimensions belong to the shared contract."""
+"""The concrete printable board-case; all dimensions come from `cad.dimensions`."""
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from cad import dimensions as dims
 from cad.harness.base.component import PrintableComponent
-from shared import dimensions as shared
 
 if TYPE_CHECKING:
     import bpy
@@ -18,7 +18,7 @@ class BoardCase(PrintableComponent):
     output_name = "board-case"
     scene_name = "Printable Board Case"
     camera_location = (330.0, -420.0, 320.0)
-    camera_target = (0.0, shared.CASE_CENTER_OFFSET_Y_MM, 6.0)
+    camera_target = (0.0, dims.CASE_CENTER_OFFSET_Y_MM, 6.0)
     volume_property = "case_volume_mm3"
 
     def __init__(self) -> None:
@@ -54,9 +54,9 @@ def add_case(
 
     case = modeling.rounded_box(
         "Printable_Board_Case",
-        shared.CASE_OUTER_SIZE_MM,
-        (0.0, shared.CASE_CENTER_OFFSET_Y_MM, shared.CASE_HEIGHT_MM / 2.0),
-        shared.CASE_OUTER_RADIUS_MM,
+        dims.CASE_OUTER_SIZE_MM,
+        (0.0, dims.CASE_CENTER_OFFSET_Y_MM, dims.CASE_HEIGHT_MM / 2.0),
+        dims.CASE_OUTER_RADIUS_MM,
         printable,
     )
     case.data.materials.append(case_material)
@@ -84,30 +84,30 @@ def _hollow_cavity(case: bpy.types.Object, construction: bpy.types.Collection) -
     from cad.harness.base.blender import modeling
 
     # The rim the plate rests on is one plate thickness below the top of the case.
-    rim_z = shared.CASE_HEIGHT_MM - shared.TILE_PLATE_THICKNESS_MM
+    rim_z = dims.CASE_HEIGHT_MM - dims.TILE_PLATE_THICKNESS_MM
     # The cavity overshoots into the pocket so the two never share a face.
-    cavity_top = shared.PCB_UNDERSIDE_Z_MM + shared.PCB_THICKNESS_MM / 2.0
-    pocket_top = rim_z + shared.BOOLEAN_THROUGH_OVERLAP_MM
+    cavity_top = dims.PCB_UNDERSIDE_Z_MM + dims.PCB_THICKNESS_MM / 2.0
+    pocket_top = rim_z + dims.BOOLEAN_THROUGH_OVERLAP_MM
     for name, size, bottom, top, radius in (
         (
             "Cutter_Case_Cavity",
-            shared.CASE_CAVITY_SIZE_MM,
-            shared.CASE_FLOOR_MM,
+            dims.CASE_CAVITY_SIZE_MM,
+            dims.CASE_FLOOR_MM,
             cavity_top,
             1.0,
         ),
         (
             "Cutter_PCB_Pocket",
-            shared.PCB_POCKET_SIZE_MM,
-            shared.PCB_UNDERSIDE_Z_MM,
+            dims.PCB_POCKET_SIZE_MM,
+            dims.PCB_UNDERSIDE_Z_MM,
             pocket_top,
-            shared.PCB_POCKET_RADIUS_MM,
+            dims.PCB_POCKET_RADIUS_MM,
         ),
     ):
         cutter = modeling.rounded_box(
             name,
             (size[0], size[1], top - bottom),
-            (0.0, shared.CASE_CENTER_OFFSET_Y_MM, (bottom + top) / 2.0),
+            (0.0, dims.CASE_CENTER_OFFSET_Y_MM, (bottom + top) / 2.0),
             radius,
             construction,
         )
@@ -123,17 +123,17 @@ def _cut_plate_rebate(
 
     from cad.harness.base.blender import modeling
 
-    depth = shared.TILE_PLATE_REBATE_DEPTH_MM + shared.BOOLEAN_THROUGH_OVERLAP_MM
+    depth = dims.TILE_PLATE_REBATE_DEPTH_MM + dims.BOOLEAN_THROUGH_OVERLAP_MM
     rebate = modeling.rounded_box(
         "Cutter_Plate_Rebate",
-        (*shared.CASE_PLATE_REBATE_MM, depth),
+        (*dims.CASE_PLATE_REBATE_MM, depth),
         (
             0.0,
-            shared.CASE_CENTER_OFFSET_Y_MM,
-            shared.CASE_HEIGHT_MM
-            - shared.TILE_PLATE_REBATE_DEPTH_MM
+            dims.CASE_CENTER_OFFSET_Y_MM,
+            dims.CASE_HEIGHT_MM
+            - dims.TILE_PLATE_REBATE_DEPTH_MM
             + depth / 2.0
-            - shared.BOOLEAN_THROUGH_OVERLAP_MM / 2.0,
+            - dims.BOOLEAN_THROUGH_OVERLAP_MM / 2.0,
         ),
         0.8,
         construction,
@@ -152,16 +152,16 @@ def _cut_rear_apertures(
     """
     from cad.harness.base.blender import modeling
 
-    wall_y = shared.CASE_CENTER_OFFSET_Y_MM + shared.CASE_DEPTH_MM / 2.0
-    depth = 2.0 * shared.CASE_FRAME_WIDTH_MM
-    center_y = wall_y - depth / 2.0 + shared.BOOLEAN_THROUGH_OVERLAP_MM
-    z = shared.CASE_REAR_APERTURE_CENTER_Z_MM
+    wall_y = dims.CASE_CENTER_OFFSET_Y_MM + dims.CASE_DEPTH_MM / 2.0
+    depth = 2.0 * dims.CASE_FRAME_WIDTH_MM
+    center_y = wall_y - depth / 2.0 + dims.BOOLEAN_THROUGH_OVERLAP_MM
+    z = dims.CASE_REAR_APERTURE_CENTER_Z_MM
 
     jack = modeling.cylinder(
         "Cutter_Jack_Aperture",
-        shared.CASE_JACK_APERTURE_DIAMETER_MM,
+        dims.CASE_JACK_APERTURE_DIAMETER_MM,
         depth,
-        (shared.CASE_JACK_APERTURE_CENTER_X_MM, center_y, z),
+        (dims.CASE_JACK_APERTURE_CENTER_X_MM, center_y, z),
         construction,
         vertices=48,
     )
@@ -169,8 +169,8 @@ def _cut_rear_apertures(
     jack.rotation_euler = (1.5707963267948966, 0.0, 0.0)
     rocker = modeling.rounded_box(
         "Cutter_Rocker_Aperture",
-        (shared.CASE_ROCKER_APERTURE_MM[0], depth, shared.CASE_ROCKER_APERTURE_MM[1]),
-        (shared.CASE_ROCKER_APERTURE_CENTER_X_MM, center_y, z),
+        (dims.CASE_ROCKER_APERTURE_MM[0], depth, dims.CASE_ROCKER_APERTURE_MM[1]),
+        (dims.CASE_ROCKER_APERTURE_CENTER_X_MM, center_y, z),
         0.6,
         construction,
     )
@@ -179,18 +179,18 @@ def _cut_rear_apertures(
 
     # Inner pockets thin the wall to each part's panel thickness; they start inside the
     # cavity so they open into it, and stop below the roof that keeps the PCB ledge whole.
-    cavity_y = shared.CASE_CENTER_OFFSET_Y_MM + shared.CASE_CAVITY_SIZE_MM[1] / 2.0
-    bottom, top = shared.CASE_WALL_POCKET_Z_MM
+    cavity_y = dims.CASE_CENTER_OFFSET_Y_MM + dims.CASE_CAVITY_SIZE_MM[1] / 2.0
+    bottom, top = dims.CASE_WALL_POCKET_Z_MM
     pockets = [
         modeling.box_between(
             f"Cutter_{name}_Wall_Pocket",
             (
                 centre_x - width / 2.0,
                 centre_x + width / 2.0,
-                cavity_y - shared.BOOLEAN_THROUGH_OVERLAP_MM,
+                cavity_y - dims.BOOLEAN_THROUGH_OVERLAP_MM,
                 wall_y - panel,
                 # Dips just under the floor surface so no face is coplanar with it.
-                bottom - shared.BOOLEAN_RECESS_OVERLAP_MM,
+                bottom - dims.BOOLEAN_RECESS_OVERLAP_MM,
                 top,
             ),
             construction,
@@ -198,15 +198,15 @@ def _cut_rear_apertures(
         for name, centre_x, width, panel in (
             (
                 "Rocker",
-                shared.CASE_ROCKER_APERTURE_CENTER_X_MM,
-                shared.CASE_ROCKER_POCKET_WIDTH_MM,
-                shared.CASE_ROCKER_PANEL_THICKNESS_MM,
+                dims.CASE_ROCKER_APERTURE_CENTER_X_MM,
+                dims.CASE_ROCKER_POCKET_WIDTH_MM,
+                dims.CASE_ROCKER_PANEL_THICKNESS_MM,
             ),
             (
                 "Jack",
-                shared.CASE_JACK_APERTURE_CENTER_X_MM,
-                shared.CASE_JACK_POCKET_WIDTH_MM,
-                shared.CASE_JACK_PANEL_THICKNESS_MM,
+                dims.CASE_JACK_APERTURE_CENTER_X_MM,
+                dims.CASE_JACK_POCKET_WIDTH_MM,
+                dims.CASE_JACK_PANEL_THICKNESS_MM,
             ),
         )
     ]
@@ -221,32 +221,32 @@ def _cut_side_slot(case: bpy.types.Object, construction: bpy.types.Collection) -
     """
     from cad.harness.base.blender import modeling
 
-    wall_x = shared.CASE_WIDTH_MM / 2.0
-    depth = 2.0 * shared.CASE_FRAME_WIDTH_MM
-    slot_y = shared.CASE_SD_SLOT_CENTER_Y_MM
+    wall_x = dims.CASE_WIDTH_MM / 2.0
+    depth = 2.0 * dims.CASE_FRAME_WIDTH_MM
+    slot_y = dims.CASE_SD_SLOT_CENTER_Y_MM
     slot = modeling.rounded_box(
         "Cutter_Card_Slot",
-        (depth, shared.CASE_SD_SLOT_MM[0], shared.CASE_SD_SLOT_MM[1]),
+        (depth, dims.CASE_SD_SLOT_MM[0], dims.CASE_SD_SLOT_MM[1]),
         (
-            wall_x - depth / 2.0 + shared.BOOLEAN_THROUGH_OVERLAP_MM,
+            wall_x - depth / 2.0 + dims.BOOLEAN_THROUGH_OVERLAP_MM,
             slot_y,
-            shared.CASE_SD_SLOT_CENTER_Z_MM,
+            dims.CASE_SD_SLOT_CENTER_Z_MM,
         ),
         0.6,
         construction,
     )
     modeling.cut_batch(case, [slot], "Cutter_Card_Slot_Combined")
-    cavity_x = shared.CASE_CAVITY_SIZE_MM[0] / 2.0
-    bottom, top = shared.CASE_WALL_POCKET_Z_MM
-    half_width = shared.CASE_SD_POCKET_WIDTH_MM / 2.0
+    cavity_x = dims.CASE_CAVITY_SIZE_MM[0] / 2.0
+    bottom, top = dims.CASE_WALL_POCKET_Z_MM
+    half_width = dims.CASE_SD_POCKET_WIDTH_MM / 2.0
     pocket = modeling.box_between(
         "Cutter_Card_Wall_Pocket",
         (
-            cavity_x - shared.BOOLEAN_THROUGH_OVERLAP_MM,
-            wall_x - shared.CASE_SD_PANEL_THICKNESS_MM,
+            cavity_x - dims.BOOLEAN_THROUGH_OVERLAP_MM,
+            wall_x - dims.CASE_SD_PANEL_THICKNESS_MM,
             slot_y - half_width,
             slot_y + half_width,
-            bottom - shared.BOOLEAN_RECESS_OVERLAP_MM,
+            bottom - dims.BOOLEAN_RECESS_OVERLAP_MM,
             top,
         ),
         construction,
@@ -260,17 +260,17 @@ def _cut_floor_vents(
     """Slots under the Pi, along its long axis, so it is not sealed in."""
     from cad.harness.base.blender import modeling
 
-    height = shared.CASE_FLOOR_MM + 2.0 * shared.BOOLEAN_THROUGH_OVERLAP_MM
+    height = dims.CASE_FLOOR_MM + 2.0 * dims.BOOLEAN_THROUGH_OVERLAP_MM
     first = -(FLOOR_VENT_COUNT - 1) / 2.0 * FLOOR_VENT_PITCH_MM
-    pi_x, pi_y = shared.PI_CENTER_MM
+    pi_x, pi_y = dims.PI_CENTER_MM
     cutters = [
         modeling.rounded_box(
             f"Cutter_Floor_Vent_{index}",
-            (shared.CASE_VENT_SLOT_MM[0], shared.CASE_VENT_SLOT_MM[1], height),
+            (dims.CASE_VENT_SLOT_MM[0], dims.CASE_VENT_SLOT_MM[1], height),
             (
                 pi_x,
                 pi_y + first + index * FLOOR_VENT_PITCH_MM,
-                shared.CASE_FLOOR_MM / 2.0,
+                dims.CASE_FLOOR_MM / 2.0,
             ),
             0.8,
             construction,
@@ -292,29 +292,29 @@ def _add_support_bosses(
     bosses = [
         modeling.cylinder_between(
             f"Boss_PCB_Support_{index:02d}",
-            shared.PCB_SUPPORT_BOSS_DIAMETER_MM,
+            dims.PCB_SUPPORT_BOSS_DIAMETER_MM,
             (x, y),
-            shared.CASE_FLOOR_MM,
-            shared.PCB_UNDERSIDE_Z_MM,
+            dims.CASE_FLOOR_MM,
+            dims.PCB_UNDERSIDE_Z_MM,
             construction,
             vertices=32,
         )
-        for index, (x, y) in enumerate(shared.PCB_SUPPORT_POSITIONS_MM)
+        for index, (x, y) in enumerate(dims.PCB_SUPPORT_POSITIONS_MM)
     ]
     modeling.union_batch(case, bosses, "Boss_All_PCB_Supports")
 
-    pilot_depth = shared.PCB_SUPPORT_PILOT_DEPTH_MM
+    pilot_depth = dims.PCB_SUPPORT_PILOT_DEPTH_MM
     pilots = [
         modeling.cylinder_between(
             f"Cutter_Support_Pilot_{index:02d}",
-            shared.PCB_SUPPORT_PILOT_DIAMETER_MM,
+            dims.PCB_SUPPORT_PILOT_DIAMETER_MM,
             (x, y),
-            shared.PCB_UNDERSIDE_Z_MM - pilot_depth,
-            shared.PCB_UNDERSIDE_Z_MM + shared.BOOLEAN_RECESS_OVERLAP_MM,
+            dims.PCB_UNDERSIDE_Z_MM - pilot_depth,
+            dims.PCB_UNDERSIDE_Z_MM + dims.BOOLEAN_RECESS_OVERLAP_MM,
             construction,
             vertices=24,
         )
-        for index, (x, y) in enumerate(shared.PCB_SUPPORT_POSITIONS_MM)
+        for index, (x, y) in enumerate(dims.PCB_SUPPORT_POSITIONS_MM)
     ]
     modeling.cut_batch(case, pilots, "Cutter_All_Support_Pilots")
 
@@ -325,18 +325,18 @@ def _cut_plate_screws(
     """Blind pilots in the ledge for the screws that hold the plate down."""
     from cad.harness.base.blender import modeling
 
-    depth = shared.PCB_SUPPORT_PILOT_DEPTH_MM
-    ledge_top = shared.CASE_HEIGHT_MM - shared.TILE_PLATE_THICKNESS_MM
+    depth = dims.PCB_SUPPORT_PILOT_DEPTH_MM
+    ledge_top = dims.CASE_HEIGHT_MM - dims.TILE_PLATE_THICKNESS_MM
     pilots = [
         modeling.cylinder_between(
             f"Cutter_Plate_Screw_{index}",
-            shared.PCB_SUPPORT_PILOT_DIAMETER_MM,
+            dims.PCB_SUPPORT_PILOT_DIAMETER_MM,
             (x, y),
             ledge_top - depth,
-            ledge_top + shared.BOOLEAN_RECESS_OVERLAP_MM,
+            ledge_top + dims.BOOLEAN_RECESS_OVERLAP_MM,
             construction,
             vertices=24,
         )
-        for index, (x, y) in enumerate(shared.TILE_PLATE_SCREW_POSITIONS_MM)
+        for index, (x, y) in enumerate(dims.TILE_PLATE_SCREW_POSITIONS_MM)
     ]
     modeling.cut_batch(case, pilots, "Cutter_All_Plate_Screw_Pilots")

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from shared import dimensions
+from cad import dimensions
 
 if TYPE_CHECKING:
     import bpy

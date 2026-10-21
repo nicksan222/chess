@@ -4,8 +4,9 @@ Read the assigned slice, current owning sources/callers and package README. Revi
 read-only: bugs, errors/startup/fault behavior, missing tests, persisted compatibility
 and cross-domain regressions. Give file/line evidence and severity, not speculative cleanup.
 
-For hardware, trace shared exact-part/pin/dimension inputs to native PCB connectivity or
-owning CAD generator, not a parallel graph or manually edited output. Check explicit
+For hardware, trace exact-part/pin/dimension inputs in `hardware/pcb/spec` to native PCB
+connectivity, and board facts through the PCB export to the owning CAD generator, not a
+parallel graph or manually edited output. Check explicit
 firmware pin handoff, sensor/LED mapping, power assumptions, stack/keepouts and evidence
 gates where affected. Use engineering peer reports/datasheets for domain-specific limits;
 flag unknown physical behavior instead of approving it from a render or clean DRC.

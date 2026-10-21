@@ -14,8 +14,8 @@ import bmesh
 import bpy
 from mathutils import Vector
 
+from cad import dimensions as dims
 from cad.harness.base.blender import modeling
-from shared import dimensions as shared
 
 
 def world_aabb(
@@ -80,7 +80,7 @@ def validate_fdm_part(
     )
     if any(axis <= 0.0 for axis in dimensions):
         raise RuntimeError(f"{part.name} has a non-positive physical dimension")
-    if not shared.fits_build_volume(dimensions, build_volume_mm):
+    if not dims.fits_build_volume(dimensions, build_volume_mm):
         raise RuntimeError(
             f"{part.name} dimensions {dimensions} mm exceed the reference "
             f"build volume {build_volume_mm} mm"

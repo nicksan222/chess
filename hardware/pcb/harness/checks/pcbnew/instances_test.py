@@ -4,7 +4,7 @@ import unittest
 from dataclasses import replace
 
 from pcb.board.board import Board
-from shared.electronics.hall_sensor import HallSensorPin
+from pcb.spec.electronics.hall_sensor import HallSensorPin
 
 
 class InstancesTest(unittest.TestCase):

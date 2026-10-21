@@ -20,7 +20,7 @@ quality:
 
 # Validate dimensions and run CAD unit tests.
 test:
-    cd "{{ root }}" && PYTHONPATH=hardware python3 -m shared.dimensions
+    cd "{{ root }}" && PYTHONPATH=hardware python3 -m cad.dimensions
     cd "{{ root }}" && PYTHONPATH=hardware python3 -m pytest hardware/cad/board/tests
     cd "{{ root }}" && PYTHONPATH=hardware python3 -m unittest discover -s hardware/cad/harness -t hardware -p '*_test.py'
 
@@ -55,11 +55,15 @@ generate: setup
     if [[ -z "$blender" ]]; then blender="{{ cached_blender }}"; fi
     PYTHONPATH=hardware python3 -m cad.board.generate "$blender"
 
-# Run checks without invoking Blender.
+# Regenerate the PCB export the enclosure is built from when it is stale.
+pcb-export:
+    cd "{{ root }}" && PYTHONPATH=hardware python3 -m cad.harness.base.pcb_export
+
+# Run checks without invoking Blender. A stale PCB export fails the tests.
 check-fast: quality test
 
-# Run all CAD checks and regenerate output.
-check: check-fast generate
+# Refresh a stale PCB export, run all CAD checks and regenerate output.
+check: pcb-export check-fast generate
 
 # Remove local Python and downloaded Blender caches.
 clean:

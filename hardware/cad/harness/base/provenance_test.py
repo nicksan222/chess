@@ -9,15 +9,16 @@ from . import provenance
 
 
 class ProvenanceTest(unittest.TestCase):
-    def test_justfile_and_shared_build_support_affect_the_source_digest(self) -> None:
+    def test_justfile_build_support_and_export_reader_affect_the_digest(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             hardware = root / "hardware"
             (hardware / "cad").mkdir(parents=True)
-            (hardware / "shared").mkdir()
+            (hardware / "pcb" / "board").mkdir(parents=True)
             (root / ".devcontainer").mkdir()
             (hardware / "cad" / "model.py").write_text("MODEL = 1\n")
-            (hardware / "shared" / "dimensions.py").write_text("SIZE = 1\n")
+            (hardware / "pcb" / "board" / "interface.py").write_text("SIZE = 1\n")
+            (hardware / "pcb" / "board" / "assembly.py").write_text("PARTS = 1\n")
             (hardware / "cad" / "justfile").write_text("generate:\n")
             (hardware / "build_support.py").write_text("SUPPORT = 1\n")
             (root / ".devcontainer" / "Dockerfile").write_text("FROM scratch\n")
@@ -28,6 +29,8 @@ class ProvenanceTest(unittest.TestCase):
                 for path in (
                     hardware / "cad" / "justfile",
                     hardware / "build_support.py",
+                    hardware / "pcb" / "board" / "interface.py",
+                    hardware / "pcb" / "board" / "assembly.py",
                 ):
                     with self.subTest(path=path.name):
                         previous = path.read_text()

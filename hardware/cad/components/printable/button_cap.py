@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from cad import dimensions as d
+from cad.dimensions.board import PanelButton
 from cad.harness.base.component import PrintableComponent
-from shared import dimensions as d
-from shared.panel_buttons import PanelButton
 
 if TYPE_CHECKING:
     import bpy

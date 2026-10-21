@@ -7,7 +7,7 @@ import unittest
 from collections.abc import Iterable
 from typing import cast
 
-from shared.electronics.harness import HARNESSES
+from cad import dimensions
 
 
 @unittest.skipUnless("bpy" in sys.modules, "Executed by the Blender generation worker")
@@ -95,8 +95,7 @@ class HarnessTest(unittest.TestCase):
 
         from cad.harness.base.blender import modeling
 
-        wires = tuple(w for group in HARNESSES.values() for w in group)
-        for wire in wires:
+        for wire in dimensions.HARNESS:
             obj = bpy.data.objects[f"Wire_{wire.connector}_{wire.cavity}"]
             with self.subTest(name=obj.name):
                 self.assertEqual(obj["connector"], wire.connector)

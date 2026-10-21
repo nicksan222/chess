@@ -21,8 +21,8 @@ from pcb.harness import (
     Product,
     SpiceModel,
 )
-from shared.components import HALL_SENSOR
-from shared.electronics.hall_sensor import HallSensorPin
+from pcb.spec.components import HALL_SENSOR
+from pcb.spec.electronics.hall_sensor import HallSensorPin
 
 HALL_SENSOR_DEFINITION = ComponentDefinition(
     product=Product(

@@ -5,7 +5,8 @@
 This is the ordered first-article checklist for the D-PROTOTYPE board. Each step names
 what to do, the pass threshold, and which `ASSUMPTIONS` entry it closes
 (`docs/pcb-assumptions.md`, plus `CAD …` entries from
-`hardware/shared/dimensions/unverified.py`). Electrical figures come from
+`hardware/cad/dimensions/unverified.py` and the host entries in
+`hardware/pcb/spec/host.py`). Electrical figures come from
 [power](power.md) and are datasheet, calculated or simulated values, not measurements.
 
 Rules:

@@ -29,7 +29,7 @@ _TYPE_COMPONENTS = {
 
 def source_digest() -> str:
     digest = hashlib.sha256(json.dumps(toolchain_versions(), sort_keys=True).encode())
-    for root in (HARDWARE / "pcb", HARDWARE / "shared"):
+    for root in (HARDWARE / "pcb",):
         for path in sorted(root.rglob("*.py")):
             relative = path.relative_to(HARDWARE)
             if (

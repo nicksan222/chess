@@ -22,8 +22,8 @@ from pcb.harness import (
     Product,
     Solid3D,
 )
-from shared.components import SK9822
-from shared.electronics.sk9822 import Sk9822Pin
+from pcb.spec.components import SK9822
+from pcb.spec.electronics.sk9822 import Sk9822Pin
 
 SK9822_DEFINITION = ComponentDefinition(
     product=Product(

@@ -10,7 +10,7 @@ changes small and type-safe. Do not duplicate chess/runtime logic in tests or in
 a new hardware abstraction merely to mirror PCB generation. Stored formats/errors and
 cross-crate behavior need focused regression coverage and upgrade review when relevant.
 
-Only edit assigned files; do not take over PCB/CAD/shared electrical contracts. Run
+Only edit assigned files; do not take over PCB/CAD electrical or board contracts. Run
 focused owning-crate checks, report paths/results/interface changes, and wait for review
 before the next slice. Fix findings within the slice. Ask lead before broadening scope;
 do not own Git or repeat final workspace checks unassigned.

@@ -116,7 +116,7 @@ signals into the buffer's output enables, so the buffer cannot drive the LED inp
 early, and it disables the outputs within about 1 µs when the rail switches off. While the buffer
 is off, 10 kΩ pull-downs (R17/R18) hold the first LED's data and clock inputs low. Without
 the switch a chain left in a lit state would draw about 4 A at power-up, which trips the
-eFuse (immediately into 1.8-2.2 A limiting, or by the breaker within 1.6 ms). The firmware contract (`hardware/shared/electronics/sk9822.py`):
+eFuse (immediately into 1.8-2.2 A limiting, or by the breaker within 1.6 ms). The firmware contract (`hardware/pcb/spec/electronics/sk9822.py`):
 
 1. Set `LED_EN` high.
 2. Stream **blank frames for at least 10 ms** (the blanking period). The buffer passes

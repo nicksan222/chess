@@ -6,15 +6,15 @@ envelopes are conservative catalogue approximations, not physical measurements.
 
 import math
 
+from cad import dimensions as cad
 from cad.harness.base.pcb import PcbPart, PcbSnapshot
-from shared import dimensions as cad
 
 # A part this close to the plate underside is treated as touching it.
 TOP_SIDE_MARGIN_MM = 0.5
 
 # Below the board the floor must stay this far from any part.
 BOTTOM_SIDE_FLOOR_CLEARANCE_MM = 2.0
-# The Pi header socket is checked as the Pi stack, by the shared transform.
+# The Pi header socket is checked as the Pi stack, from the exported host site.
 # Bottom parts keep this far from the cavity wall.
 BOTTOM_SIDE_WALL_CLEARANCE_MM = 1.0
 

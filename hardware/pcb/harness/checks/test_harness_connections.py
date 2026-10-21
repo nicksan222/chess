@@ -5,7 +5,7 @@ from dataclasses import replace
 
 from pcb.board.board import Board
 from pcb.harness.base.connections import NetConnection
-from shared.electronics.harness import HARNESSES, validate_harness_connections
+from pcb.spec.electronics.harness import HARNESSES, validate_harness_connections
 
 
 class HarnessConnectionsTest(unittest.TestCase):

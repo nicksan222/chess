@@ -7,8 +7,8 @@ from enum import StrEnum
 from pathlib import Path
 from typing import cast
 
-from shared.components import COMPONENTS
-from shared.electronics.harness import HARNESS_PARTS, HARNESSES, render_harness_table
+from pcb.spec.components import COMPONENTS
+from pcb.spec.electronics.harness import HARNESS_PARTS, HARNESSES, render_harness_table
 
 from ...circuit import Circuit
 from ...component import BoardComponent

@@ -1,7 +1,9 @@
 """PCB-owned assembly metadata, readable by Blender's Python 3.11.
 
-This snapshot is generated beside the checked KiCad model by the PCB build. It is derived data, never an
-editable source, and contains no electrical implementation or KiCad dependency.
+This snapshot is generated beside the checked KiCad model by the PCB build. It is
+derived data, never an editable source, and contains no electrical implementation
+or KiCad dependency. Besides the placed parts it carries the board interface: the
+facts the case and plate are built from.
 """
 
 from __future__ import annotations
@@ -12,10 +14,10 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
+from pcb.board.interface import BoardInterface, decode
+
 if TYPE_CHECKING:
     from pcb.board.board import Board
-
-from shared import dimensions
 
 
 @dataclass(frozen=True)
@@ -58,6 +60,7 @@ class PcbSnapshot:
     leds: dict[str, str]
     buttons: dict[str, str]
     host_header: str
+    interface: BoardInterface
 
     def __post_init__(self) -> None:
         names = {part.reference for part in self.parts}
@@ -71,6 +74,8 @@ class PcbSnapshot:
         }
         if grouped - names:
             raise ValueError("PCB snapshot groups contain unknown references")
+        if {wire.connector for wire in self.interface.harness} - names:
+            raise ValueError("PCB snapshot harness starts at an unknown connector")
 
     @classmethod
     def current(cls) -> PcbSnapshot:
@@ -85,6 +90,7 @@ class PcbSnapshot:
         from enum import StrEnum
 
         from pcb.harness import BoardComponent, Side
+        from pcb.spec.layout import PCB_CENTER_OFFSET_Y_MM
 
         parts: list[PcbPart] = []
         for component in board.components():
@@ -96,7 +102,7 @@ class PcbSnapshot:
                     part.definition.product.body_mm,
                     (
                         part.placement.x_mm,
-                        part.placement.y_mm + dimensions.PCB_CENTER_OFFSET_Y_MM,
+                        part.placement.y_mm + PCB_CENTER_OFFSET_Y_MM,
                     ),
                     part.placement.rotation_degrees,
                     part.placement.side is Side.BOTTOM,
@@ -118,8 +124,7 @@ class PcbSnapshot:
                     {
                         str(pin): (
                             part.pin_position(pin).x_mm,
-                            part.pin_position(pin).y_mm
-                            + dimensions.PCB_CENTER_OFFSET_Y_MM,
+                            part.pin_position(pin).y_mm + PCB_CENTER_OFFSET_Y_MM,
                         )
                         for pin in part.definition.pin_type
                     },
@@ -140,6 +145,7 @@ class PcbSnapshot:
             {name: part.reference for name, part in board.leds.items()},
             {name: part.reference for name, part in board.buttons.items()},
             board.host_header.reference,
+            BoardInterface.current(),
         )
 
     def write(self, path: Path) -> None:
@@ -147,50 +153,5 @@ class PcbSnapshot:
 
     @classmethod
     def read(cls, path: Path) -> PcbSnapshot:
-        data = cast(dict[str, object], json.loads(path.read_text()))
-        parts = tuple(
-            PcbPart(
-                cast(str, part["reference"]),
-                cast(str, part["value"]),
-                cast(
-                    tuple[float, float, float],
-                    tuple(cast(list[float], part["body_mm"])),
-                ),
-                cast(
-                    tuple[float, float], tuple(cast(list[float], part["position_mm"]))
-                ),
-                cast(float, part["rotation_degrees"]),
-                cast(bool, part["bottom"]),
-                cast(
-                    tuple[float, float, float],
-                    tuple(cast(list[float], part["housing_mm"])),
-                )
-                if part.get("housing_mm")
-                else None,
-                cast(str | None, part.get("panel_passage")),
-                tuple(
-                    cast(tuple[float, float, float, float], tuple(zone))
-                    for zone in cast(list[list[float]], part.get("mated_zones", []))
-                ),
-                {
-                    pin: cast(tuple[float, float], tuple(position))
-                    for pin, position in cast(
-                        dict[str, list[float]], part.get("pin_positions_mm", {})
-                    ).items()
-                },
-                tuple(cast(list[str], part.get("mated_zone_roles", []))),
-                cast(
-                    tuple[float, float], tuple(cast(list[float], part["wire_exit_mm"]))
-                )
-                if part.get("wire_exit_mm")
-                else None,
-            )
-            for part in cast(list[dict[str, object]], data["parts"])
-        )
-        return cls(
-            parts,
-            cast(dict[str, str], data["sensors"]),
-            cast(dict[str, str], data["leds"]),
-            cast(dict[str, str], data["buttons"]),
-            cast(str, data["host_header"]),
-        )
+        raw = cast(object, json.loads(path.read_text()))
+        return cast(PcbSnapshot, decode(cls, raw))

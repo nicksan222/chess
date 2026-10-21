@@ -17,11 +17,7 @@ HARDWARE_ROOT = Path(__file__).resolve().parents[2]
 if str(HARDWARE_ROOT) not in sys.path:
     sys.path.insert(0, str(HARDWARE_ROOT))
 
-from cad.board.board import Board
 from cad.harness.base.generation import publish
-from cad.harness.base.pcb import PcbSnapshot
-from cad.harness.checks.clearance import bottom_side_violations, top_side_violations
-from shared import dimensions
 
 GENERATED = Path(__file__).resolve().parents[1] / "generated"
 
@@ -40,12 +36,24 @@ def generate(blender: Path, destination: Path = GENERATED) -> None:
 def render(output: Path) -> None:
     import bpy
 
+    # Imported here, not at module level: `cad.dimensions` reads the PCB export on
+    # import, and the host process must be able to regenerate a stale export first.
+    from cad import dimensions
+    from cad.board.board import Board
     from cad.harness.base.blender.render import render_assembly, render_printable
     from cad.harness.base.blender.testing import run_tests
-
-    board = Board(
-        PcbSnapshot.read(output / "pcb-components.json"), output / "chess-board.glb"
+    from cad.harness.base.pcb import PcbSnapshot
+    from cad.harness.checks.clearance import (
+        bottom_side_violations,
+        top_side_violations,
     )
+
+    staged = PcbSnapshot.read(output / "pcb-components.json")
+    if staged != dimensions.PCB:
+        raise RuntimeError(
+            "The staged PCB export differs from the one the enclosure dimensions read"
+        )
+    board = Board(staged, output / "chess-board.glb")
     dimensions.validate()
     for check in (top_side_violations, bottom_side_violations):
         if violations := check(board.pcb_definition):

@@ -2,15 +2,17 @@
 
 ## Read before matching work
 
-- `hardware/cad/README.md`, `hardware/shared/README.md`.
+- `hardware/cad/README.md`, `hardware/README.md`.
 - `docs/cad.md`, `docs/assembly.md` and `hardware/cad/README.md` and the owning `hardware/cad/components/` definition.
 
 ## Scope and boundaries
 
 Own assigned case/tile-plate Python generators, printable geometry, fasteners, board
 supports, Pi/control clearances, connector access, tolerance stack, FDM printability,
-assembly/service access and light diffusion. Shared dimensions and coordinates belong
-in `hardware/shared/dimensions.py`; CAD-only modeling/presentation stays in CAD.
+assembly/service access and light diffusion. Enclosure dimensions belong in
+`hardware/cad/dimensions/`. Board facts (outline, squares, mounting holes, Pi
+placement, panel products, harness) come from the PCB export and change only in
+`hardware/pcb/spec` through the hardware engineer.
 Coordinates centre on the playing area, and printable models use assembly coordinates.
 Each printable object has one owning generator; assembly imports it instead of redefining
 it. The PCB proxy is a render stand-in, not the electrical/placement source of truth.

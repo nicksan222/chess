@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 from typing import cast
 
-from shared import dimensions
+from cad import dimensions
 
 
 @unittest.skipUnless("bpy" in sys.modules, "Executed by the Blender generation worker")
@@ -400,7 +400,7 @@ class SurfaceTest(unittest.TestCase):
         import bpy
         from mathutils import Vector
 
-        from shared.panel_buttons import PANEL_BUTTONS
+        from cad.dimensions import PANEL_BUTTONS
 
         plate = bpy.data.objects["Printable_Tile_Plate"]
         surface = dimensions.CASE_HEIGHT_MM - dimensions.PANEL_SURFACE_RECESS_MM
@@ -453,8 +453,8 @@ class SurfaceTest(unittest.TestCase):
         import bpy
         from mathutils import Vector
 
+        from cad.dimensions import PANEL_BUTTONS
         from cad.harness.base.blender.validation import overlap_volume_mm3
-        from shared.panel_buttons import PANEL_BUTTONS
 
         plate = bpy.data.objects["Printable_Tile_Plate"]
         for button in PANEL_BUTTONS:

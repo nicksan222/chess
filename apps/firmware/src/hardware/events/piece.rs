@@ -1,7 +1,7 @@
 /// A physical position on the board's eight-by-eight sensing grid.
 ///
 /// Row zero is the rank-1 edge and column zero is the file-A edge, matching the
-/// coordinate origin in `hardware/shared/hall_banks.py`.
+/// coordinate origin in `hardware/pcb/spec/hall_banks.py`.
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct BoardPosition {
     row: u8,

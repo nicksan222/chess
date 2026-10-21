@@ -20,9 +20,9 @@ from pcb.harness import (
     Point,
     Product,
 )
-from shared.components import POWER_HEADER
-from shared.components.power_header import POWER_HEADER_MATED_ZONES
-from shared.electronics.power_header import PowerHeaderPin
+from pcb.spec.components import POWER_HEADER
+from pcb.spec.components.power_header import POWER_HEADER_MATED_ZONES
+from pcb.spec.electronics.power_header import PowerHeaderPin
 
 POWER_HEADER_DEFINITION = ComponentDefinition(
     product=Product(

@@ -2,8 +2,8 @@
 
 import unittest
 
-from shared import dimensions
-from shared.panel_buttons import PANEL_BUTTONS
+from cad import dimensions
+from cad.dimensions import PANEL_BUTTONS
 
 
 class ControlLayoutTest(unittest.TestCase):
@@ -38,17 +38,18 @@ class ControlLayoutTest(unittest.TestCase):
     def test_display_harness_reaches_the_centered_module_with_slack(self) -> None:
         from math import dist
 
-        from shared.components.harness import OLED_WIRE_LENGTH_MM
-
-        connector = dimensions.PCB_STRIP_PLACEMENTS["J2"].centre_mm
-        self.assertGreaterEqual(
-            OLED_WIRE_LENGTH_MM, dist(connector, dimensions.PANEL_OLED_CENTER_MM) + 30
-        )
+        connector = dimensions.PCB_PARTS["J2"].position_mm
+        for wire in dimensions.HARNESS:
+            if wire.connector == "J2":
+                with self.subTest(cavity=wire.cavity):
+                    self.assertGreaterEqual(
+                        wire.length_mm,
+                        dist(connector, dimensions.PANEL_OLED_CENTER_MM) + 30,
+                    )
 
     def test_oled_routes_end_on_the_supplier_solder_pads(self) -> None:
         from cad.board.board import Board
         from cad.board.wiring import wire_route
-        from shared.electronics.harness import OLED_HARNESS
 
         board = Board()
         expected = (
@@ -57,7 +58,9 @@ class ControlLayoutTest(unittest.TestCase):
             (-33.5, -188.73, 26.5),
             (-33.5, -186.19, 26.5),
         )
-        for wire, endpoint in zip(OLED_HARNESS, expected):
+        oled = [wire for wire in dimensions.HARNESS if wire.connector == "J2"]
+        self.assertEqual(len(oled), len(expected))
+        for wire, endpoint in zip(oled, expected):
             with self.subTest(cavity=wire.cavity):
                 for actual, wanted in zip(
                     wire_route(wire, board.pcb_definition)[-1], endpoint

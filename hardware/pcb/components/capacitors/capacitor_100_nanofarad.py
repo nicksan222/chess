@@ -12,7 +12,7 @@ from pcb.harness import (
     Product,
 )
 from pcb.harness.components.capacitor import Capacitor, CapacitorPin
-from shared.components.cap_100n import CAP_100N
+from pcb.spec.components.cap_100n import CAP_100N
 
 # Match the production board's Murata JEMCGC-2701X p25 Table 2 reflow land:
 # 0.65 x 0.7 mm pads with a 0.7 mm gap and 0.25 mm courtyard margin.

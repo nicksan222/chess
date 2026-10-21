@@ -1,7 +1,7 @@
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
 rust_packages := "apps/firmware crates/chess crates/core crates/logger crates/menu crates/persistence"
-python_packages := "hardware/shared hardware/cad hardware/pcb"
+python_packages := "hardware/cad hardware/pcb"
 
 # Show repository capabilities.
 default:
@@ -17,7 +17,6 @@ check: _automation-format agents-check
     set -euo pipefail
     for package in {{ rust_packages }}; do just --justfile "$package/justfile" check; done
     just firmware-binary
-    just --justfile hardware/shared/justfile check
     just --justfile hardware/pcb/justfile review
     just --justfile hardware/cad/justfile check
 
@@ -26,7 +25,6 @@ precommit: _automation-format agents-check
     #!/usr/bin/env bash
     set -euo pipefail
     for package in {{ rust_packages }}; do just --justfile "$package/justfile" check; done
-    just --justfile hardware/shared/justfile check
     just --justfile hardware/cad/justfile check-fast
     just --justfile hardware/pcb/justfile quality
 
@@ -53,9 +51,8 @@ test: agents-test
     #!/usr/bin/env bash
     set -euo pipefail
     for package in {{ rust_packages }}; do just --justfile "$package/justfile" test; done
-    just --justfile hardware/shared/justfile test
-    just --justfile hardware/cad/justfile test
     just --justfile hardware/pcb/justfile review
+    just --justfile hardware/cad/justfile test
 
 # Regenerate CAD and PCB review output.
 generate:

@@ -5,9 +5,9 @@ from __future__ import annotations
 import math
 from typing import TYPE_CHECKING
 
+from cad import dimensions
 from cad.harness.base.component import Component
 from cad.harness.base.pcb import PcbPart
-from shared import dimensions
 
 if TYPE_CHECKING:
     import bpy

@@ -2,11 +2,11 @@
 
 import unittest
 
+from cad import dimensions
 from cad.board.board import Board
 from cad.harness.base.pcb import PcbSnapshot
 from pcb.board.board import Board as CircuitBoard
 from pcb.harness import Side
-from shared import dimensions
 
 
 class BoardTest(unittest.TestCase):
@@ -51,14 +51,14 @@ class BoardTest(unittest.TestCase):
         )
 
     def test_off_board_parts_and_every_harness_wire_are_present(self) -> None:
-        from shared.electronics.harness import HARNESSES
-
-        board = Board(PcbSnapshot.current())
+        snapshot = PcbSnapshot.current()
+        board = Board(snapshot)
         self.assertEqual(
             {part.product_key for part in board.panel_parts},
             {"BARREL_JACK", "POWER_SWITCH"},
         )
-        wires = tuple(w for group in HARNESSES.values() for w in group)
+        wires = snapshot.interface.harness
+        self.assertEqual(len(wires), 8)
         self.assertEqual(tuple(part.wire for part in board.harness_wires), wires)
         self.assertEqual(len(board.connector_mates), 2)
         for part in board.harness_wires:

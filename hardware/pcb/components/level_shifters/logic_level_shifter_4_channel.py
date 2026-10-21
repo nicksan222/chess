@@ -20,8 +20,8 @@ from pcb.harness import (
     Point,
     Product,
 )
-from shared.components import AHCT125
-from shared.electronics.ahct125 import Ahct125Pin
+from pcb.spec.components import AHCT125
+from pcb.spec.electronics.ahct125 import Ahct125Pin
 
 AHCT125_DEFINITION = ComponentDefinition(
     product=Product(

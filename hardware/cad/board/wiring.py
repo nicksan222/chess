@@ -4,15 +4,14 @@ Waypoints describe clearance routes, not a supplier cable model. Cut lengths
 include service slack; its final dressing and bend radii remain physical checks.
 """
 
-from cad.harness.base.pcb import PcbSnapshot
-from shared import dimensions as d
-from shared.dimensions import rear_panel as rear
-from shared.electronics.harness import HarnessWire
+from cad import dimensions as d
+from cad.dimensions import rear_panel as rear
+from cad.harness.base.pcb import HarnessRun, PcbSnapshot
 
 Point3D = tuple[float, float, float]
 
 
-def wire_route(wire: HarnessWire, pcb: PcbSnapshot) -> tuple[Point3D, ...]:
+def wire_route(wire: HarnessRun, pcb: PcbSnapshot) -> tuple[Point3D, ...]:
     connector = next(part for part in pcb.parts if part.reference == wire.connector)
     if connector.wire_exit_mm is None:
         raise ValueError(f"{connector.reference} must declare its wire exit")
@@ -27,7 +26,7 @@ def wire_route(wire: HarnessWire, pcb: PcbSnapshot) -> tuple[Point3D, ...]:
         )
         # Approach the solder pads from the module's left edge, keeping the
         # conductor outside the underside components until its endpoint.
-        pad_x, pad_y = d.PANEL_OLED_PAD_POSITIONS_MM[cavity]
+        pad_x, pad_y = d.DISPLAY.pads_mm[wire.far_terminal]
         target_x = d.PANEL_OLED_CENTER_MM[0] + pad_x
         target_y = d.PANEL_OLED_CENTER_MM[1] + pad_y
         lane_x = target_x - 8 - cavity * 2

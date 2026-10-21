@@ -19,9 +19,9 @@ from pcb.harness import (
     Point,
     Product,
 )
-from shared.components import PI_ZERO_HEADER
-from shared.dimensions.case import PI_HEADER_BODY_MM
-from shared.electronics.raspberry_pi_header import RaspberryPiHeaderPin
+from pcb.spec.components import PI_ZERO_HEADER
+from pcb.spec.electronics.raspberry_pi_header import RaspberryPiHeaderPin
+from pcb.spec.host import PI_HEADER_BODY_MM
 
 PI_ZERO_HEADER_DEFINITION = ComponentDefinition(
     product=Product(

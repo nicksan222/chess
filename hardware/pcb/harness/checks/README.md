@@ -16,7 +16,7 @@ There are three distinct suites:
 
 | Check | Entry point | Input |
 |---|---|---|
-| Catalog completeness and uniqueness | `test_catalog.py` | All PCB definitions and assembly products against the authoritative shared catalog |
+| Catalog completeness and uniqueness | `test_catalog.py` | All PCB definitions and assembly products against the authoritative catalog in `spec/components` |
 | Datasheet coverage and availability | `test_datasheets.py` | Every purchasing product, including wire spools, and every PCB product reference |
 | Native pad coverage, net assignments, closed courtyards, copper containment and save/reload preservation | `pcbnew/test_components.py` | Every PCB definition rendered and reopened on both sides at 0°, 90°, 180° and 270° |
 

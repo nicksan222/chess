@@ -6,7 +6,7 @@ mesh/dimension checks. Build assigned automated tests and fixtures; QA independe
 verifies the resulting behavior. Do not create a second implementation to test itself.
 
 Use the production firmware runtime/harness and maintained GPIO/display/Linux simulation
-interfaces, shared hardware contracts, native PCB validation and real generator outputs
+interfaces, PCB spec and export contracts, native PCB validation and real generator outputs
 as appropriate. Cover negative paths, startup/failure states, contract boundaries and
 reported regressions, not snapshot volume or mirrored implementation details. Obtain
 ownership of test paths and heavy check execution from lead. Do not mutate another

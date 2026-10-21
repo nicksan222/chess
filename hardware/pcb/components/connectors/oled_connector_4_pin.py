@@ -20,9 +20,9 @@ from pcb.harness import (
     Point,
     Product,
 )
-from shared.components import OLED_HEADER
-from shared.components.oled_header import OLED_HEADER_MATED_ZONES
-from shared.electronics.connectors import OledHeaderPin
+from pcb.spec.components import OLED_HEADER
+from pcb.spec.components.oled_header import OLED_HEADER_MATED_ZONES
+from pcb.spec.electronics.connectors import OledHeaderPin
 
 OLED_HEADER_DEFINITION = ComponentDefinition(
     product=Product(

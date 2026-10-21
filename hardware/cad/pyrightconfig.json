@@ -4,6 +4,7 @@
     "../build_support.py",
     "board",
     "components",
+    "dimensions",
     "harness"
   ],
   "extraPaths": [

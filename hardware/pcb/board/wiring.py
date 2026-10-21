@@ -21,18 +21,18 @@ from pcb.harness import (
 )
 from pcb.harness.components.capacitor import CapacitorPin
 from pcb.harness.components.resistor import ResistorPin
-from shared import dimensions
-from shared.electronics import (
+from pcb.spec import layout
+from pcb.spec.electronics import (
     FusePin,
     PowerHeaderPin,
     Sk9822Pin,
 )
-from shared.electronics.ahct125 import Ahct125Pin
-from shared.electronics.efuse import EfusePin
-from shared.electronics.hall_sensor import HallSensorPin
-from shared.electronics.passives import TvsDiodePin
-from shared.hall_banks import BANK_FILES, BANK_RANKS
-from shared.panel_buttons import PANEL_BUTTONS
+from pcb.spec.electronics.ahct125 import Ahct125Pin
+from pcb.spec.electronics.efuse import EfusePin
+from pcb.spec.electronics.hall_sensor import HallSensorPin
+from pcb.spec.electronics.passives import TvsDiodePin
+from pcb.spec.hall_banks import BANK_FILES, BANK_RANKS
+from pcb.spec.panel_buttons import PANEL_BUTTONS
 
 if TYPE_CHECKING:
     from pcb.board.board import Board
@@ -105,11 +105,11 @@ def wiring(board: Board) -> tuple[NetRoute, ...]:
     )
     sensors: list[NetRoute] = []
     # A loop writes the repeated intent; every sensor is still a separate instance.
-    for bank in dimensions.HALL_BANKS:
-        x, y = bank.centre(dimensions.SQUARE_SIZE_MM, dimensions.PLAYING_SPAN_MM)
-        y += (dimensions.PCB_SIZE_MM[1] - dimensions.PLAYING_SPAN_MM) / 2
-        half_width = BANK_FILES * dimensions.SQUARE_SIZE_MM / 2 - 1
-        half_height = BANK_RANKS * dimensions.SQUARE_SIZE_MM / 2 - 1
+    for bank in layout.HALL_BANKS:
+        x, y = bank.centre(layout.SQUARE_SIZE_MM, layout.PLAYING_SPAN_MM)
+        y += (layout.PCB_SIZE_MM[1] - layout.PLAYING_SPAN_MM) / 2
+        half_width = BANK_FILES * layout.SQUARE_SIZE_MM / 2 - 1
+        half_height = BANK_RANKS * layout.SQUARE_SIZE_MM / 2 - 1
         area = (x - half_width, y - half_height, x + half_width, y + half_height)
         for square in bank.members:
             sensor = board.sensors[square.name]

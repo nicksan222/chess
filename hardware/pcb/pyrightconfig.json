@@ -4,8 +4,7 @@
     "board",
     "harness",
     "components",
-    "../shared/components",
-    "../shared/electronics"
+    "spec"
   ],
   "extraPaths": [
     ".."

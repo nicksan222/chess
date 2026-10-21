@@ -5,8 +5,8 @@ definitions or registries explicitly, so another board can use them too.
 """
 
 from pcb.components.catalog import PCB_DEFINITIONS
-from shared.components import APPROVED_COMPONENTS
-from shared.components.oled_module import OLED_REFERENCE_DOCUMENTS
+from pcb.spec.components import APPROVED_COMPONENTS
+from pcb.spec.components.oled_module import OLED_REFERENCE_DOCUMENTS
 
 
 def datasheet_references() -> tuple[tuple[str, str], ...]:

@@ -30,6 +30,7 @@ def check[BoardNet: Net](
         (PCB_ROOT / "harness", "*_test.py"),
         (PCB_ROOT / "components", "*_test.py"),
         (PCB_ROOT / "harness/checks", "test_*.py"),
+        (PCB_ROOT / "spec/tests", "test_*.py"),
     ):
         subprocess.run(
             (

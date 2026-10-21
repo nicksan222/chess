@@ -8,9 +8,10 @@ Architecture is in `docs/architecture.md`; development commands are in
 
 - `apps/firmware`: Raspberry Pi process, system integration, Yocto image.
 - `crates/{chess,core,logger,menu,persistence}`: portable Rust logic and services.
-- `hardware/shared`: authoritative physical, electrical and firmware contracts.
-- `hardware/pcb`: KiCad generation, routing, SPICE and board validation.
-- `hardware/cad`: Blender geometry and review renders.
+- `hardware/pcb`: authoritative parts, pins, wiring and board geometry in `spec/`;
+  KiCad generation, routing, SPICE and board validation.
+- `hardware/cad`: enclosure dimensions, Blender geometry and review renders, built
+  from the PCB's exported board interface (`pcb/generated/pcb-components.json`).
 
 Change authoritative contracts before regenerating artifacts. Do not hand-edit generated
 CAD/PCB output or weaken tests to make hardware pass. Automated checks do not prove a

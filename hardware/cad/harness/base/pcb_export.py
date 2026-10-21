@@ -78,3 +78,20 @@ def prepare_export(stage: Path, snapshot: PcbSnapshot | None = None) -> None:
     raise RuntimeError(
         "PCB assembly export is incomplete, stale or changed during copying"
     )
+
+
+def refresh_export() -> None:
+    """Regenerate the PCB export when it is missing, stale or damaged."""
+    if export_current(SOURCE):
+        print("CAD: the PCB export is current", flush=True)
+        return
+    from pcb.board.generate import generate
+
+    print("CAD: regenerating the PCB export from current definitions", flush=True)
+    generate()
+    if not export_current(SOURCE):
+        raise RuntimeError("PCB regeneration did not produce a current export")
+
+
+if __name__ == "__main__":
+    refresh_export()

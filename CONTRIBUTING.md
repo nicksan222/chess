@@ -23,7 +23,7 @@ Each application, crate, and hardware domain owns a local `justfile`. Use the
 root recipes for repository-wide validation:
 
 ```sh
-just precommit  # checks without expensive renders
+just precommit  # checks without expensive renders; needs a current PCB export
 just check      # complete validation and review artifact generation
 ```
 

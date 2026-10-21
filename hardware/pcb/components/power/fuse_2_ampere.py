@@ -18,8 +18,8 @@ from pcb.harness import (
     Point,
     Product,
 )
-from shared.components import FUSE_2A
-from shared.electronics.passives import FusePin
+from pcb.spec.components import FUSE_2A
+from pcb.spec.electronics.passives import FusePin
 
 FUSE_2A_DEFINITION = ComponentDefinition(
     product=Product(

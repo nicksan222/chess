@@ -1,6 +1,6 @@
 # Harness wiring
 
-Generated from `hardware/shared/electronics/harness.py`; do not edit.
+Generated from `hardware/pcb/spec/electronics/harness.py`; do not edit.
 Cavity numbers are JST's: cavity k mates header circuit k.
 
 ## Power entry

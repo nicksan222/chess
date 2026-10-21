@@ -18,8 +18,8 @@ from pcb.harness import (
     Point,
     Product,
 )
-from shared.components import TEST_POINT
-from shared.electronics.test_point import TestPointPin
+from pcb.spec.components import TEST_POINT
+from pcb.spec.electronics.test_point import TestPointPin
 
 TEST_POINT_DEFINITION = ComponentDefinition(
     product=Product(

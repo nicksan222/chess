@@ -25,7 +25,7 @@ The image provides:
 - a Bun-managed `.pi` TypeScript project with pinned Pi API types, workspace
   IntelliSense, and `bun run --cwd .pi check` validation for project extensions;
 - stable Rust with `rustfmt`, Clippy, Just, and the AArch64 GNU target/linker;
-- Ruff for CAD, PCB, and shared Python;
+- Ruff for CAD and PCB Python;
 - KiCad 9 with `kicad-cli` and `pcbnew`;
 - a checksum-verified Blender at `/opt/blender`;
 - X11/GL/EGL, Mesa, Xvfb, and `xauth` so headless Blender can render;

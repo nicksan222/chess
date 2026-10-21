@@ -17,8 +17,8 @@ the cap without operator approval. Start a missing role with `python3 .agents/te
 | lead | Requirements, interface decisions, integration and Git | Checkpoint, integration fixes |
 | developer | Portable chess/menu/core/persistence/logger logic | `crates/` and callers agreed with firmware |
 | firmware-engineer | Pi runtime, typed events, Linux device/network adapters | `apps/firmware/src/` and assigned tests |
-| hardware-engineer | Circuit/power/pins, native PCB/connectivity/routing | `hardware/pcb/board/`, shared electrical contracts |
-| mechanical-engineer | Enclosure/tile plate, tolerance/optical/assembly stack | `hardware/cad/`, shared dimensions |
+| hardware-engineer | Circuit/power/pins, native PCB/connectivity/routing | `hardware/pcb/spec/`, `hardware/pcb/board/` |
+| mechanical-engineer | Enclosure/tile plate, tolerance/optical/assembly stack | `hardware/cad/`, including `hardware/cad/dimensions/` |
 | qa | Independent behavior/evidence verification | Reports; assigned validation execution |
 | reviewer | Read-only correctness/contracts/regression review | Reports |
 | pushback | Read-only challenge to architecture and physical assumptions | Reports |
@@ -39,9 +39,10 @@ implementation by default. Unassigned agents stay idle and send no status prompt
 - Electronics → firmware: share net/pin identities, voltage/polarity, timing, Hall-bank
   addresses/mapping, LED order and brightness/power limits. Pi pin declarations are
   hand-maintained; coordinate both sides rather than inventing PCB-to-Rust generation.
-- PCB → mechanics: share populated heights, keepouts, supports, holes, connector access
-  and magnet/sensor/LED stack. Only agreed cross-domain measurements belong in
-  `hardware/shared/dimensions.py`; tool behavior stays with its domain.
+- PCB → mechanics: populated heights, keepouts, holes, connector access and the
+  magnet/sensor/LED stack reach CAD only through the PCB's exported board interface
+  (`hardware/pcb/board/interface.py`). Agree a change, make it in `hardware/pcb/spec`,
+  regenerate the PCB, then adapt CAD; tool behavior stays with its domain.
 - Design → manufacturing: confirm exact approved parts, footprint/process compatibility,
   print/board tolerance and assembly/prototype acceptance. A render or clean DRC does
   not authorize a part substitution or fabrication.
@@ -50,7 +51,7 @@ implementation by default. Unassigned agents stay idle and send no status prompt
 
 For such a change, the lead identifies the affected peer, agrees the interface, assigns
 one writer for each shared file, and includes the peer's evidence in review. Do not pass
-broad ownership of `hardware/shared` to two engineers at once. Verify current code and
+broad ownership of `hardware/pcb/spec` to two engineers at once. Verify current code and
 exact datasheets: historical documentation may contain obsolete counts or claims.
 
 ## Execution and evidence

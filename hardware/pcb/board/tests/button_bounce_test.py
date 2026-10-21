@@ -8,7 +8,7 @@ import pytest
 
 from pcb.board.board import Board, BoardNet
 from pcb.harness import StateChange
-from shared.electronics.tactile_switch import TactileSwitchPin
+from pcb.spec.electronics.tactile_switch import TactileSwitchPin
 
 
 @pytest.mark.parametrize("pullup_ohms", [10_000.0, 50_000.0, 100_000.0])

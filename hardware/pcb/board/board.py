@@ -60,9 +60,9 @@ from pcb.harness.base.geometry import Side
 from pcb.harness.base.pcbnew.design_rules import DesignRules
 from pcb.harness.base.pcbnew.layout import BoardLayout, Label, Line, MountingHole, Plane
 from pcb.harness.base.pcbnew.routing.settings import RoutingSettings
-from shared import dimensions, wiring
-from shared.electronics import Tca9554Pin
-from shared.panel_buttons import PANEL_BUTTONS
+from pcb.spec import host, layout, wiring
+from pcb.spec.electronics import Tca9554Pin
+from pcb.spec.panel_buttons import PANEL_BUTTONS
 
 
 class BoardNet(Net):
@@ -382,14 +382,12 @@ def _placement(
     x_mm: float, y_mm: float, rotation: float = 0, side: Side = Side.TOP
 ) -> Placement:
     """Translate the shared playing-area origin into the PCB's centre origin."""
-    height = dimensions.PCB_SIZE_MM[1]
-    return Placement(
-        x_mm, y_mm + (height - dimensions.PLAYING_SPAN_MM) / 2, rotation, side
-    )
+    height = layout.PCB_SIZE_MM[1]
+    return Placement(x_mm, y_mm + (height - layout.PLAYING_SPAN_MM) / 2, rotation, side)
 
 
 def _strip_placement(reference: str) -> Placement:
-    placement = dimensions.PCB_STRIP_PLACEMENTS[reference]
+    placement = layout.PCB_STRIP_PLACEMENTS[reference]
     return _placement(
         *placement.centre_mm,
         placement.rotation_degrees,
@@ -438,7 +436,7 @@ class Board(Circuit[BoardNet]):
     led_power_switch: LedPowerMosfet
 
     def __init__(self) -> None:
-        width, height, _ = dimensions.PCB_SIZE_MM
+        width, height, _ = layout.PCB_SIZE_MM
         super().__init__(BoardNet, outline=BoardOutline(width, height))
         self.buttons: dict[str, TactileButton] = {}
         self.sensors: dict[str, HallSensor] = {}
@@ -686,8 +684,8 @@ def _add_controls(circuit: Board) -> None:
         HostGpioSocket40Pin,
         reference="J1",
         placement=_placement(
-            *dimensions.PI_HEADER_CENTER_MM,
-            (dimensions.PI_ROTATION_DEG + 90) % 360,
+            *host.PI_HEADER_CENTER_MM,
+            (host.PI_ROTATION_DEG + 90) % 360,
             Side.BOTTOM,
         ),
         purpose="Raspberry Pi Zero 2 W GPIO socket",
@@ -910,7 +908,7 @@ def _add_led_switch(circuit: Board) -> None:
 
 
 def _add_squares(board: Board) -> None:
-    for square in dimensions.BOARD_SQUARES.led_chain:
+    for square in layout.BOARD_SQUARES.led_chain:
         index = square.led_chain_index
         rotation = 0 if square.position.rank % 2 else 180
         direction = 1 if rotation == 0 else -1
@@ -982,8 +980,8 @@ def _add_squares(board: Board) -> None:
 
 def _add_sensor_banks(board: Board) -> None:
     for label, reference, bypass_reference in BANK_REFERENCES:
-        bank = next(bank for bank in dimensions.HALL_BANKS if bank.label == label)
-        x, y = dimensions.EXPANDER_POSITIONS_BY_BANK_MM[label]
+        bank = next(bank for bank in layout.HALL_BANKS if bank.label == label)
+        x, y = layout.EXPANDER_POSITIONS_BY_BANK_MM[label]
         channels = tuple(
             BoardNet(wiring.sense_net(member.name)) for member in bank.members
         )
@@ -1024,7 +1022,7 @@ def _add_sensor_banks(board: Board) -> None:
 
 
 def _layout_point(x: float, y: float) -> Point:
-    return Point(x, y + (dimensions.PCB_SIZE_MM[1] - dimensions.PLAYING_SPAN_MM) / 2)
+    return Point(x, y + (layout.PCB_SIZE_MM[1] - layout.PLAYING_SPAN_MM) / 2)
 
 
 def _layout[BoardNet: Net](
@@ -1048,9 +1046,9 @@ def _layout[BoardNet: Net](
         ("D1", "D1 TVS", 0, 2.6),
         ("J2", "J2 OLED: 1 GND 2 3V3 3 SCL 4 SDA", 0, 4.1),
     ):
-        x, y = dimensions.PCB_STRIP_PLACEMENTS[reference].centre_mm
+        x, y = layout.PCB_STRIP_PLACEMENTS[reference].centre_mm
         labels.append(Label(text, _layout_point(x + dx, y + dy), 0.8))
-    for square in dimensions.BOARD_SQUARES:
+    for square in layout.BOARD_SQUARES:
         x, y = square.centre_mm
         labels.append(Label(square.name, _layout_point(x - 12, y)))
     for button in PANEL_BUTTONS:
@@ -1058,19 +1056,16 @@ def _layout[BoardNet: Net](
         labels.append(
             Label(
                 button.name,
-                _layout_point(
-                    x, y + (4.5 if y > dimensions.PANEL_ORIGIN_Y_MM else -4.5)
-                ),
+                _layout_point(x, y + (4.5 if y > layout.PANEL_ORIGIN_Y_MM else -4.5)),
                 0.9,
             )
         )
-    half = dimensions.PLAYING_SPAN_MM / 2
+    half = layout.PLAYING_SPAN_MM / 2
     boundaries = tuple(
-        -half + index * dimensions.SQUARE_SIZE_MM
-        for index in range(1, dimensions.GRID_COUNT)
+        -half + index * layout.SQUARE_SIZE_MM for index in range(1, layout.GRID_COUNT)
     )
     along = tuple(
-        -half + index * 8 for index in range(1, round(dimensions.PLAYING_SPAN_MM / 8))
+        -half + index * 8 for index in range(1, round(layout.PLAYING_SPAN_MM / 8))
     )
     dots = {(boundary, offset) for boundary in boundaries for offset in along}
     dots.update((offset, boundary) for boundary in boundaries for offset in along)
@@ -1079,12 +1074,12 @@ def _layout[BoardNet: Net](
         for x, y in sorted(dots)
         if all(
             (x - hx) ** 2 + (y - hy) ** 2 >= 16
-            for hx, hy in dimensions.PCB_SUPPORT_POSITIONS_MM
+            for hx, hy in layout.PCB_MOUNTING_HOLE_POSITIONS_MM
         )
     )
     return BoardLayout(
         copper_layers=8,
-        thickness_mm=dimensions.PCB_THICKNESS_MM,
+        thickness_mm=layout.PCB_THICKNESS_MM,
         edge_clearance_mm=edge_clearance_mm,
         minimum_clearance_mm=minimum_clearance_mm,
         minimum_track_width_mm=minimum_track_width_mm,
@@ -1098,9 +1093,9 @@ def _layout[BoardNet: Net](
             MountingHole(
                 f"H{index}",
                 _layout_point(x, y),
-                dimensions.PCB_MOUNTING_HOLE_DIAMETER_MM,
+                layout.PCB_MOUNTING_HOLE_DIAMETER_MM,
             )
-            for index, (x, y) in enumerate(dimensions.PCB_SUPPORT_POSITIONS_MM, 1)
+            for index, (x, y) in enumerate(layout.PCB_MOUNTING_HOLE_POSITIONS_MM, 1)
         ),
         labels=tuple(labels),
         lines=lines,
