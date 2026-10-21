@@ -78,6 +78,6 @@ cmd "just firmware-binary" "🦀 link the firmware for AArch64"
 cmd "just --justfile <package>/justfile check" "🎯 one package at a time"
 
 section "📚 Read next"
-printf '  📖 README.md   🤝 CONTRIBUTING.md   🏗️  docs/architecture.md   🛠️  docs/development.md\n'
+printf '  📖 README.md   🤝 .github/CONTRIBUTING.md   🏗️  docs/architecture.md   🛠️  docs/development.md\n'
 printf '\n  %sShow this again any time with %sjust welcome%s%s ✨\n\n' "${dim}" "${cyan}" "${reset}" \
     "${reset}"

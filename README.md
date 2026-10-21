@@ -15,7 +15,7 @@
 [![Blender](https://img.shields.io/badge/Blender-4.5-E87D0D?logo=blender&logoColor=white)](hardware/cad/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-F7C843.svg)](LICENSE)
 
-[**Explore the hardware**](hardware/README.md) · [**Read the architecture**](docs/architecture.md) · [**Build from source**](docs/development.md) · [**Contribute**](CONTRIBUTING.md)
+[**Explore the hardware**](hardware/README.md) · [**Read the architecture**](docs/architecture.md) · [**Build from source**](docs/development.md) · [**Contribute**](.github/CONTRIBUTING.md)
 
 <a href="hardware/cad/generated/board-assembly-finished.png">
   <img src="hardware/cad/generated/board-assembly-finished.png" width="100%" alt="Generated Blender render of the finished open-source smart chessboard">
@@ -165,7 +165,7 @@ project rather than only polish a finished product.
 - **Mechanical:** test clearances, print strategy, materials, and light diffusion.
 - **Docs:** turn a pile of generated artifacts into a delightful build journey.
 
-Start with [`CONTRIBUTING.md`](CONTRIBUTING.md), bring large ideas to
+Start with [`CONTRIBUTING.md`](.github/CONTRIBUTING.md), bring large ideas to
 [Discussions](https://github.com/nicksan222/chess/discussions), and use the issue
 forms for focused bugs or features. First-time contributors are very welcome.
 
@@ -176,7 +176,7 @@ forms for focused bugs or features. First-time contributors are very welcome.
 **Build it. Break it. Teach it a new game.**
 
 Released under the [MIT License](LICENSE) · Please follow the
-[Code of Conduct](CODE_OF_CONDUCT.md) · Report security issues via
-[`SECURITY.md`](SECURITY.md)
+[Code of Conduct](.github/CODE_OF_CONDUCT.md) · Report security issues via
+[`SECURITY.md`](.github/SECURITY.md)
 
 </div>

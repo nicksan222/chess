@@ -10,7 +10,7 @@ Treat source code, authoritative contracts and executable checks as the
 authority. Instructions describe intent and how to find current examples; do
 not assume an example, count, pin, part number or command flag is still current.
 
-- Start with `git status --short`, `README.md`, `CONTRIBUTING.md`, the root
+- Start with `git status --short`, `README.md`, `.github/CONTRIBUTING.md`, the root
   `justfile` and the nearest package README and `justfile` for ownership.
 - Discover skills by listing `.agents/skills/*/SKILL.md` and reading their
   `name` and `description` fields. Load the matching instructions before

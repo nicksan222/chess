@@ -76,5 +76,4 @@ just --justfile hardware/pcb/justfile check
 The first two commands need no external network. `component-checks` includes live
 documentation requests. `check` runs the three suites, board-specific tests from `board/tests/`, lint/type checks and the
 composed board declaration; review, CI and the commit gate use it too.
-Root `PYTHONPATH=hardware python3 -m unittest discover` also discovers these
-suites once. The normal gate requires KiCad and ngspice from the devcontainer.
+The normal gate requires KiCad and ngspice from the devcontainer.
