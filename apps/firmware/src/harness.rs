@@ -4,6 +4,7 @@ use std::{io, time::Duration};
 
 use crate::{
     hardware::HardwareEvent,
+    menu::transitions::{Config, TransitionEvent},
     runtime::{Firmware, Snapshot},
 };
 
@@ -14,9 +15,15 @@ pub struct FirmwareHarness {
 }
 
 impl FirmwareHarness {
+    /// Starts firmware with [`Config::offline`], so tests never reach the network.
     pub fn start() -> io::Result<Self> {
+        Self::with_config(&Config::offline())
+    }
+
+    /// Starts firmware with explicit integration settings, such as a local fake.
+    pub fn with_config(config: &Config) -> io::Result<Self> {
         Ok(Self {
-            firmware: Firmware::start()?,
+            firmware: Firmware::start_with(config)?,
         })
     }
 
@@ -42,6 +49,34 @@ impl FirmwareHarness {
                 io::Error::new(
                     io::ErrorKind::TimedOut,
                     format!("firmware did not process {event:?}"),
+                )
+            })?
+    }
+
+    /// Injects a transition report, as background work would send it, and waits
+    /// for the application to apply it. Acknowledgement counts reports, so no
+    /// real background report may be in flight.
+    pub async fn report(&mut self, event: TransitionEvent) -> io::Result<Snapshot> {
+        let reported = self.snapshot().reported_events;
+        self.firmware
+            .reports()
+            .emit(event)
+            .map_err(io::Error::other)?;
+        self.until(|snapshot| snapshot.reported_events > reported)
+            .await
+    }
+
+    /// Waits for background work, such as an update check, to reach a state.
+    pub async fn until(&mut self, condition: impl Fn(&Snapshot) -> bool) -> io::Result<Snapshot> {
+        tokio::time::timeout(Duration::from_secs(5), self.firmware.until(condition))
+            .await
+            .map_err(|_| {
+                io::Error::new(
+                    io::ErrorKind::TimedOut,
+                    format!(
+                        "firmware never reached the state; last {:?}",
+                        self.snapshot()
+                    ),
                 )
             })?
     }

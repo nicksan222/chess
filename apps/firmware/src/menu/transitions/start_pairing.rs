@@ -1,2 +1,22 @@
-/// Hands pairing startup to the future pairing module.
-pub(super) fn handle() {}
+//! The pairing flow: a placeholder until its integration is implemented.
+
+use super::{Reporter, Transition};
+use crate::menu::Request;
+
+/// Finishes immediately; replace with the real integration.
+pub struct Pairing;
+
+impl Transition for Pairing {
+    const REQUEST: Request = Request::StartPairing;
+
+    type Settings = ();
+    type Status = ();
+
+    fn new(_: &()) -> Self {
+        Self
+    }
+
+    fn start(&mut self, report: Reporter<()>) {
+        report.finish(());
+    }
+}

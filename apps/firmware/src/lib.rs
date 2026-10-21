@@ -6,3 +6,4 @@ pub mod hardware;
 pub mod harness;
 pub mod menu;
 pub mod runtime;
+pub mod updater;

@@ -54,9 +54,43 @@ headless `menu` crate's primitives into the Play, Connection, Pairing, Update,
 and Settings submenus. Leaf requests are typed but deliberately immediate and
 non-blocking until their external modules define completion and cancellation
 behavior; the menu crate remains product-neutral and performs no operation.
-Each request has one placeholder integration file under `src/menu/transitions/`,
-so future module ownership has an explicit location without entering the menu
-definition or runtime loop.
+Each request is handled by a transition under `src/menu/transitions/`. A
+transition is defined entirely in its own file by implementing the `Transition`
+trait: the request it handles and, for a blocking item, the escape action that
+cancels it; its `Settings` (`Default` is the network-free value tests use,
+`device()` the product's); its `Status` for the snapshot; and `start` and
+`cancel`. One line in the `transitions!` registry in `mod.rs` wires it in,
+generating its `Config` field, its `Snapshot::transitions` field and its
+dispatch. Every request has a transition; those whose integration does not
+exist yet are placeholders that finish immediately. Tests require a transition
+for every menu request and check each against its menu item.
+
+The kind follows from the menu item and what the transition reports. A
+blocking item holds input until the transition reports `finish`; escape calls
+`cancel`. A plain item stays free while a background transition reports
+`progress` and `finish`, or an immediate one finishes inside `start`. Reports
+are `TransitionEvent`s, which the runtime loop receives alongside hardware
+events; one generic rule releases the menu when the request blocking it
+finishes. `Snapshot::blocking` names the operation holding input. Tests drive
+the real menu, inject reports with `FirmwareHarness::report` as they inject
+hardware with `trigger`, and wait for background results with `until`.
+
+`src/updater/` owns the local firmware and its updates, independent of menus
+and displays. `installed` names the running firmware and its Cargo version,
+used by `--version`, the startup log and the user agent. `Updater::check`
+first runs preflight checks, cheapest first, so a failure names its cause: the
+system clock must be set (`ClockNotSet`), the release host must resolve
+(`Offline`) and accept a connection (`Unreachable`). It then asks the GitHub
+Releases API for this repository's latest stable release over HTTPS and
+compares its `v<version>` tag with the installed version: `NoRelease` (404),
+`UpToDate` or `Available(Release)`. A failing service is `ServiceDown`, an
+exhausted quota `RateLimited`, and other failures keep their cause chain. TLS uses `rustls` on `ring` with the image's `ca-certificates`, so it
+needs a synchronised clock. Installing an update is not implemented.
+
+The Check for Updates transition only runs that check and presents it as
+`Snapshot::transitions.update`: `Checking`, then the result, `Disabled` or
+`Failed`. No button is bound to escape yet, so a check ends with its result or
+a 15 s timeout.
 
 `src/hardware/buttons.rs` and `src/hardware/debounce.rs` own polling, active-low
 translation, and mechanical debounce. Call `start_subscription` with a GPIO

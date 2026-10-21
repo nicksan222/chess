@@ -1,4 +1,9 @@
-//! Dispatch points for externally implemented menu requests.
+//! The integrations behind menu requests.
+//!
+//! Every request has a transition, defined in its own file by implementing
+//! [`Transition`] and registered with one line below; see [`transition`] for
+//! the contract and the kinds it supports. Requests whose integration does not
+//! exist yet have placeholder transitions that finish immediately.
 
 mod check_for_updates;
 mod install_update;
@@ -9,20 +14,21 @@ mod select_online_game;
 mod show_connection_status;
 mod show_session_status;
 mod start_pairing;
+pub mod transition;
 
-use super::Request;
+pub use check_for_updates::{UpdateCheck, UpdateStatus};
+pub(crate) use transition::report;
+pub use transition::{Reporter, Transition, TransitionEvent, TransitionEventBus};
 
-/// Dispatches one menu request to its dedicated transition module.
-pub(crate) fn handle(request: Request) {
-    match request {
-        Request::SelectLocalGame => select_local_game::handle(),
-        Request::SelectOnlineGame => select_online_game::handle(),
-        Request::ShowConnectionStatus => show_connection_status::handle(),
-        Request::ScanWifi => scan_wifi::handle(),
-        Request::OpenNetworkSettings => open_network_settings::handle(),
-        Request::StartPairing => start_pairing::handle(),
-        Request::ShowSessionStatus => show_session_status::handle(),
-        Request::CheckForUpdates => check_for_updates::handle(),
-        Request::InstallUpdate => install_update::handle(),
-    }
+transition::transitions! {
+    /// "Check for Updates": the latest GitHub release against the running version.
+    update: UpdateCheck,
+    install_update: install_update::UpdateInstall,
+    open_network_settings: open_network_settings::NetworkSettings,
+    scan_wifi: scan_wifi::WifiScan,
+    select_local_game: select_local_game::LocalGameSetup,
+    select_online_game: select_online_game::OnlineGameSetup,
+    show_connection_status: show_connection_status::ConnectionStatus,
+    show_session_status: show_session_status::SessionStatus,
+    start_pairing: start_pairing::Pairing,
 }

@@ -1,2 +1,22 @@
-/// Hands local-game selection to the future game coordinator.
-pub(super) fn handle() {}
+//! Local game setup: a placeholder until its integration is implemented.
+
+use super::{Reporter, Transition};
+use crate::menu::Request;
+
+/// Finishes immediately; replace with the real integration.
+pub struct LocalGameSetup;
+
+impl Transition for LocalGameSetup {
+    const REQUEST: Request = Request::SelectLocalGame;
+
+    type Settings = ();
+    type Status = ();
+
+    fn new(_: &()) -> Self {
+        Self
+    }
+
+    fn start(&mut self, report: Reporter<()>) {
+        report.finish(());
+    }
+}

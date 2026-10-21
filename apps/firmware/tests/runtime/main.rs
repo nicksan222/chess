@@ -2,6 +2,8 @@
 
 mod gpio;
 mod navigator;
+mod transitions;
+mod updates;
 
 use navigator::Navigator;
 

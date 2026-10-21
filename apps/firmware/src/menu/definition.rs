@@ -36,9 +36,11 @@ impl Screen {
 
 /// A request exposed by a selectable leaf in the product menu.
 ///
-/// These values are placeholders for future external modules. The menu does not
-/// execute them, and none are blocking until those integrations define their
-/// completion and cancellation behavior.
+/// The menu does not execute these; each one is handled by the transition
+/// registered for it in `transitions`. `CheckForUpdates` is blocking, with
+/// `CancelUpdateCheck` as its escape action. The others have placeholder
+/// transitions that finish immediately, and stay non-blocking until their
+/// integrations define completion and cancellation behavior.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Request {
     /// Select local game setup.
@@ -57,6 +59,8 @@ pub enum Request {
     ShowSessionStatus,
     /// Check whether a software update is available.
     CheckForUpdates,
+    /// Abandon a running update check; the escape action of `CheckForUpdates`.
+    CancelUpdateCheck,
     /// Start the externally managed update flow.
     InstallUpdate,
 }
@@ -93,7 +97,11 @@ pub static PAIRING_MENU: Menu<'static, Request> = Menu::new(
 pub static UPDATE_MENU: Menu<'static, Request> = Menu::new(
     "Update",
     &[
-        MenuItem::action("Check for Updates", Request::CheckForUpdates),
+        MenuItem::blocking_action(
+            "Check for Updates",
+            Request::CheckForUpdates,
+            Request::CancelUpdateCheck,
+        ),
         MenuItem::action("Install Update", Request::InstallUpdate),
     ],
 );
@@ -161,13 +169,16 @@ mod tests {
                 ("Session Status", Request::ShowSessionStatus),
             ],
         );
-        assert_menu(
-            &UPDATE_MENU,
-            &[
-                ("Check for Updates", Request::CheckForUpdates),
-                ("Install Update", Request::InstallUpdate),
-            ],
-        );
+        let [check, install] = UPDATE_MENU.items() else {
+            panic!("the update menu has two items");
+        };
+        assert_eq!(check.label(), "Check for Updates");
+        assert_eq!(check.as_action(), Some(&Request::CheckForUpdates));
+        assert!(check.is_blocking());
+        assert_eq!(check.escape_action(), Some(&Request::CancelUpdateCheck));
+        assert_eq!(install.label(), "Install Update");
+        assert_eq!(install.as_action(), Some(&Request::InstallUpdate));
+        assert!(!install.is_blocking());
         assert!(SETTINGS_MENU.is_empty());
     }
 
