@@ -77,10 +77,6 @@ cmd "just cad" "🧊 test, then generate CAD renders"
 cmd "just firmware-binary" "🦀 link the firmware for AArch64"
 cmd "just --justfile <package>/justfile check" "🎯 one package at a time"
 
-section "🧭 Agent tooling"
-cmd "just agents-check" "🔍 validate shared skills, roles and adapters"
-cmd "just sync-agents" "🔁 regenerate adapters after changing skills or roles"
-
 section "📚 Read next"
 printf '  📖 README.md   🤝 CONTRIBUTING.md   🏗️  docs/architecture.md   🛠️  docs/development.md\n'
 printf '\n  %sShow this again any time with %sjust welcome%s%s ✨\n\n' "${dim}" "${cyan}" "${reset}" \

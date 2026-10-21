@@ -7,8 +7,8 @@
 | `.agents/skills/*/SKILL.md` | Agent Skills instructions and bundled references |
 | `.agents/roles/*.md` | Shared subagent briefs with name, description, read-only intent and optional required skills |
 | `.claude/skills/*` | Relative symlinks to the canonical skill folders |
-| `.claude/agents/*.md` | Generated Claude wrappers that read the shared roles |
-| `.codex/agents/*.toml` | Generated Codex wrappers that read the shared roles |
+| `.claude/agents/*.md` | Thin Claude wrappers that read the shared roles |
+| `.codex/agents/*.toml` | Thin Codex wrappers that read the shared roles |
 | `CLAUDE.md`, `GEMINI.md`, `.github/copilot-instructions.md` | Relative symlinks to `AGENTS.md` for harnesses with other instruction filenames |
 
 Codex discovers repository skills in `.agents/skills`; Claude discovers the
@@ -34,25 +34,23 @@ instead of copying numbers, part lists, pins or versions that will go stale.
 
 ## Maintenance
 
-- Run `just sync-agents` after adding skills or changing role metadata. It
-  creates missing links and regenerates the native role wrappers. It does not
-  install tools, stage files or change user settings, and it refuses to
-  overwrite a local copy that it does not own.
-- `just agents-check` lints and tests the checker, then validates shared
-  metadata, skill links, `just` recipe, skill, role, path and link references,
-  adapter drift and harness configuration. It runs in `just quality`,
-  `just precommit` and CI.
-- If a role is removed or renamed, delete its generated wrappers; the checker
-  flags orphans but never deletes native agents it does not recognise.
-- Structural checks cannot prove prose is still correct. When source changes
-  invalidate guidance, update that guidance in the same change.
+Adapters are thin and written by hand; keep them in step with their source in
+the same change:
+
+- New skill: add `.agents/skills/<name>/SKILL.md` and a relative link
+  `.claude/skills/<name> -> ../../.agents/skills/<name>`.
+- New role: add `.agents/roles/<name>.md`, then copy an existing wrapper in
+  `.claude/agents/` and `.codex/agents/` and change only `name`, `description`
+  and the role path. Read-only roles deny `Edit, Write, NotebookEdit, Agent` in
+  the Claude wrapper; writable roles deny only `Agent`.
+- Renamed or removed role or skill: rename or delete its wrappers and link too.
+- When source changes invalidate guidance, update that guidance in the same
+  change.
 - Skill links need a checkout with symlinks enabled. Without them, use direct
   `.agents/skills` discovery instead of maintaining independent copies.
 
 Personal plugins, models, providers, MCP servers and credentials stay in local
 or user configuration (`.claude/settings.local.json`, `.codex/config.toml`).
-The checker, `tooling/agents/agent_tooling.py`, has no dependencies beyond
-Python and Git.
 
 ## Adapter references
 

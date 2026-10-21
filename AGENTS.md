@@ -84,7 +84,6 @@ actions, purchases or publication.
 ## Maintaining this tooling
 
 `.agents/skills` and `.agents/roles` are the canonical sources; provider entry
-points and role adapters route here. See `.agents/README.md`. Run
-`just sync-agents` after adding or changing skills or role metadata;
-`just agents-check` checks drift without writing files and is part of the
-commit gate. Do not copy shared instructions into provider configuration.
+points and role adapters route here. See `.agents/README.md` for the adapter
+layout and how to add or rename a skill or role. Do not copy shared
+instructions into provider configuration.

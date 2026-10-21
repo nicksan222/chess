@@ -140,8 +140,7 @@ See [`docs/development.md`](docs/development.md) for the full workflow.
 Coding assistants start from [`AGENTS.md`](AGENTS.md). Claude Code, Codex and
 other harnesses share one set of [skills and subagent roles](.agents/README.md),
 including firmware, hardware, mechanical and manufacturing engineers; the
-session you start delegates to them as needed. `just agents-check` validates
-the shared tooling.
+session you start delegates to them as needed.
 
 ## Project status
 

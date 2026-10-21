@@ -5,7 +5,7 @@ workspace=$(pwd)
 step_number=0
 step() {
     step_number=$((step_number + 1))
-    printf '\n\e[1m%s  [%d/5] %s\e[0m\n' "$1" "${step_number}" "$2"
+    printf '\n\e[1m%s  [%d/4] %s\e[0m\n' "$1" "${step_number}" "$2"
 }
 fail() {
     printf '\n❌ \e[31merror:\e[0m %s\n' "$1" >&2
@@ -31,12 +31,6 @@ for harness in claude codex; do
         fail "agent harness ${harness} is not installed; rebuild the container"
     fi
 done
-
-step "🧭" "Checking shared agent skills, roles and adapters"
-if ! command -v python3 >/dev/null 2>&1; then
-    fail "python3 is required in the development container"
-fi
-python3 tooling/agents/agent_tooling.py
 
 step "👋" "Installing the terminal welcome"
 # Show our welcome once, in the first VS Code terminal, instead of the base image notice.

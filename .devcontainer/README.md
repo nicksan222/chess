@@ -34,9 +34,8 @@ CI prebuilds this image, pushes it to GHCR, then runs Python, CAD, PCB, and Rust
 parallel `devcontainer exec` jobs against that digest. Subsequent
 prebuilds reuse the image layers when the Dockerfile is unchanged.
 
-Container creation configures the repository pre-commit hook, installs Codex
-and validates the shared agent skills, roles and adapters without starting a
-model. Separate `chess-claude` and `chess-codex` volumes keep provider
+Container creation configures the repository pre-commit hook and installs Codex
+without starting a model. Separate `chess-claude` and `chess-codex` volumes keep provider
 credentials and runtime configuration across rebuilds. Run `claude auth login`
 (or forward `CLAUDE_CODE_OAUTH_TOKEN`) and `codex login` inside the container.
 Accept workspace trust manually. Host API credentials may select API billing;
@@ -54,7 +53,6 @@ versions, which agents are signed in, and the commands below. Bring it back with
 just welcome                # toolchain/login status and starter commands
 claude auth login           # persistent Claude login; no automatic sign-in
 codex login                 # persistent Codex login
-just agents-check           # validate shared skills, roles and adapters
 just pcb                    # test, then generate PCB review output
 just cad                    # test, then generate CAD output
 just quality                # lint and format-check every package

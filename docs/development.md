@@ -56,8 +56,7 @@ container; Yocto owns its caches under `.cache/yocto`.
 ## CI
 
 The `PR` workflow invokes package-local recipes for code quality, every Rust
-package, hardware, and firmware; code quality includes `just agents-check` for
-the shared agent tooling. In addition to host tests and Yocto metadata
+package, hardware, and firmware. In addition to host tests and Yocto metadata
 validation, `Firmware checks / AArch64 binary` performs a locked optimized build
 and links the real firmware executable for the Pi architecture. Cargo follows the
 firmware package's complete dependency graph automatically, including local

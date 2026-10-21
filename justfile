@@ -12,7 +12,7 @@ welcome:
     @bash .devcontainer/welcome.sh
 
 # Complete repository validation and generation.
-check: _automation-format agents-check
+check: _automation-format
     #!/usr/bin/env bash
     set -euo pipefail
     for package in {{ rust_packages }}; do just --justfile "$package/justfile" check; done
@@ -22,7 +22,7 @@ check: _automation-format agents-check
     just --justfile hardware/cad/justfile check
 
 # Fast commit gate: lint and tests; no renders, PCB regeneration or cross-build (CI runs them).
-precommit: _automation-format agents-check
+precommit: _automation-format
     #!/usr/bin/env bash
     set -euo pipefail
     for package in {{ rust_packages }}; do just --justfile "$package/justfile" check; done
@@ -31,7 +31,7 @@ precommit: _automation-format agents-check
     just --justfile hardware/pcb/justfile quality
 
 # Formatting, linting, checking, and documentation.
-quality: _automation-format agents-check
+quality: _automation-format
     #!/usr/bin/env bash
     set -euo pipefail
     for package in {{ rust_packages }}; do just --justfile "$package/justfile" quality; done
@@ -49,7 +49,7 @@ _automation-format:
     done
 
 # All package tests, including hardware validation.
-test: agents-test
+test:
     #!/usr/bin/env bash
     set -euo pipefail
     for package in {{ rust_packages }}; do just --justfile "$package/justfile" test; done
@@ -89,20 +89,6 @@ firmware-check:
 # Build the flashable Yocto image.
 firmware:
     just --justfile apps/firmware/justfile image
-
-# Refresh skill links and native agent wrappers from the shared source.
-sync-agents:
-    python3 tooling/agents/agent_tooling.py --sync
-
-# Lint, format-check and test agent tooling, then validate shared skills, roles and adapters.
-agents-check:
-    ruff check tooling/agents
-    ruff format --check tooling/agents
-    just agents-test
-
-# Offline agent tooling regressions, including the repository drift check.
-agents-test:
-    python3 -m unittest discover -s tooling/agents -v
 
 # Remove package-local caches and transient output.
 clean:
