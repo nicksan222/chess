@@ -35,7 +35,10 @@ fn feed(response: String) -> (Navigator, Arc<AtomicUsize>) {
             let _ = stream.write_all(response.as_bytes());
         }
     });
-    let config = Config { update: Some(url) };
+    let config = Config {
+        update: Some(url),
+        ..Config::offline()
+    };
     let panel = Navigator::new(FirmwareHarness::with_config(&config).unwrap());
     (panel, requests)
 }
@@ -74,6 +77,7 @@ async fn the_menu_holds_input_until_the_result_arrives() {
             "http://{}/releases/latest",
             silent.local_addr().unwrap()
         )),
+        ..Config::offline()
     };
     let mut panel = Navigator::new(FirmwareHarness::with_config(&config).unwrap());
 

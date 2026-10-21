@@ -61,8 +61,9 @@ cancels it; its `Settings` (`Default` is the network-free value tests use,
 `device()` the product's); its `Status` for the snapshot; and `start` and
 `cancel`. One line in the `transitions!` registry in `mod.rs` wires it in,
 generating its `Config` field, its `Snapshot::transitions` field and its
-dispatch. Requests without a transition are placeholders, logged and ignored.
-A test checks every registered transition against its menu item.
+dispatch. Every request has a transition; those whose integration does not
+exist yet are placeholders that finish immediately. Tests require a transition
+for every menu request and check each against its menu item.
 
 The kind follows from the menu item and what the transition reports. A
 blocking item holds input until the transition reports `finish`; escape calls

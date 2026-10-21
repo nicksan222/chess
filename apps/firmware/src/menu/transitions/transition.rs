@@ -11,7 +11,8 @@
 //! - **Background:** a plain `MenuItem::action`. It reports progress and
 //!   results while the menu stays free.
 //! - **Immediate:** a plain `MenuItem::action` that reports `finish` from
-//!   [`Transition::start`] itself.
+//!   [`Transition::start`] itself, as the placeholders for not-yet-implemented
+//!   integrations do.
 //!
 //! A transition without settings or status uses `()` for either.
 
@@ -228,7 +229,8 @@ macro_rules! transitions {
                         return self.$field.cancel(Reporter::new::<$transition>(&self.events));
                     }
                 )*
-                logger::info!("{request:?} has no transition yet");
+                // Unreachable for menu requests: a test requires a transition for each.
+                logger::warn!("{request:?} has no transition");
             }
         }
 
@@ -255,19 +257,39 @@ mod tests {
         transitions::{REGISTERED, UpdateStatus},
     };
 
-    #[test]
-    fn every_registered_transition_matches_its_menu_item() {
-        fn items(menu: &Menu<'static, Request>, found: &mut Vec<&MenuItem<'static, Request>>) {
+    fn leaves() -> Vec<&'static MenuItem<'static, Request>> {
+        fn walk(
+            menu: &'static Menu<'static, Request>,
+            found: &mut Vec<&'static MenuItem<'static, Request>>,
+        ) {
             for item in menu.items() {
                 match item.as_submenu() {
-                    Some(submenu) => items(submenu, found),
+                    Some(submenu) => walk(submenu, found),
                     None => found.push(item),
                 }
             }
         }
-        let mut leaves = Vec::new();
-        items(&MAIN_MENU, &mut leaves);
+        let mut found = Vec::new();
+        walk(&MAIN_MENU, &mut found);
+        found
+    }
 
+    #[test]
+    fn every_menu_request_has_a_transition() {
+        for item in leaves() {
+            let request = item.as_action().expect("menu leaves are actions");
+            assert!(
+                REGISTERED
+                    .iter()
+                    .any(|(registered, _)| registered == request),
+                "{request:?} has no transition"
+            );
+        }
+    }
+
+    #[test]
+    fn every_registered_transition_matches_its_menu_item() {
+        let leaves = leaves();
         for (request, cancel) in REGISTERED {
             let item = leaves
                 .iter()

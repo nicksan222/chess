@@ -19,6 +19,7 @@ async fn blocked_on_check() -> (Navigator, TcpListener) {
     let silent = TcpListener::bind("127.0.0.1:0").unwrap();
     let config = Config {
         update: Some(format!("http://{}/", silent.local_addr().unwrap())),
+        ..Config::offline()
     };
     let mut panel = Navigator::new(FirmwareHarness::with_config(&config).unwrap());
     let blocked = panel.open(Request::CheckForUpdates).await;
@@ -56,5 +57,21 @@ async fn a_finished_report_releases_the_blocking_request() {
     assert_eq!(done.blocking, None);
     assert_eq!(done.transitions.update, UpdateStatus::UpToDate);
     panel.open(Request::InstallUpdate).await;
+    panel.firmware.shutdown().await.unwrap();
+}
+
+#[tokio::test]
+async fn a_placeholder_finishes_at_once_and_leaves_the_menu_free() {
+    let mut panel = Navigator::start();
+
+    let opened = panel.open(Request::SelectLocalGame).await;
+    assert_eq!(opened.blocking, None);
+    let finished = panel
+        .firmware
+        .until(|snapshot| snapshot.reported_events == 1)
+        .await
+        .unwrap();
+    assert_eq!(finished.blocking, None);
+    panel.open(Request::ScanWifi).await;
     panel.firmware.shutdown().await.unwrap();
 }

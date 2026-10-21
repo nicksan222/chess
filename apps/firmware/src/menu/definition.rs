@@ -38,9 +38,9 @@ impl Screen {
 ///
 /// The menu does not execute these; each one is handled by the transition
 /// registered for it in `transitions`. `CheckForUpdates` is blocking, with
-/// `CancelUpdateCheck` as its escape action. Requests without a transition are
-/// placeholders and stay non-blocking until one defines their completion and
-/// cancellation behavior.
+/// `CancelUpdateCheck` as its escape action. The others have placeholder
+/// transitions that finish immediately, and stay non-blocking until their
+/// integrations define completion and cancellation behavior.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Request {
     /// Select local game setup.
