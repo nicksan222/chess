@@ -77,11 +77,14 @@ hardware with `trigger`, and wait for background results with `until`.
 
 `src/updater/` owns the local firmware and its updates, independent of menus
 and displays. `installed` names the running firmware and its Cargo version,
-used by `--version`, the startup log and the user agent. `Updater::check` asks
-the GitHub Releases API for this repository's latest stable release over HTTPS
-and compares its `v<version>` tag with the installed version: `NoRelease`
-(404), `UpToDate` or `Available(Release)`, or a typed `Error` with its cause
-chain. TLS uses `rustls` on `ring` with the image's `ca-certificates`, so it
+used by `--version`, the startup log and the user agent. `Updater::check`
+first runs preflight checks, cheapest first, so a failure names its cause: the
+system clock must be set (`ClockNotSet`), the release host must resolve
+(`Offline`) and accept a connection (`Unreachable`). It then asks the GitHub
+Releases API for this repository's latest stable release over HTTPS and
+compares its `v<version>` tag with the installed version: `NoRelease` (404),
+`UpToDate` or `Available(Release)`. A failing service is `ServiceDown`, an
+exhausted quota `RateLimited`, and other failures keep their cause chain. TLS uses `rustls` on `ring` with the image's `ca-certificates`, so it
 needs a synchronised clock. Installing an update is not implemented.
 
 The Check for Updates transition only runs that check and presents it as

@@ -7,6 +7,7 @@
 mod error;
 mod github;
 pub mod installed;
+mod preflight;
 mod release;
 
 pub use error::Error;
@@ -30,8 +31,10 @@ impl Updater {
         Self { feed: feed.into() }
     }
 
-    /// Compares the latest published release with the installed firmware.
+    /// Compares the latest published release with the installed firmware,
+    /// after checking the clock, the internet connection and the release host.
     pub async fn check(&self) -> Result<Availability, Error> {
+        preflight::run(&self.feed).await?;
         match github::latest(&self.feed).await? {
             None => Ok(Availability::NoRelease),
             Some((tag, page)) => Availability::of(&tag, &page, &installed::version()),
@@ -57,8 +60,10 @@ mod tests {
         let url = format!("http://{}/releases/latest", listener.local_addr().unwrap());
         thread::spawn(move || {
             for mut stream in listener.incoming().flatten() {
-                let _ = stream.read(&mut [0; 4096]);
-                let _ = stream.write_all(response.as_bytes());
+                // Preflight probes connect without sending a request.
+                if stream.read(&mut [0; 4096]).unwrap_or(0) > 0 {
+                    let _ = stream.write_all(response.as_bytes());
+                }
             }
         });
         Updater::new(url)
@@ -102,7 +107,15 @@ mod tests {
     async fn failures_are_errors_not_up_to_date() {
         assert_eq!(
             feed(answer("503 Service Unavailable", "")).check().await,
-            Err(Error::Status(503))
+            Err(Error::ServiceDown(503))
+        );
+        assert_eq!(
+            feed(answer("429 Too Many Requests", "")).check().await,
+            Err(Error::RateLimited)
+        );
+        assert_eq!(
+            feed(answer("400 Bad Request", "")).check().await,
+            Err(Error::Status(400))
         );
         assert!(matches!(
             feed(answer("200 OK", "{}")).check().await,

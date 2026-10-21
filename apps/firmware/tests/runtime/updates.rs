@@ -18,7 +18,7 @@ use firmware::{
         Request,
         transitions::{Config, UpdateStatus},
     },
-    updater::Release,
+    updater::{Error, Release},
 };
 
 use crate::Navigator;
@@ -31,9 +31,11 @@ fn feed(response: String) -> (Navigator, Arc<AtomicUsize>) {
     let served = requests.clone();
     thread::spawn(move || {
         for mut stream in listener.incoming().flatten() {
-            let _ = stream.read(&mut [0; 4096]);
-            served.fetch_add(1, Ordering::SeqCst);
-            let _ = stream.write_all(response.as_bytes());
+            // Preflight probes connect without sending a request.
+            if stream.read(&mut [0; 4096]).unwrap_or(0) > 0 {
+                served.fetch_add(1, Ordering::SeqCst);
+                let _ = stream.write_all(response.as_bytes());
+            }
         }
     });
     let config = Config {
@@ -108,10 +110,9 @@ async fn a_failed_check_releases_the_menu_and_can_be_retried() {
             .until(|snapshot| snapshot.blocking.is_none())
             .await
             .unwrap();
-        assert!(
-            matches!(&failed.transitions.update, UpdateStatus::Failed(cause) if cause.contains("503")),
-            "{:?}",
-            failed.transitions.update
+        assert_eq!(
+            failed.transitions.update,
+            UpdateStatus::Failed(Error::ServiceDown(503))
         );
         assert_eq!(requests.load(Ordering::SeqCst), attempt);
     }

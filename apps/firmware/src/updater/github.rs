@@ -23,9 +23,12 @@ pub(super) async fn latest(feed: &str) -> Result<Option<(String, String)>, Error
         .send()
         .await?;
     match response.status() {
+        status if status.is_success() => {}
         StatusCode::NOT_FOUND => return Ok(None),
-        status if !status.is_success() => return Err(Error::Status(status.as_u16())),
-        _ => {}
+        // GitHub answers 403 or 429 once the unauthenticated quota is spent.
+        StatusCode::FORBIDDEN | StatusCode::TOO_MANY_REQUESTS => return Err(Error::RateLimited),
+        status if status.is_server_error() => return Err(Error::ServiceDown(status.as_u16())),
+        status => return Err(Error::Status(status.as_u16())),
     }
     let body = response.bytes().await?;
     let release: serde_json::Value =

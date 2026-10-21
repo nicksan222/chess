@@ -10,7 +10,7 @@ use tokio::task::JoinHandle;
 use super::{Reporter, Transition};
 use crate::{
     menu::Request,
-    updater::{Availability, Release, Updater},
+    updater::{Availability, Error, Release, Updater},
 };
 
 /// Update discovery owned by one firmware instance.
@@ -35,8 +35,8 @@ pub enum UpdateStatus {
     UpToDate,
     /// A newer release.
     Available(Release),
-    /// The check could not complete; carries the cause chain.
-    Failed(String),
+    /// The check could not complete, named by its first failed step.
+    Failed(Error),
 }
 
 impl Transition for UpdateCheck {
@@ -70,7 +70,7 @@ impl Transition for UpdateCheck {
                 Ok(Availability::NoRelease) => UpdateStatus::NoRelease,
                 Ok(Availability::UpToDate) => UpdateStatus::UpToDate,
                 Ok(Availability::Available(release)) => UpdateStatus::Available(release),
-                Err(error) => UpdateStatus::Failed(error.to_string()),
+                Err(error) => UpdateStatus::Failed(error),
             };
             match &status {
                 UpdateStatus::Failed(cause) => warn!("update check failed: {cause}"),
