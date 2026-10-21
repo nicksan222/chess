@@ -72,8 +72,28 @@ mod tests {
     }
 
     #[test]
+    fn a_prerelease_above_the_installed_version_is_newer() {
+        let installed = Version::new(1, 2, 0);
+        assert!(matches!(
+            Availability::of("v1.3.0-rc.1", "page", &installed),
+            Ok(Availability::Available(Release { version, .. })) if version.pre.as_str() == "rc.1"
+        ));
+    }
+
+    #[test]
+    fn build_metadata_never_decides() {
+        let installed = Version::parse("1.2.0+device.4").unwrap();
+        assert_eq!(
+            Availability::of("v1.2.0+ci.9", "page", &installed),
+            Ok(Availability::UpToDate)
+        );
+    }
+
+    #[test]
     fn rejects_tags_that_are_not_v_semver() {
-        for tag in ["1.3.0", "v1.3", "latest"] {
+        for tag in [
+            "1.3.0", "v1.3", "latest", "V1.3.0", " v1.3.0", "v1.3.0 ", "",
+        ] {
             assert_eq!(
                 Availability::of(tag, "page", &Version::new(1, 0, 0)),
                 Err(Error::InvalidTag(tag.into()))

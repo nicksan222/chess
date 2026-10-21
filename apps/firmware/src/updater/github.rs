@@ -48,3 +48,74 @@ fn client() -> Result<Client, Error> {
         .timeout(Duration::from_secs(15))
         .build()?)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::updater::fake::{FakeFeed, answer, release};
+
+    #[tokio::test]
+    async fn asks_for_the_github_api_as_this_firmware() {
+        let feed = FakeFeed::answering(release("v1.0.0"));
+        latest(&feed.url).await.unwrap();
+
+        let requests = feed.requests();
+        assert_eq!(requests.len(), 1);
+        let request = requests[0].to_ascii_lowercase();
+        assert!(request.starts_with("get /releases/latest "), "{request}");
+        assert!(
+            request.contains("accept: application/vnd.github+json"),
+            "{request}"
+        );
+        let agent = format!("user-agent: {}/{}", installed::NAME, installed::version());
+        assert!(request.contains(&agent), "{request}");
+    }
+
+    #[tokio::test]
+    async fn returns_the_tag_and_page_of_the_latest_release() {
+        let feed = FakeFeed::answering(release("v1.2.3"));
+        assert_eq!(
+            latest(&feed.url).await,
+            Ok(Some((
+                "v1.2.3".into(),
+                "https://example.invalid/v1.2.3".into()
+            )))
+        );
+    }
+
+    #[tokio::test]
+    async fn no_release_yet_is_not_an_error() {
+        let feed = FakeFeed::answering(answer("404 Not Found", ""));
+        assert_eq!(latest(&feed.url).await, Ok(None));
+    }
+
+    #[tokio::test]
+    async fn classifies_failing_statuses() {
+        for (status, expected) in [
+            ("403 Forbidden", Error::RateLimited),
+            ("429 Too Many Requests", Error::RateLimited),
+            ("500 Internal Server Error", Error::ServiceDown(500)),
+            ("502 Bad Gateway", Error::ServiceDown(502)),
+            ("401 Unauthorized", Error::Status(401)),
+        ] {
+            let feed = FakeFeed::answering(answer(status, ""));
+            assert_eq!(latest(&feed.url).await, Err(expected), "{status}");
+        }
+    }
+
+    #[tokio::test]
+    async fn rejects_answers_that_are_not_releases() {
+        for body in [
+            "not json",
+            r#"{"tag_name": "v1.0.0"}"#,
+            r#"{"html_url": "https://example.invalid"}"#,
+            r#"{"tag_name": 1, "html_url": "https://example.invalid"}"#,
+        ] {
+            let feed = FakeFeed::answering(answer("200 OK", body));
+            assert!(
+                matches!(latest(&feed.url).await, Err(Error::InvalidResponse(_))),
+                "{body}"
+            );
+        }
+    }
+}

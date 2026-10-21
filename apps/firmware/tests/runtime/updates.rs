@@ -134,3 +134,28 @@ async fn offline_firmware_reports_disabled_and_stays_navigable() {
     panel.open(Request::InstallUpdate).await;
     panel.firmware.shutdown().await.unwrap();
 }
+
+#[tokio::test]
+async fn without_internet_the_check_fails_offline_and_releases_the_menu() {
+    // `.invalid` never resolves (RFC 6761), as when the device has no internet.
+    let config = Config {
+        update: Some("https://update-check.invalid/releases/latest".into()),
+        ..Config::offline()
+    };
+    let mut panel = Navigator::new(FirmwareHarness::with_config(&config).unwrap());
+
+    panel.open(Request::CheckForUpdates).await;
+    let snapshot = panel
+        .firmware
+        .until(|snapshot| snapshot.blocking.is_none())
+        .await
+        .unwrap();
+    assert_eq!(
+        snapshot.transitions.update,
+        UpdateStatus::Failed(Error::Offline {
+            host: "update-check.invalid".into()
+        })
+    );
+    panel.open(Request::InstallUpdate).await;
+    panel.firmware.shutdown().await.unwrap();
+}

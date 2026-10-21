@@ -5,6 +5,8 @@
 //! results. Installing an update is not implemented.
 
 mod error;
+#[cfg(test)]
+pub(crate) mod fake;
 mod github;
 pub mod installed;
 mod preflight;
@@ -44,58 +46,30 @@ impl Updater {
 
 #[cfg(test)]
 mod tests {
-    use std::{
-        io::{Read, Write},
-        net::TcpListener,
-        thread,
-    };
-
     use semver::Version;
 
-    use super::*;
+    use super::{
+        fake::{FakeFeed, answer, release},
+        *,
+    };
 
-    /// Serves `response` to every connection on a local port.
-    fn feed(response: String) -> Updater {
-        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
-        let url = format!("http://{}/releases/latest", listener.local_addr().unwrap());
-        thread::spawn(move || {
-            for mut stream in listener.incoming().flatten() {
-                // Preflight probes connect without sending a request.
-                if stream.read(&mut [0; 4096]).unwrap_or(0) > 0 {
-                    let _ = stream.write_all(response.as_bytes());
-                }
-            }
-        });
-        Updater::new(url)
-    }
-
-    fn answer(status: &str, body: &str) -> String {
-        format!(
-            "HTTP/1.1 {status}\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",
-            body.len()
-        )
-    }
-
-    fn release(tag: &str) -> String {
-        answer(
-            "200 OK",
-            &format!(r#"{{"tag_name": "{tag}", "html_url": "https://example.invalid/{tag}"}}"#),
-        )
+    fn check(response: String) -> Updater {
+        Updater::new(FakeFeed::answering(response).url)
     }
 
     #[tokio::test]
     async fn reports_what_the_feed_publishes() {
         assert_eq!(
-            feed(answer("404 Not Found", "")).check().await,
+            check(answer("404 Not Found", "")).check().await,
             Ok(Availability::NoRelease)
         );
         let installed = installed::version();
         assert_eq!(
-            feed(release(&format!("v{installed}"))).check().await,
+            check(release(&format!("v{installed}"))).check().await,
             Ok(Availability::UpToDate)
         );
         assert_eq!(
-            feed(release("v99.0.0")).check().await,
+            check(release("v99.0.0")).check().await,
             Ok(Availability::Available(Release {
                 version: Version::new(99, 0, 0),
                 page: "https://example.invalid/v99.0.0".into(),
@@ -106,24 +80,50 @@ mod tests {
     #[tokio::test]
     async fn failures_are_errors_not_up_to_date() {
         assert_eq!(
-            feed(answer("503 Service Unavailable", "")).check().await,
+            check(answer("503 Service Unavailable", "")).check().await,
             Err(Error::ServiceDown(503))
         );
         assert_eq!(
-            feed(answer("429 Too Many Requests", "")).check().await,
+            check(answer("429 Too Many Requests", "")).check().await,
             Err(Error::RateLimited)
         );
         assert_eq!(
-            feed(answer("400 Bad Request", "")).check().await,
+            check(answer("400 Bad Request", "")).check().await,
             Err(Error::Status(400))
         );
         assert!(matches!(
-            feed(answer("200 OK", "{}")).check().await,
+            check(answer("200 OK", "{}")).check().await,
             Err(Error::InvalidResponse(_))
         ));
         assert_eq!(
-            feed(release("latest")).check().await,
+            check(release("latest")).check().await,
             Err(Error::InvalidTag("latest".into()))
+        );
+    }
+
+    #[tokio::test]
+    async fn preflight_failures_stop_before_any_request() {
+        let port = std::net::TcpListener::bind("127.0.0.1:0")
+            .unwrap()
+            .local_addr()
+            .unwrap()
+            .port();
+        assert_eq!(
+            Updater::new(format!("http://127.0.0.1:{port}/"))
+                .check()
+                .await,
+            Err(Error::Unreachable {
+                host: "127.0.0.1".into()
+            })
+        );
+    }
+
+    #[test]
+    fn the_product_checks_this_repositorys_github_releases() {
+        assert_eq!(Updater::github().feed, LATEST_RELEASE);
+        assert!(
+            LATEST_RELEASE.starts_with("https://api.github.com/repos/nicksan222/chess/"),
+            "{LATEST_RELEASE}"
         );
     }
 }

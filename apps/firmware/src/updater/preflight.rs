@@ -101,6 +101,36 @@ mod tests {
         assert_eq!(clock(SystemTime::now()), Ok(()));
     }
 
+    #[test]
+    fn the_clock_floor_is_inclusive() {
+        let floor = SystemTime::UNIX_EPOCH + EARLIEST_PLAUSIBLE;
+        assert_eq!(clock(floor), Ok(()));
+        assert_eq!(
+            clock(floor - Duration::from_secs(1)),
+            Err(Error::ClockNotSet)
+        );
+    }
+
+    #[tokio::test]
+    async fn an_ip_literal_feed_needs_no_name_resolution() {
+        // Port 9 on 127.0.0.2 is closed, so this reaches the TCP probe: had it
+        // gone through DNS first, a resolver failure would report Offline.
+        assert_eq!(
+            run("http://127.0.0.2:9/").await,
+            Err(Error::Unreachable {
+                host: "127.0.0.2".into()
+            })
+        );
+    }
+
+    #[tokio::test]
+    async fn a_feed_without_a_host_is_rejected() {
+        assert!(matches!(
+            run("file:///releases/latest").await,
+            Err(Error::InvalidFeed(_))
+        ));
+    }
+
     #[tokio::test]
     async fn a_listening_host_passes() {
         let listener = TcpListener::bind("127.0.0.1:0").unwrap();

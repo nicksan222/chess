@@ -18,6 +18,11 @@ mod tests {
     use super::*;
 
     #[test]
+    fn the_name_is_the_package_name() {
+        assert_eq!(NAME, env!("CARGO_PKG_NAME"));
+    }
+
+    #[test]
     fn the_package_version_is_the_installed_version() {
         assert_eq!(version().to_string(), env!("CARGO_PKG_VERSION"));
     }

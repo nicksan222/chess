@@ -103,45 +103,177 @@ impl Drop for UpdateCheck {
 
 #[cfg(test)]
 mod tests {
-    use std::{net::TcpListener, time::Duration};
+    use std::time::Duration;
 
-    use tokio::task;
+    use tokio::{task, time::timeout};
 
     use super::*;
-    use crate::menu::transitions::{TransitionEvent, TransitionEventBus};
+    use crate::{
+        events::Subscription,
+        menu::transitions::{TransitionEvent, TransitionEventBus},
+        updater::{
+            Error, LATEST_RELEASE,
+            fake::{FakeFeed, answer, release},
+            installed,
+        },
+    };
 
-    #[tokio::test]
-    async fn cancelling_aborts_the_running_check() {
-        // Accepts connections but never answers, so the check stays in flight.
-        let silent = TcpListener::bind("127.0.0.1:0").unwrap();
-        let feed = Some(format!("http://{}/", silent.local_addr().unwrap()));
+    /// A transition reading `feed`, with a reporter and a subscription to
+    /// what it reports.
+    fn transition(
+        feed: Option<String>,
+    ) -> (
+        UpdateCheck,
+        Reporter<UpdateStatus>,
+        Subscription<TransitionEvent>,
+    ) {
         let events = TransitionEventBus::new();
-        let mut reports = events.subscribe();
+        let reports = events.subscribe();
         let report = Reporter::new::<UpdateCheck>(&events);
-        let mut updates = UpdateCheck::new(&feed);
+        (UpdateCheck::new(&feed), report, reports)
+    }
 
-        updates.start(report.clone());
-        let running = updates.running.as_ref().unwrap().abort_handle();
-        updates.cancel(report);
+    async fn next(reports: &mut Subscription<TransitionEvent>) -> TransitionEvent {
+        timeout(Duration::from_secs(5), reports.recv())
+            .await
+            .expect("the transition reported nothing")
+            .unwrap()
+    }
 
-        tokio::time::timeout(Duration::from_secs(2), async {
+    async fn stopped(running: task::AbortHandle) {
+        timeout(Duration::from_secs(2), async {
             while !running.is_finished() {
                 task::yield_now().await;
             }
         })
         .await
-        .unwrap();
+        .expect("the check kept running");
+    }
+
+    #[test]
+    fn the_product_checks_github_and_tests_run_offline() {
+        assert_eq!(UpdateCheck::device(), Some(LATEST_RELEASE.to_owned()));
+        assert_eq!(<UpdateCheck as Transition>::Settings::default(), None);
+    }
+
+    #[tokio::test]
+    async fn without_a_feed_it_finishes_disabled_and_starts_nothing() {
+        let (mut updates, report, mut reports) = transition(None);
+        updates.start(report);
+
+        assert!(updates.running.is_none());
         assert_eq!(
-            reports.try_recv().unwrap(),
-            Some(TransitionEvent::progress::<UpdateCheck>(
-                UpdateStatus::Checking
-            ))
+            next(&mut reports).await,
+            TransitionEvent::finished::<UpdateCheck>(UpdateStatus::Disabled)
+        );
+    }
+
+    #[tokio::test]
+    async fn reports_checking_then_each_result_as_its_status() {
+        let installed = format!("v{}", installed::version());
+        for (response, status) in [
+            (answer("404 Not Found", ""), UpdateStatus::NoRelease),
+            (release(&installed), UpdateStatus::UpToDate),
+            (
+                release("v99.0.0"),
+                UpdateStatus::Available(Release {
+                    version: semver::Version::new(99, 0, 0),
+                    page: "https://example.invalid/v99.0.0".into(),
+                }),
+            ),
+            (
+                answer("503 Service Unavailable", ""),
+                UpdateStatus::Failed(Error::ServiceDown(503)),
+            ),
+        ] {
+            let feed = FakeFeed::answering(response);
+            let (mut updates, report, mut reports) = transition(Some(feed.url.clone()));
+            updates.start(report);
+
+            assert_eq!(
+                next(&mut reports).await,
+                TransitionEvent::progress::<UpdateCheck>(UpdateStatus::Checking)
+            );
+            assert_eq!(
+                next(&mut reports).await,
+                TransitionEvent::finished::<UpdateCheck>(status)
+            );
+        }
+    }
+
+    #[tokio::test]
+    async fn preflight_failures_become_failed_statuses() {
+        let port = std::net::TcpListener::bind("127.0.0.1:0")
+            .unwrap()
+            .local_addr()
+            .unwrap()
+            .port();
+        let (mut updates, report, mut reports) =
+            transition(Some(format!("http://127.0.0.1:{port}/")));
+        updates.start(report);
+
+        next(&mut reports).await;
+        assert_eq!(
+            next(&mut reports).await,
+            TransitionEvent::finished::<UpdateCheck>(UpdateStatus::Failed(Error::Unreachable {
+                host: "127.0.0.1".into()
+            }))
+        );
+    }
+
+    #[tokio::test]
+    async fn cancelling_aborts_the_running_check() {
+        let feed = FakeFeed::silent();
+        let (mut updates, report, mut reports) = transition(Some(feed.url.clone()));
+
+        updates.start(report.clone());
+        let running = updates.running.as_ref().unwrap().abort_handle();
+        updates.cancel(report);
+
+        stopped(running).await;
+        assert!(updates.running.is_none());
+        assert_eq!(
+            next(&mut reports).await,
+            TransitionEvent::progress::<UpdateCheck>(UpdateStatus::Checking)
         );
         assert_eq!(
-            reports.try_recv().unwrap(),
-            Some(TransitionEvent::finished::<UpdateCheck>(
-                UpdateStatus::NotChecked
-            ))
+            next(&mut reports).await,
+            TransitionEvent::finished::<UpdateCheck>(UpdateStatus::NotChecked)
         );
+    }
+
+    #[tokio::test]
+    async fn cancelling_with_nothing_running_still_reports_finished() {
+        let (mut updates, report, mut reports) = transition(None);
+        updates.cancel(report);
+        assert_eq!(
+            next(&mut reports).await,
+            TransitionEvent::finished::<UpdateCheck>(UpdateStatus::NotChecked)
+        );
+    }
+
+    #[tokio::test]
+    async fn starting_again_replaces_a_running_check() {
+        let feed = FakeFeed::silent();
+        let (mut updates, report, _reports) = transition(Some(feed.url.clone()));
+
+        updates.start(report.clone());
+        let first = updates.running.as_ref().unwrap().abort_handle();
+        updates.start(report);
+
+        stopped(first).await;
+        assert!(!updates.running.as_ref().unwrap().is_finished());
+    }
+
+    #[tokio::test]
+    async fn dropping_the_transition_stops_its_check() {
+        let feed = FakeFeed::silent();
+        let (mut updates, report, _reports) = transition(Some(feed.url.clone()));
+
+        updates.start(report);
+        let running = updates.running.as_ref().unwrap().abort_handle();
+        drop(updates);
+
+        stopped(running).await;
     }
 }

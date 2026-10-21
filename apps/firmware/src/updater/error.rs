@@ -66,3 +66,64 @@ impl From<reqwest::Error> for Error {
         Self::Request(cause)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn every_failure_reads_as_a_sentence_naming_its_cause() {
+        for (error, message) in [
+            (Error::ClockNotSet, "the system clock is not set"),
+            (
+                Error::Offline {
+                    host: "api.github.com".into(),
+                },
+                "no internet connection: api.github.com does not resolve",
+            ),
+            (
+                Error::Unreachable {
+                    host: "api.github.com".into(),
+                },
+                "api.github.com is unreachable",
+            ),
+            (
+                Error::ServiceDown(503),
+                "release service is down (HTTP 503)",
+            ),
+            (
+                Error::RateLimited,
+                "release service rate limit reached; try later",
+            ),
+            (Error::Status(401), "release service answered HTTP 401"),
+            (
+                Error::InvalidTag("latest".into()),
+                r#"release tag "latest" is not v<semantic version>"#,
+            ),
+        ] {
+            assert_eq!(error.to_string(), message);
+        }
+    }
+
+    #[tokio::test]
+    async fn request_failures_keep_their_cause_chain() {
+        // reqwest panics without a crypto provider; the product's client
+        // installs ring the same way, and test order must not matter.
+        let _ = rustls::crypto::ring::default_provider().install_default();
+        // A refused connection: reqwest's own message hides why.
+        let port = std::net::TcpListener::bind("127.0.0.1:0")
+            .unwrap()
+            .local_addr()
+            .unwrap()
+            .port();
+        let failure = reqwest::get(format!("http://127.0.0.1:{port}/"))
+            .await
+            .unwrap_err();
+        let top = failure.to_string();
+        let Error::Request(chain) = Error::from(failure) else {
+            panic!("not a request error");
+        };
+        assert!(chain.starts_with(&top), "{chain}");
+        assert!(chain.len() > top.len(), "the cause is missing: {chain}");
+    }
+}
