@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   prebuild:
-    name: Dev container
+    name: 🐳 Dev container
     runs-on: ubuntu-latest
     outputs:
       image: ${{ steps.prebuild.outputs.image }}
@@ -27,7 +27,7 @@ jobs:
         uses: ./.github/actions/prebuild-devcontainer
 
   hardware:
-    name: Hardware
+    name: 🔧 Hardware
     needs: prebuild
     permissions:
       contents: read
@@ -37,7 +37,7 @@ jobs:
       image: ${{ needs.prebuild.outputs.image }}
 
   quality:
-    name: Quality
+    name: ✨ Quality
     needs: prebuild
     permissions:
       contents: read
@@ -47,7 +47,7 @@ jobs:
       image: ${{ needs.prebuild.outputs.image }}
 
   firmware:
-    name: Firmware
+    name: 📦 Firmware
     if: startsWith(github.ref, 'refs/tags/v')
     needs: [hardware, quality]
     permissions:

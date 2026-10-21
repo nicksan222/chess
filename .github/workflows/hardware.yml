@@ -19,18 +19,18 @@ permissions:
 
 jobs:
   board:
-    name: PCB → CAD
+    name: 🧩 PCB → CAD
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - name: Prepare hardware container
+      - name: 🐳 Prepare hardware container
         uses: ./.github/actions/run-in-devcontainer
         with:
           image: ${{ inputs.image }}
           command: "true"
-      - name: Review PCB
+      - name: 🔍 Review PCB
         id: pcb_review
         if: ${{ inputs.base-ref == '' }}
         uses: ./.github/actions/run-in-devcontainer
@@ -38,7 +38,7 @@ jobs:
           image: ${{ inputs.image }}
           prepare: "false"
           command: just --justfile hardware/pcb/justfile review
-      - name: Review PCB and generate pull-request report
+      - name: 🔍 Review PCB and generate pull-request report
         id: pcb_pr_review
         if: ${{ inputs.base-ref != '' }}
         uses: ./.github/actions/run-in-devcontainer
@@ -46,7 +46,7 @@ jobs:
           image: ${{ inputs.image }}
           prepare: "false"
           command: just --justfile hardware/pcb/justfile pr-report ${{ inputs.base-ref }}
-      - name: Check CAD using the reviewed PCB model
+      - name: 📐 Check CAD using the reviewed PCB model
         id: cad
         uses: ./.github/actions/run-in-devcontainer
         with:

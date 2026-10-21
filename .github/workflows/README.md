@@ -19,7 +19,7 @@ Workflows invoke the same package-local `justfile` capabilities used by
 developers. Workflow YAML contains only scheduling, caching, artifact,
 permission, and release policy.
 
-`hardware.yml` runs PCB review followed by CAD checks in one `PCB → CAD` job.
+`hardware.yml` runs PCB review followed by CAD checks in one `🧩 PCB → CAD` job.
 The job prepares one container from the pinned image and both steps execute in
 that same container and workspace. CAD consumes the
 checked native KiCad model produced by PCB review; PCB failure prevents CAD
@@ -34,3 +34,7 @@ recipe available locally. Reports include ERC/DRC results and links to complete
 generated artifacts. Pull requests without a semantic PCB change stay quiet;
 forked pull requests keep the report in the job summary because GitHub withholds
 write tokens. Physical measurements remain a separate release requirement.
+
+`quality.yml` lists one test job per workspace crate explicitly instead of
+discovering crates into a matrix, so every check has a stable name in the
+Actions graph. Adding a crate means adding its `test-<crate>` job there.
