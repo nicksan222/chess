@@ -46,6 +46,20 @@ jobs:
         timeout-minutes: 5
         with:
           just-version: 1.40.0
+      - name: 🔢 Check firmware version
+        timeout-minutes: 1
+        run: |
+          # Devices compare this version with the latest release tag.
+          workspace=$(sed -n 's/^version = "\(.*\)"$/\1/p' Cargo.toml)
+          yocto=$(sed -n 's/^version = "\(.*\)"$/\1/p' apps/firmware/yocto/Cargo.toml)
+          if [[ "$workspace" != "$yocto" ]]; then
+            echo "::error::Cargo.toml is $workspace but apps/firmware/yocto/Cargo.toml is $yocto"
+            exit 1
+          fi
+          if [[ "$GITHUB_REF" == refs/tags/v* && "$GITHUB_REF_NAME" != "v$workspace" ]]; then
+            echo "::error::tag $GITHUB_REF_NAME does not name firmware version $workspace"
+            exit 1
+          fi
       - name: 🧽 Free disk space
         timeout-minutes: 5
         run: |
@@ -137,6 +151,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          # Devices follow /releases/latest, which skips prereleases such as v1.0.0-rc.1.
+          prerelease=()
+          if [[ "${GITHUB_REF_NAME}" == *-* ]]; then prerelease=(--prerelease); fi
           gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1 \
-            || gh release create "${GITHUB_REF_NAME}" --generate-notes
+            || gh release create "${GITHUB_REF_NAME}" --generate-notes "${prerelease[@]}"
           gh release upload "${GITHUB_REF_NAME}" dist/firmware/* --clobber
