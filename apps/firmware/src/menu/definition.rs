@@ -36,10 +36,10 @@ impl Screen {
 
 /// A request exposed by a selectable leaf in the product menu.
 ///
-/// The menu does not execute these; `transitions` dispatches each one.
-/// `CheckForUpdates` is blocking: it completes when its result arrives and is
-/// cancelled by `CancelUpdateCheck` on escape. The rest are placeholders and
-/// stay non-blocking until their integrations define completion and
+/// The menu does not execute these; each one is handled by the transition
+/// registered for it in `transitions`. `CheckForUpdates` is blocking, with
+/// `CancelUpdateCheck` as its escape action. Requests without a transition are
+/// placeholders and stay non-blocking until one defines their completion and
 /// cancellation behavior.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Request {

@@ -1,7 +1,8 @@
-//! Asks GitHub Releases whether newer firmware is published and reports it.
+//! "Check for Updates": asks GitHub Releases whether newer firmware is
+//! published and reports it.
 //!
-//! The menu item is blocking: the menu holds input from activation until the
-//! final status arrives, or until escape cancels the check.
+//! A blocking transition: the menu holds input from activation until the final
+//! status arrives, and escape (`CancelUpdateCheck`) aborts the check.
 
 use std::{cmp::Ordering, error::Error, time::Duration};
 
@@ -10,37 +11,18 @@ use reqwest::{Client, StatusCode, header::ACCEPT};
 use semver::Version;
 use tokio::task::{self, JoinHandle};
 
-use super::Reporter;
+use super::{Reporter, Transition};
+use crate::menu::Request;
 
 /// Newest non-draft, non-prerelease release; tags are `v<Cargo version>`.
-pub(crate) const GITHUB_RELEASES: &str =
-    "https://api.github.com/repos/nicksan222/chess/releases/latest";
+const GITHUB_RELEASES: &str = "https://api.github.com/repos/nicksan222/chess/releases/latest";
 
 type BoxError = Box<dyn Error + Send + Sync>;
 
 /// Update discovery owned by one firmware instance.
-pub(super) struct Updates {
-    /// Release endpoint, or `None` to disable checks, as in hardware-free tests.
+pub struct UpdateCheck {
     feed: Option<String>,
     running: Option<JoinHandle<()>>,
-}
-
-impl Updates {
-    pub(super) fn new(feed: Option<String>) -> Self {
-        Self {
-            feed,
-            running: None,
-        }
-    }
-}
-
-impl Drop for Updates {
-    // The firmware loop owns this, so stopping the loop cancels a running check.
-    fn drop(&mut self) {
-        if let Some(running) = &self.running {
-            running.abort();
-        }
-    }
 }
 
 /// Progress of "Check for Updates", as presented in the firmware snapshot.
@@ -63,36 +45,63 @@ pub enum UpdateStatus {
     Failed(String),
 }
 
-/// Starts a check in the background; its final status unblocks the menu.
-pub(super) fn handle(updates: &mut Updates, report: Reporter) {
-    let Some(feed) = updates.feed.clone() else {
-        info!("update checks are disabled");
-        report.finish(UpdateStatus::Disabled);
-        return;
-    };
-    report.progress(UpdateStatus::Checking);
-    let check = tokio::spawn(async move {
-        let status = check(&feed, &running_version())
-            .await
-            .unwrap_or_else(|error| UpdateStatus::Failed(chain(&*error)));
-        match &status {
-            UpdateStatus::Failed(cause) => warn!("update check failed: {cause}"),
-            status => info!("update check finished: {status:?}"),
+impl Transition for UpdateCheck {
+    const REQUEST: Request = Request::CheckForUpdates;
+    const CANCEL: Option<Request> = Some(Request::CancelUpdateCheck);
+
+    /// The release endpoint; `None`, the default, disables checks.
+    type Settings = Option<String>;
+    type Status = UpdateStatus;
+
+    fn device() -> Self::Settings {
+        Some(GITHUB_RELEASES.to_owned())
+    }
+
+    fn new(feed: &Self::Settings) -> Self {
+        Self {
+            feed: feed.clone(),
+            running: None,
         }
-        report.finish(status);
-    });
-    if let Some(previous) = updates.running.replace(check) {
-        previous.abort();
+    }
+
+    fn start(&mut self, report: Reporter<UpdateStatus>) {
+        let Some(feed) = self.feed.clone() else {
+            info!("update checks are disabled");
+            report.finish(UpdateStatus::Disabled);
+            return;
+        };
+        report.progress(UpdateStatus::Checking);
+        let check = tokio::spawn(async move {
+            let status = check(&feed, &running_version())
+                .await
+                .unwrap_or_else(|error| UpdateStatus::Failed(chain(&*error)));
+            match &status {
+                UpdateStatus::Failed(cause) => warn!("update check failed: {cause}"),
+                status => info!("update check finished: {status:?}"),
+            }
+            report.finish(status);
+        });
+        if let Some(previous) = self.running.replace(check) {
+            previous.abort();
+        }
+    }
+
+    fn cancel(&mut self, report: Reporter<UpdateStatus>) {
+        if let Some(running) = self.running.take() {
+            running.abort();
+        }
+        info!("update check cancelled");
+        report.finish(UpdateStatus::NotChecked);
     }
 }
 
-/// Abandons a running check after escape aborted the menu's blocking operation.
-pub(super) fn cancel(updates: &mut Updates, report: Reporter) {
-    if let Some(running) = updates.running.take() {
-        running.abort();
+impl Drop for UpdateCheck {
+    // The firmware loop owns this, so stopping the loop cancels a running check.
+    fn drop(&mut self) {
+        if let Some(running) = &self.running {
+            running.abort();
+        }
     }
-    info!("update check cancelled");
-    report.finish(UpdateStatus::NotChecked);
 }
 
 async fn check(feed: &str, current: &Version) -> Result<UpdateStatus, BoxError> {
@@ -164,10 +173,7 @@ mod tests {
     };
 
     use super::*;
-    use crate::menu::{
-        Request,
-        transitions::{TransitionEvent, TransitionEventBus},
-    };
+    use crate::menu::transitions::{TransitionEvent, TransitionEventBus};
 
     /// Serves `response` to every connection on a local port.
     fn feed(response: &'static str) -> String {
@@ -231,15 +237,15 @@ mod tests {
     async fn cancelling_aborts_the_running_check() {
         // Accepts connections but never answers, so the check stays in flight.
         let silent = TcpListener::bind("127.0.0.1:0").unwrap();
-        let feed = format!("http://{}/releases/latest", silent.local_addr().unwrap());
+        let feed = Some(format!("http://{}/", silent.local_addr().unwrap()));
         let events = TransitionEventBus::new();
         let mut reports = events.subscribe();
-        let report = Reporter::new(Request::CheckForUpdates, &events);
-        let mut updates = Updates::new(Some(feed));
+        let report = Reporter::new::<UpdateCheck>(&events);
+        let mut updates = UpdateCheck::new(&feed);
 
-        handle(&mut updates, report.clone());
+        updates.start(report.clone());
         let running = updates.running.as_ref().unwrap().abort_handle();
-        cancel(&mut updates, report);
+        updates.cancel(report);
 
         tokio::time::timeout(Duration::from_secs(2), async {
             while !running.is_finished() {
@@ -250,15 +256,13 @@ mod tests {
         .unwrap();
         assert_eq!(
             reports.try_recv().unwrap(),
-            Some(TransitionEvent::progress(
-                Request::CheckForUpdates,
+            Some(TransitionEvent::progress::<UpdateCheck>(
                 UpdateStatus::Checking
             ))
         );
         assert_eq!(
             reports.try_recv().unwrap(),
-            Some(TransitionEvent::finished(
-                Request::CheckForUpdates,
+            Some(TransitionEvent::finished::<UpdateCheck>(
                 UpdateStatus::NotChecked
             ))
         );

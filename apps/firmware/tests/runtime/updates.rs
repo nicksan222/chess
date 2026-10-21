@@ -14,8 +14,10 @@ use std::{
 use firmware::{
     hardware::pins::{Button, ButtonEvent},
     harness::FirmwareHarness,
-    menu::Request,
-    runtime::{Config, UpdateStatus},
+    menu::{
+        Request,
+        transitions::{Config, UpdateStatus},
+    },
 };
 
 use crate::Navigator;
@@ -33,9 +35,7 @@ fn feed(response: String) -> (Navigator, Arc<AtomicUsize>) {
             let _ = stream.write_all(response.as_bytes());
         }
     });
-    let config = Config {
-        release_feed: Some(url),
-    };
+    let config = Config { update: Some(url) };
     let panel = Navigator::new(FirmwareHarness::with_config(&config).unwrap());
     (panel, requests)
 }
@@ -70,7 +70,7 @@ async fn the_menu_holds_input_until_the_result_arrives() {
     // Accepts connections but never answers, so the check stays in flight.
     let silent = TcpListener::bind("127.0.0.1:0").unwrap();
     let config = Config {
-        release_feed: Some(format!(
+        update: Some(format!(
             "http://{}/releases/latest",
             silent.local_addr().unwrap()
         )),

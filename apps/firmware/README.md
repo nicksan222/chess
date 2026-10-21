@@ -54,31 +54,29 @@ headless `menu` crate's primitives into the Play, Connection, Pairing, Update,
 and Settings submenus. Leaf requests are typed but deliberately immediate and
 non-blocking until their external modules define completion and cancellation
 behavior; the menu crate remains product-neutral and performs no operation.
-Each request has one integration file under `src/menu/transitions/`, so module
-ownership has an explicit location without entering the menu definition or
-runtime loop; a blocking request's escape action lives with it. All but Check
-for Updates are still placeholders.
+Each request is handled by a transition under `src/menu/transitions/`. A
+transition is defined entirely in its own file by implementing the `Transition`
+trait: the request it handles and, for a blocking item, the escape action that
+cancels it; its `Settings` (`Default` is the network-free value tests use,
+`device()` the product's); its `Status` for the snapshot; and `start` and
+`cancel`. One line in the `transitions!` registry in `mod.rs` wires it in,
+generating its `Config` field, its `Snapshot::transitions` field and its
+dispatch. Requests without a transition are placeholders, logged and ignored.
+A test checks every registered transition against its menu item.
 
-Long-running requests use the menu crate's blocking items, and every
-integration follows one contract in `src/menu/transitions/`. Activation holds
-input; the transition starts its work and reports through a `Reporter` as a
-`TransitionEvent`: `progress` while running, `finished` when done. The runtime
-loop receives reports alongside hardware events and applies one generic rule:
-a finished report for the request blocking the menu releases it. Escape
-dispatches the item's escape action, which cancels the work and reports it
-finished. The report's `StatusUpdate` lands in `Snapshot::transitions`, and
-`Snapshot::blocking` names the operation holding input.
-
-A new integration adds its setting to `Config` (`device()` for the product,
-network-free `offline()` for `FirmwareHarness`), its field to
-`TransitionStatus`, its variant to `StatusUpdate`, its state to `Transitions`
-and its arms to `Transitions::handle`; the runtime and harness do not change.
-Tests drive the real menu, inject reports with `FirmwareHarness::report` like
+The kind follows from the menu item and what the transition reports. A
+blocking item holds input until the transition reports `finish`; escape calls
+`cancel`. A plain item stays free while a background transition reports
+`progress` and `finish`, or an immediate one finishes inside `start`. Reports
+are `TransitionEvent`s, which the runtime loop receives alongside hardware
+events; one generic rule releases the menu when the request blocking it
+finishes. `Snapshot::blocking` names the operation holding input. Tests drive
+the real menu, inject reports with `FirmwareHarness::report` as they inject
 hardware with `trigger`, and wait for background results with `until`.
 
 Check for Updates asks the GitHub Releases API for this repository's latest
-stable release over HTTPS and reports `Snapshot::transitions.update`: `Checking`, then
-`Available` when its `v<version>` tag is newer than the running Cargo version,
+stable release over HTTPS and reports `Snapshot::transitions.update`:
+`Checking`, then `Available` when its `v<version>` tag is newer than the running Cargo version,
 `UpToDate`, `NoRelease` (404), `Disabled` or `Failed` with the cause. It
 downloads nothing. TLS uses `rustls` on `ring` with the image's
 `ca-certificates`, so it needs a synchronised clock. No button is bound to

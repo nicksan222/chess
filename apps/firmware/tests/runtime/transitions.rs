@@ -1,11 +1,14 @@
-//! The generic lifecycle of blocking menu requests, driven by injected reports.
+//! The generic lifecycle of a blocking transition, driven by injected reports
+//! through the real menu and runtime loop.
 
 use std::net::TcpListener;
 
 use firmware::{
     harness::FirmwareHarness,
-    menu::Request,
-    runtime::{Config, TransitionEvent, UpdateStatus},
+    menu::{
+        Request,
+        transitions::{Config, TransitionEvent, UpdateCheck, UpdateStatus},
+    },
 };
 
 use crate::Navigator;
@@ -15,7 +18,7 @@ use crate::Navigator;
 async fn blocked_on_check() -> (Navigator, TcpListener) {
     let silent = TcpListener::bind("127.0.0.1:0").unwrap();
     let config = Config {
-        release_feed: Some(format!("http://{}/", silent.local_addr().unwrap())),
+        update: Some(format!("http://{}/", silent.local_addr().unwrap())),
     };
     let mut panel = Navigator::new(FirmwareHarness::with_config(&config).unwrap());
     let blocked = panel.open(Request::CheckForUpdates).await;
@@ -36,8 +39,7 @@ async fn a_finished_report_releases_the_blocking_request() {
 
     let running = panel
         .firmware
-        .report(TransitionEvent::progress(
-            Request::CheckForUpdates,
+        .report(TransitionEvent::progress::<UpdateCheck>(
             UpdateStatus::Checking,
         ))
         .await
@@ -46,8 +48,7 @@ async fn a_finished_report_releases_the_blocking_request() {
 
     let done = panel
         .firmware
-        .report(TransitionEvent::finished(
-            Request::CheckForUpdates,
+        .report(TransitionEvent::finished::<UpdateCheck>(
             UpdateStatus::UpToDate,
         ))
         .await
@@ -55,21 +56,5 @@ async fn a_finished_report_releases_the_blocking_request() {
     assert_eq!(done.blocking, None);
     assert_eq!(done.transitions.update, UpdateStatus::UpToDate);
     panel.open(Request::InstallUpdate).await;
-    panel.firmware.shutdown().await.unwrap();
-}
-
-#[tokio::test]
-async fn another_requests_report_leaves_the_menu_blocked() {
-    let (mut panel, _feed) = blocked_on_check().await;
-
-    let snapshot = panel
-        .firmware
-        .report(TransitionEvent::finished(
-            Request::InstallUpdate,
-            UpdateStatus::UpToDate,
-        ))
-        .await
-        .unwrap();
-    assert_eq!(snapshot.blocking, Some(Request::CheckForUpdates));
     panel.firmware.shutdown().await.unwrap();
 }

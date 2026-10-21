@@ -4,7 +4,8 @@ use std::{io, time::Duration};
 
 use crate::{
     hardware::HardwareEvent,
-    runtime::{Config, Firmware, Snapshot, TransitionEvent},
+    menu::transitions::{Config, TransitionEvent},
+    runtime::{Firmware, Snapshot},
 };
 
 /// An isolated real firmware instance, with hardware replaced by event injection.

@@ -9,13 +9,10 @@ use tokio::{runtime::Handle, sync::watch, task::JoinHandle};
 use crate::{
     events::ReceiveError,
     hardware::HardwareEventBus,
-    menu::transitions::{TransitionEventBus, Transitions},
+    menu::transitions::{Config, TransitionEventBus, Transitions},
 };
 use state::State;
 
-pub use crate::menu::transitions::{
-    Config, StatusUpdate, TransitionEvent, TransitionStatus, UpdateStatus,
-};
 pub use state::Snapshot;
 
 /// Owns one running firmware instance. Dropping it stops its event loop.
