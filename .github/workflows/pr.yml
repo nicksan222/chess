@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   prebuild:
-    name: Dev container
+    name: 🐳 Dev container
     runs-on: ubuntu-latest
     outputs:
       image: ${{ steps.prebuild.outputs.image }}
@@ -24,7 +24,7 @@ jobs:
         uses: ./.github/actions/prebuild-devcontainer
 
   agent-team:
-    name: Agent team (offline)
+    name: 🤖 Agent team (offline)
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -33,7 +33,7 @@ jobs:
       - run: python3 -m unittest discover -s .agents/team/tests -v
 
   pi-harness:
-    name: Pi harness
+    name: 🥧 Pi harness
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -44,7 +44,7 @@ jobs:
       - run: bun run --cwd .pi check
 
   hardware:
-    name: Hardware
+    name: 🔧 Hardware
     needs: prebuild
     permissions:
       contents: read
@@ -55,7 +55,7 @@ jobs:
       base-ref: ${{ github.event.pull_request.base.sha }}
 
   hardware-report:
-    name: Hardware PR report
+    name: 📝 Hardware PR report
     needs: hardware
     runs-on: ubuntu-latest
     permissions:
@@ -66,7 +66,7 @@ jobs:
       - uses: actions/download-artifact@v8
         with:
           name: pcb-pr-report
-      - name: Create, update, or remove PCB change report
+      - name: 💬 Create, update, or remove PCB change report
         if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
         uses: actions/github-script@v9
         with:
@@ -106,13 +106,13 @@ jobs:
               });
             }
             await core.summary.addRaw(body).write();
-      - name: Publish report to job summary for forked pull requests
+      - name: 📋 Publish report to job summary for forked pull requests
         if: ${{ github.event.pull_request.head.repo.full_name != github.repository }}
         shell: bash
         run: cat pcb-pr-report.md >> "${GITHUB_STEP_SUMMARY}"
 
   quality:
-    name: Quality
+    name: ✨ Quality
     needs: prebuild
     permissions:
       contents: read
@@ -122,7 +122,7 @@ jobs:
       image: ${{ needs.prebuild.outputs.image }}
 
   firmware-check:
-    name: Firmware checks
+    name: 🔌 Firmware checks
     needs: prebuild
     permissions:
       contents: read
@@ -137,7 +137,7 @@ jobs:
     needs: [hardware, hardware-report, quality, pi-harness, agent-team, firmware-check]
     runs-on: ubuntu-latest
     steps:
-      - name: Verify required jobs succeeded
+      - name: ✅ Verify required jobs succeeded
         env:
           RESULTS: ${{ toJSON(needs) }}
         run: |

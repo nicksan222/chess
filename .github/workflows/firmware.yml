@@ -31,7 +31,7 @@ concurrency:
 
 jobs:
   build:
-    name: Build image
+    name: 🏗️ Build image
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-24.04
     timeout-minutes: 360
@@ -46,13 +46,13 @@ jobs:
         timeout-minutes: 5
         with:
           just-version: 1.40.0
-      - name: Free disk space
+      - name: 🧽 Free disk space
         timeout-minutes: 5
         run: |
           sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc
           docker system prune --all --force
       - id: cache
-        name: Registry cache names
+        name: 🏷️ Registry cache names
         timeout-minutes: 1
         run: |
           package="${GITHUB_REPOSITORY#*/}/yocto-cache"
@@ -73,7 +73,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ github.token }}
       - id: cache-restore
-        name: Restore Yocto registry cache
+        name: ♻️ Restore Yocto registry cache
         timeout-minutes: 15
         if: steps.cache-tools.outcome == 'success' && steps.cache-login.outcome == 'success'
         continue-on-error: true
@@ -82,7 +82,7 @@ jobs:
         run: just --justfile apps/firmware/justfile cache-restore "$CACHE_REGISTRY"
       # Bootstrap GHCR from the existing combined Actions archive, if it still
       # exists. No new Actions cache is saved; future runs use the registry.
-      - name: Restore legacy cache during migration
+      - name: 🕰️ Restore legacy cache during migration
         timeout-minutes: 15
         if: steps.cache-restore.outcome != 'success'
         continue-on-error: true
@@ -98,7 +98,7 @@ jobs:
         timeout-minutes: 240
         run: just --justfile apps/firmware/justfile image
       - id: image-stop
-        name: Stop image builder before archiving caches
+        name: 🛑 Stop image builder before archiving caches
         if: always() && steps.image.outcome != 'skipped'
         timeout-minutes: 5
         # Killing the Docker client at a step timeout can leave its container alive.
@@ -106,7 +106,7 @@ jobs:
           docker ps --quiet --filter label=io.chess.yocto-image=true \
             | xargs --no-run-if-empty docker stop --time 60
       - id: cache-save
-        name: Save Yocto registry cache
+        name: 💾 Save Yocto registry cache
         timeout-minutes: 45
         if: >-
           always() && github.ref == 'refs/heads/main' &&
@@ -117,7 +117,7 @@ jobs:
         env:
           CACHE_REGISTRY: ${{ steps.cache.outputs.registry }}
         run: just --justfile apps/firmware/justfile cache-save "$CACHE_REGISTRY"
-      - name: Prune old untagged cache manifests
+      - name: ✂️ Prune old untagged cache manifests
         timeout-minutes: 3
         if: always() && steps.cache-save.outcome == 'success'
         continue-on-error: true
@@ -135,7 +135,7 @@ jobs:
           if-no-files-found: error
 
   release:
-    name: Publish release
+    name: 🚀 Publish release
     if: github.event_name == 'workflow_call' && inputs.publish && startsWith(github.ref, 'refs/tags/v')
     needs: build
     runs-on: ubuntu-24.04
@@ -146,7 +146,7 @@ jobs:
         with:
           name: firmware-${{ github.sha }}
           path: dist/firmware
-      - name: Publish release
+      - name: 🚀 Publish release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
