@@ -82,11 +82,10 @@ metadata from `apps/firmware/yocto/Cargo.lock`, `just firmware-check` parses and
 dry-runs the BitBake image graph, `just firmware-binary` builds the AArch64
 application, and `just firmware` constructs the complete image.
 
-The version-controlled Git hook and `.pre-commit-config.yaml` both invoke
+The version-controlled Git hook in `.githooks/pre-commit` invokes
 `just precommit`, which excludes expensive CAD renders and PCB fabrication
-output. The pre-commit configuration also checks the generated Yocto crate
-metadata whenever its manifest, lockfile, or generated include changes; stale
-metadata fails with the regeneration command.
+output. The firmware package check it runs also validates the generated Yocto
+crate metadata; stale metadata fails with the regeneration command.
 
 ## Reading hardware and build files
 

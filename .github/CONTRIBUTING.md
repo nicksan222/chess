@@ -27,7 +27,7 @@ just precommit  # checks without expensive renders
 just check      # complete validation and review artifact generation
 ```
 
-See [`docs/development.md`](docs/development.md) for package-specific commands
+See [`docs/development.md`](../docs/development.md) for package-specific commands
 and architecture details.
 
 ## Pull requests
@@ -39,4 +39,4 @@ and architecture details.
 5. Describe the motivation, validation, and any physical assumptions in the PR.
 
 By contributing, you agree that your contribution is licensed under the
-repository's [MIT License](LICENSE).
+repository's [MIT License](../LICENSE).
