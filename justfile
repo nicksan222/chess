@@ -90,45 +90,19 @@ firmware-check:
 firmware:
     just --justfile apps/firmware/justfile image
 
-# Configure runtime Herdr hooks and the pinned review panel (no model calls).
-agents-setup:
-    python3 .agents/team/setup.py
+# Refresh skill links and native agent wrappers from the shared source.
+sync-agents:
+    python3 tooling/agents/agent_tooling.py --sync
 
-# Start the whole agent team (asks Claude Code or Pi).
-agents:
-    python3 .agents/team/agents.py up
-
-# Stop the whole agent team.
-agents-stop:
-    python3 .agents/team/agents.py down
-
-# Restart the whole agent team with new conversations; keeps the task handoff.
-agents-restart:
-    python3 .agents/team/agents.py restart
-
-# Check container tools and provider login without a model request.
-[positional-arguments]
-agents-doctor *args:
-    python3 .agents/team/agents.py doctor "$@"
-
-# Show all configured models, harnesses and roles without starting them.
-agents-list:
-    python3 .agents/team/agents.py list
-
-# Report local recorded Claude tokens, not remaining subscription allowance.
-[positional-arguments]
-agents-usage *args:
-    python3 .agents/team/usage.py "$@"
-
-# Lint, format-check and test agent tooling without provider/model requests.
+# Lint, format-check and test agent tooling, then validate shared skills, roles and adapters.
 agents-check:
-    ruff check .agents/team
-    ruff format --check .agents/team
+    ruff check tooling/agents
+    ruff format --check tooling/agents
     just agents-test
 
-# Offline regressions; optional native smoke tests use HERDR_TEST_BIN.
+# Offline agent tooling regressions, including the repository drift check.
 agents-test:
-    python3 -m unittest discover -s .agents/team/tests -v
+    python3 -m unittest discover -s tooling/agents -v
 
 # Remove package-local caches and transient output.
 clean:

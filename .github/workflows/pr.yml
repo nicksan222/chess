@@ -23,26 +23,6 @@ jobs:
       - id: prebuild
         uses: ./.github/actions/prebuild-devcontainer
 
-  agent-team:
-    name: Agent team (offline)
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v7
-      - run: python3 -m unittest discover -s .agents/team/tests -v
-
-  pi-harness:
-    name: Pi harness
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: 1.4.0
-      - run: bun install --cwd .pi --frozen-lockfile
-      - run: bun run --cwd .pi check
-
   hardware:
     name: Hardware
     needs: prebuild
@@ -134,7 +114,7 @@ jobs:
   required-checks:
     name: Required checks
     if: always()
-    needs: [hardware, hardware-report, quality, pi-harness, agent-team, firmware-check]
+    needs: [hardware, hardware-report, quality, firmware-check]
     runs-on: ubuntu-latest
     steps:
       - name: Verify required jobs succeeded

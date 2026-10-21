@@ -40,7 +40,6 @@ claude_ready() {
     [[ -f "${HOME}/.claude/.credentials.json" || -n "${CLAUDE_CODE_OAUTH_TOKEN:-}" \
         || -n "${ANTHROPIC_API_KEY:-}" ]]
 }
-pi_ready() { [[ -s "${HOME}/.pi/agent/auth.json" ]]; }
 codex_ready() { [[ -f "${HOME}/.codex/auth.json" || -n "${OPENAI_API_KEY:-}" ]]; }
 
 cat <<EOF
@@ -59,14 +58,11 @@ tool "🐍" "Python" python3 python3 --version
 tool "🧹" "Ruff" ruff ruff --version
 tool "🔌" "KiCad" kicad-cli kicad-cli version
 tool "🧊" "Blender" "${BLENDER_BIN:-blender}" "${BLENDER_BIN:-blender}" --version
-tool "🥟" "Bun" bun bun --version
 tool "🐳" "Docker" docker docker --version
 
 section "🤖 Agents"
 login "🧠" "Claude" "claude auth login" claude_ready
-login "🥧" "Pi" "pi, then /login" pi_ready
 login "📜" "Codex" "codex login" codex_ready
-tool "🐑" "Herdr" herdr herdr --version
 
 section "🚀 Start here"
 cmd "just" "📋 list every repository recipe"
@@ -81,11 +77,9 @@ cmd "just cad" "🧊 test, then generate CAD renders"
 cmd "just firmware-binary" "🦀 link the firmware for AArch64"
 cmd "just --justfile <package>/justfile check" "🎯 one package at a time"
 
-section "👥 Agent team"
-cmd "just agents-doctor" "🩺 check tools and logins (no model calls)"
-cmd "just agents" "🏟️  start the team (Claude Code or Pi)"
-cmd "just agents-restart" "🔄 restart the team, task handoff kept"
-cmd "just agents-stop" "🛑 stop the team"
+section "🧭 Agent tooling"
+cmd "just agents-check" "🔍 validate shared skills, roles and adapters"
+cmd "just sync-agents" "🔁 regenerate adapters after changing skills or roles"
 
 section "📚 Read next"
 printf '  📖 README.md   🤝 CONTRIBUTING.md   🏗️  docs/architecture.md   🛠️  docs/development.md\n'

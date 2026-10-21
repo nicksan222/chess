@@ -25,7 +25,10 @@ __pycache__/
 *.py[cod]
 .cache/
 
-# Agent credentials/configuration overrides stay local.
+# Personal agent overrides (models, providers, env, MCP, notes) stay local.
 .claude/settings.local.json
-/.codex/
+CLAUDE.local.md
+AGENTS.local.md
+.codex/config.toml
+.codex/config.local.toml
 /dist/firmware/

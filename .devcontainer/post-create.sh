@@ -5,7 +5,7 @@ workspace=$(pwd)
 step_number=0
 step() {
     step_number=$((step_number + 1))
-    printf '\n\e[1m%s  [%d/6] %s\e[0m\n' "$1" "${step_number}" "$2"
+    printf '\n\e[1m%s  [%d/5] %s\e[0m\n' "$1" "${step_number}" "$2"
 }
 fail() {
     printf '\n❌ \e[31merror:\e[0m %s\n' "$1" >&2
@@ -20,31 +20,23 @@ git config --local core.hooksPath .githooks
 
 step "📦" "Claiming persistent agent volumes"
 # Docker creates new named volumes as root; each agent runtime must persist state.
-sudo chown "$(id -u):$(id -g)" \
-    "${HOME}/.pi/agent" "${HOME}/.local/share/pi-worktrees" \
-    "${HOME}/.claude" "${HOME}/.codex" "${HOME}/.config/herdr"
+sudo chown "$(id -u):$(id -g)" "${HOME}/.claude" "${HOME}/.codex"
 
-step "🤖" "Installing Pi and Codex"
+step "🤖" "Installing Codex"
 # Node comes from a devcontainer feature, so npm harnesses install here, pinned.
-# Claude Code and Herdr are pinned in the image (see Dockerfile).
-npm install --global --ignore-scripts \
-    @earendil-works/pi-coding-agent@1.0.3 @openai/codex@0.159.3
-for harness in pi claude codex herdr; do
+# Claude Code is pinned in the image (see Dockerfile).
+npm install --global --ignore-scripts @openai/codex@0.159.3
+for harness in claude codex; do
     if ! command -v "${harness}" >/dev/null 2>&1; then
         fail "agent harness ${harness} is not installed; rebuild the container"
     fi
 done
 
-step "🥟" "Installing and type-checking Pi extensions"
-bun install --cwd .pi --frozen-lockfile
-bun run --cwd .pi check
-
-step "👥" "Configuring the Herdr agent team"
+step "🧭" "Checking shared agent skills, roles and adapters"
 if ! command -v python3 >/dev/null 2>&1; then
     fail "python3 is required in the development container"
 fi
-python3 .agents/team/setup.py
-python3 .agents/team/agents.py list
+python3 tooling/agents/agent_tooling.py
 
 step "👋" "Installing the terminal welcome"
 # Show our welcome once, in the first VS Code terminal, instead of the base image notice.
