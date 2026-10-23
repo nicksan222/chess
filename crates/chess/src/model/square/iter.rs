@@ -50,7 +50,10 @@ impl AllSquares {
     /// Backs [`Square::all`]. The range is fixed at all 64 squares, so
     /// the iterator is [`ExactSizeIterator`] with length 64 when fresh.
     pub(super) const fn new() -> Self {
-        Self { front: 0, back: 64 }
+        Self {
+            front: 0,
+            back: Square::COUNT as u8,
+        }
     }
 }
 

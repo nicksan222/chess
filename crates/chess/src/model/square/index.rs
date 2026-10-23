@@ -2,6 +2,8 @@
 
 use core::fmt;
 
+use super::Square;
+
 /// A validated zero-based square index in `0..64`.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(transparent)]
@@ -27,7 +29,7 @@ impl SquareIndex {
     /// # Ok::<(), chess::InvalidSquare>(())
     /// ```
     pub const fn new(value: u8) -> Result<Self, InvalidSquare> {
-        if value < 64 {
+        if (value as usize) < Square::COUNT {
             Ok(Self(value))
         } else {
             Err(InvalidSquare { index: value })

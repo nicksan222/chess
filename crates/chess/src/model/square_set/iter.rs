@@ -45,7 +45,7 @@ impl DoubleEndedIterator for Squares {
         if self.bits == 0 {
             return None;
         }
-        let index = (63 - self.bits.leading_zeros()) as u8;
+        let index = (u64::BITS - 1 - self.bits.leading_zeros()) as u8;
         self.bits &= !(1_u64 << index);
         Square::from_raw_index(index)
     }
