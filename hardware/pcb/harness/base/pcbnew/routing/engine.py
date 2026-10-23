@@ -508,38 +508,47 @@ def route_plan(ctx: RoutingContext, declarations: tuple[NetRoute, ...]) -> None:
                 if route.launch is None and route.net.label not in points
             )
             points.update(reserve_routes(ctx, pending))
-        keepouts: set[tuple[int, int]] = set(ctx.via_keepouts)
-        for route in group:
-            radius = route.via_keepout_mm
-            if radius <= 0:
-                continue
-            nodes = route_endpoints(ctx, route)
-            spots = [
-                *points[route.net.label].values(),
-                *(ctx.pads_by_endpoint[node].GetPosition() for node in nodes),
-            ]
-            span = range(
-                -math.ceil(radius / grid_router.GRID_MM),
-                math.ceil(radius / grid_router.GRID_MM) + 1,
-            )
-            for spot in spots:
-                x, y = pcbnew.ToMM(spot.x), pcbnew.ToMM(spot.y)
-                keepouts.update(
-                    (
-                        round(x / grid_router.GRID_MM) + i,
-                        round(y / grid_router.GRID_MM) + j,
-                    )
-                    for i in span
-                    for j in span
-                    if math.hypot(i * grid_router.GRID_MM, j * grid_router.GRID_MM)
-                    <= radius
-                )
-        current = replace(ctx, via_keepouts=frozenset(keepouts))
+        current = replace(ctx, via_keepouts=group_via_keepouts(ctx, group, points))
         for route in group:
             if route.launch is not None:
                 route_launched_nets(current, (route,))
             else:
                 route_nets(current, (route,), reserved=points)
+
+
+def group_via_keepouts(
+    ctx: RoutingContext,
+    group: tuple[NetRoute, ...],
+    points: Mapping[str, Mapping[Endpoint, pcbnew.VECTOR2I]],
+) -> frozenset[tuple[int, int]]:
+    """The context's via bans plus a disc around each declared keepout net's spots."""
+    keepouts: set[tuple[int, int]] = set(ctx.via_keepouts)
+    for route in group:
+        radius = route.via_keepout_mm
+        if radius <= 0:
+            continue
+        nodes = route_endpoints(ctx, route)
+        spots = [
+            *points[route.net.label].values(),
+            *(ctx.pads_by_endpoint[node].GetPosition() for node in nodes),
+        ]
+        span = range(
+            -math.ceil(radius / grid_router.GRID_MM),
+            math.ceil(radius / grid_router.GRID_MM) + 1,
+        )
+        for spot in spots:
+            x, y = pcbnew.ToMM(spot.x), pcbnew.ToMM(spot.y)
+            keepouts.update(
+                (
+                    round(x / grid_router.GRID_MM) + i,
+                    round(y / grid_router.GRID_MM) + j,
+                )
+                for i in span
+                for j in span
+                if math.hypot(i * grid_router.GRID_MM, j * grid_router.GRID_MM)
+                <= radius
+            )
+    return frozenset(keepouts)
 
 
 def route_endpoints(ctx: RoutingContext, route: NetRoute) -> list[Endpoint]:

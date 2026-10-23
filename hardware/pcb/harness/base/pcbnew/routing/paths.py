@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import heapq
 import math
+from collections.abc import Iterator
 from dataclasses import dataclass
 from itertools import pairwise
 from typing import TypedDict
@@ -46,63 +47,111 @@ def position(cell: tuple[int, int]) -> pcbnew.VECTOR2I:
     )
 
 
-def blocked_cells(
+# Extra margin around drilled pads: a via may not land where a drill already is.
+DRILL_KEEPOUT_MM = 0.25
+
+Cells = set[tuple[int, int]]
+CellBounds = tuple[int, int, int, int]
+
+
+def _cells_in_box(
+    left_mm: float,
+    right_mm: float,
+    top_mm: float,
+    bottom_mm: float,
+    bounds: CellBounds,
+) -> Iterator[tuple[int, int]]:
+    """Grid cells of an mm rectangle, rounded outward and clipped to `bounds`."""
+    x0, y0, x1, y1 = bounds
+    left = math.floor(left_mm / GRID_MM)
+    right = math.ceil(right_mm / GRID_MM)
+    top = math.floor(top_mm / GRID_MM)
+    bottom = math.ceil(bottom_mm / GRID_MM)
+    for ix in range(max(x0, left), min(x1, right) + 1):
+        for iy in range(max(y0, top), min(y1, bottom) + 1):
+            yield ix, iy
+
+
+def _rasterize_circle(
+    position: pcbnew.VECTOR2I,
+    radius: float,
+    targets: tuple[Cells, ...],
+    extra: float,
+    bounds: CellBounds,
+) -> None:
+    """Mark every cell within `radius + extra` of a circle's centre."""
+    centre_x, centre_y = mm(position.x), mm(position.y)
+    reach = radius + extra
+    for ix, iy in _cells_in_box(
+        centre_x - reach, centre_x + reach, centre_y - reach, centre_y + reach, bounds
+    ):
+        dx = ix * GRID_MM - centre_x
+        dy = iy * GRID_MM - centre_y
+        if dx * dx + dy * dy <= reach * reach:
+            for cells in targets:
+                cells.add((ix, iy))
+
+
+def _rasterize_box(
+    box: pcbnew.BOX2I, targets: tuple[Cells, ...], extra: float, bounds: CellBounds
+) -> None:
+    """Mark every cell inside a bounding box grown by `extra`.
+
+    Conservative for non-circular pads and for tracks, whose boxes over-cover
+    diagonals.
+    """
+    for cell in _cells_in_box(
+        mm(box.GetLeft()) - extra,
+        mm(box.GetRight()) + extra,
+        mm(box.GetTop()) - extra,
+        mm(box.GetBottom()) + extra,
+        bounds,
+    ):
+        for cells in targets:
+            cells.add(cell)
+
+
+def _rasterize_segment(
+    track: pcbnew.PCB_TRACK,
+    targets: tuple[Cells, ...],
+    extra: float,
+    bounds: CellBounds,
+) -> None:
+    """Cells within reach of the segment itself, not of its bounding box.
+
+    A diagonal track's bounding box can span tens of millimetres and would wall
+    off whole regions of a layer that the copper never occupies.
+    """
+    start, end = track.GetStart(), track.GetEnd()
+    ax, ay, bx, by = mm(start.x), mm(start.y), mm(end.x), mm(end.y)
+    reach = mm(track.GetWidth()) / 2 + extra
+    dx, dy = bx - ax, by - ay
+    length = dx * dx + dy * dy
+    for ix, iy in _cells_in_box(
+        min(ax, bx) - reach,
+        max(ax, bx) + reach,
+        min(ay, by) - reach,
+        max(ay, by) + reach,
+        bounds,
+    ):
+        px, py = ix * GRID_MM, iy * GRID_MM
+        t = 0.0 if length == 0 else ((px - ax) * dx + (py - ay) * dy) / length
+        t = min(max(t, 0.0), 1.0)
+        if math.hypot(ax + t * dx - px, ay + t * dy - py) <= reach:
+            for cells in targets:
+                cells.add((ix, iy))
+
+
+def _block_pads(
     board: pcbnew.BOARD,
     netcode: int,
-    bounds: tuple[int, int, int, int],
+    bounds: CellBounds,
     layers: tuple[int, ...],
-    additional_via_keepouts: frozenset[tuple[int, int]],
-    settings: RoutingSettings = DEFAULT_SETTINGS,
-) -> tuple[dict[int, set[tuple[int, int]]], set[tuple[int, int]]]:
-    """Rasterize foreign copper separately for tracks and full-stack vias.
-
-    Returns (blocked, via_forbidden). `blocked[layer]` holds cells where a track
-    centre may not go on that layer. `via_forbidden` is layer-independent: a through
-    via pierces every layer, so it must also avoid copper and drills on layers the
-    route does not use. `bounds` limits work to the search window
-    (x0, y0, x1, y1 in cells); `additional_via_keepouts` adds caller-owned via bans.
-    Copper on `netcode` is skipped (it is a legal destination); net 0 never matches.
-    """
-    x0, y0, x1, y1 = bounds
-    blocked: dict[int, set[tuple[int, int]]] = {layer: set() for layer in layers}
-    via_forbidden = set(additional_via_keepouts)
-
-    # Mark every cell within `radius + extra` of a circle's centre.
-    def mark_circle(
-        position: pcbnew.VECTOR2I,
-        radius: float,
-        targets: tuple[set[tuple[int, int]], ...],
-        extra: float,
-    ) -> None:
-        centre_x, centre_y = mm(position.x), mm(position.y)
-        reach = radius + extra
-        left = math.floor((centre_x - reach) / GRID_MM)
-        right = math.ceil((centre_x + reach) / GRID_MM)
-        top = math.floor((centre_y - reach) / GRID_MM)
-        bottom = math.ceil((centre_y + reach) / GRID_MM)
-        for ix in range(max(x0, left), min(x1, right) + 1):
-            for iy in range(max(y0, top), min(y1, bottom) + 1):
-                dx = ix * GRID_MM - centre_x
-                dy = iy * GRID_MM - centre_y
-                if dx * dx + dy * dy <= reach * reach:
-                    for cells in targets:
-                        cells.add((ix, iy))
-
-    # Mark every cell inside a bounding box grown by `extra` (conservative for
-    # non-circular pads and for tracks, whose boxes over-cover diagonals).
-    def mark_box(
-        box: pcbnew.BOX2I, targets: tuple[set[tuple[int, int]], ...], extra: float
-    ) -> None:
-        left = math.floor((mm(box.GetLeft()) - extra) / GRID_MM)
-        right = math.ceil((mm(box.GetRight()) + extra) / GRID_MM)
-        top = math.floor((mm(box.GetTop()) - extra) / GRID_MM)
-        bottom = math.ceil((mm(box.GetBottom()) + extra) / GRID_MM)
-        for ix in range(max(x0, left), min(x1, right) + 1):
-            for iy in range(max(y0, top), min(y1, bottom) + 1):
-                for cells in targets:
-                    cells.add((ix, iy))
-
-    # Pads first: they are the fixed obstacles.
+    blocked: dict[int, Cells],
+    via_forbidden: Cells,
+    settings: RoutingSettings,
+) -> None:
+    """Pads are the fixed obstacles; same-net pads stay open as destinations."""
     for footprint in board.GetFootprints():
         for pad in footprint.Pads():
             is_hole = pad.GetAttribute() in {
@@ -111,7 +160,9 @@ def blocked_cells(
             }
             if is_hole:
                 # Retain the separate drill keepout even for same-net pads.
-                mark_box(pad.GetBoundingBox(), (via_forbidden,), 0.25)
+                _rasterize_box(
+                    pad.GetBoundingBox(), (via_forbidden,), DRILL_KEEPOUT_MM, bounds
+                )
             # Same-net copper is a valid destination/tree. NPTH holes have no net
             # and must always remain clear on every routing layer.
             if pad.GetNetCode() == netcode and netcode != 0:
@@ -132,55 +183,77 @@ def blocked_cells(
                     continue
                 if pad.GetShape() == pcbnew.PAD_SHAPE_CIRCLE:
                     size = pad.GetSize()
-                    mark_circle(
+                    _rasterize_circle(
                         pad.GetPosition(),
                         max(mm(size.x), mm(size.y)) / 2,
                         targets,
                         extra,
+                        bounds,
                     )
                 else:
-                    mark_box(pad.GetBoundingBox(), targets, extra)
+                    _rasterize_box(pad.GetBoundingBox(), targets, extra, bounds)
 
-    # Then copper already routed for other nets, including earlier routing stages.
-    def mark_segment(
-        track: pcbnew.PCB_TRACK,
-        targets: tuple[set[tuple[int, int]], ...],
-        extra: float,
-    ) -> None:
-        """Cells within reach of the segment itself, not of its bounding box.
 
-        A diagonal track's bounding box can span tens of millimetres and would wall
-        off whole regions of a layer that the copper never occupies.
-        """
-        start, end = track.GetStart(), track.GetEnd()
-        ax, ay, bx, by = mm(start.x), mm(start.y), mm(end.x), mm(end.y)
-        reach = mm(track.GetWidth()) / 2 + extra
-        dx, dy = bx - ax, by - ay
-        length = dx * dx + dy * dy
-        left = math.floor((min(ax, bx) - reach) / GRID_MM)
-        right = math.ceil((max(ax, bx) + reach) / GRID_MM)
-        top = math.floor((min(ay, by) - reach) / GRID_MM)
-        bottom = math.ceil((max(ay, by) + reach) / GRID_MM)
-        for ix in range(max(x0, left), min(x1, right) + 1):
-            for iy in range(max(y0, top), min(y1, bottom) + 1):
-                px, py = ix * GRID_MM, iy * GRID_MM
-                t = 0.0 if length == 0 else ((px - ax) * dx + (py - ay) * dy) / length
-                t = min(max(t, 0.0), 1.0)
-                if math.hypot(ax + t * dx - px, ay + t * dy - py) <= reach:
-                    for cells in targets:
-                        cells.add((ix, iy))
+def _block_vias(
+    via: pcbnew.PCB_TRACK,
+    bounds: CellBounds,
+    blocked: dict[int, Cells],
+    via_forbidden: Cells,
+    settings: RoutingSettings,
+) -> None:
+    """A foreign via blocks vias and, on every layer, tracks."""
+    box = via.GetBoundingBox()
+    _rasterize_box(box, (via_forbidden,), settings.via_keepout_mm, bounds)
+    _rasterize_box(box, tuple(blocked.values()), settings.track_keepout_mm, bounds)
 
+
+def _block_tracks(
+    board: pcbnew.BOARD,
+    netcode: int,
+    bounds: CellBounds,
+    layers: tuple[int, ...],
+    blocked: dict[int, Cells],
+    via_forbidden: Cells,
+    settings: RoutingSettings,
+) -> None:
+    """Copper already routed for other nets, including earlier routing stages."""
     for track in board.GetTracks():
         if track.GetNetCode() == netcode and netcode != 0:
             continue
         if isinstance(track, pcbnew.PCB_VIA):
-            box = track.GetBoundingBox()
-            mark_box(box, (via_forbidden,), settings.via_keepout_mm)
-            mark_box(box, tuple(blocked.values()), settings.track_keepout_mm)
+            _block_vias(track, bounds, blocked, via_forbidden, settings)
             continue
-        mark_segment(track, (via_forbidden,), settings.via_keepout_mm)
+        _rasterize_segment(track, (via_forbidden,), settings.via_keepout_mm, bounds)
         if track.GetLayer() in layers:
-            mark_segment(track, (blocked[track.GetLayer()],), settings.track_keepout_mm)
+            _rasterize_segment(
+                track,
+                (blocked[track.GetLayer()],),
+                settings.track_keepout_mm,
+                bounds,
+            )
+
+
+def blocked_cells(
+    board: pcbnew.BOARD,
+    netcode: int,
+    bounds: CellBounds,
+    layers: tuple[int, ...],
+    additional_via_keepouts: frozenset[tuple[int, int]],
+    settings: RoutingSettings = DEFAULT_SETTINGS,
+) -> tuple[dict[int, Cells], Cells]:
+    """Rasterize foreign copper separately for tracks and full-stack vias.
+
+    Returns (blocked, via_forbidden). `blocked[layer]` holds cells where a track
+    centre may not go on that layer. `via_forbidden` is layer-independent: a through
+    via pierces every layer, so it must also avoid copper and drills on layers the
+    route does not use. `bounds` limits work to the search window
+    (x0, y0, x1, y1 in cells); `additional_via_keepouts` adds caller-owned via bans.
+    Copper on `netcode` is skipped (it is a legal destination); net 0 never matches.
+    """
+    blocked: dict[int, Cells] = {layer: set() for layer in layers}
+    via_forbidden = set(additional_via_keepouts)
+    _block_pads(board, netcode, bounds, layers, blocked, via_forbidden, settings)
+    _block_tracks(board, netcode, bounds, layers, blocked, via_forbidden, settings)
     return blocked, via_forbidden
 
 
@@ -245,47 +318,25 @@ class Route:
     layers: tuple[int, ...]
 
 
-def find_route(
+# Search costs in planar-step units. A via costs 16 steps: layer changes cost copper
+# and manufacturability, so the search only makes one when it saves a lot of detour.
+STEP_COST = 1
+DIAGONAL_COST = 2
+VIA_COST = 16
+UNREACHED = 1 << 60
+
+
+def _search_window(
     board: pcbnew.BOARD,
-    net: pcbnew.NETINFO_ITEM,
     start: pcbnew.VECTOR2I,
     end: pcbnew.VECTOR2I,
-    margin_mm: float = 150.0,
-    preferred_layer_index: int | None = None,
-    required_end_layer_index: int | None = None,
-    allow_vias: bool = True,
-    layers: tuple[int, ...] = LAYERS,
-    diagonals: bool = False,
-    additional_via_keepouts: frozenset[tuple[int, int]] = frozenset(),
-    routing_bounds_mm: tuple[float, float, float, float] | None = None,
-    settings: RoutingSettings = DEFAULT_SETTINGS,
-) -> Route:
-    """Find a path whose point layers are indices into ``layers``.
-
-    ``routing_bounds_mm`` is an absolute KiCad-coordinate rectangle ordered
-    (left, top, right, bottom), with Y increasing downward. It limits track
-    centre lines (including exact endpoint stubs), not the full copper width.
-    Board-edge restrictions additionally reserve clearance for tracks and vias.
-
-    Other parameters: `margin_mm` pads the search window around the endpoints'
-    bounding box (bigger is slower but finds detours). `preferred_layer_index`
-    fixes the layer the route starts on and `required_end_layer_index` the layer it
-    must finish on (None = any). `allow_vias` permits layer changes; `diagonals`
-    permits 45-degree steps. `additional_via_keepouts` are extra cells where vias
-    are banned. Raises RuntimeError when no path exists, and ValueError when the
-    endpoints themselves are illegal; callers rely on the former to try fallbacks.
-    """
-    if not layers:
-        raise ValueError("at least one routing layer is required")
-    for label, index in (
-        ("preferred start", preferred_layer_index),
-        ("required end", required_end_layer_index),
-    ):
-        if index is not None and not 0 <= index < len(layers):
-            raise ValueError(f"{label} layer index {index} is outside {layers}")
-
-    # --- Bounds: stay inside the board edge by the pour margin plus half a track.
-    # Check exact endpoints before snapping: a legal cell can hide an illegal stub.
+    margin_mm: float,
+    routing_bounds_mm: tuple[float, float, float, float] | None,
+    settings: RoutingSettings,
+) -> tuple[CellBounds, CellBounds]:
+    """Return (search cell bounds, via cell bounds), validating both endpoints."""
+    # Stay inside the board edge by the pour margin plus half a track. Check exact
+    # endpoints before snapping: a legal cell can hide an illegal stub.
     start_cell, end_cell = grid_cell(start), grid_cell(end)
     margin = round(margin_mm / GRID_MM)
     edge = board.GetBoardEdgesBoundingBox()
@@ -344,6 +395,155 @@ def find_route(
             raise ValueError(
                 f"snapped {label} endpoint is outside routing cell bounds {bounds}"
             )
+    return bounds, via_bounds
+
+
+def _neighbours(
+    node: GridNode, layer_count: int, diagonals: bool, allow_vias: bool
+) -> list[tuple[int, int, int, int]]:
+    """Candidate (x, y, layer index, step cost) moves in a fixed, tie-stable order."""
+    x, y, layer_index = node.x, node.y, node.layer_index
+    candidates = [
+        (x + 1, y, layer_index, STEP_COST),
+        (x - 1, y, layer_index, STEP_COST),
+        (x, y + 1, layer_index, STEP_COST),
+        (x, y - 1, layer_index, STEP_COST),
+    ]
+    if diagonals:
+        candidates.extend(
+            (
+                (x + 1, y + 1, layer_index, DIAGONAL_COST),
+                (x + 1, y - 1, layer_index, DIAGONAL_COST),
+                (x - 1, y + 1, layer_index, DIAGONAL_COST),
+                (x - 1, y - 1, layer_index, DIAGONAL_COST),
+            )
+        )
+    if allow_vias:
+        candidates.extend(
+            (x, y, other_layer, VIA_COST)
+            for other_layer in range(layer_count)
+            if other_layer != layer_index
+        )
+    return candidates
+
+
+def _move_allowed(
+    node: GridNode,
+    nx: int,
+    ny: int,
+    nl: int,
+    layers: tuple[int, ...],
+    blocked: dict[int, Cells],
+    via_forbidden: Cells,
+    bounds: CellBounds,
+    via_bounds: CellBounds,
+    diagonals: bool,
+) -> bool:
+    """Whether a track or via may enter (nx, ny) on layer index `nl`."""
+    if not (bounds[0] <= nx <= bounds[2] and bounds[1] <= ny <= bounds[3]):
+        return False
+    cell = (nx, ny)
+    if cell in blocked[layers[nl]]:
+        return False
+    # Forbid cutting a corner between two blocked cells on a diagonal step.
+    if (
+        diagonals
+        and nx != node.x
+        and ny != node.y
+        and ((nx, node.y) in blocked[layers[nl]] or (node.x, ny) in blocked[layers[nl]])
+    ):
+        return False
+    # A through via needs clearance on its source and destination. The
+    # layer-independent via_forbidden map covers copper on other layers.
+    return not (
+        nl != node.layer_index
+        and (
+            cell in blocked[layers[node.layer_index]]
+            or cell in via_forbidden
+            or not (
+                via_bounds[0] <= nx <= via_bounds[2]
+                and via_bounds[1] <= ny <= via_bounds[3]
+            )
+        )
+    )
+
+
+def _reconstruct(
+    found: GridNode, starts: list[GridNode], previous: dict[GridNode, GridNode]
+) -> list[GridNode]:
+    """Walk predecessors back to a start node, keeping endpoints, layer changes
+    and corners only."""
+    path = [found]
+    while path[-1] not in starts:
+        path.append(previous[path[-1]])
+    path.reverse()
+    simple = [path[0]]
+    for index in range(1, len(path) - 1):
+        before, here, after = path[index - 1], path[index], path[index + 1]
+        if here.direction_from(before) != after.direction_from(here):
+            simple.append(here)
+    simple.append(path[-1])
+    return simple
+
+
+def find_route(
+    board: pcbnew.BOARD,
+    net: pcbnew.NETINFO_ITEM,
+    start: pcbnew.VECTOR2I,
+    end: pcbnew.VECTOR2I,
+    margin_mm: float = 150.0,
+    preferred_layer_index: int | None = None,
+    required_end_layer_index: int | None = None,
+    allow_vias: bool = True,
+    layers: tuple[int, ...] = LAYERS,
+    diagonals: bool = False,
+    additional_via_keepouts: frozenset[tuple[int, int]] = frozenset(),
+    routing_bounds_mm: tuple[float, float, float, float] | None = None,
+    settings: RoutingSettings = DEFAULT_SETTINGS,
+) -> Route:
+    """Find a path whose point layers are indices into ``layers``.
+
+    ``routing_bounds_mm`` is an absolute KiCad-coordinate rectangle ordered
+    (left, top, right, bottom), with Y increasing downward. It limits track
+    centre lines (including exact endpoint stubs), not the full copper width.
+    Board-edge restrictions additionally reserve clearance for tracks and vias.
+
+    Other parameters: `margin_mm` pads the search window around the endpoints'
+    bounding box (bigger is slower but finds detours). `preferred_layer_index`
+    fixes the layer the route starts on and `required_end_layer_index` the layer it
+    must finish on (None = any). `allow_vias` permits layer changes; `diagonals`
+    permits 45-degree steps. `additional_via_keepouts` are extra cells where vias
+    are banned. Raises RuntimeError when no path exists, and ValueError when the
+    endpoints themselves are illegal; callers rely on the former to try fallbacks.
+    """
+    """Find a path whose point layers are indices into ``layers``.
+
+    ``routing_bounds_mm`` is an absolute KiCad-coordinate rectangle ordered
+    (left, top, right, bottom), with Y increasing downward. It limits track
+    centre lines (including exact endpoint stubs), not the full copper width.
+    Board-edge restrictions additionally reserve clearance for tracks and vias.
+
+    Other parameters: `margin_mm` pads the search window around the endpoints'
+    bounding box (bigger is slower but finds detours). `preferred_layer_index`
+    fixes the layer the route starts on and `required_end_layer_index` the layer it
+    must finish on (None = any). `allow_vias` permits layer changes; `diagonals`
+    permits 45-degree steps. `additional_via_keepouts` are extra cells where vias
+    are banned. Raises RuntimeError when no path exists, and ValueError when the
+    endpoints themselves are illegal; callers rely on the former to try fallbacks.
+    """
+    if not layers:
+        raise ValueError("at least one routing layer is required")
+    for label, index in (
+        ("preferred start", preferred_layer_index),
+        ("required end", required_end_layer_index),
+    ):
+        if index is not None and not 0 <= index < len(layers):
+            raise ValueError(f"{label} layer index {index} is outside {layers}")
+
+    start_cell, end_cell = grid_cell(start), grid_cell(end)
+    bounds, via_bounds = _search_window(
+        board, start, end, margin_mm, routing_bounds_mm, settings
+    )
     blocked, via_forbidden = blocked_cells(
         board,
         net.GetNetCode(),
@@ -358,8 +558,8 @@ def find_route(
         blocked[layer].discard(start_cell)
         blocked[layer].discard(end_cell)
 
-    # --- A* search. Start on any layer (or the preferred one) and finish on any
-    # layer (or the required one).
+    # A* search. Start on any layer (or the preferred one) and finish on any layer
+    # (or the required one).
     start_layers = (
         range(len(layers))
         if preferred_layer_index is None
@@ -392,58 +592,25 @@ def find_route(
         if node in targets:
             found = node
             break
-        x, y, layer_index = node.x, node.y, node.layer_index
-        candidates = [
-            (x + 1, y, layer_index, 1),
-            (x - 1, y, layer_index, 1),
-            (x, y + 1, layer_index, 1),
-            (x, y - 1, layer_index, 1),
-        ]
-        if diagonals:
-            candidates.extend(
-                (
-                    (x + 1, y + 1, layer_index, 2),
-                    (x + 1, y - 1, layer_index, 2),
-                    (x - 1, y + 1, layer_index, 2),
-                    (x - 1, y - 1, layer_index, 2),
-                )
-            )
-        # A via costs 16 steps: layer changes cost copper and manufacturability, so
-        # the search only makes one when it saves a lot of detour.
-        if allow_vias:
-            candidates.extend(
-                (x, y, other_layer, 16)
-                for other_layer in range(len(layers))
-                if other_layer != layer_index
-            )
-        for nx, ny, nl, step_cost in candidates:
-            if not (bounds[0] <= nx <= bounds[2] and bounds[1] <= ny <= bounds[3]):
-                continue
-            cell = (nx, ny)
-            if cell in blocked[layers[nl]]:
-                continue
-            # Forbid cutting a corner between two blocked cells on a diagonal step.
-            if (
-                diagonals
-                and nx != x
-                and ny != y
-                and ((nx, y) in blocked[layers[nl]] or (x, ny) in blocked[layers[nl]])
-            ):
-                continue
-            # A through via needs clearance on its source and destination. The
-            # layer-independent via_forbidden map covers copper on other layers.
-            if nl != layer_index and (
-                cell in blocked[layers[layer_index]]
-                or cell in via_forbidden
-                or not (
-                    via_bounds[0] <= nx <= via_bounds[2]
-                    and via_bounds[1] <= ny <= via_bounds[3]
-                )
+        for nx, ny, nl, step_cost in _neighbours(
+            node, len(layers), diagonals, allow_vias
+        ):
+            if not _move_allowed(
+                node,
+                nx,
+                ny,
+                nl,
+                layers,
+                blocked,
+                via_forbidden,
+                bounds,
+                via_bounds,
+                diagonals,
             ):
                 continue
             candidate = GridNode(nx, ny, nl)
             new_cost = cost + step_cost
-            if new_cost >= distance.get(candidate, 1 << 60):
+            if new_cost >= distance.get(candidate, UNREACHED):
                 continue
             distance[candidate] = new_cost
             previous[candidate] = node
@@ -452,20 +619,7 @@ def find_route(
             serial += 1
     if found is None:
         raise RuntimeError(f"no route for {net.GetNetname()} in {bounds}")
-
-    # Walk predecessors back to a start node, then reverse.
-    path = [found]
-    while path[-1] not in starts:
-        path.append(previous[path[-1]])
-    path.reverse()
-    # Keep endpoints, layer changes, and corners only.
-    simple = [path[0]]
-    for index in range(1, len(path) - 1):
-        before, here, after = path[index - 1], path[index], path[index + 1]
-        if here.direction_from(before) != after.direction_from(here):
-            simple.append(here)
-    simple.append(path[-1])
-    return Route(tuple(simple), layers)
+    return Route(tuple(_reconstruct(found, starts, previous)), layers)
 
 
 def apply_route(
