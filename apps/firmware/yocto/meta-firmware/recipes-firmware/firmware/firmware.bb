@@ -8,6 +8,10 @@ inherit cargo cargo-update-recipe-crates externalsrc systemd
 require ${BPN}-crates.inc
 
 # Build straight from the repository checkout instead of a fetched tarball.
+# The fallback assumes the BitBake build directory (TOPDIR) sits two levels
+# below the repository root. That does not hold for the kas layout used by the
+# justfile and CI (<cache>/build), so those always set FIRMWARE_SOURCE_DIR
+# (kas/firmware.yml passes it through from the environment).
 FIRMWARE_SOURCE_DIR ??= "${TOPDIR}/../.."
 EXTERNALSRC = "${FIRMWARE_SOURCE_DIR}"
 EXTERNALSRC_BUILD = "${WORKDIR}/build"
@@ -21,7 +25,8 @@ CARGO_LOCK_SRC_DIR = "${FIRMWARE_APP_DIR}/yocto"
 
 # Only scan the firmware app when computing SOURCE_DATE_EPOCH. Scanning the
 # whole checkout races rm_work through the CI-mounted .cache/yocto tree.
-# do_unpack resets SOURCE_BASEDIR to EXTERNALSRC, so set it again afterwards.
+# The externalsrc class sets SOURCE_BASEDIR to EXTERNALSRC (the whole checkout)
+# during do_unpack, overriding the line below, so restore it right after unpack.
 SOURCE_BASEDIR = "${FIRMWARE_APP_DIR}"
 python firmware_restore_source_basedir() {
     d.setVar("SOURCE_BASEDIR", d.getVar("FIRMWARE_APP_DIR"))

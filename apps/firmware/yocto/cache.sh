@@ -16,6 +16,17 @@
 #   YOCTO_CACHE_PLAIN_HTTP  set to 1 for a registry without TLS
 set -euo pipefail
 
+# Basename globs of the sstate archives in the toolchain group: compilers and
+# native or cross tools. Every other sstate archive belongs to the system group.
+toolchain_patterns=(
+  'sstate:*-native:*' 'sstate:*-cross-*:*'
+  'sstate:gcc*:*' 'sstate:libgcc*:*' 'sstate:binutils*:*'
+  'sstate:llvm*:*' 'sstate:clang*:*'
+  'sstate:rust*:*' 'sstate:cargo*:*' 'sstate:libstd-rs*:*'
+)
+# Registry tag component naming the cache format and build platform.
+platform_tag="v1-linux-amd64"
+
 usage() {
   echo "usage: cache.sh restore|save REGISTRY [GROUP]" >&2
   exit 2
@@ -44,26 +55,14 @@ cache="$(realpath "${YOCTO_CACHE_DIR:-.cache/yocto}")"
 work="$(mktemp -d "$cache/registry.XXXXXX")"
 trap 'rm -rf -- "$work"' EXIT
 
-reference="$registry:v1-linux-amd64-$group"
+reference="$registry:$platform_tag-$group"
 oras_options=()
 if [[ ${YOCTO_CACHE_PLAIN_HTTP:-0} == 1 ]]; then
   oras_options+=(--plain-http)
 fi
 
-# Succeed if an sstate archive belongs to the toolchain group.
-is_toolchain() {
-  case "${1##*/}" in
-    sstate:*-native:* | sstate:*-cross-*:*) ;;
-    sstate:gcc*:* | sstate:libgcc*:* | sstate:binutils*:*) ;;
-    sstate:llvm*:* | sstate:clang*:*) ;;
-    sstate:rust*:* | sstate:cargo*:* | sstate:libstd-rs*:*) ;;
-    *) return 1 ;;
-  esac
-}
-
 # Print the group's completed cache entries, NUL-separated, relative to $cache.
 list_group() {
-  local file kind
   if [[ $group == sources ]]; then
     [[ -d downloads ]] || return 0
     find downloads ! -name '*.lock' ! -name '*.tmp' -print0
@@ -71,11 +70,20 @@ list_group() {
   fi
 
   [[ -d sstate-cache ]] || return 0
-  find sstate-cache -type f -name 'sstate:*' ! -name '*.lock' ! -name '*.tmp' -print0 |
-    while IFS= read -r -d '' file; do
-      if is_toolchain "$file"; then kind=toolchain; else kind=system; fi
-      if [[ $kind == "$group" ]]; then printf '%s\0' "$file"; fi
-    done
+  # One find pass selects the group: the toolchain patterns as an OR of -name
+  # tests, or their negation for the system group.
+  local pattern
+  local match=()
+  for pattern in "${toolchain_patterns[@]}"; do
+    match+=(-o -name "$pattern")
+  done
+  match=("${match[@]:1}") # Drop the leading -o.
+  local select=(\( "${match[@]}" \))
+  if [[ $group == system ]]; then
+    select=(! "${select[@]}")
+  fi
+  find sstate-cache -type f -name 'sstate:*' ! -name '*.lock' ! -name '*.tmp' \
+    "${select[@]}" -print0
 }
 
 restore() {
