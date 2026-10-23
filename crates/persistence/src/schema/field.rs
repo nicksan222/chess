@@ -1,5 +1,6 @@
 use core::{fmt, marker::PhantomData};
 
+use super::error::checked_prefix;
 use crate::{
     DecodeValue, EncodeValue, InlineValue, KeyValueStore, LoadOutcome, RetrieveError, SaveError,
 };
@@ -96,12 +97,7 @@ where
         S: KeyValueStore + ?Sized,
     {
         let written = value.encode_value(scratch).map_err(SaveError::Encode)?;
-        if written > scratch.len() {
-            return Err(SaveError::InvalidEncodedLength {
-                reported: written,
-                capacity: scratch.len(),
-            });
-        }
+        let written = checked_prefix(written, scratch.len())?;
         store
             .store(self.key, &scratch[..written])
             .map_err(SaveError::Backend)
@@ -164,12 +160,7 @@ where
                 });
             }
         };
-        if len > scratch.len() {
-            return Err(RetrieveError::InvalidLoadedLength {
-                reported: len,
-                capacity: scratch.len(),
-            });
-        }
+        let len = checked_prefix(len, scratch.len())?;
         T::decode_value(&scratch[..len])
             .map(Some)
             .map_err(RetrieveError::Decode)
