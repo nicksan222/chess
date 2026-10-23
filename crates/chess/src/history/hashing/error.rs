@@ -1,34 +1,77 @@
 //! Canonical hashing of invalid-operation details.
 
-use sha2::{Digest, Sha256};
-
 use crate::{GameSyncError, HistoryEventKind, MoveError};
 
-use super::{super::HistoryError, event::update_final_state, status::color_code};
+use super::{
+    super::HistoryError,
+    event::{EventTag, update_final_state},
+    writer::HashWriter,
+};
+
+tag_enum!(MoveErrorTag {
+    GameOver,
+    PendingInvalid,
+    NoPiece,
+    WrongSide,
+    IllegalDestination,
+    UnexpectedPromotion,
+    InvalidPromotion,
+    NonCanonicalPromotion,
+    StalePiece,
+});
+
+tag_enum!(SyncErrorTag { History, Move });
+
+tag_enum!(HistoryErrorTag {
+    Ply,
+    PreviousHash,
+    Hash,
+    InvalidTransition,
+    NothingToResolve,
+    Tip,
+});
 
 /// Mixes a movefailure into the cumulative timeline hash.
 ///
 /// The encoding covers every [`MoveError`](crate::MoveError) variant, so
 /// distinct invalid-move details produce distinct [`crate::HistoryStep`]
 /// commitments anchored to the previous tip.
-pub(super) fn update_move_error(digest: &mut Sha256, error: MoveError) {
+pub(super) fn update_move_error(writer: &mut HashWriter, error: MoveError) {
     match error {
         MoveError::GameOver { final_state } => {
-            digest.update([0]);
-            update_final_state(digest, final_state);
+            writer.tag(MoveErrorTag::GameOver);
+            update_final_state(writer, final_state);
         }
-        MoveError::PendingInvalid => digest.update([1]),
-        MoveError::NoPiece { square } => digest.update([2, square.index().value()]),
+        MoveError::PendingInvalid => {
+            writer.tag(MoveErrorTag::PendingInvalid);
+        }
+        MoveError::NoPiece { square } => {
+            writer.tag(MoveErrorTag::NoPiece).square(square);
+        }
         MoveError::WrongSide { expected, actual } => {
-            digest.update([3, color_code(expected), color_code(actual)]);
+            writer
+                .tag(MoveErrorTag::WrongSide)
+                .color(expected)
+                .color(actual);
         }
         MoveError::IllegalDestination { from, to } => {
-            digest.update([4, from.index().value(), to.index().value()]);
+            writer
+                .tag(MoveErrorTag::IllegalDestination)
+                .square(from)
+                .square(to);
         }
-        MoveError::UnexpectedPromotion => digest.update([5]),
-        MoveError::InvalidPromotion => digest.update([6]),
-        MoveError::NonCanonicalPromotion => digest.update([7]),
-        MoveError::StalePiece => digest.update([8]),
+        MoveError::UnexpectedPromotion => {
+            writer.tag(MoveErrorTag::UnexpectedPromotion);
+        }
+        MoveError::InvalidPromotion => {
+            writer.tag(MoveErrorTag::InvalidPromotion);
+        }
+        MoveError::NonCanonicalPromotion => {
+            writer.tag(MoveErrorTag::NonCanonicalPromotion);
+        }
+        MoveError::StalePiece => {
+            writer.tag(MoveErrorTag::StalePiece);
+        }
     }
 }
 
@@ -37,78 +80,68 @@ pub(super) fn update_move_error(digest: &mut Sha256, error: MoveError) {
 /// The encoding covers nested history and move failures, so a retained
 /// [`InvalidState::Synchronization`](crate::InvalidState) step commits to
 /// the exact mismatch that blocked peer synchronization.
-pub(super) fn update_sync_error(digest: &mut Sha256, error: GameSyncError) {
+pub(super) fn update_sync_error(writer: &mut HashWriter, error: GameSyncError) {
     match error {
         GameSyncError::History(error) => {
-            digest.update([0]);
-            update_history_error(digest, error);
+            writer.tag(SyncErrorTag::History);
+            update_history_error(writer, error);
         }
         GameSyncError::Move(error) => {
-            digest.update([1]);
-            update_move_error(digest, error);
+            writer.tag(SyncErrorTag::Move);
+            update_move_error(writer, error);
         }
     }
 }
 
-fn update_history_error(digest: &mut Sha256, error: HistoryError) {
+fn update_history_error(writer: &mut HashWriter, error: HistoryError) {
     match error {
         HistoryError::Ply { expected, actual } => {
-            digest.update([0]);
-            digest.update(expected.value().to_be_bytes());
-            digest.update(actual.value().to_be_bytes());
+            writer.tag(HistoryErrorTag::Ply).ply(expected).ply(actual);
         }
         HistoryError::PreviousHash {
             ply,
             expected,
             actual,
         } => {
-            digest.update([1]);
-            digest.update(ply.value().to_be_bytes());
-            digest.update(expected.as_bytes());
-            digest.update(actual.as_bytes());
+            writer
+                .tag(HistoryErrorTag::PreviousHash)
+                .ply(ply)
+                .hash(&expected)
+                .hash(&actual);
         }
         HistoryError::Hash {
             ply,
             expected,
             actual,
         } => {
-            digest.update([2]);
-            digest.update(ply.value().to_be_bytes());
-            digest.update(expected.as_bytes());
-            digest.update(actual.as_bytes());
+            writer
+                .tag(HistoryErrorTag::Hash)
+                .ply(ply)
+                .hash(&expected)
+                .hash(&actual);
         }
         HistoryError::InvalidTransition { current, incoming } => {
-            digest.update([3]);
-            update_optional_event_marker(digest, current);
-            update_event_marker(digest, incoming);
+            writer.tag(HistoryErrorTag::InvalidTransition);
+            update_optional_event_kind(writer, current);
+            writer.tag(EventTag::from(incoming));
         }
         HistoryError::NothingToResolve { current } => {
-            digest.update([4]);
-            update_optional_event_marker(digest, current);
+            writer.tag(HistoryErrorTag::NothingToResolve);
+            update_optional_event_kind(writer, current);
         }
         HistoryError::Tip { expected, actual } => {
-            digest.update([5]);
-            digest.update(expected.as_bytes());
-            digest.update(actual.as_bytes());
+            writer
+                .tag(HistoryErrorTag::Tip)
+                .hash(&expected)
+                .hash(&actual);
         }
     }
 }
 
-fn update_optional_event_marker(digest: &mut Sha256, event: Option<HistoryEventKind>) {
-    match event {
-        Some(event) => digest.update([1, event_kind_code(event)]),
-        None => digest.update([0]),
-    }
-}
-
-fn update_event_marker(digest: &mut Sha256, event: HistoryEventKind) {
-    digest.update([event_kind_code(event)]);
-}
-
-const fn event_kind_code(event: HistoryEventKind) -> u8 {
-    match event {
-        HistoryEventKind::Move => 0,
-        HistoryEventKind::Invalid => 1,
-        HistoryEventKind::Final => 2,
-    }
+/// Writes a presence byte, then the kind tag when present.
+fn update_optional_event_kind(writer: &mut HashWriter, kind: Option<HistoryEventKind>) {
+    match kind {
+        Some(kind) => writer.byte(1).tag(EventTag::from(kind)),
+        None => writer.byte(0),
+    };
 }

@@ -1,16 +1,48 @@
 //! Canonical hashing of every authoritative event variant.
 
-use sha2::{Digest, Sha256};
-
-use crate::{ChessMove, HistoryEvent, InvalidState};
+use crate::{ChessMove, HistoryEvent, HistoryEventKind, InvalidState};
 
 use super::{
     super::{FinalState, HistoryHash, Ply},
     error::{update_move_error, update_sync_error},
-    status::{color_code, draw_claim_code, update_draw_reason},
+    status::{update_draw_claim, update_draw_reason},
+    writer::HashWriter,
 };
 
 const HASH_DOMAIN: &[u8] = b"chess.game-history.sha256.v1\0";
+
+tag_enum!(
+    /// Event category tag, shared with history-error encodings.
+    pub(super) EventTag {
+        Move,
+        Invalid,
+        Final,
+    }
+);
+
+tag_enum!(InvalidTag {
+    Move,
+    Synchronization,
+    DrawClaim,
+    PendingInvalid,
+});
+
+tag_enum!(FinalTag {
+    Checkmate,
+    Stalemate,
+    Draw,
+    DrawAfter,
+});
+
+impl From<HistoryEventKind> for EventTag {
+    fn from(kind: HistoryEventKind) -> Self {
+        match kind {
+            HistoryEventKind::Move => Self::Move,
+            HistoryEventKind::Invalid => Self::Invalid,
+            HistoryEventKind::Final => Self::Final,
+        }
+    }
+}
 
 /// Computes the cumulative hash for one timeline step.
 ///
@@ -25,37 +57,26 @@ pub(in crate::history) fn calculate_hash(
     ply: Ply,
     event: HistoryEvent,
 ) -> HistoryHash {
-    let mut digest = Sha256::new();
-    digest.update(HASH_DOMAIN);
-    digest.update(previous.as_bytes());
-    digest.update(ply.value().to_be_bytes());
-    update_event(&mut digest, event);
-    HistoryHash::from_bytes(digest.finalize().into())
+    let mut writer = HashWriter::new(HASH_DOMAIN);
+    writer.hash(&previous).ply(ply);
+    update_event(&mut writer, event);
+    writer.finish()
 }
 
-fn update_event(digest: &mut Sha256, event: HistoryEvent) {
+fn update_event(writer: &mut HashWriter, event: HistoryEvent) {
+    writer.tag(EventTag::from(event.kind()));
     match event {
-        HistoryEvent::Move(chess_move) => {
-            digest.update([0]);
-            update_move(digest, chess_move);
-        }
-        HistoryEvent::Invalid(invalid) => {
-            digest.update([1]);
-            update_invalid(digest, invalid);
-        }
-        HistoryEvent::Final(final_state) => {
-            digest.update([2]);
-            update_final_state(digest, final_state);
-        }
+        HistoryEvent::Move(chess_move) => update_move(writer, chess_move),
+        HistoryEvent::Invalid(invalid) => update_invalid(writer, invalid),
+        HistoryEvent::Final(final_state) => update_final_state(writer, final_state),
     }
 }
 
-fn update_move(digest: &mut Sha256, chess_move: ChessMove) {
-    digest.update([
-        chess_move.from().index().value(),
-        chess_move.to().index().value(),
-        chess_move.promotion_code(),
-    ]);
+fn update_move(writer: &mut HashWriter, chess_move: ChessMove) {
+    writer
+        .square(chess_move.from())
+        .square(chess_move.to())
+        .byte(chess_move.promotion_code());
 }
 
 /// Mixes an invalid state into the cumulative timeline hash.
@@ -63,18 +84,23 @@ fn update_move(digest: &mut Sha256, chess_move: ChessMove) {
 /// The encoding covers move, synchronization, draw-claim, and pending
 /// failures, so stacked invalid states resolved newest-first each carry a
 /// distinct commitment to the tip that preceded them.
-pub(super) fn update_invalid(digest: &mut Sha256, invalid: InvalidState) {
+pub(super) fn update_invalid(writer: &mut HashWriter, invalid: InvalidState) {
     match invalid {
         InvalidState::Move(error) => {
-            digest.update([0]);
-            update_move_error(digest, error);
+            writer.tag(InvalidTag::Move);
+            update_move_error(writer, error);
         }
         InvalidState::Synchronization(error) => {
-            digest.update([1]);
-            update_sync_error(digest, error);
+            writer.tag(InvalidTag::Synchronization);
+            update_sync_error(writer, error);
         }
-        InvalidState::DrawClaim { claim } => digest.update([2, draw_claim_code(claim)]),
-        InvalidState::PendingInvalid => digest.update([3]),
+        InvalidState::DrawClaim { claim } => {
+            writer.tag(InvalidTag::DrawClaim);
+            update_draw_claim(writer, claim);
+        }
+        InvalidState::PendingInvalid => {
+            writer.tag(InvalidTag::PendingInvalid);
+        }
     }
 }
 
@@ -84,17 +110,22 @@ pub(super) fn update_invalid(digest: &mut Sha256, invalid: InvalidState) {
 /// outcomes. Since a [`FinalState`](crate::FinalState) seals the
 /// [`GameHistory`](crate::GameHistory) tip permanently, its exact terms
 /// stay committed to the anchor-to-tip chain.
-pub(super) fn update_final_state(digest: &mut Sha256, final_state: FinalState) {
+pub(super) fn update_final_state(writer: &mut HashWriter, final_state: FinalState) {
     match final_state {
-        FinalState::Checkmate { winner } => digest.update([0, color_code(winner)]),
-        FinalState::Stalemate => digest.update([1]),
+        FinalState::Checkmate { winner } => {
+            writer.tag(FinalTag::Checkmate).color(winner);
+        }
+        FinalState::Stalemate => {
+            writer.tag(FinalTag::Stalemate);
+        }
         FinalState::Draw { reason } => {
-            digest.update([2]);
-            update_draw_reason(digest, reason);
+            writer.tag(FinalTag::Draw);
+            update_draw_reason(writer, reason);
         }
         FinalState::DrawAfter { claim, chess_move } => {
-            digest.update([3, draw_claim_code(claim)]);
-            update_move(digest, chess_move);
+            writer.tag(FinalTag::DrawAfter);
+            update_draw_claim(writer, claim);
+            update_move(writer, chess_move);
         }
     }
 }
