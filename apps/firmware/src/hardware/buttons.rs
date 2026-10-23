@@ -1,6 +1,6 @@
 //! Control-panel buttons: debounce GPIO levels and publish typed events.
 
-use std::{error::Error as StdError, fmt};
+use std::{error::Error as StdError, fmt, ops::Deref};
 
 use tokio::{runtime::Handle, task::JoinHandle, time::Instant};
 
@@ -9,7 +9,7 @@ use crate::events::{Bus, ReceiveError, Subscription};
 use super::{
     HardwareEventBus,
     debounce::{Debouncer, POLL_INTERVAL},
-    pins::{GPIO, Level, ReadLevel},
+    pins::{GPIO, Input, Level, Pin, ReadLevel},
 };
 
 /// The label printed beside a physical control-panel button.
@@ -29,6 +29,21 @@ pub enum Button {
     F5,
 }
 
+impl Button {
+    /// The menu input this button drives, if it navigates the menu.
+    pub fn menu_input(self) -> Option<::menu::Input> {
+        use ::menu::Input;
+        match self {
+            Self::Up => Some(Input::Up),
+            Self::Down => Some(Input::Down),
+            Self::Left => Some(Input::Left),
+            Self::Right => Some(Input::Right),
+            Self::Ok => Some(Input::Ok),
+            Self::Reset | Self::Pass | Self::F1 | Self::F2 | Self::F3 | Self::F4 | Self::F5 => None,
+        }
+    }
+}
+
 /// A debounced electrical transition produced by a physical button adapter.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ButtonEvent {
@@ -44,34 +59,32 @@ pub enum ButtonAction {
 }
 
 /// A control-panel button connected directly to a GPIO input.
+///
+/// Dereferences to its [`Pin`] for the GPIO identity and level reads.
 pub struct ButtonPin<const BCM: u8> {
-    gpio: GPIO,
+    pin: Pin<BCM, Input>,
     button: Button,
+}
+
+impl<const BCM: u8> Deref for ButtonPin<BCM> {
+    type Target = Pin<BCM, Input>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.pin
+    }
 }
 
 impl<const BCM: u8> ButtonPin<BCM> {
     pub(super) const fn new(button: Button) -> Self {
         Self {
-            gpio: GPIO::new(BCM),
+            pin: Pin::new(),
             button,
         }
-    }
-
-    pub const fn gpio(&self) -> GPIO {
-        self.gpio
-    }
-
-    pub const fn bcm_number(&self) -> u8 {
-        BCM
     }
 
     /// Returns the physical panel label assigned to this pin.
     pub const fn button(&self) -> Button {
         self.button
-    }
-
-    pub fn read_level<R: ReadLevel>(&self, reader: &mut R) -> Result<Level, R::Error> {
-        reader.read_level(self.gpio)
     }
 
     /// Starts polling and debouncing this button.
@@ -99,7 +112,7 @@ impl<const BCM: u8> ButtonPin<BCM> {
         let button_events = Bus::new();
         let event_subscription = button_events.subscribe();
         let worker = runtime.spawn(poll(
-            self.gpio,
+            self.gpio(),
             self.button,
             reader,
             events.clone(),
@@ -158,6 +171,49 @@ impl fmt::Display for StartSubscriptionError {
 
 impl StdError for StartSubscriptionError {}
 
+/// One button's sampling state: reads its GPIO, debounces, and reports edges.
+/// Kept free of timers and buses so it can be stepped directly in tests.
+struct ButtonPoller {
+    gpio: GPIO,
+    button: Button,
+    debouncer: Option<Debouncer>,
+    read_failed: bool,
+}
+
+impl ButtonPoller {
+    fn new(gpio: GPIO, button: Button, initial: Option<Level>) -> Self {
+        Self {
+            gpio,
+            button,
+            debouncer: initial.map(Debouncer::new),
+            read_failed: false,
+        }
+    }
+
+    /// Samples the line once at `now`. A failed read is logged once per run of
+    /// failures and restarts any debounce in progress; the first successful
+    /// read becomes the baseline when none was supplied.
+    fn step<R: ReadLevel>(&mut self, reader: &mut R, now: Instant) -> Option<ButtonEvent> {
+        let Ok(level) = reader.read_level(self.gpio) else {
+            if !self.read_failed {
+                logger::warn!("button GPIO {} read failed", self.gpio.bcm_number());
+            }
+            self.read_failed = true;
+            if let Some(debouncer) = &mut self.debouncer {
+                debouncer.interrupt();
+            }
+            return None;
+        };
+        self.read_failed = false;
+
+        let debouncer = self.debouncer.get_or_insert_with(|| Debouncer::new(level));
+        Some(match debouncer.observe(level, now)? {
+            ButtonAction::Pressed => ButtonEvent::Pressed(self.button),
+            ButtonAction::Released => ButtonEvent::Released(self.button),
+        })
+    }
+}
+
 async fn poll<R>(
     gpio: GPIO,
     button: Button,
@@ -170,32 +226,12 @@ async fn poll<R>(
 {
     let mut interval = tokio::time::interval(POLL_INTERVAL);
     interval.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip);
-    let mut debouncer = initial.map(Debouncer::new);
-    let mut read_failed = false;
+    let mut poller = ButtonPoller::new(gpio, button, initial);
 
     loop {
         interval.tick().await;
-
-        let Ok(level) = reader.read_level(gpio) else {
-            if !read_failed {
-                logger::warn!("button GPIO {} read failed", gpio.bcm_number());
-            }
-            read_failed = true;
-            if let Some(debouncer) = &mut debouncer {
-                debouncer.interrupt();
-            }
+        let Some(event) = poller.step(&mut reader, Instant::now()) else {
             continue;
-        };
-        read_failed = false;
-
-        let debouncer = debouncer.get_or_insert_with(|| Debouncer::new(level));
-        let Some(action) = debouncer.observe(level, Instant::now()) else {
-            continue;
-        };
-
-        let event = match action {
-            ButtonAction::Pressed => ButtonEvent::Pressed(button),
-            ButtonAction::Released => ButtonEvent::Released(button),
         };
         if button_events.emit(event).is_err() {
             return;
@@ -219,6 +255,27 @@ mod tests {
 
     use super::*;
     use crate::hardware::pins::BoardPins;
+
+    #[test]
+    fn the_poller_steps_through_debounce_failures_and_baseline() {
+        let start = Instant::now();
+        let ms = Duration::from_millis;
+        let gpio = GPIO::new(5);
+        let mut reader = SequenceReader {
+            levels: VecDeque::from([Level::High, Level::Low, Level::Low]),
+        };
+        let mut poller = ButtonPoller::new(gpio, Button::Up, None);
+
+        // The first valid read is the baseline, not a press.
+        assert_eq!(poller.step(&mut reader, start), None);
+        assert_eq!(poller.step(&mut reader, start + ms(5)), None);
+        assert_eq!(
+            poller.step(&mut reader, start + ms(30)),
+            Some(ButtonEvent::Pressed(Button::Up))
+        );
+        // A failed read (the script is exhausted) reports nothing.
+        assert_eq!(poller.step(&mut reader, start + ms(35)), None);
+    }
 
     #[test]
     fn starting_a_button_subscription_without_a_runtime_returns_an_error() {
