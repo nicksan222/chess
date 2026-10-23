@@ -110,7 +110,7 @@ mod tests {
     use super::*;
     use crate::{
         events::Subscription,
-        menu::transitions::{TransitionEvent, TransitionEventBus},
+        menu::transitions::{Phase, TransitionEvent, TransitionEventBus},
         updater::{
             Error, LATEST_RELEASE,
             fake::{FakeFeed, answer, release},
@@ -164,7 +164,7 @@ mod tests {
         assert!(updates.running.is_none());
         assert_eq!(
             next(&mut reports).await,
-            TransitionEvent::finished::<UpdateCheck>(UpdateStatus::Disabled)
+            TransitionEvent::new::<UpdateCheck>(Phase::Finished, UpdateStatus::Disabled)
         );
     }
 
@@ -192,11 +192,11 @@ mod tests {
 
             assert_eq!(
                 next(&mut reports).await,
-                TransitionEvent::progress::<UpdateCheck>(UpdateStatus::Checking)
+                TransitionEvent::new::<UpdateCheck>(Phase::Progress, UpdateStatus::Checking)
             );
             assert_eq!(
                 next(&mut reports).await,
-                TransitionEvent::finished::<UpdateCheck>(status)
+                TransitionEvent::new::<UpdateCheck>(Phase::Finished, status)
             );
         }
     }
@@ -215,9 +215,12 @@ mod tests {
         next(&mut reports).await;
         assert_eq!(
             next(&mut reports).await,
-            TransitionEvent::finished::<UpdateCheck>(UpdateStatus::Failed(Error::Unreachable {
-                host: "127.0.0.1".into()
-            }))
+            TransitionEvent::new::<UpdateCheck>(
+                Phase::Finished,
+                UpdateStatus::Failed(Error::Unreachable {
+                    host: "127.0.0.1".into()
+                })
+            )
         );
     }
 
@@ -234,11 +237,11 @@ mod tests {
         assert!(updates.running.is_none());
         assert_eq!(
             next(&mut reports).await,
-            TransitionEvent::progress::<UpdateCheck>(UpdateStatus::Checking)
+            TransitionEvent::new::<UpdateCheck>(Phase::Progress, UpdateStatus::Checking)
         );
         assert_eq!(
             next(&mut reports).await,
-            TransitionEvent::finished::<UpdateCheck>(UpdateStatus::NotChecked)
+            TransitionEvent::new::<UpdateCheck>(Phase::Finished, UpdateStatus::NotChecked)
         );
     }
 
@@ -248,7 +251,7 @@ mod tests {
         updates.cancel(report);
         assert_eq!(
             next(&mut reports).await,
-            TransitionEvent::finished::<UpdateCheck>(UpdateStatus::NotChecked)
+            TransitionEvent::new::<UpdateCheck>(Phase::Finished, UpdateStatus::NotChecked)
         );
     }
 

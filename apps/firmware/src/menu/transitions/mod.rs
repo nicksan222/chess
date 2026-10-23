@@ -18,7 +18,7 @@ pub mod transition;
 
 pub use check_for_updates::{UpdateCheck, UpdateStatus};
 pub(crate) use transition::report;
-pub use transition::{Reporter, Transition, TransitionEvent, TransitionEventBus};
+pub use transition::{Phase, Reporter, Transition, TransitionEvent, TransitionEventBus};
 
 transition::transitions! {
     /// "Check for Updates": the latest GitHub release against the running version.

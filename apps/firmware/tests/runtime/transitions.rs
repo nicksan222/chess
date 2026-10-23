@@ -7,7 +7,7 @@ use firmware::{
     harness::FirmwareHarness,
     menu::{
         Request,
-        transitions::{Config, TransitionEvent, UpdateCheck, UpdateStatus},
+        transitions::{Config, Phase, TransitionEvent, UpdateCheck, UpdateStatus},
     },
 };
 
@@ -40,7 +40,8 @@ async fn a_finished_report_releases_the_blocking_request() {
 
     let running = panel
         .firmware
-        .report(TransitionEvent::progress::<UpdateCheck>(
+        .report(TransitionEvent::new::<UpdateCheck>(
+            Phase::Progress,
             UpdateStatus::Checking,
         ))
         .await
@@ -49,7 +50,8 @@ async fn a_finished_report_releases_the_blocking_request() {
 
     let done = panel
         .firmware
-        .report(TransitionEvent::finished::<UpdateCheck>(
+        .report(TransitionEvent::new::<UpdateCheck>(
+            Phase::Finished,
             UpdateStatus::UpToDate,
         ))
         .await

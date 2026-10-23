@@ -68,25 +68,25 @@ pub trait Registered: Transition {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TransitionEvent {
     request: Request,
-    finished: bool,
+    phase: Phase,
     status: StatusUpdate,
 }
 
-impl TransitionEvent {
-    /// `T`'s work is still running.
-    pub fn progress<T: Registered>(status: T::Status) -> Self {
-        Self {
-            request: T::REQUEST,
-            finished: false,
-            status: T::wrap(status),
-        }
-    }
+/// Whether a report leaves the work running or ends it.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum Phase {
+    /// The work is still running.
+    Progress,
+    /// The work is done; a menu blocked on it resumes.
+    Finished,
+}
 
-    /// `T`'s work is done; a menu blocked on it resumes.
-    pub fn finished<T: Registered>(status: T::Status) -> Self {
+impl TransitionEvent {
+    /// A report of `T`'s work in `phase`.
+    pub fn new<T: Registered>(phase: Phase, status: T::Status) -> Self {
         Self {
             request: T::REQUEST,
-            finished: true,
+            phase,
             status: T::wrap(status),
         }
     }
@@ -99,36 +99,30 @@ pub type TransitionEventBus = Bus<TransitionEvent>;
 #[derive(Clone)]
 pub struct Reporter<S> {
     events: TransitionEventBus,
-    event: fn(bool, S) -> TransitionEvent,
+    event: fn(Phase, S) -> TransitionEvent,
 }
 
 impl<S> Reporter<S> {
     pub(super) fn new<T: Registered<Status = S>>(events: &TransitionEventBus) -> Self {
         Self {
             events: events.clone(),
-            event: |finished, status| {
-                if finished {
-                    TransitionEvent::finished::<T>(status)
-                } else {
-                    TransitionEvent::progress::<T>(status)
-                }
-            },
+            event: TransitionEvent::new::<T>,
         }
     }
 
     /// The work is still running.
     pub fn progress(&self, status: S) {
-        self.send((self.event)(false, status));
+        self.send(Phase::Progress, status);
     }
 
     /// The work is done.
     pub fn finish(&self, status: S) {
-        self.send((self.event)(true, status));
+        self.send(Phase::Finished, status);
     }
 
-    fn send(&self, event: TransitionEvent) {
+    fn send(&self, phase: Phase, status: S) {
         // Emitting fails only once the firmware loop has stopped listening.
-        let _ = self.events.emit(event);
+        let _ = self.events.emit((self.event)(phase, status));
     }
 }
 
@@ -138,7 +132,7 @@ pub(crate) fn report(
     menu: &mut MenuState<'static, Request>,
     status: &mut TransitionStatus,
 ) {
-    if event.finished && menu.blocking_action() == Some(&event.request) {
+    if event.phase == Phase::Finished && menu.blocking_action() == Some(&event.request) {
         menu.unblock();
     }
     status.apply(event.status);
@@ -322,9 +316,9 @@ mod tests {
                 Request::CancelUpdateCheck,
             )],
         );
-        let event = |request, finished| TransitionEvent {
+        let event = |request, phase| TransitionEvent {
             request,
-            finished,
+            phase,
             status: StatusUpdate::update(UpdateStatus::UpToDate),
         };
         let mut menu = MenuState::new(&BLOCKING);
@@ -335,15 +329,19 @@ mod tests {
         );
 
         report(
-            event(Request::CheckForUpdates, false),
+            event(Request::CheckForUpdates, Phase::Progress),
             &mut menu,
             &mut status,
         );
         assert!(menu.is_blocked());
-        report(event(Request::InstallUpdate, true), &mut menu, &mut status);
+        report(
+            event(Request::InstallUpdate, Phase::Finished),
+            &mut menu,
+            &mut status,
+        );
         assert!(menu.is_blocked());
         report(
-            event(Request::CheckForUpdates, true),
+            event(Request::CheckForUpdates, Phase::Finished),
             &mut menu,
             &mut status,
         );
