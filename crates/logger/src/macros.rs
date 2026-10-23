@@ -23,57 +23,35 @@ macro_rules! log {
     };
 }
 
-/// Emits an error record through the registered logger.
-#[macro_export]
-macro_rules! error {
-    (target: $target:expr, $($argument:tt)+) => {
-        $crate::log!(level: $crate::Level::Error, target: $target, $($argument)+)
-    };
-    ($($argument:tt)+) => {
-        $crate::log!(level: $crate::Level::Error, $($argument)+)
-    };
-}
-
-/// Emits a warning record through the registered logger.
-#[macro_export]
-macro_rules! warn {
-    (target: $target:expr, $($argument:tt)+) => {
-        $crate::log!(level: $crate::Level::Warn, target: $target, $($argument)+)
-    };
-    ($($argument:tt)+) => {
-        $crate::log!(level: $crate::Level::Warn, $($argument)+)
+/// Defines one `#[macro_export]` macro per level. `$d` receives a literal `$`
+/// so the generated macros can declare their own repetitions.
+macro_rules! define_level_macros {
+    ($d:tt $($(#[$doc:meta])* $name:ident => $level:ident;)+) => {
+        $(
+            $(#[$doc])*
+            #[macro_export]
+            macro_rules! $name {
+                (target: $target:expr, $d($d argument:tt)+) => {
+                    $crate::log!(level: $crate::Level::$level, target: $target, $d($d argument)+)
+                };
+                ($d($d argument:tt)+) => {
+                    $crate::log!(level: $crate::Level::$level, $d($d argument)+)
+                };
+            }
+        )+
     };
 }
 
-/// Emits an informational record through the registered logger.
-#[macro_export]
-macro_rules! info {
-    (target: $target:expr, $($argument:tt)+) => {
-        $crate::log!(level: $crate::Level::Info, target: $target, $($argument)+)
-    };
-    ($($argument:tt)+) => {
-        $crate::log!(level: $crate::Level::Info, $($argument)+)
-    };
-}
-
-/// Emits a debug record through the registered logger.
-#[macro_export]
-macro_rules! debug {
-    (target: $target:expr, $($argument:tt)+) => {
-        $crate::log!(level: $crate::Level::Debug, target: $target, $($argument)+)
-    };
-    ($($argument:tt)+) => {
-        $crate::log!(level: $crate::Level::Debug, $($argument)+)
-    };
-}
-
-/// Emits a trace record through the registered logger.
-#[macro_export]
-macro_rules! trace {
-    (target: $target:expr, $($argument:tt)+) => {
-        $crate::log!(level: $crate::Level::Trace, target: $target, $($argument)+)
-    };
-    ($($argument:tt)+) => {
-        $crate::log!(level: $crate::Level::Trace, $($argument)+)
-    };
+define_level_macros! {
+    $
+    /// Emits an error record through the registered logger.
+    error => Error;
+    /// Emits a warning record through the registered logger.
+    warn => Warn;
+    /// Emits an informational record through the registered logger.
+    info => Info;
+    /// Emits a debug record through the registered logger.
+    debug => Debug;
+    /// Emits a trace record through the registered logger.
+    trace => Trace;
 }
