@@ -126,7 +126,7 @@ impl Game {
     /// Active history returns `None`, meaning [`Game::play`] may attempt
     /// the move against the board cache.
     pub(crate) fn blocking_move_error(&self) -> Option<MoveError> {
-        match self.history.latest().map(HistoryStep::event) {
+        match self.latest_event() {
             Some(HistoryEvent::Invalid(_)) => Some(MoveError::PendingInvalid),
             Some(HistoryEvent::Final(final_state)) => Some(MoveError::GameOver { final_state }),
             Some(HistoryEvent::Move(_)) | None => None,
@@ -140,10 +140,7 @@ impl Game {
     /// final tip seals the timeline permanently. [`Game::legal_moves`](crate::Game::legal_moves)
     /// uses this gate before reading the board cache.
     pub(super) fn accepts_moves(&self) -> bool {
-        matches!(
-            self.history.latest().map(HistoryStep::event),
-            None | Some(HistoryEvent::Move(_))
-        )
+        matches!(self.latest_event(), None | Some(HistoryEvent::Move(_)))
     }
 
     /// Returns the category of the newest history event, if any.
@@ -153,6 +150,14 @@ impl Game {
     /// or final (sealing). Returns `None` for empty history, which counts
     /// as active.
     pub(super) fn latest_event_kind(&self) -> Option<HistoryEventKind> {
-        self.history.latest().map(|step| step.event().kind())
+        self.latest_event().map(HistoryEvent::kind)
+    }
+
+    /// Returns the newest history event, if any.
+    ///
+    /// Reads only the history tip. Empty history yields `None`, which counts
+    /// as active.
+    pub(crate) fn latest_event(&self) -> Option<HistoryEvent> {
+        self.history.latest().map(HistoryStep::event)
     }
 }

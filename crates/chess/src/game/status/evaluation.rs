@@ -25,7 +25,7 @@ impl Game {
     /// ```
     #[must_use]
     pub fn status(&self) -> GameStatus {
-        match self.history().latest().map(|step| step.event()) {
+        match self.latest_event() {
             Some(HistoryEvent::Final(final_state)) => return final_state.into(),
             Some(HistoryEvent::Invalid(state)) => return GameStatus::Invalid { state },
             Some(HistoryEvent::Move(_)) | None => {}
@@ -128,7 +128,7 @@ impl Game {
     /// blocked until newest-first resolution.
     #[must_use]
     pub fn latest_invalid(&self) -> Option<InvalidState> {
-        match self.history().latest().map(|step| step.event()) {
+        match self.latest_event() {
             Some(HistoryEvent::Invalid(state)) => Some(state),
             _ => None,
         }

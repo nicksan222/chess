@@ -141,8 +141,7 @@ impl Game {
         if self.rebuild_board()? != self.board {
             return Err(GameVerificationError::BoardCache);
         }
-        if let Some(HistoryEvent::Final(final_state)) =
-            self.history.latest().map(|step| step.event())
+        if let Some(HistoryEvent::Final(final_state)) = self.latest_event()
             && !self.final_state_is_available(final_state)
         {
             return Err(GameVerificationError::FinalState { final_state });

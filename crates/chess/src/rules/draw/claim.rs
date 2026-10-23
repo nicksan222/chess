@@ -48,7 +48,7 @@ impl Game {
     /// [`GameStatus::DrawClaimAvailable`](crate::GameStatus).
     #[must_use]
     pub fn draw_claims(&self) -> DrawClaims {
-        match self.history().latest().map(|step| step.event()) {
+        match self.latest_event() {
             None | Some(HistoryEvent::Move(_)) => self.current_draw_claims(),
             Some(HistoryEvent::Invalid(_) | HistoryEvent::Final(_)) => DrawClaims::NONE,
         }
@@ -82,8 +82,7 @@ impl Game {
     /// ```
     pub fn claim_draw(&mut self, claim: DrawClaim) -> Result<(), DrawClaimError> {
         if !self.draw_claims().contains(claim) {
-            self.record_invalid(InvalidState::DrawClaim { claim });
-            return Err(DrawClaimError::Unavailable { claim });
+            return Err(self.reject_claim(claim, DrawClaimError::Unavailable { claim }));
         }
         self.append_final(FinalState::Draw {
             reason: DrawReason::Claimed(claim),
@@ -112,17 +111,19 @@ impl Game {
     ) -> Result<(), DrawClaimError> {
         let available = match self.draw_claims_after(chess_move) {
             Ok(available) => available,
-            Err(error) => {
-                self.record_invalid(InvalidState::DrawClaim { claim });
-                return Err(DrawClaimError::Move(error));
-            }
+            Err(error) => return Err(self.reject_claim(claim, DrawClaimError::Move(error))),
         };
         if !available.contains(claim) {
-            self.record_invalid(InvalidState::DrawClaim { claim });
-            return Err(DrawClaimError::Unavailable { claim });
+            return Err(self.reject_claim(claim, DrawClaimError::Unavailable { claim }));
         }
         self.append_final(FinalState::DrawAfter { claim, chess_move });
         Ok(())
+    }
+
+    /// Retains a rejected claim as an invalid state and returns `error`.
+    fn reject_claim(&mut self, claim: DrawClaim, error: DrawClaimError) -> DrawClaimError {
+        self.record_invalid(InvalidState::DrawClaim { claim });
+        error
     }
 
     /// Returns draws made claimable by `chess_move` without changing this game.
