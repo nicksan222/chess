@@ -16,9 +16,11 @@ use tokio::{
 
 use super::Error;
 
-/// No firmware with this code was built before 2026-01-01T00:00:00Z, so an
-/// earlier clock was never set; certificate validation would fail.
-const EARLIEST_PLAUSIBLE: Duration = Duration::from_secs(1_767_225_600);
+/// 2026-01-01T00:00:00Z as seconds since the Unix epoch. No firmware with this
+/// code was built before then, so an earlier clock was never set and
+/// certificate validation would fail.
+const EARLIEST_PLAUSIBLE_EPOCH_SECS: u64 = 1_767_225_600;
+const EARLIEST_PLAUSIBLE: Duration = Duration::from_secs(EARLIEST_PLAUSIBLE_EPOCH_SECS);
 /// Bounds each network probe, well under the request timeout.
 const PROBE: Duration = Duration::from_secs(5);
 

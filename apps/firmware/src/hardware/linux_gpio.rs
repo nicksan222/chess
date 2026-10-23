@@ -7,6 +7,8 @@ use gpiocdev::{
     line::{Bias, Value},
 };
 
+use crate::board::GPIO_CONSUMER;
+
 use super::pins::{GPIO, Level, ReadLevel};
 
 /// Keeps one kernel input request per BCM-numbered line on the selected chip.
@@ -49,7 +51,7 @@ impl ReadLevel for LinuxGpioReader {
                 let mut builder = Request::builder();
                 builder
                     .on_chip(&self.chip)
-                    .with_consumer("firmware-button")
+                    .with_consumer(GPIO_CONSUMER)
                     .with_line(u32::from(gpio.bcm_number()))
                     .as_input();
                 if self.pull_up {
