@@ -1,10 +1,5 @@
 use alloc::boxed::Box;
-use core::{
-    cmp::Ordering,
-    fmt,
-    hash::{Hash, Hasher},
-    iter::FusedIterator,
-};
+use core::iter::FusedIterator;
 
 /// An owned, singly linked list.
 ///
@@ -207,11 +202,14 @@ impl<T> LinkedList<T> {
     }
 }
 
-impl<T> Default for LinkedList<T> {
-    fn default() -> Self {
-        Self::new()
+impl_sequence_traits! {
+    impl[T] LinkedList<T> {
+        iter: Iter<'a, T>,
+        iter_mut: IterMut<'a, T>,
     }
 }
+
+impl_iteration_order_traits!(impl[T] LinkedList<T>);
 
 impl<T> Drop for LinkedList<T> {
     fn drop(&mut self) {
@@ -227,41 +225,6 @@ impl<T: Clone> Clone for LinkedList<T> {
     fn clone_from(&mut self, source: &Self) {
         self.clear();
         self.extend(source.iter().cloned());
-    }
-}
-
-impl<T: fmt::Debug> fmt::Debug for LinkedList<T> {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        formatter.debug_list().entries(self).finish()
-    }
-}
-
-impl<T: PartialEq> PartialEq for LinkedList<T> {
-    fn eq(&self, other: &Self) -> bool {
-        self.len == other.len && self.iter().eq(other)
-    }
-}
-
-impl<T: Eq> Eq for LinkedList<T> {}
-
-impl<T: PartialOrd> PartialOrd for LinkedList<T> {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        self.iter().partial_cmp(other)
-    }
-}
-
-impl<T: Ord> Ord for LinkedList<T> {
-    fn cmp(&self, other: &Self) -> Ordering {
-        self.iter().cmp(other)
-    }
-}
-
-impl<T: Hash> Hash for LinkedList<T> {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        self.len.hash(state);
-        for element in self {
-            element.hash(state);
-        }
     }
 }
 
@@ -312,24 +275,6 @@ impl<T> IntoIterator for LinkedList<T> {
 
     fn into_iter(self) -> Self::IntoIter {
         IntoIter { list: self }
-    }
-}
-
-impl<'a, T> IntoIterator for &'a LinkedList<T> {
-    type Item = &'a T;
-    type IntoIter = Iter<'a, T>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.iter()
-    }
-}
-
-impl<'a, T> IntoIterator for &'a mut LinkedList<T> {
-    type Item = &'a mut T;
-    type IntoIter = IterMut<'a, T>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.iter_mut()
     }
 }
 

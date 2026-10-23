@@ -2,19 +2,13 @@ use alloc::{
     collections::TryReserveError,
     vec::{self, Vec},
 };
-use core::{
-    cmp::Ordering,
-    fmt,
-    hash::{Hash, Hasher},
-    iter::Rev,
-    slice,
-};
+use core::{iter::Rev, slice};
 
 /// An allocator-backed last-in, first-out stack.
 ///
 /// Pushing and popping are amortized `O(1)`. All iterators follow pop order,
 /// from the top of the stack to the bottom.
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Clone)]
 pub struct Stack<T> {
     elements: Vec<T>,
 }
@@ -161,38 +155,14 @@ impl<T> Stack<T> {
     }
 }
 
-impl<T> Default for Stack<T> {
-    fn default() -> Self {
-        Self::new()
+impl_sequence_traits! {
+    impl[T] Stack<T> {
+        iter: Iter<'a, T>,
+        iter_mut: IterMut<'a, T>,
     }
 }
 
-impl<T: fmt::Debug> fmt::Debug for Stack<T> {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        formatter.debug_list().entries(self).finish()
-    }
-}
-
-impl<T: PartialOrd> PartialOrd for Stack<T> {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        self.iter().partial_cmp(other)
-    }
-}
-
-impl<T: Ord> Ord for Stack<T> {
-    fn cmp(&self, other: &Self) -> Ordering {
-        self.iter().cmp(other)
-    }
-}
-
-impl<T: Hash> Hash for Stack<T> {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        self.len().hash(state);
-        for element in self {
-            element.hash(state);
-        }
-    }
-}
+impl_iteration_order_traits!(impl[T] Stack<T>);
 
 impl<T> Extend<T> for Stack<T> {
     fn extend<I: IntoIterator<Item = T>>(&mut self, iter: I) {
@@ -238,24 +208,6 @@ impl<T> IntoIterator for Stack<T> {
 
     fn into_iter(self) -> Self::IntoIter {
         self.elements.into_iter().rev()
-    }
-}
-
-impl<'a, T> IntoIterator for &'a Stack<T> {
-    type Item = &'a T;
-    type IntoIter = Iter<'a, T>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.iter()
-    }
-}
-
-impl<'a, T> IntoIterator for &'a mut Stack<T> {
-    type Item = &'a mut T;
-    type IntoIter = IterMut<'a, T>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.iter_mut()
     }
 }
 

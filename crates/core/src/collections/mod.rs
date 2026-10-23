@@ -1,5 +1,8 @@
 //! General-purpose collections with project-relevant semantics.
 
+#[macro_use]
+mod macros;
+
 mod array_stack;
 mod capacity_error;
 mod linked_list;

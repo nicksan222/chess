@@ -1,7 +1,4 @@
 use core::{
-    cmp::Ordering,
-    fmt,
-    hash::{Hash, Hasher},
     iter::{FusedIterator, Rev},
     slice,
 };
@@ -160,11 +157,14 @@ impl<T, const N: usize> ArrayStack<T, N> {
     }
 }
 
-impl<T, const N: usize> Default for ArrayStack<T, N> {
-    fn default() -> Self {
-        Self::new()
+impl_sequence_traits! {
+    impl[T, const N: usize] ArrayStack<T, N> {
+        iter: Iter<'a, T>,
+        iter_mut: IterMut<'a, T>,
     }
 }
+
+impl_iteration_order_traits!(impl[T, const N: usize] ArrayStack<T, N>);
 
 impl<T: Clone, const N: usize> Clone for ArrayStack<T, N> {
     fn clone(&self) -> Self {
@@ -174,41 +174,6 @@ impl<T: Clone, const N: usize> Clone for ArrayStack<T, N> {
         }
         clone.len = self.len;
         clone
-    }
-}
-
-impl<T: fmt::Debug, const N: usize> fmt::Debug for ArrayStack<T, N> {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        formatter.debug_list().entries(self).finish()
-    }
-}
-
-impl<T: PartialEq, const N: usize> PartialEq for ArrayStack<T, N> {
-    fn eq(&self, other: &Self) -> bool {
-        self.len == other.len && self.iter().eq(other)
-    }
-}
-
-impl<T: Eq, const N: usize> Eq for ArrayStack<T, N> {}
-
-impl<T: PartialOrd, const N: usize> PartialOrd for ArrayStack<T, N> {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        self.iter().partial_cmp(other)
-    }
-}
-
-impl<T: Ord, const N: usize> Ord for ArrayStack<T, N> {
-    fn cmp(&self, other: &Self) -> Ordering {
-        self.iter().cmp(other)
-    }
-}
-
-impl<T: Hash, const N: usize> Hash for ArrayStack<T, N> {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        self.len.hash(state);
-        for element in self {
-            element.hash(state);
-        }
     }
 }
 
@@ -224,24 +189,6 @@ impl<T, const N: usize> IntoIterator for ArrayStack<T, N> {
 
     fn into_iter(self) -> Self::IntoIter {
         IntoIter { stack: self }
-    }
-}
-
-impl<'a, T, const N: usize> IntoIterator for &'a ArrayStack<T, N> {
-    type Item = &'a T;
-    type IntoIter = Iter<'a, T>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.iter()
-    }
-}
-
-impl<'a, T, const N: usize> IntoIterator for &'a mut ArrayStack<T, N> {
-    type Item = &'a mut T;
-    type IntoIter = IterMut<'a, T>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.iter_mut()
     }
 }
 
