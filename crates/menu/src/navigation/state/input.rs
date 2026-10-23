@@ -9,11 +9,7 @@ impl<'a, A> MenuState<'a, A> {
     /// While blocked, escape aborts the active operation and every other input
     /// produces [`Event::InputBlocked`].
     pub fn handle(&mut self, input: Input) -> Event<'a, A> {
-        if let Some(event) = self.handle_blocking_input(input) {
-            return event;
-        }
-
-        self.apply_menu_input(input)
+        self.resolve_input(input, |_| None)
     }
 
     /// Applies input and dispatches every action-bearing event.
@@ -41,15 +37,9 @@ impl<'a, A> MenuState<'a, A> {
         C: ?Sized,
         B: ExternalBehavior<C, A> + ?Sized,
     {
-        if let Some(event) = self.handle_blocking_input(input) {
-            return event;
-        }
-
-        let Some(command) = behavior.on_input(context, self.snapshot(), input) else {
-            return self.apply_menu_input(input);
-        };
-
-        self.apply_external(command)
+        self.resolve_input(input, |state| {
+            behavior.on_input(context, state.snapshot(), input)
+        })
     }
 
     /// Applies externally overridden input and dispatches action-bearing events.
@@ -86,24 +76,39 @@ impl<'a, A> MenuState<'a, A> {
         }
     }
 
-    fn apply_menu_input(&mut self, input: Input) -> Event<'a, A> {
-        match self.current.controls().command(input) {
-            Command::SelectPrevious => self.previous(),
-            Command::SelectNext => self.next(),
-            Command::Activate => self.activate(),
-            Command::GoBack => self.back(),
-            Command::Action(action) => Event::Activated(action),
-            Command::Ignore => Event::Ignored,
+    /// Resolves blocking state first, then an optional external override, then
+    /// the current menu's own controls.
+    fn resolve_input(
+        &mut self,
+        input: Input,
+        external: impl FnOnce(&Self) -> Option<Command<A>>,
+    ) -> Event<'a, A> {
+        if let Some(event) = self.handle_blocking_input(input) {
+            return event;
+        }
+
+        match external(self) {
+            Some(command) => self.apply_command(command, Event::ExternalAction),
+            None => {
+                let menu = self.current;
+                let command = borrowed(menu.controls().command(input));
+                self.apply_command(command, Event::Activated)
+            }
         }
     }
 
-    fn apply_external(&mut self, command: Command<A>) -> Event<'a, A> {
+    /// Applies `command`, wrapping a carried action with `wrap_action`.
+    fn apply_command<T>(
+        &mut self,
+        command: Command<T>,
+        wrap_action: impl FnOnce(T) -> Event<'a, A>,
+    ) -> Event<'a, A> {
         match command {
             Command::SelectPrevious => self.previous(),
             Command::SelectNext => self.next(),
             Command::Activate => self.activate(),
             Command::GoBack => self.back(),
-            Command::Action(action) => Event::ExternalAction(action),
+            Command::Action(action) => wrap_action(action),
             Command::Ignore => Event::Ignored,
         }
     }
@@ -114,5 +119,17 @@ impl<'a, A> MenuState<'a, A> {
             escape_action,
         });
         Event::BlockingStarted(action)
+    }
+}
+
+/// Views a bound command's action by reference so it can share `apply_command`.
+const fn borrowed<A>(command: &Command<A>) -> Command<&A> {
+    match command {
+        Command::SelectPrevious => Command::SelectPrevious,
+        Command::SelectNext => Command::SelectNext,
+        Command::Activate => Command::Activate,
+        Command::GoBack => Command::GoBack,
+        Command::Action(action) => Command::Action(action),
+        Command::Ignore => Command::Ignore,
     }
 }
