@@ -9,6 +9,8 @@ Board tests model sensing and button behavior; full electrical and physical
 release validation remain pending.
 """
 
+from collections.abc import Callable
+
 from pcb.components.capacitors.capacitor_1_microfarad import Capacitor1Microfarad
 from pcb.components.capacitors.capacitor_1_nanofarad import Capacitor1Nanofarad
 from pcb.components.capacitors.capacitor_10_microfarad import Capacitor10Microfarad
@@ -56,13 +58,16 @@ from pcb.harness import (
     Placement,
     Point,
 )
+from pcb.harness.base.component import RegisteredComponent
 from pcb.harness.base.geometry import Side
 from pcb.harness.base.pcbnew.design_rules import DesignRules
 from pcb.harness.base.pcbnew.layout import BoardLayout, Label, Line, MountingHole, Plane
 from pcb.harness.base.pcbnew.routing.settings import RoutingSettings
 from shared import dimensions, wiring
 from shared.electronics import Tca9554Pin
+from shared.electronics.raspberry_pi_header import RaspberryPiHeaderPin
 from shared.panel_buttons import PANEL_BUTTONS
+from shared.squares import BoardSquare
 
 
 class BoardNet(Net):
@@ -388,12 +393,64 @@ def _placement(
     )
 
 
+UNUSED = NoConnect("Unused by the chessboard")
+
+
+# Header pins the chessboard uses; every other pin is explicitly unused.
+HOST_HEADER_CONNECTIONS: dict[RaspberryPiHeaderPin, BoardNet] = {
+    RaspberryPiHeaderPin.THREE_VOLTS_THREE: BoardNet.THREE_VOLTS_THREE,
+    RaspberryPiHeaderPin.FIVE_VOLTS: BoardNet.FIVE_VOLTS,
+    RaspberryPiHeaderPin.I2C_SDA: BoardNet.I2C_SDA,
+    RaspberryPiHeaderPin.FIVE_VOLTS_ALT: BoardNet.FIVE_VOLTS,
+    RaspberryPiHeaderPin.I2C_SCL: BoardNet.I2C_SCL,
+    RaspberryPiHeaderPin.GROUND_6: BoardNet.GROUND,
+    RaspberryPiHeaderPin.GROUND_9: BoardNet.GROUND,
+    RaspberryPiHeaderPin.BUTTON_RESET_GPIO17: BoardNet.BTN_RESET,
+    RaspberryPiHeaderPin.GROUND_14: BoardNet.GROUND,
+    RaspberryPiHeaderPin.BUTTON_F3_GPIO22: BoardNet.BTN_F3,
+    RaspberryPiHeaderPin.BUTTON_F4_GPIO23: BoardNet.BTN_F4,
+    RaspberryPiHeaderPin.THREE_VOLTS_THREE_ALT: BoardNet.THREE_VOLTS_THREE,
+    RaspberryPiHeaderPin.BUTTON_F5_GPIO24: BoardNet.BTN_F5,
+    RaspberryPiHeaderPin.SPI_DATA_GPIO10: BoardNet.SPI_DATA_3V3,
+    RaspberryPiHeaderPin.GROUND_20: BoardNet.GROUND,
+    RaspberryPiHeaderPin.SPI_CLOCK_GPIO11: BoardNet.SPI_CLK_3V3,
+    RaspberryPiHeaderPin.GROUND_25: BoardNet.GROUND,
+    RaspberryPiHeaderPin.BUTTON_UP_GPIO5: BoardNet.BTN_UP,
+    RaspberryPiHeaderPin.GROUND_30: BoardNet.GROUND,
+    RaspberryPiHeaderPin.BUTTON_DOWN_GPIO6: BoardNet.BTN_DOWN,
+    RaspberryPiHeaderPin.BUTTON_LEFT_GPIO12: BoardNet.BTN_LEFT,
+    RaspberryPiHeaderPin.BUTTON_RIGHT_GPIO13: BoardNet.BTN_RIGHT,
+    RaspberryPiHeaderPin.GROUND_34: BoardNet.GROUND,
+    RaspberryPiHeaderPin.BUTTON_PASS_GPIO19: BoardNet.BTN_PASS,
+    RaspberryPiHeaderPin.BUTTON_OK_GPIO16: BoardNet.BTN_OK,
+    RaspberryPiHeaderPin.LED_EN_GPIO26: BoardNet.LED_EN,
+    RaspberryPiHeaderPin.BUTTON_F1_GPIO20: BoardNet.BTN_F1,
+    RaspberryPiHeaderPin.GROUND_39: BoardNet.GROUND,
+    RaspberryPiHeaderPin.BUTTON_F2_GPIO21: BoardNet.BTN_F2,
+}
+
+
 def _strip_placement(reference: str) -> Placement:
     placement = dimensions.PCB_STRIP_PLACEMENTS[reference]
     return _placement(
         *placement.centre_mm,
         placement.rotation_degrees,
         Side.BOTTOM if placement.bottom else Side.TOP,
+    )
+
+
+def _place_strip[Part: RegisteredComponent](
+    circuit: "Board",
+    constructor: Callable[..., Part],
+    reference: str,
+    **connections: object,
+) -> Part:
+    """Place a part from the shared strip table, deriving placement from its reference."""
+    return circuit.place(
+        constructor,
+        reference=reference,
+        placement=_strip_placement(reference),
+        **connections,
     )
 
 
@@ -503,165 +560,165 @@ class Board(Circuit[BoardNet]):
 
 def _add_power(circuit: Board) -> None:
     """Each concrete constructor owns its mapping from these signals to pads."""
-    circuit.input_bulk_capacitor = circuit.place(
+    circuit.input_bulk_capacitor = _place_strip(
+        circuit,
         PolarizedCapacitor560Microfarad,
-        reference="C1",
-        placement=_strip_placement("C1"),
+        "C1",
         purpose="LED rail bulk capacitor",
         positive=BoardNet.FIVE_VOLTS,
         negative=BoardNet.GROUND,
     )
-    circuit.host_bulk_capacitor = circuit.place(
+    circuit.host_bulk_capacitor = _place_strip(
+        circuit,
         PolarizedCapacitor560Microfarad,
-        reference="C140",
-        placement=_strip_placement("C140"),
+        "C140",
         purpose="LED rail bulk capacitor",
         positive=BoardNet.FIVE_VOLTS,
         negative=BoardNet.GROUND,
     )
-    circuit.input_bypass = circuit.place(
+    circuit.input_bypass = _place_strip(
+        circuit,
         Capacitor1Microfarad,
-        reference="C141",
-        placement=_strip_placement("C141"),
+        "C141",
         purpose="eFuse input bypass",
         terminal_a=BoardNet.DC_FUSED,
         terminal_b=BoardNet.GROUND,
     )
-    circuit.slew_capacitor = circuit.place(
+    circuit.slew_capacitor = _place_strip(
+        circuit,
         Capacitor10Nanofarad,
-        reference="C142",
-        placement=_strip_placement("C142"),
+        "C142",
         purpose="eFuse dVdt",
         terminal_a=BoardNet.EFUSE_DVDT,
         terminal_b=BoardNet.GROUND,
     )
-    circuit.timer_capacitor = circuit.place(
+    circuit.timer_capacitor = _place_strip(
+        circuit,
         Capacitor1Nanofarad,
-        reference="C143",
-        placement=_strip_placement("C143"),
+        "C143",
         purpose="eFuse ITIMER",
         terminal_a=BoardNet.EFUSE_ITIMER,
         terminal_b=BoardNet.GROUND,
     )
-    circuit.overvoltage_filter = circuit.place(
+    circuit.overvoltage_filter = _place_strip(
+        circuit,
         Capacitor10Nanofarad,
-        reference="C144",
-        placement=_strip_placement("C144"),
+        "C144",
         purpose="OVLO spike filter",
         terminal_a=BoardNet.EFUSE_OVLO,
         terminal_b=BoardNet.GROUND,
     )
-    circuit.place(
+    _place_strip(
+        circuit,
         Capacitor10Microfarad,
-        reference="C2",
-        placement=_strip_placement("C2"),
+        "C2",
         purpose="Rail decoupling capacitor",
         terminal_a=BoardNet.FIVE_VOLTS,
         terminal_b=BoardNet.GROUND,
     )
-    circuit.input_tvs = circuit.place(
+    circuit.input_tvs = _place_strip(
+        circuit,
         BidirectionalTvs12Volt,
-        reference="D1",
-        placement=_strip_placement("D1"),
+        "D1",
         purpose="Bidirectional transient suppressor on the eFuse input",
         protected_input=BoardNet.DC_FUSED,
         ground=BoardNet.GROUND,
     )
-    circuit.input_fuse = circuit.place(
+    circuit.input_fuse = _place_strip(
+        circuit,
         Fuse2Ampere,
-        reference="F1",
-        placement=_strip_placement("F1"),
+        "F1",
         purpose="Input over-current protection on the jack tip",
         unfused_input=BoardNet.DC_IN,
         fused_output=BoardNet.DC_FUSED,
     )
-    circuit.power_connector = circuit.place(
+    circuit.power_connector = _place_strip(
+        circuit,
         PowerConnector4Pin,
-        reference="J4",
-        placement=_strip_placement("J4"),
+        "J4",
         purpose="Power entry: jack and rocker harness",
         dc_input=BoardNet.DC_IN,
         ground=BoardNet.GROUND,
         fused_to_switch=BoardNet.DC_FUSED,
         run=BoardNet.RUN,
     )
-    circuit.current_limit_resistor = circuit.place(
+    circuit.current_limit_resistor = _place_strip(
+        circuit,
         Resistor1Point65Kilohm,
-        reference="R3",
-        placement=_strip_placement("R3"),
+        "R3",
         purpose="eFuse current limit (ILM)",
         terminal_a=BoardNet.EFUSE_ILM,
         terminal_b=BoardNet.GROUND,
     )
-    circuit.overvoltage_top = circuit.place(
+    circuit.overvoltage_top = _place_strip(
+        circuit,
         PrecisionResistor604Kilohm,
-        reference="R4",
-        placement=_strip_placement("R4"),
+        "R4",
         purpose="OVLO divider, top",
         terminal_a=BoardNet.EFUSE_OVLO,
         terminal_b=BoardNet.DC_FUSED,
     )
-    circuit.overvoltage_bottom = circuit.place(
+    circuit.overvoltage_bottom = _place_strip(
+        circuit,
         PrecisionResistor169Kilohm,
-        reference="R5",
-        placement=_strip_placement("R5"),
+        "R5",
         purpose="OVLO divider, bottom",
         terminal_a=BoardNet.EFUSE_OVLO,
         terminal_b=BoardNet.GROUND,
     )
-    circuit.enable_top = circuit.place(
+    circuit.enable_top = _place_strip(
+        circuit,
         PrecisionResistor604Kilohm,
-        reference="R6",
-        placement=_strip_placement("R6"),
+        "R6",
         purpose="EN divider from RUN, top",
         terminal_a=BoardNet.RUN,
         terminal_b=BoardNet.EFUSE_EN,
     )
-    circuit.enable_bottom = circuit.place(
+    circuit.enable_bottom = _place_strip(
+        circuit,
         Resistor261Kilohm,
-        reference="R7",
-        placement=_strip_placement("R7"),
+        "R7",
         purpose="EN divider, bottom",
         terminal_a=BoardNet.EFUSE_EN,
         terminal_b=BoardNet.GROUND,
     )
-    circuit.switch_wetting_load = circuit.place(
+    circuit.switch_wetting_load = _place_strip(
+        circuit,
         Resistor1Kilohm,
-        reference="R8",
-        placement=_strip_placement("R8"),
+        "R8",
         purpose="Rocker contact wetting load",
         terminal_a=BoardNet.RUN,
         terminal_b=BoardNet.GROUND,
     )
-    circuit.place(
+    _place_strip(
+        circuit,
         TestPoint,
-        reference="TP1",
-        placement=_strip_placement("TP1"),
+        "TP1",
         purpose="5 V test point",
         probe=BoardNet.FIVE_VOLTS,
     )
-    circuit.place(
+    _place_strip(
+        circuit,
         TestPoint,
-        reference="TP2",
-        placement=_strip_placement("TP2"),
+        "TP2",
         purpose="Ground test point",
         probe=BoardNet.GROUND,
     )
-    circuit.place(
+    _place_strip(
+        circuit,
         TestPoint,
-        reference="TP5",
-        placement=_strip_placement("TP5"),
+        "TP5",
         purpose="3.3 V test point",
         probe=BoardNet.THREE_VOLTS_THREE,
     )
-    circuit.electronic_fuse = circuit.place(
+    circuit.electronic_fuse = _place_strip(
+        circuit,
         ElectronicFuse,
-        reference="U74",
-        placement=_strip_placement("U74"),
+        "U74",
         purpose="Input eFuse: inrush, OVLO, reverse blocking, circuit breaker",
         enable_uvlo=BoardNet.EFUSE_EN,
         overvoltage_lockout=BoardNet.EFUSE_OVLO,
-        power_good=NoConnect("Unused by the chessboard"),
+        power_good=UNUSED,
         power_good_threshold=BoardNet.EFUSE_OVLO,
         input=BoardNet.DC_FUSED,
         output=BoardNet.FIVE_VOLTS,
@@ -674,10 +731,10 @@ def _add_power(circuit: Board) -> None:
 
 def _add_controls(circuit: Board) -> None:
     """Each concrete constructor owns its mapping from these signals to pads."""
-    circuit.place(
+    _place_strip(
+        circuit,
         Capacitor100Nanofarad,
-        reference="C7",
-        placement=_strip_placement("C7"),
+        "C7",
         purpose="Buffer decoupling capacitor",
         terminal_a=BoardNet.FIVE_VOLTS,
         terminal_b=BoardNet.GROUND,
@@ -691,51 +748,15 @@ def _add_controls(circuit: Board) -> None:
             Side.BOTTOM,
         ),
         purpose="Raspberry Pi Zero 2 W GPIO socket",
-        three_volts_three=BoardNet.THREE_VOLTS_THREE,
-        five_volts=BoardNet.FIVE_VOLTS,
-        i2c_sda=BoardNet.I2C_SDA,
-        five_volts_alt=BoardNet.FIVE_VOLTS,
-        i2c_scl=BoardNet.I2C_SCL,
-        ground_6=BoardNet.GROUND,
-        gpio4=NoConnect("Unused by the chessboard"),
-        uart_tx_gpio14=NoConnect("Unused by the chessboard"),
-        ground_9=BoardNet.GROUND,
-        uart_rx_gpio15=NoConnect("Unused by the chessboard"),
-        button_reset_gpio17=BoardNet.BTN_RESET,
-        gpio18=NoConnect("Unused by the chessboard"),
-        gpio27=NoConnect("Unused by the chessboard"),
-        ground_14=BoardNet.GROUND,
-        button_f3_gpio22=BoardNet.BTN_F3,
-        button_f4_gpio23=BoardNet.BTN_F4,
-        three_volts_three_alt=BoardNet.THREE_VOLTS_THREE,
-        button_f5_gpio24=BoardNet.BTN_F5,
-        spi_data_gpio10=BoardNet.SPI_DATA_3V3,
-        ground_20=BoardNet.GROUND,
-        spi_miso_gpio9=NoConnect("Unused by the chessboard"),
-        gpio25=NoConnect("Unused by the chessboard"),
-        spi_clock_gpio11=BoardNet.SPI_CLK_3V3,
-        spi_ce0_gpio8=NoConnect("Unused by the chessboard"),
-        ground_25=BoardNet.GROUND,
-        spi_ce1_gpio7=NoConnect("Unused by the chessboard"),
-        id_eeprom_data=NoConnect("Unused by the chessboard"),
-        id_eeprom_clock=NoConnect("Unused by the chessboard"),
-        button_up_gpio5=BoardNet.BTN_UP,
-        ground_30=BoardNet.GROUND,
-        button_down_gpio6=BoardNet.BTN_DOWN,
-        button_left_gpio12=BoardNet.BTN_LEFT,
-        button_right_gpio13=BoardNet.BTN_RIGHT,
-        ground_34=BoardNet.GROUND,
-        button_pass_gpio19=BoardNet.BTN_PASS,
-        button_ok_gpio16=BoardNet.BTN_OK,
-        led_en_gpio26=BoardNet.LED_EN,
-        button_f1_gpio20=BoardNet.BTN_F1,
-        ground_39=BoardNet.GROUND,
-        button_f2_gpio21=BoardNet.BTN_F2,
+        **{
+            pin.name.lower(): HOST_HEADER_CONNECTIONS.get(pin, UNUSED)
+            for pin in RaspberryPiHeaderPin
+        },
     )
-    circuit.place(
+    _place_strip(
+        circuit,
         OledConnector4Pin,
-        reference="J2",
-        placement=_strip_placement("J2"),
+        "J2",
         purpose="OLED harness header (module wired by its pad labels)",
         ground=BoardNet.GROUND,
         three_volts_three=BoardNet.THREE_VOLTS_THREE,
@@ -744,62 +765,62 @@ def _add_controls(circuit: Board) -> None:
         mounting_tab_a=BoardNet.GROUND,
         mounting_tab_b=BoardNet.GROUND,
     )
-    circuit.place(
+    _place_strip(
+        circuit,
         Resistor10Kilohm,
-        reference="R17",
-        placement=_strip_placement("R17"),
+        "R17",
         purpose="LED_DATA_5V pull-down while the buffer is Hi-Z",
         terminal_a=BoardNet.LED_DATA_5V,
         terminal_b=BoardNet.GROUND,
     )
-    circuit.place(
+    _place_strip(
+        circuit,
         Resistor10Kilohm,
-        reference="R18",
-        placement=_strip_placement("R18"),
+        "R18",
         purpose="LED_CLK_5V pull-down while the buffer is Hi-Z",
         terminal_a=BoardNet.LED_CLK_5V,
         terminal_b=BoardNet.GROUND,
     )
-    circuit.led_data_termination = circuit.place(
+    circuit.led_data_termination = _place_strip(
+        circuit,
         Resistor56Ohm,
-        reference="R9",
-        placement=_strip_placement("R9"),
+        "R9",
         purpose="LED data source termination",
         terminal_a=BoardNet.LED_DATA_5V,
         terminal_b=BoardNet.LED_DATA_BUF,
     )
-    circuit.place(
+    _place_strip(
+        circuit,
         TestPoint,
-        reference="TP3",
-        placement=_strip_placement("TP3"),
+        "TP3",
         purpose="Buffered LED data test point",
         probe=BoardNet.LED_DATA_5V,
     )
-    circuit.place(
+    _place_strip(
+        circuit,
         TestPoint,
-        reference="TP4",
-        placement=_strip_placement("TP4"),
+        "TP4",
         purpose="Buffered LED clock test point",
         probe=BoardNet.LED_CLK_5V,
     )
-    circuit.place(
+    _place_strip(
+        circuit,
         TestPoint,
-        reference="TP6",
-        placement=_strip_placement("TP6"),
+        "TP6",
         purpose="I2C clock test point",
         probe=BoardNet.I2C_SCL,
     )
-    circuit.place(
+    _place_strip(
+        circuit,
         TestPoint,
-        reference="TP7",
-        placement=_strip_placement("TP7"),
+        "TP7",
         purpose="I2C data test point",
         probe=BoardNet.I2C_SDA,
     )
-    circuit.led_buffer = circuit.place(
+    circuit.led_buffer = _place_strip(
+        circuit,
         LogicLevelShifter4Channel,
-        reference="U5",
-        placement=_strip_placement("U5"),
+        "U5",
         purpose="Quad 5 V buffer accepts 3.3 V SPI clock and data",
         buffer_1_output_enable=BoardNet.LED_OE_N,
         buffer_1_input=BoardNet.SPI_DATA_3V3,
@@ -808,10 +829,10 @@ def _add_controls(circuit: Board) -> None:
         buffer_2_input=BoardNet.SPI_CLK_3V3,
         buffer_2_output=BoardNet.LED_CLK_5V,
         ground=BoardNet.GROUND,
-        buffer_3_output=NoConnect("Unused by the chessboard"),
+        buffer_3_output=UNUSED,
         buffer_3_input=BoardNet.GROUND,
         buffer_3_output_enable=BoardNet.FIVE_VOLTS,
-        buffer_4_output=NoConnect("Unused by the chessboard"),
+        buffer_4_output=UNUSED,
         buffer_4_input=BoardNet.GROUND,
         buffer_4_output_enable=BoardNet.FIVE_VOLTS,
         supply=BoardNet.FIVE_VOLTS,
@@ -829,76 +850,76 @@ def _add_controls(circuit: Board) -> None:
 
 def _add_led_switch(circuit: Board) -> None:
     """Each concrete constructor owns its mapping from these signals to pads."""
-    circuit.place(
+    _place_strip(
+        circuit,
         Capacitor10Nanofarad,
-        reference="C145",
-        placement=_strip_placement("C145"),
+        "C145",
         purpose="Q1 gate-to-drain ramp capacitor",
         terminal_a=BoardNet.LED_SW_GATE,
         terminal_b=BoardNet.LED_5V,
     )
-    circuit.place(
+    _place_strip(
+        circuit,
         Capacitor100Nanofarad,
-        reference="C146",
-        placement=_strip_placement("C146"),
+        "C146",
         purpose="U75 decoupling capacitor",
         terminal_a=BoardNet.FIVE_VOLTS,
         terminal_b=BoardNet.GROUND,
     )
-    circuit.led_power_switch = circuit.place(
+    circuit.led_power_switch = _place_strip(
+        circuit,
         LedPowerMosfet,
-        reference="Q1",
-        placement=_strip_placement("Q1"),
+        "Q1",
         purpose="LED rail switch, +5V to LED_5V",
         source=BoardNet.FIVE_VOLTS,
         gate=BoardNet.LED_SW_GATE,
         drain=BoardNet.LED_5V,
     )
-    circuit.place(
+    _place_strip(
+        circuit,
         LedSwitchDriverMosfet,
-        reference="Q2",
-        placement=_strip_placement("Q2"),
+        "Q2",
         purpose="LED_EN inverter driving the LED switch gate and buffer enables",
         gate=BoardNet.LED_EN_GATE,
         source=BoardNet.GROUND,
         drain=BoardNet.LED_EN_N,
     )
-    circuit.place(
+    _place_strip(
+        circuit,
         Resistor1Kilohm,
-        reference="R13",
-        placement=_strip_placement("R13"),
+        "R13",
         purpose="LED_EN series to Q2 gate",
         terminal_a=BoardNet.LED_EN,
         terminal_b=BoardNet.LED_EN_GATE,
     )
-    circuit.place(
+    _place_strip(
+        circuit,
         Resistor100Kilohm,
-        reference="R14",
-        placement=_strip_placement("R14"),
+        "R14",
         purpose="Q2 gate pull-down (LED rail off)",
         terminal_a=BoardNet.LED_EN_GATE,
         terminal_b=BoardNet.GROUND,
     )
-    circuit.place(
+    _place_strip(
+        circuit,
         Resistor10Kilohm,
-        reference="R15",
-        placement=_strip_placement("R15"),
+        "R15",
         purpose="LED_EN_N pull-up",
         terminal_a=BoardNet.LED_EN_N,
         terminal_b=BoardNet.FIVE_VOLTS,
     )
-    circuit.place(
+    _place_strip(
+        circuit,
         Resistor100Kilohm,
-        reference="R16",
-        placement=_strip_placement("R16"),
+        "R16",
         purpose="Q1 gate drive (turn-on ramp)",
         terminal_a=BoardNet.LED_EN_N,
         terminal_b=BoardNet.LED_SW_GATE,
     )
-    circuit.place(
+    _place_strip(
+        circuit,
         LedEnableLogicGate,
-        reference="U75",
-        placement=_strip_placement("U75"),
+        "U75",
         purpose="LED_OE_N = Schmitt(Q1 gate) OR LED_EN_N: buffer on only once LED_5V is up",
         input_1=BoardNet.LED_EN_N,
         ground=BoardNet.GROUND,
@@ -909,75 +930,123 @@ def _add_led_switch(circuit: Board) -> None:
     )
 
 
+# Reference numbering for the repeated per-square parts.
+FIRST_LED_NUMBER = 6
+FIRST_LED_BYPASS_NUMBER = 8
+SENSOR_BYPASS_NUMBER_OFFSET = 71
+
+# Placement offsets from the LED and Hall sensor centres, in millimetres.
+LED_BYPASS_OFFSET_MM = 4
+SENSOR_BYPASS_OFFSET_MM = 2.4
+# The DATA_OUT land is 2.6 mm outward and 1.6 mm down; the termination centre is
+# another 3.05 mm outward.
+TURN_TERMINATION_OUTWARD_MM = 5.65
+TURN_TERMINATION_DOWN_MM = 1.6
+
+
+def _led_chain_links(
+    square: BoardSquare,
+) -> tuple[tuple[Net, Net], tuple[Net | NoConnect, Net | NoConnect]]:
+    """Return one LED's (data, clock) inputs and outputs along the chain."""
+    index = square.led_chain_index
+    inputs = (
+        (BoardNet.LED_DATA_5V, BoardNet.LED_CLK_5V)
+        if index == 0
+        else LED_LINKS[index - 1]
+    )
+    if index == len(LED_LINKS):
+        return inputs, (
+            NoConnect("Last LED has no downstream data receiver"),
+            NoConnect("Last LED has no downstream clock receiver"),
+        )
+    data_out, clock_out = LED_LINKS[index]
+    if square.name in LED_TURN_TERMINATIONS:
+        data_out = BoardNet(data_out.label + "_SRC")
+    return inputs, (data_out, clock_out)
+
+
 def _add_squares(board: Board) -> None:
     for square in dimensions.BOARD_SQUARES.led_chain:
-        index = square.led_chain_index
         rotation = 0 if square.position.rank % 2 else 180
         direction = 1 if rotation == 0 else -1
-        lx, ly = square.led_position_mm
-        hx, hy = square.hall_position_mm
-        data_in, clock_in = (
-            (BoardNet.LED_DATA_5V, BoardNet.LED_CLK_5V)
-            if index == 0
-            else LED_LINKS[index - 1]
-        )
-        data_out: Net | NoConnect
-        clock_out: Net | NoConnect
-        if index == len(LED_LINKS):
-            data_out = NoConnect("Last LED has no downstream data receiver")
-            clock_out = NoConnect("Last LED has no downstream clock receiver")
-        else:
-            data_out, clock_out = LED_LINKS[index]
-            if square.name in LED_TURN_TERMINATIONS:
-                data_out = BoardNet(data_out.label + "_SRC")
-        board.leds[square.name] = board.place(
-            ClockedRgbLed,
-            reference=f"U{6 + index}",
-            placement=_placement(lx, ly, rotation),
-            purpose="Clocked 5050 RGB LED",
-            data_in=data_in,
-            clock_in=clock_in,
-            ground=BoardNet.GROUND,
-            five_volts=BoardNet.LED_5V,
-            data_out=data_out,
-            clock_out=clock_out,
-        )
-        board.sensors[square.name] = board.place(
-            HallSensor,
-            reference=f"HS{square.sensor_number}",
-            placement=_placement(hx, hy),
-            purpose="Omnipolar active-low Hall-effect square sensor",
-            supply=BoardNet.THREE_VOLTS_THREE,
-            active_low_output=BoardNet(wiring.sense_net(square.name)),
-            ground=BoardNet.GROUND,
-        )
-        board.led_bypasses[square.name] = board.place(
-            Capacitor100Nanofarad,
-            reference=f"C{8 + index}",
-            placement=_placement(lx, ly + direction * 4, rotation),
-            purpose="Local LED decoupling capacitor",
-            terminal_a=BoardNet.LED_5V,
-            terminal_b=BoardNet.GROUND,
-        )
-        board.sensor_bypasses[square.name] = board.place(
-            Capacitor100Nanofarad,
-            reference=f"C{71 + square.sensor_number}",
-            placement=_placement(hx, hy - 2.4),
-            purpose="Local Hall-sensor decoupling capacitor",
-            terminal_a=BoardNet.THREE_VOLTS_THREE,
-            terminal_b=BoardNet.GROUND,
-        )
-        if square.name in LED_TURN_TERMINATIONS:
-            board.led_turn_terminations[square.name] = board.place(
-                Resistor56Ohm,
-                reference=LED_TURN_TERMINATIONS[square.name],
-                # The DATA_OUT land is 2.6 mm outward and 1.6 mm down;
-                # the termination centre is another 3.05 mm outward.
-                placement=_placement(lx - direction * 5.65, ly - direction * 1.6),
-                purpose="LED rank-turn data source termination",
-                terminal_a=LED_LINKS[index][0],
-                terminal_b=BoardNet(LED_LINKS[index][0].label + "_SRC"),
-            )
+        _place_led(board, square, rotation)
+        _place_sensor(board, square)
+        _place_bypasses(board, square, rotation, direction)
+        _place_turn_termination(board, square, direction)
+
+
+def _place_led(board: Board, square: BoardSquare, rotation: float) -> None:
+    lx, ly = square.led_position_mm
+    (data_in, clock_in), (data_out, clock_out) = _led_chain_links(square)
+    board.leds[square.name] = board.place(
+        ClockedRgbLed,
+        reference=f"U{FIRST_LED_NUMBER + square.led_chain_index}",
+        placement=_placement(lx, ly, rotation),
+        purpose="Clocked 5050 RGB LED",
+        data_in=data_in,
+        clock_in=clock_in,
+        ground=BoardNet.GROUND,
+        five_volts=BoardNet.LED_5V,
+        data_out=data_out,
+        clock_out=clock_out,
+    )
+
+
+def _place_sensor(board: Board, square: BoardSquare) -> None:
+    hx, hy = square.hall_position_mm
+    board.sensors[square.name] = board.place(
+        HallSensor,
+        reference=f"HS{square.sensor_number}",
+        placement=_placement(hx, hy),
+        purpose="Omnipolar active-low Hall-effect square sensor",
+        supply=BoardNet.THREE_VOLTS_THREE,
+        active_low_output=BoardNet(wiring.sense_net(square.name)),
+        ground=BoardNet.GROUND,
+    )
+
+
+def _place_bypasses(
+    board: Board, square: BoardSquare, rotation: float, direction: int
+) -> None:
+    """Place the square's local LED then Hall-sensor decoupling capacitors."""
+    lx, ly = square.led_position_mm
+    hx, hy = square.hall_position_mm
+    board.led_bypasses[square.name] = board.place(
+        Capacitor100Nanofarad,
+        reference=f"C{FIRST_LED_BYPASS_NUMBER + square.led_chain_index}",
+        placement=_placement(lx, ly + direction * LED_BYPASS_OFFSET_MM, rotation),
+        purpose="Local LED decoupling capacitor",
+        terminal_a=BoardNet.LED_5V,
+        terminal_b=BoardNet.GROUND,
+    )
+    board.sensor_bypasses[square.name] = board.place(
+        Capacitor100Nanofarad,
+        reference=f"C{SENSOR_BYPASS_NUMBER_OFFSET + square.sensor_number}",
+        placement=_placement(hx, hy - SENSOR_BYPASS_OFFSET_MM),
+        purpose="Local Hall-sensor decoupling capacitor",
+        terminal_a=BoardNet.THREE_VOLTS_THREE,
+        terminal_b=BoardNet.GROUND,
+    )
+
+
+def _place_turn_termination(board: Board, square: BoardSquare, direction: int) -> None:
+    """Terminate the data line where the serpentine chain turns to the next rank."""
+    reference = LED_TURN_TERMINATIONS.get(square.name)
+    if reference is None:
+        return
+    lx, ly = square.led_position_mm
+    data_link = LED_LINKS[square.led_chain_index][0]
+    board.led_turn_terminations[square.name] = board.place(
+        Resistor56Ohm,
+        reference=reference,
+        placement=_placement(
+            lx - direction * TURN_TERMINATION_OUTWARD_MM,
+            ly - direction * TURN_TERMINATION_DOWN_MM,
+        ),
+        purpose="LED rank-turn data source termination",
+        terminal_a=data_link,
+        terminal_b=BoardNet(data_link.label + "_SRC"),
+    )
 
 
 def _add_sensor_banks(board: Board) -> None:
