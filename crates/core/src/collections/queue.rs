@@ -1,5 +1,5 @@
 use alloc::collections::{TryReserveError, VecDeque, vec_deque};
-use core::{fmt, hash::Hash};
+use core::hash::Hash;
 
 /// An allocator-backed first-in, first-out queue.
 ///
@@ -151,15 +151,10 @@ impl<T> Queue<T> {
     }
 }
 
-impl<T> Default for Queue<T> {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl<T: fmt::Debug> fmt::Debug for Queue<T> {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        formatter.debug_list().entries(self).finish()
+impl_sequence_traits! {
+    impl[T] Queue<T> {
+        iter: Iter<'a, T>,
+        iter_mut: IterMut<'a, T>,
     }
 }
 
@@ -207,24 +202,6 @@ impl<T> IntoIterator for Queue<T> {
 
     fn into_iter(self) -> Self::IntoIter {
         self.elements.into_iter()
-    }
-}
-
-impl<'a, T> IntoIterator for &'a Queue<T> {
-    type Item = &'a T;
-    type IntoIter = Iter<'a, T>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.iter()
-    }
-}
-
-impl<'a, T> IntoIterator for &'a mut Queue<T> {
-    type Item = &'a mut T;
-    type IntoIter = IterMut<'a, T>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.iter_mut()
     }
 }
 

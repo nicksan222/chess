@@ -87,39 +87,47 @@ impl<const BCM: u8, Capability: Writable> Pin<BCM, Capability> {
     }
 }
 
-/// Direct high/low GPIO pins used by the control-panel buttons.
-pub struct GPIOPins {
-    pub up_button: ButtonPin<5>,
-    pub down_button: ButtonPin<6>,
-    pub left_button: ButtonPin<12>,
-    pub right_button: ButtonPin<13>,
-    pub ok_button: ButtonPin<16>,
-    pub reset_button: ButtonPin<17>,
-    pub pass_button: ButtonPin<19>,
-    pub function_one_button: ButtonPin<20>,
-    pub function_two_button: ButtonPin<21>,
-    pub function_three_button: ButtonPin<22>,
-    pub function_four_button: ButtonPin<23>,
-    pub function_five_button: ButtonPin<24>,
+/// Declares [`GPIOPins`] from one `field: BCM => Button` row per button, so
+/// each field's BCM number and panel label are written exactly once.
+macro_rules! button_pins {
+    ($($field:ident: $bcm:literal => $button:ident),+ $(,)?) => {
+        /// Direct high/low GPIO pins used by the control-panel buttons.
+        pub struct GPIOPins {
+            $(pub $field: ButtonPin<$bcm>,)+
+        }
+
+        impl GPIOPins {
+            /// Number of control-panel buttons wired to GPIOs.
+            pub const COUNT: usize = [$($bcm),+].len();
+
+            const fn get() -> Self {
+                Self {
+                    $($field: ButtonPin::new(Button::$button),)+
+                }
+            }
+
+            /// Each button's BCM number and panel label, in declaration order.
+            #[cfg(test)]
+            fn wiring(&self) -> [(u8, Button); Self::COUNT] {
+                [$((self.$field.bcm_number(), self.$field.button())),+]
+            }
+        }
+    };
 }
 
-impl GPIOPins {
-    const fn get() -> Self {
-        Self {
-            up_button: ButtonPin::new(Button::Up),
-            down_button: ButtonPin::new(Button::Down),
-            left_button: ButtonPin::new(Button::Left),
-            right_button: ButtonPin::new(Button::Right),
-            ok_button: ButtonPin::new(Button::Ok),
-            reset_button: ButtonPin::new(Button::Reset),
-            pass_button: ButtonPin::new(Button::Pass),
-            function_one_button: ButtonPin::new(Button::F1),
-            function_two_button: ButtonPin::new(Button::F2),
-            function_three_button: ButtonPin::new(Button::F3),
-            function_four_button: ButtonPin::new(Button::F4),
-            function_five_button: ButtonPin::new(Button::F5),
-        }
-    }
+button_pins! {
+    up_button: 5 => Up,
+    down_button: 6 => Down,
+    left_button: 12 => Left,
+    right_button: 13 => Right,
+    ok_button: 16 => Ok,
+    reset_button: 17 => Reset,
+    pass_button: 19 => Pass,
+    function_one_button: 20 => F1,
+    function_two_button: 21 => F2,
+    function_three_button: 22 => F3,
+    function_four_button: 23 => F4,
+    function_five_button: 24 => F5,
 }
 
 /// Pins for the board's shared I2C bus.
@@ -242,37 +250,8 @@ mod tests {
         );
         assert_eq!(pins.led.enable.bcm_number(), 26);
         assert_eq!(LED_ENABLE_BOOT_LEVEL, Level::Low);
-        let gpio = pins.gpio;
         assert_eq!(
-            [
-                (gpio.up_button.bcm_number(), gpio.up_button.button()),
-                (gpio.down_button.bcm_number(), gpio.down_button.button()),
-                (gpio.left_button.bcm_number(), gpio.left_button.button()),
-                (gpio.right_button.bcm_number(), gpio.right_button.button()),
-                (gpio.ok_button.bcm_number(), gpio.ok_button.button()),
-                (gpio.reset_button.bcm_number(), gpio.reset_button.button()),
-                (gpio.pass_button.bcm_number(), gpio.pass_button.button()),
-                (
-                    gpio.function_one_button.bcm_number(),
-                    gpio.function_one_button.button()
-                ),
-                (
-                    gpio.function_two_button.bcm_number(),
-                    gpio.function_two_button.button()
-                ),
-                (
-                    gpio.function_three_button.bcm_number(),
-                    gpio.function_three_button.button()
-                ),
-                (
-                    gpio.function_four_button.bcm_number(),
-                    gpio.function_four_button.button()
-                ),
-                (
-                    gpio.function_five_button.bcm_number(),
-                    gpio.function_five_button.button()
-                ),
-            ],
+            pins.gpio.wiring(),
             [
                 (5, Button::Up),
                 (6, Button::Down),

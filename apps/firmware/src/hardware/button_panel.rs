@@ -6,7 +6,7 @@ use logger::{error, info};
 
 use super::{
     HardwareEventBus,
-    pins::{BoardPins, ButtonPin, ButtonSubscription, ReadLevel},
+    pins::{BoardPins, ButtonPin, ButtonSubscription, GPIOPins, ReadLevel},
 };
 
 /// Dropping the panel stops all pollers and releases their GPIO requests.
@@ -60,7 +60,7 @@ impl ButtonPanel {
         tokio::runtime::Handle::try_current()
             .map_err(|_| io::Error::other("button panel requires an active Tokio runtime"))?;
         let pins = BoardPins::get().gpio;
-        let mut subscriptions = Vec::with_capacity(12);
+        let mut subscriptions = Vec::with_capacity(GPIOPins::COUNT);
         macro_rules! attach {
             ($($pin:ident),+ $(,)?) => {$(
                 subscriptions.push(start(&pins.$pin, reader(), events)?);
