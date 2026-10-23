@@ -23,6 +23,26 @@ struct Node<T> {
     next: Link<T>,
 }
 
+/// Returns the empty link after the last node (`head` itself when empty).
+fn tail_link_mut<T>(head: &mut Link<T>) -> &mut Link<T> {
+    let mut tail = head;
+    while let Some(node) = tail {
+        tail = &mut node.next;
+    }
+    tail
+}
+
+/// Fills the empty link `tail` with a new node and returns that node's own
+/// (empty) next link.
+fn link_node<T>(tail: &mut Link<T>, element: T) -> &mut Link<T> {
+    &mut tail
+        .insert(Box::new(Node {
+            element,
+            next: None,
+        }))
+        .next
+}
+
 impl<T> LinkedList<T> {
     /// Creates an empty list without allocating.
     #[must_use]
@@ -115,14 +135,7 @@ impl<T> LinkedList<T> {
     /// This operation is `O(n)`. Use [`LinkedList::extend`] when adding several
     /// elements; one extension traverses the existing list only once.
     pub fn push_back(&mut self, element: T) {
-        let mut tail = &mut self.head;
-        while let Some(node) = tail {
-            tail = &mut node.next;
-        }
-        *tail = Some(Box::new(Node {
-            element,
-            next: None,
-        }));
+        link_node(tail_link_mut(&mut self.head), element);
         self.len += 1;
     }
 
@@ -130,27 +143,12 @@ impl<T> LinkedList<T> {
     ///
     /// This operation is `O(n)`.
     pub fn pop_back(&mut self) -> Option<T> {
-        let head = self.head.as_mut()?;
-        if head.next.is_none() {
-            return self.pop_front();
+        let mut link = &mut self.head;
+        while link.as_ref()?.next.is_some() {
+            link = &mut link.as_mut()?.next;
         }
 
-        let mut current = head;
-        while current
-            .next
-            .as_ref()
-            .is_some_and(|next| next.next.is_some())
-        {
-            current = current
-                .next
-                .as_mut()
-                .expect("the loop condition guarantees a next node");
-        }
-
-        let tail = current
-            .next
-            .take()
-            .expect("a multi-element list has a tail node");
+        let tail = link.take()?;
         self.len -= 1;
         Some(tail.element)
     }
@@ -164,11 +162,7 @@ impl<T> LinkedList<T> {
             return;
         }
 
-        let mut tail = &mut self.head;
-        while let Some(node) = tail {
-            tail = &mut node.next;
-        }
-        *tail = other.head.take();
+        *tail_link_mut(&mut self.head) = other.head.take();
         self.len += other.len;
         other.len = 0;
     }
@@ -230,20 +224,9 @@ impl<T: Clone> Clone for LinkedList<T> {
 
 impl<T> Extend<T> for LinkedList<T> {
     fn extend<I: IntoIterator<Item = T>>(&mut self, iter: I) {
-        let mut tail = &mut self.head;
-        while let Some(node) = tail {
-            tail = &mut node.next;
-        }
-
+        let mut tail = tail_link_mut(&mut self.head);
         for element in iter {
-            *tail = Some(Box::new(Node {
-                element,
-                next: None,
-            }));
-            tail = &mut tail
-                .as_mut()
-                .expect("a node was inserted immediately above")
-                .next;
+            tail = link_node(tail, element);
             self.len += 1;
         }
     }
