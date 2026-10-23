@@ -72,13 +72,8 @@ pub fn encode(
         });
     }
 
-    let payload_len = payload.len() as u32;
-    let metadata = metadata(schema_version, payload_len);
-    let checksum = checksum(&metadata, payload);
-
-    output[..4].copy_from_slice(&MAGIC);
-    output[VERSION_OFFSET..CHECKSUM_OFFSET].copy_from_slice(&metadata);
-    output[CHECKSUM_OFFSET..HEADER_LEN].copy_from_slice(&checksum.to_le_bytes());
+    let header = Header::for_payload(schema_version, payload);
+    output[..HEADER_LEN].copy_from_slice(&header.to_bytes());
     output[HEADER_LEN..required].copy_from_slice(payload);
     Ok(required)
 }
@@ -88,67 +83,18 @@ pub fn encode(
 /// Trailing bytes are rejected because persistent records have an exact length;
 /// callers must slice framing buffers before decoding.
 pub fn decode(input: &[u8]) -> Result<Record<'_>, DecodeError> {
-    if input.len() < HEADER_LEN {
-        return Err(DecodeError::TruncatedHeader {
-            actual: input.len(),
-        });
-    }
-
-    let found_magic: [u8; 4] = input[..4]
-        .try_into()
-        .expect("the header length was validated above");
-    if found_magic != MAGIC {
-        return Err(DecodeError::InvalidMagic { found: found_magic });
-    }
-
-    let format_version = input[VERSION_OFFSET];
-    if format_version != FORMAT_VERSION {
-        return Err(DecodeError::UnsupportedFormatVersion {
-            found: format_version,
-        });
-    }
-
-    let flags = input[FLAGS_OFFSET];
-    if flags != SUPPORTED_FLAGS {
-        return Err(DecodeError::UnsupportedFlags { found: flags });
-    }
-
-    let schema_version = u16::from_le_bytes(
-        input[SCHEMA_OFFSET..LENGTH_OFFSET]
-            .try_into()
-            .expect("schema field has a fixed width"),
-    );
-    let declared_len = u32::from_le_bytes(
-        input[LENGTH_OFFSET..CHECKSUM_OFFSET]
-            .try_into()
-            .expect("length field has a fixed width"),
-    );
-    let payload_len = usize::try_from(declared_len)
-        .map_err(|_| DecodeError::PayloadLengthUnsupported { declared_len })?;
-    let actual_len = input.len() - HEADER_LEN;
-    if payload_len != actual_len {
-        return Err(DecodeError::LengthMismatch {
-            declared: declared_len,
-            actual: actual_len,
-        });
-    }
-
-    let expected = u32::from_le_bytes(
-        input[CHECKSUM_OFFSET..HEADER_LEN]
-            .try_into()
-            .expect("checksum field has a fixed width"),
-    );
-    let metadata: [u8; 8] = input[VERSION_OFFSET..CHECKSUM_OFFSET]
-        .try_into()
-        .expect("metadata has a fixed width");
+    let header = Header::parse(input)?;
     let payload = &input[HEADER_LEN..];
-    let actual = checksum(&metadata, payload);
-    if actual != expected {
-        return Err(DecodeError::ChecksumMismatch { expected, actual });
+    let actual = checksum(&header.metadata(), payload);
+    if actual != header.checksum {
+        return Err(DecodeError::ChecksumMismatch {
+            expected: header.checksum,
+            actual,
+        });
     }
 
     Ok(Record {
-        schema_version,
+        schema_version: header.schema_version,
         payload,
     })
 }
@@ -159,16 +105,105 @@ pub fn crc32(bytes: &[u8]) -> u32 {
     !update_crc(!0, bytes)
 }
 
-fn metadata(schema_version: u16, payload_len: u32) -> [u8; 8] {
-    let mut metadata = [0; 8];
-    metadata[0] = FORMAT_VERSION;
-    metadata[1] = SUPPORTED_FLAGS;
-    metadata[2..4].copy_from_slice(&schema_version.to_le_bytes());
-    metadata[4..8].copy_from_slice(&payload_len.to_le_bytes());
-    metadata
+/// The covered metadata: everything between the magic and the checksum.
+const METADATA_LEN: usize = CHECKSUM_OFFSET - VERSION_OFFSET;
+
+/// The fixed-width envelope header.
+#[derive(Clone, Copy)]
+struct Header {
+    schema_version: u16,
+    payload_len: u32,
+    checksum: u32,
 }
 
-fn checksum(metadata: &[u8; 8], payload: &[u8]) -> u32 {
+impl Header {
+    /// Builds the header for `payload`, which must fit in `u32`.
+    fn for_payload(schema_version: u16, payload: &[u8]) -> Self {
+        let mut header = Self {
+            schema_version,
+            payload_len: payload.len() as u32,
+            checksum: 0,
+        };
+        header.checksum = checksum(&header.metadata(), payload);
+        header
+    }
+
+    fn metadata(self) -> [u8; METADATA_LEN] {
+        let mut bytes = [0; METADATA_LEN];
+        bytes[0] = FORMAT_VERSION;
+        bytes[FLAGS_OFFSET - VERSION_OFFSET] = SUPPORTED_FLAGS;
+        bytes[SCHEMA_OFFSET - VERSION_OFFSET..LENGTH_OFFSET - VERSION_OFFSET]
+            .copy_from_slice(&self.schema_version.to_le_bytes());
+        bytes[LENGTH_OFFSET - VERSION_OFFSET..].copy_from_slice(&self.payload_len.to_le_bytes());
+        bytes
+    }
+
+    fn to_bytes(self) -> [u8; HEADER_LEN] {
+        let mut bytes = [0; HEADER_LEN];
+        bytes[..MAGIC.len()].copy_from_slice(&MAGIC);
+        bytes[VERSION_OFFSET..CHECKSUM_OFFSET].copy_from_slice(&self.metadata());
+        bytes[CHECKSUM_OFFSET..].copy_from_slice(&self.checksum.to_le_bytes());
+        bytes
+    }
+
+    /// Validates everything about `input` except the checksum.
+    fn parse(input: &[u8]) -> Result<Self, DecodeError> {
+        if input.len() < HEADER_LEN {
+            return Err(DecodeError::TruncatedHeader {
+                actual: input.len(),
+            });
+        }
+
+        let mut found = [0; MAGIC.len()];
+        found.copy_from_slice(&input[..MAGIC.len()]);
+        if found != MAGIC {
+            return Err(DecodeError::InvalidMagic { found });
+        }
+
+        let format_version = input[VERSION_OFFSET];
+        if format_version != FORMAT_VERSION {
+            return Err(DecodeError::UnsupportedFormatVersion {
+                found: format_version,
+            });
+        }
+
+        let flags = input[FLAGS_OFFSET];
+        if flags != SUPPORTED_FLAGS {
+            return Err(DecodeError::UnsupportedFlags { found: flags });
+        }
+
+        let declared_len = read_u32(input, LENGTH_OFFSET);
+        let payload_len = usize::try_from(declared_len)
+            .map_err(|_| DecodeError::PayloadLengthUnsupported { declared_len })?;
+        let actual_len = input.len() - HEADER_LEN;
+        if payload_len != actual_len {
+            return Err(DecodeError::LengthMismatch {
+                declared: declared_len,
+                actual: actual_len,
+            });
+        }
+
+        Ok(Self {
+            schema_version: read_u16(input, SCHEMA_OFFSET),
+            payload_len: declared_len,
+            checksum: read_u32(input, CHECKSUM_OFFSET),
+        })
+    }
+}
+
+fn read_u16(input: &[u8], offset: usize) -> u16 {
+    let mut bytes = [0; 2];
+    bytes.copy_from_slice(&input[offset..offset + 2]);
+    u16::from_le_bytes(bytes)
+}
+
+fn read_u32(input: &[u8], offset: usize) -> u32 {
+    let mut bytes = [0; 4];
+    bytes.copy_from_slice(&input[offset..offset + 4]);
+    u32::from_le_bytes(bytes)
+}
+
+fn checksum(metadata: &[u8], payload: &[u8]) -> u32 {
     !update_crc(update_crc(!0, metadata), payload)
 }
 
