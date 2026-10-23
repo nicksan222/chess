@@ -60,50 +60,49 @@ impl SqliteStore {
     pub fn into_connection(self) -> Connection {
         self.connection
     }
-
-    fn value(&self, key: &[u8]) -> rusqlite::Result<Option<Vec<u8>>> {
-        self.connection
-            .query_row(
-                "SELECT value FROM persistence_values WHERE key = ?1",
-                params![key],
-                |row| row.get(0),
-            )
-            .optional()
-    }
 }
 
 impl KeyValueStore for SqliteStore {
     type Error = rusqlite::Error;
 
     fn value_len(&mut self, key: &[u8]) -> Result<Option<usize>, Self::Error> {
-        let length = self
-            .connection
+        self.connection
             .query_row(
                 "SELECT length(value) FROM persistence_values WHERE key = ?1",
                 params![key],
-                |row| row.get::<_, i64>(0),
+                |row| {
+                    let length = row.get::<_, i64>(0)?;
+                    usize::try_from(length)
+                        .map_err(|_| rusqlite::Error::IntegralValueOutOfRange(0, length))
+                },
             )
-            .optional()?;
-        length
-            .map(|value| {
-                usize::try_from(value)
-                    .map_err(|_| rusqlite::Error::IntegralValueOutOfRange(0, value))
-            })
-            .transpose()
+            .optional()
     }
 
     fn load(&mut self, key: &[u8], output: &mut [u8]) -> Result<LoadOutcome, Self::Error> {
-        let Some(value) = self.value(key)? else {
+        let Some(required) = self.value_len(key)? else {
             return Ok(LoadOutcome::NotFound);
         };
-        if output.len() < value.len() {
-            return Ok(LoadOutcome::BufferTooSmall {
-                required: value.len(),
-            });
+        if output.len() < required {
+            return Ok(LoadOutcome::BufferTooSmall { required });
         }
 
-        output[..value.len()].copy_from_slice(&value);
-        Ok(LoadOutcome::Loaded { len: value.len() })
+        // The row can disappear between the length query and the read only if
+        // another connection removes it; report that as not found.
+        let value: Option<Vec<u8>> = self
+            .connection
+            .query_row(
+                "SELECT value FROM persistence_values WHERE key = ?1",
+                params![key],
+                |row| row.get(0),
+            )
+            .optional()?;
+        let Some(value) = value else {
+            return Ok(LoadOutcome::NotFound);
+        };
+        let len = value.len().min(output.len());
+        output[..len].copy_from_slice(&value[..len]);
+        Ok(LoadOutcome::Loaded { len })
     }
 
     fn store(&mut self, key: &[u8], value: &[u8]) -> Result<(), Self::Error> {
