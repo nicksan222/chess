@@ -296,12 +296,10 @@ impl GameHistory {
     /// ```
     pub fn verify(&self) -> Result<(), HistoryError> {
         let mut previous = self.anchor;
-        let mut expected_value = Ply::FIRST.value();
-        for step in &self.steps {
-            let expected_ply = Ply::new(expected_value).expect("history ply is nonzero");
+        for (value, step) in (Ply::FIRST.value()..).zip(&self.steps) {
+            let expected_ply = Ply::new(value).expect("history ply is nonzero");
             validate_step(*step, expected_ply, previous)?;
             previous = step.hash();
-            expected_value = expected_value.saturating_add(1);
         }
         if previous != self.tip {
             return Err(HistoryError::Tip {
@@ -361,7 +359,7 @@ impl GameHistory {
     }
 
     fn next_ply(&self) -> Ply {
-        let value = (self.steps.len() as u64).saturating_add(1);
+        let value = u64::try_from(self.steps.len()).map_or(u64::MAX, |len| len.saturating_add(1));
         Ply::new(value).expect("a history cannot contain enough allocated nodes to overflow")
     }
 }
