@@ -359,6 +359,27 @@ def _component_label(reference: str, component: object) -> str:
     return f"`{reference}` — {description}" + (f" ({specifics})" if specifics else "")
 
 
+def _added_removed_changed(
+    before: Mapping[str, object], after: Mapping[str, object]
+) -> tuple[list[str], list[str], list[str]]:
+    """Sorted keys only in `after`, only in `before`, and in both with new values."""
+    added = sorted(set(after) - set(before))
+    removed = sorted(set(before) - set(after))
+    changed = sorted(
+        key for key in set(before) & set(after) if before[key] != after[key]
+    )
+    return added, removed, changed
+
+
+def _differing_keys(
+    before: Mapping[str, object], after: Mapping[str, object]
+) -> list[str]:
+    """Sorted keys whose value differs, counting a missing key as a difference."""
+    return sorted(
+        key for key in set(before) | set(after) if before.get(key) != after.get(key)
+    )
+
+
 def _component_changes(
     base: Mapping[str, object], current: Mapping[str, object]
 ) -> tuple[str, list[str]]:
@@ -370,11 +391,7 @@ def _component_changes(
     """
     before = _mapping(base.get("components", {}), "base components")
     after = _mapping(current.get("components", {}), "current components")
-    added = sorted(set(after) - set(before))
-    removed = sorted(set(before) - set(after))
-    modified = sorted(
-        key for key in set(before) & set(after) if before[key] != after[key]
-    )
+    added, removed, modified = _added_removed_changed(before, after)
     details = [f"Added {_component_label(key, after[key])}" for key in added]
     details += [f"Removed {_component_label(key, before[key])}" for key in removed]
     for key in modified:
@@ -399,11 +416,7 @@ def _net_changes(
     """Added, removed and rewired nets; a rewired net shows +/- pin differences."""
     before = _mapping(base.get("nets", {}), "base nets")
     after = _mapping(current.get("nets", {}), "current nets")
-    added = sorted(set(after) - set(before))
-    removed = sorted(set(before) - set(after))
-    rewired = sorted(
-        key for key in set(before) & set(after) if before[key] != after[key]
-    )
+    added, removed, rewired = _added_removed_changed(before, after)
     details: list[str] = []
     for name in added:
         endpoints = _json_list(after[name], f"net {name}")
@@ -439,9 +452,7 @@ def _placement_changes(
     """
     before = _mapping(base_layout.get("placements", {}), "base placements")
     after = _mapping(current_layout.get("placements", {}), "current placements")
-    changed = sorted(
-        key for key in set(before) | set(after) if before.get(key) != after.get(key)
-    )
+    changed = _differing_keys(before, after)
     details: list[str] = []
     for reference in changed:
         if reference not in before:
@@ -473,9 +484,7 @@ def _rule_changes(
     """Changed design-rule settings (from the project's design settings)."""
     before = _flatten(base_layout.get("rules", {}))
     after = _flatten(current_layout.get("rules", {}))
-    changed = sorted(
-        key for key in set(before) | set(after) if before.get(key) != after.get(key)
-    )
+    changed = _differing_keys(before, after)
     details = [
         f"`{key}`: `{before.get(key, 'not set')}` → `{after.get(key, 'not set')}`"
         for key in changed
