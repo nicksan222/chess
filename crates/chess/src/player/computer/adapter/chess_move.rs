@@ -5,7 +5,11 @@
 //! legal domain move. A `Resign` result maps to `None` so the synchronous
 //! computer poll can yield pending or report resignation.
 
-use crate::{ChessMove, Color, ComputerError, PieceKind, Rank, Square, player::PlayerView};
+use crate::{
+    ChessMove, ComputerError, PieceKind, Rank,
+    model::{Castle, CastleSide},
+    player::PlayerView,
+};
 use embedded_chess_engine::Move as SearchMove;
 
 use super::model::from_position;
@@ -27,8 +31,12 @@ pub(in crate::player::computer) fn from_search_move(
     view: PlayerView<'_>,
 ) -> Result<Option<ChessMove>, ComputerError> {
     let (from, to) = match search_move {
-        SearchMove::KingSideCastle => castle_squares(view.side_to_move(), true),
-        SearchMove::QueenSideCastle => castle_squares(view.side_to_move(), false),
+        SearchMove::KingSideCastle => {
+            Castle::new(view.side_to_move(), CastleSide::Kingside).king_move()
+        }
+        SearchMove::QueenSideCastle => {
+            Castle::new(view.side_to_move(), CastleSide::Queenside).king_move()
+        }
         SearchMove::Piece(from, to) => (
             from_position(from).ok_or(ComputerError::InvalidSquare)?,
             from_position(to).ok_or(ComputerError::InvalidSquare)?,
@@ -67,13 +75,4 @@ pub(in crate::player::computer) fn from_search_move(
         ChessMove::promotion(from, to, PieceKind::Queen)
             .expect("queen is always a valid promotion kind"),
     ))
-}
-
-const fn castle_squares(color: Color, kingside: bool) -> (Square, Square) {
-    match (color, kingside) {
-        (Color::White, true) => (Square::E1, Square::G1),
-        (Color::White, false) => (Square::E1, Square::C1),
-        (Color::Black, true) => (Square::E8, Square::G8),
-        (Color::Black, false) => (Square::E8, Square::C8),
-    }
 }

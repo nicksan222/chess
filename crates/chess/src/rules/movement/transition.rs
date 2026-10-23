@@ -2,7 +2,7 @@
 
 use crate::{
     Board, Color, FileOffset, HalfmoveClock, Piece, PieceKind, Rank, RankOffset, Square,
-    SquareOffset,
+    SquareOffset, model::Castle,
 };
 
 impl Board {
@@ -21,20 +21,41 @@ impl Board {
         destination: Square,
         promotion: Option<PieceKind>,
     ) {
-        let mut captured = self.remove_piece(destination);
-        if piece.kind() == PieceKind::Pawn
-            && self.en_passant_target() == Some(destination)
-            && captured.is_none()
-        {
-            let behind = SquareOffset::new(
-                FileOffset::ZERO,
-                RankOffset::pawn_push(piece.color()).reversed(),
-            );
-            captured = destination
-                .offset(behind)
-                .and_then(|square| self.remove_piece(square));
-        }
+        let captured = self.take_captured_piece(piece, destination);
+        self.place_moved_piece(piece, destination, promotion);
+        self.relocate_castling_rook(piece, destination);
+        self.revoke_castling_rights(piece, captured);
+        self.finish_move(piece, destination, captured);
+    }
 
+    /// Removes and returns the piece captured by `piece` moving to `destination`.
+    ///
+    /// Covers both a normal capture and an en-passant capture, where the
+    /// victim stands behind the destination square.
+    fn take_captured_piece(&mut self, piece: Piece, destination: Square) -> Option<Piece> {
+        let captured = self.remove_piece(destination);
+        if captured.is_some()
+            || piece.kind() != PieceKind::Pawn
+            || self.en_passant_target() != Some(destination)
+        {
+            return captured;
+        }
+        let behind = SquareOffset::new(
+            FileOffset::ZERO,
+            RankOffset::pawn_push(piece.color()).reversed(),
+        );
+        destination
+            .offset(behind)
+            .and_then(|square| self.remove_piece(square))
+    }
+
+    /// Moves `piece` to `destination`, promoting when it reaches the back rank.
+    fn place_moved_piece(
+        &mut self,
+        piece: Piece,
+        destination: Square,
+        promotion: Option<PieceKind>,
+    ) {
         self.remove_piece(piece.square());
         let mut moved = piece.at(destination);
         if let Some(kind) = promotion.or_else(|| {
@@ -44,74 +65,65 @@ impl Board {
             moved = moved.promoted(kind);
         }
         self.set_piece(moved);
+    }
 
-        if piece.kind() == PieceKind::King {
-            let mut rights = self.castling_rights();
-            rights.clear(piece.color());
-            self.set_castling_rights(rights);
-            let rook_move = match (piece.square(), destination) {
-                (Square::E1, Square::G1) => Some((Square::H1, Square::F1)),
-                (Square::E1, Square::C1) => Some((Square::A1, Square::D1)),
-                (Square::E8, Square::G8) => Some((Square::H8, Square::F8)),
-                (Square::E8, Square::C8) => Some((Square::A8, Square::D8)),
-                _ => None,
-            };
-            if let Some((from, to)) = rook_move
-                && let Some(rook) = self.remove_piece(from)
-            {
+    /// Moves the rook alongside a castling king move.
+    fn relocate_castling_rook(&mut self, piece: Piece, destination: Square) {
+        if piece.kind() != PieceKind::King {
+            return;
+        }
+        if let Some(castle) = Castle::from_king_move(piece.square(), destination) {
+            let (from, to) = castle.rook_move();
+            if let Some(rook) = self.remove_piece(from) {
                 self.set_piece(rook.at(to));
             }
         }
-        self.update_rook_right(piece);
-        if let Some(captured) = captured {
-            self.update_rook_right(captured);
-        }
-
-        let double_push = is_initial_double_pawn_push(piece, destination);
-        finish_move(self, piece, captured, double_push);
     }
 
-    fn update_rook_right(&mut self, piece: Piece) {
-        if piece.kind() != PieceKind::Rook {
-            return;
-        }
+    /// Revokes rights lost by a king move, a rook leaving or a rook captured.
+    fn revoke_castling_rights(&mut self, piece: Piece, captured: Option<Piece>) {
         let mut rights = self.castling_rights();
-        match (piece.color(), piece.square()) {
-            (Color::White, Square::H1) => rights.revoke_kingside(Color::White),
-            (Color::White, Square::A1) => rights.revoke_queenside(Color::White),
-            (Color::Black, Square::H8) => rights.revoke_kingside(Color::Black),
-            (Color::Black, Square::A8) => rights.revoke_queenside(Color::Black),
-            _ => return,
+        if piece.kind() == PieceKind::King {
+            rights.clear(piece.color());
+        }
+        for rook in [Some(piece), captured].into_iter().flatten() {
+            if rook.kind() != PieceKind::Rook {
+                continue;
+            }
+            if let Some(castle) = Castle::from_rook_origin(rook.color(), rook.square()) {
+                rights.revoke(castle.color(), castle.side());
+            }
         }
         self.set_castling_rights(rights);
     }
-}
 
-fn finish_move(board: &mut Board, moved: Piece, captured: Option<Piece>, double_push: bool) {
-    let mut halfmove_clock = board.halfmove_clock();
-    if moved.kind() == PieceKind::Pawn || captured.is_some() {
-        halfmove_clock = HalfmoveClock::ZERO;
-    } else {
-        halfmove_clock.increment();
+    /// Updates clocks, the en-passant target and the side to move.
+    fn finish_move(&mut self, moved: Piece, destination: Square, captured: Option<Piece>) {
+        let mut halfmove_clock = self.halfmove_clock();
+        if moved.kind() == PieceKind::Pawn || captured.is_some() {
+            halfmove_clock = HalfmoveClock::ZERO;
+        } else {
+            halfmove_clock.increment();
+        }
+        self.set_halfmove_clock(halfmove_clock);
+
+        let en_passant_target = is_initial_double_pawn_push(moved, destination)
+            .then(|| {
+                moved.square().offset(SquareOffset::new(
+                    FileOffset::ZERO,
+                    RankOffset::pawn_push(moved.color()),
+                ))
+            })
+            .flatten();
+        self.set_en_passant_target(en_passant_target);
+
+        if moved.color() == Color::Black {
+            let mut fullmove_number = self.fullmove_number();
+            fullmove_number.increment();
+            self.set_fullmove_number(fullmove_number);
+        }
+        self.set_side_to_move(moved.color().opposite());
     }
-    board.set_halfmove_clock(halfmove_clock);
-
-    let en_passant_target = if double_push {
-        moved.square().offset(SquareOffset::new(
-            FileOffset::ZERO,
-            RankOffset::pawn_push(moved.color()),
-        ))
-    } else {
-        None
-    };
-    board.set_en_passant_target(en_passant_target);
-
-    if moved.color() == Color::Black {
-        let mut fullmove_number = board.fullmove_number();
-        fullmove_number.increment();
-        board.set_fullmove_number(fullmove_number);
-    }
-    board.set_side_to_move(moved.color().opposite());
 }
 
 /// Returns whether `square` is the promotion back rank for `color`.

@@ -4,6 +4,8 @@ use core::fmt;
 
 use crate::Color;
 
+use super::CastleSide;
+
 /// The castling options retained by a board.
 #[derive(Clone, Copy, Default, PartialEq, Eq, Hash)]
 #[repr(transparent)]
@@ -80,6 +82,14 @@ impl CastlingRights {
     /// unchanged. Revoking an already absent right is idempotent.
     pub fn revoke_queenside(&mut self, color: Color) {
         self.set(Self::mask(color, false), false);
+    }
+
+    /// Revokes the right for `color` on `side`.
+    pub(crate) fn revoke(&mut self, color: Color, side: CastleSide) {
+        match side {
+            CastleSide::Kingside => self.revoke_kingside(color),
+            CastleSide::Queenside => self.revoke_queenside(color),
+        }
     }
 
     /// Removes both castling rights for `color`.
