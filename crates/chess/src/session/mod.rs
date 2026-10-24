@@ -51,6 +51,20 @@ impl GameSession {
         Self { game, white, black }
     }
 
+    const fn player(&self, color: Color) -> &Player {
+        match color {
+            Color::White => &self.white,
+            Color::Black => &self.black,
+        }
+    }
+
+    const fn player_mut(&mut self, color: Color) -> &mut Player {
+        match color {
+            Color::White => &mut self.white,
+            Color::Black => &mut self.black,
+        }
+    }
+
     /// Returns the authoritative game as a read-only view.
     ///
     /// The game remains the single source of truth: players only see its
@@ -67,7 +81,7 @@ impl GameSession {
     /// staged move before its non-blocking poll.
     #[must_use]
     pub const fn white(&self) -> &Player {
-        &self.white
+        self.player(Color::White)
     }
 
     /// Returns mutable access to the White player, not the game.
@@ -75,7 +89,7 @@ impl GameSession {
     /// Authoritative position state stays behind [`game`](Self::game); this
     /// accessor only stages input in White's single-pending mailbox slot.
     pub const fn white_mut(&mut self) -> &mut Player {
-        &mut self.white
+        self.player_mut(Color::White)
     }
 
     /// Returns the Black player.
@@ -84,7 +98,7 @@ impl GameSession {
     /// staged move before its non-blocking poll.
     #[must_use]
     pub const fn black(&self) -> &Player {
-        &self.black
+        self.player(Color::Black)
     }
 
     /// Returns mutable access to the Black player, not the game.
@@ -92,7 +106,7 @@ impl GameSession {
     /// Authoritative position state stays behind [`game`](Self::game); this
     /// accessor only stages input in Black's single-pending mailbox slot.
     pub const fn black_mut(&mut self) -> &mut Player {
-        &mut self.black
+        self.player_mut(Color::Black)
     }
 
     /// Ends the session and returns its game and players.
