@@ -20,10 +20,16 @@ This directory owns GitHub Actions workflow definitions:
 it branched (a three-dot diff from the merge base, so commits that later land on
 the base branch never count). Documentation-only changes skip every job
 including the container prebuild. `apps/`, `crates/`, Cargo files, `clippy.toml`
-and `deny.toml` run Quality and Firmware checks without Hardware. `hardware/` and
-`pyproject.toml` run Hardware and Quality without Firmware checks. Repository
-lint configuration (`tooling/`, the ast-grep, ls-lint, typos and EditorConfig
-files, `.githooks/`) runs Quality alone. Any other path (workflows, the dev
+and `deny.toml` run Quality and Firmware checks without Hardware. In Hardware,
+`hardware/pcb` runs the PCB review and `hardware/cad` runs CAD against the
+checked-in PCB export; `hardware/shared` runs both. After a PCB-only change,
+CAD (Blender) runs only if the review regenerated the export it consumes
+(`chess-board.glb`, `3d-models.json`, `pcb-components.json`,
+`chess-board.kicad_pcb`) differently from the merge base, and the PR report
+runs only when the PCB was reviewed. Repository lint configuration
+(`tooling/`, the ast-grep, ls-lint, typos and EditorConfig files, `.githooks/`)
+and `pyproject.toml` run Quality alone; it already runs Ruff, basedpyright and
+the PCB checks with board tests. Any other path (workflows, the dev
 container, the root `justfile`, new directories) runs everything, so unknown
 files fail safe. `Required checks` accepts skipped jobs but still fails on any
 failed or cancelled one. Pushes to `main` always run the full set.

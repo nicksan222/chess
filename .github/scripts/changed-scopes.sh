@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Classify the files a pull request changes into CI scopes and write
-# `hardware=<bool>`, `rust=<bool>` and `quality=<bool>` lines to stdout
-# (GITHUB_OUTPUT format).
+# `pcb=<bool>`, `cad=<bool>`, `hardware=<bool>` (either of them), `rust=<bool>`
+# and `quality=<bool>` lines to stdout (GITHUB_OUTPUT format).
 #
 # Usage: changed-scopes.sh <base-sha> <head-sha>
 #
@@ -14,7 +14,8 @@ set -euo pipefail
 
 base="$1"
 head="$2"
-hardware=false
+pcb=false
+cad=false
 rust=false
 quality=false
 
@@ -28,25 +29,42 @@ while IFS= read -r file; do
         clippy.toml | deny.toml)
         rust=true
         ;;
-    # Hardware generation only: no Rust code reads hardware/, and pyproject.toml
-    # configures the hardware Python lint and tests.
-    hardware/* | pyproject.toml)
-        hardware=true
+    # Hardware generation; no Rust code reads hardware/. The PCB review decides
+    # whether its regenerated export changed enough to need CAD as well.
+    hardware/pcb/*)
+        pcb=true
         ;;
-    # Quality job only: repository lint rules, their tools and the Git hook.
+    # CAD only: it reuses the checked-in PCB export.
+    hardware/cad/*)
+        cad=true
+        ;;
+    # Shared physical and electrical contracts feed both generators.
+    hardware/shared/*)
+        pcb=true
+        cad=true
+        ;;
+    # Quality job only: repository lint rules and their tools, the Git hook, and
+    # pyproject.toml (Ruff and pytest settings change no generated artifact; the
+    # Quality job runs Ruff, basedpyright and the PCB checks with board tests).
     tooling/* | sgconfig.yml | .ls-lint.yml | typos.toml | .editorconfig | \
-        .editorconfig-checker.json | .githooks/*)
+        .editorconfig-checker.json | .githooks/* | pyproject.toml)
         quality=true
         ;;
     # Everything else (workflows, the dev container, the root justfile, unknown paths).
     *)
-        hardware=true
+        pcb=true
+        cad=true
         rust=true
         quality=true
         ;;
     esac
 done < <(git diff --name-only "$base...$head")
 
+hardware=false
+if [[ "$pcb" == true || "$cad" == true ]]; then hardware=true; fi
+
+echo "pcb=$pcb"
+echo "cad=$cad"
 echo "hardware=$hardware"
 echo "rust=$rust"
 echo "quality=$quality"
