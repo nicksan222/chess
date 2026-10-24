@@ -3,6 +3,7 @@ set shell := ["bash", "-euo", "pipefail", "-c"]
 root := justfile_directory() + "/../.."
 ast_grep := env_var_or_default("AST_GREP", "ast-grep")
 ls_lint := env_var_or_default("LS_LINT", "ls-lint")
+pip_audit := env_var_or_default("PIP_AUDIT", "pip-audit")
 
 default:
     @just --list
@@ -34,8 +35,12 @@ deny:
 unused-dependencies:
     cd "{{ root }}" && cargo shear
 
+# Known vulnerabilities in the development container's pinned Python tools; queries PyPI.
+python-audit:
+    cd "{{ root }}" && {{ pip_audit }} --requirement .devcontainer/requirements.txt --no-deps --progress-spinner off
+
 # Every dependency check; needs network access for advisories.
-dependencies: deny unused-dependencies
+dependencies: deny unused-dependencies python-audit
 
 # Run every quality gate.
 check: quality dependencies
