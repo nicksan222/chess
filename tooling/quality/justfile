@@ -5,6 +5,7 @@ ast_grep := env_var_or_default("AST_GREP", "ast-grep")
 ls_lint := env_var_or_default("LS_LINT", "ls-lint")
 shellcheck := env_var_or_default("SHELLCHECK", "shellcheck")
 actionlint := env_var_or_default("ACTIONLINT", "actionlint")
+typos := env_var_or_default("TYPOS", "typos")
 pip_audit := env_var_or_default("PIP_AUDIT", "pip-audit")
 
 # vtk 9.3.1 (PYSEC-2025-224..226) is pinned exactly by cadquery-ocp 7.8, which
@@ -15,8 +16,8 @@ pip_audit_ignored := "--ignore-vuln PYSEC-2025-224 --ignore-vuln PYSEC-2025-225 
 default:
     @just --list
 
-# Repository rules no compiler or linter covers: patterns, names, crate boundaries, shell and workflows.
-quality: patterns names boundaries shell workflows
+# Repository rules no compiler or linter covers: patterns, names, boundaries, shell, workflows, spelling.
+quality: patterns names boundaries shell workflows spelling
 
 # Test every ast-grep rule against its examples, then scan the repository.
 patterns:
@@ -34,6 +35,10 @@ shell:
 # GitHub Actions workflows, including their `run:` scripts through ShellCheck (actionlint).
 workflows:
     cd "{{ root }}" && {{ actionlint }}
+
+# Spelling in code, comments and docs (typos.toml).
+spelling:
+    cd "{{ root }}" && {{ typos }}
 
 # Crate boundaries: deny.toml wrappers (some unused in the smaller Yocto graph), then each portable crate as sole root.
 boundaries:

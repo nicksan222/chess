@@ -126,7 +126,8 @@ RUN curl --fail --location --proto '=https' --tlsv1.2 --show-error \
     && cargo install just --locked --version 1.40.0 \
     && cargo install cargo-deny --locked --version 0.20.2 \
     && cargo install cargo-shear --locked --version 1.14.0 \
-    && cargo install ast-grep --locked --version 0.51.0
+    && cargo install ast-grep --locked --version 0.51.0 \
+    && cargo install typos-cli --locked --version 1.51.1
 
 # Native Claude Code; login happens only at runtime.
 ENV DISABLE_AUTOUPDATER=1
