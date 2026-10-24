@@ -56,6 +56,7 @@ tool "🦀" "Rust" cargo cargo --version
 tool "⚙️ " "Just" just just --version
 tool "🐍" "Python" python3 python3 --version
 tool "🧹" "Ruff" ruff ruff --version
+tool "🔎" "ast-grep" ast-grep ast-grep --version
 tool "🔌" "KiCad" kicad-cli kicad-cli version
 tool "🧊" "Blender" "${BLENDER_BIN:-blender}" "${BLENDER_BIN:-blender}" --version
 tool "🐳" "Docker" docker docker --version
@@ -67,7 +68,7 @@ login "📜" "Codex" "codex login" codex_ready
 section "🚀 Start here"
 cmd "just" "📋 list every repository recipe"
 cmd "just precommit" "✅ the fast commit gate (runs on every commit)"
-cmd "just quality" "🧹 lint and format-check every package"
+cmd "just quality" "🧹 lint, format-check and ast-grep patterns"
 cmd "just test" "🧪 test every package"
 cmd "just check" "🏁 all domains, sequentially (slow)"
 

@@ -77,6 +77,8 @@ pub static MENU: Menu<'static, super::Request> = Menu::new(
 
 /// How long reaching `NetworkManager` may take before an operation fails with
 /// [`Error::TimedOut`].
+// Not a `tuning!` value: bounds a NetworkManager D-Bus call; a protocol bound, not a prototype knob.
+// ast-grep-ignore: no-hardcoded-timing
 pub const CONNECT_TIMEOUT: Duration = Duration::from_secs(5);
 
 /// Product Wi-Fi operations. Clones share one connection to the Wi-Fi stack.

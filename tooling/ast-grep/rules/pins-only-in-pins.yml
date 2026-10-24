@@ -1,0 +1,34 @@
+id: pins-only-in-pins
+language: rust
+severity: error
+message: BCM/GPIO number outside apps/firmware/src/hardware/pins.rs.
+note: |
+  The Pi pin map has one hand-maintained source. Declare the pin in
+  apps/firmware/src/hardware/pins.rs and take it from `BoardPins`.
+files:
+  - apps/firmware/src/**/*.rs
+  - apps/firmware/tests/**/*.rs
+ignores:
+  - apps/firmware/src/hardware/pins.rs
+  - apps/firmware/src/hardware/pins/**
+rule:
+  all:
+    - any:
+        - kind: generic_type
+          regex: '^(Pin|ButtonPin)\s*<\s*[0-9]'
+        - pattern: GPIO::new($N)
+        - pattern: $R.with_line($N)
+        - pattern: $R.with_lines($N)
+        - kind: identifier
+          regex: '^(GPIO|BCM)_?[0-9]+$'
+    - not:
+        inside:
+          stopBy: end
+          any:
+            - kind: mod_item
+              follows: { kind: attribute_item, regex: '^#\[cfg\(test\)\]$' }
+            - kind: function_item
+              follows: { kind: attribute_item, regex: '^#\[(tokio::)?test\b' }
+constraints:
+  N:
+    regex: '^&?\[?\s*[0-9]'

@@ -29,20 +29,22 @@ precommit: _automation-format
     just --justfile hardware/shared/justfile check
     just --justfile hardware/cad/justfile check-fast
     just --justfile hardware/pcb/justfile quality
+    just --justfile tooling/quality/justfile quality
 
-# Formatting, linting, checking, and documentation.
+# Formatting, linting, checking, documentation, and ast-grep patterns.
 quality: _automation-format
     #!/usr/bin/env bash
     set -euo pipefail
     for package in {{ rust_packages }}; do just --justfile "$package/justfile" quality; done
     for package in {{ python_packages }}; do just --justfile "$package/justfile" quality; done
+    just --justfile tooling/quality/justfile quality
 
 # Verify every package-owned justfile uses the canonical format.
 [private]
 _automation-format:
     #!/usr/bin/env bash
     set -euo pipefail
-    files=(justfile)
+    files=(justfile tooling/quality/justfile)
     for package in {{ rust_packages }} {{ python_packages }}; do files+=("$package/justfile"); done
     for file in "${files[@]}"; do
         just --unstable --justfile "$file" --fmt --check
@@ -56,6 +58,7 @@ test:
     just --justfile hardware/shared/justfile test
     just --justfile hardware/cad/justfile test
     just --justfile hardware/pcb/justfile review
+    just --justfile tooling/quality/justfile patterns
 
 # Regenerate CAD and PCB review output.
 generate:

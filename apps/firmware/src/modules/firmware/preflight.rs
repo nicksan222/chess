@@ -22,6 +22,8 @@ use super::Error;
 const EARLIEST_PLAUSIBLE_EPOCH_SECS: u64 = 1_767_225_600;
 const EARLIEST_PLAUSIBLE: Duration = Duration::from_secs(EARLIEST_PLAUSIBLE_EPOCH_SECS);
 /// Bounds each network probe, well under the request timeout.
+// Not a `tuning!` value: bounds one DNS or TCP probe; a network bound, not a prototype knob.
+// ast-grep-ignore: no-hardcoded-timing
 pub(super) const PROBE: Duration = Duration::from_secs(5);
 
 /// Runs every check against the host serving `feed`.

@@ -1,0 +1,15 @@
+set shell := ["bash", "-euo", "pipefail", "-c"]
+
+root := justfile_directory() + "/../.."
+ast_grep := env_var_or_default("AST_GREP", "ast-grep")
+
+default:
+    @just --list
+
+# Repository rules no compiler or linter covers: ast-grep patterns.
+quality: patterns
+
+# Test every ast-grep rule against its examples, then scan the repository.
+patterns:
+    cd "{{ root }}" && {{ ast_grep }} test --skip-snapshot-tests
+    cd "{{ root }}" && {{ ast_grep }} scan
