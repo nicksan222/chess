@@ -150,7 +150,7 @@ fn assert_filtering_skips_argument_evaluation() {
     let evaluations = AtomicUsize::new(0);
     debug!("unused {}", evaluations.fetch_add(1, Ordering::Relaxed));
     assert_eq!(evaluations.load(Ordering::Relaxed), 0);
-    assert!(CAPTURE.take().is_empty());
+    assert_eq!(CAPTURE.take(), Vec::new());
 }
 
 fn assert_flush_and_nop_logger() {
