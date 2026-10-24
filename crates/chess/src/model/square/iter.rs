@@ -49,6 +49,10 @@ impl AllSquares {
     ///
     /// Backs [`Square::all`]. The range is fixed at all 64 squares, so
     /// the iterator is [`ExactSizeIterator`] with length 64 when fresh.
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "`Square::COUNT` is 64, which fits in `u8`"
+    )]
     pub(super) const fn new() -> Self {
         Self {
             front: 0,

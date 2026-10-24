@@ -38,7 +38,7 @@ impl Game {
     /// ```
     pub fn resolve_latest_invalid(&mut self) -> Result<HistoryStep, HistoryError> {
         let step = self.history.resolve_latest_invalid()?;
-        self.log_invalid_resolved(step);
+        Self::log_invalid_resolved(step);
         Ok(step)
     }
 
@@ -50,6 +50,10 @@ impl Game {
     /// reported as a warning on the `chess::game` log target. Returns
     /// `None` without touching history when the newest event is final,
     /// since sealed timelines accept no further events.
+    #[expect(
+        clippy::expect_used,
+        reason = "the final-event check above guarantees the history is active or invalid, which accepts an invalid event"
+    )]
     pub(crate) fn record_invalid(&mut self, invalid: InvalidState) -> Option<HistoryStep> {
         if self.latest_event_kind() == Some(HistoryEventKind::Final) {
             return None;
@@ -69,6 +73,10 @@ impl Game {
     /// [`Game::accept`](crate::Game::accept) for the validation applied to
     /// peer-supplied final events. Sealing is logged on the `chess::game`
     /// target.
+    #[expect(
+        clippy::expect_used,
+        reason = "callers seal only histories whose newest event is not final, so a final event is always accepted"
+    )]
     pub(crate) fn append_final(&mut self, final_state: FinalState) -> HistoryStep {
         self.push_event(HistoryEvent::Final(final_state))
             .expect("a final event may seal active history")
@@ -103,7 +111,7 @@ impl Game {
         event: HistoryEvent,
     ) -> Result<HistoryStep, HistoryError> {
         let step = self.history.push(event)?;
-        self.log_history_step(step);
+        Self::log_history_step(step);
         Ok(step)
     }
 
@@ -115,7 +123,7 @@ impl Game {
     /// `chess::game` target.
     pub(in crate::game) fn append_validated_step(&mut self, step: HistoryStep) {
         self.history.append_validated(step);
-        self.log_history_step(step);
+        Self::log_history_step(step);
     }
 
     /// Returns the error blocking valid play, if history tip blocks it.

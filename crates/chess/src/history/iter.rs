@@ -7,6 +7,7 @@ use chess_core::collections::Iter as LinkedListIter;
 use super::HistoryStep;
 
 /// An iterator over hash-linked game-history steps in chronological order.
+#[derive(Debug)]
 pub struct GameHistoryIter<'a>(LinkedListIter<'a, HistoryStep>);
 
 impl<'a> GameHistoryIter<'a> {

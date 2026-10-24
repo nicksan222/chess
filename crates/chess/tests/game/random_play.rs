@@ -45,7 +45,7 @@ fn randomized_legal_games_replay_verify_and_synchronize_in_parallel() {
                             break;
                         }
 
-                        let chess_move = moves[(random.next() as usize) % moves.len()];
+                        let chess_move = moves[usize::try_from(random.next() % u64::try_from(moves.len()).unwrap()).unwrap()];
                         let step = sender.play(chess_move).unwrap_or_else(|error| {
                             panic!(
                                 "generated move {chess_move} failed for worker {worker}, game {game_index}, ply {ply}: {error}"

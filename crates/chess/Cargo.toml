@@ -53,3 +53,6 @@ path = "tests/lichess/main.rs"
 name = "perft"
 path = "benches/performance/perft.rs"
 harness = false
+
+[lints]
+workspace = true

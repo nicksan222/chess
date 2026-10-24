@@ -147,7 +147,11 @@ fn event_hashes_match_golden_vectors() {
         .map(|(index, event)| {
             std::format!(
                 "{}",
-                calculate_hash(hash(index as u8), ply(index as u64 + 1), event)
+                calculate_hash(
+                    hash(u8::try_from(index).unwrap()),
+                    ply(index as u64 + 1),
+                    event
+                )
             )
         })
         .collect();

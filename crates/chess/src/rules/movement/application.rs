@@ -22,6 +22,10 @@ impl Board {
     /// [`MoveError::InvalidPromotion`] for a pawn or king promotion kind, and
     /// [`MoveError::UnexpectedPromotion`] when a non-pawn move carries a
     /// promotion kind.
+    #[expect(
+        clippy::expect_used,
+        reason = "promotion kinds were validated above, and `ChessMove::promotion` only rejects pawn and king"
+    )]
     pub(crate) fn make_move(&mut self, chess_move: ChessMove) -> Result<ChessMove, MoveError> {
         let piece = self.piece_at(chess_move.from()).ok_or(MoveError::NoPiece {
             square: chess_move.from(),

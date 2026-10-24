@@ -129,7 +129,10 @@ fn board_edges_are_objective_and_corners_belong_to_two_edges() {
     assert!(!Square::A4.is_corner());
     assert!(!Square::D4.is_edge());
     assert!(!Square::D4.is_corner());
+}
 
+#[test]
+fn board_edges_hold_eight_squares_and_edge_squares_are_counted() {
     for edge in BoardEdge::ALL {
         assert_eq!(
             Square::all()
