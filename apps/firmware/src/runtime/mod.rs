@@ -85,7 +85,7 @@ impl Firmware {
     }
 
     /// The public API of a registered module, such as
-    /// `firmware.module::<Update>()`.
+    /// `firmware.module::<Updates>()`.
     pub fn module<F: Facade>(&self) -> F {
         F::find(&self.facades).expect("startup builds every registered module")
     }

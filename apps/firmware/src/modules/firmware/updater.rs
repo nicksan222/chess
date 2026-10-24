@@ -30,7 +30,7 @@ mod tests {
     use semver::Version;
 
     use super::*;
-    use crate::modules::update::{
+    use crate::modules::firmware::{
         LATEST_RELEASE, Release,
         fake::{FakeFeed, answer, release},
     };

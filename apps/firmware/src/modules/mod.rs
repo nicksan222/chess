@@ -17,7 +17,7 @@ module::modules! {
     /// Wi-Fi status, scanning and provisioning.
     connection: Connection,
     /// Firmware update discovery; uses `connection`.
-    update: Update,
+    firmware: Updates,
     /// Game setup.
     play: Play,
     /// Pairing and online sessions.
@@ -85,7 +85,7 @@ mod tests {
                 assert!((module.built)(&facades), "{} was not built", module.name);
             }
         }
-        assert_eq!(<update::Update as Facade>::MODULE, "update");
+        assert_eq!(<firmware::Updates as Facade>::MODULE, "firmware");
     }
 
     #[test]
@@ -115,7 +115,10 @@ mod tests {
 
     #[test]
     fn requests_name_their_module() {
-        assert_eq!(Request::Update(update::Request::Check).module(), "update");
+        assert_eq!(
+            Request::Updates(firmware::Request::Check).module(),
+            "firmware"
+        );
         assert_eq!(Request::Play(play::Request::LocalGame).module(), "play");
         assert_eq!(
             Request::Connection(connection::Request::ScanWifi).module(),
@@ -125,18 +128,18 @@ mod tests {
 
     #[test]
     fn only_a_finished_report_for_the_blocking_request_releases_the_menu() {
-        const CHECK: Request = Request::Update(update::Request::Check);
-        const INSTALL: Request = Request::Update(update::Request::Install);
+        const CHECK: Request = Request::Updates(firmware::Request::Check);
+        const INSTALL: Request = Request::Updates(firmware::Request::Install);
         static BLOCKING: Menu<'static, Request> = Menu::new(
             "Test",
             &[MenuItem::blocking_action(
                 "Check",
                 CHECK,
-                Request::Update(update::Request::CancelCheck),
+                Request::Updates(firmware::Request::CancelCheck),
             )],
         );
         let event = |request, phase| {
-            ModuleEvent::new::<update::Update>(Some(request), phase, update::Status::UpToDate)
+            ModuleEvent::new::<firmware::Updates>(Some(request), phase, firmware::Status::UpToDate)
         };
         let mut menu = MenuState::new(&BLOCKING);
         let mut status = ModuleStatus::default();
@@ -147,14 +150,18 @@ mod tests {
         report(event(INSTALL, Phase::Finished), &mut menu, &mut status);
         assert!(menu.is_blocked());
         report(
-            ModuleEvent::new::<update::Update>(None, Phase::Finished, update::Status::UpToDate),
+            ModuleEvent::new::<firmware::Updates>(
+                None,
+                Phase::Finished,
+                firmware::Status::UpToDate,
+            ),
             &mut menu,
             &mut status,
         );
         assert!(menu.is_blocked(), "work no request started never unblocks");
         report(event(CHECK, Phase::Finished), &mut menu, &mut status);
         assert!(!menu.is_blocked());
-        assert_eq!(status.update, update::Status::UpToDate);
+        assert_eq!(status.firmware, firmware::Status::UpToDate);
     }
 
     #[test]
@@ -164,18 +171,18 @@ mod tests {
         static EMPTY: Menu<'static, Request> = Menu::new("Empty", &[]);
         let mut menu = MenuState::new(&EMPTY);
         let mut status = ModuleStatus {
-            update: update::Status::UpToDate,
+            firmware: firmware::Status::UpToDate,
             ..ModuleStatus::default()
         };
 
         module::Reporter::new(
             &events,
-            Some(Request::Update(update::Request::Install)),
-            <update::Update as module::sealed::Registered>::wrap,
+            Some(Request::Updates(firmware::Request::Install)),
+            <firmware::Updates as module::sealed::Registered>::wrap,
         )
         .done();
         report(reports.try_recv().unwrap().unwrap(), &mut menu, &mut status);
 
-        assert_eq!(status.update, update::Status::UpToDate);
+        assert_eq!(status.firmware, firmware::Status::UpToDate);
     }
 }

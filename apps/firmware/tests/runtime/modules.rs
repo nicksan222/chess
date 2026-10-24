@@ -10,22 +10,22 @@ use firmware::{
     modules::{
         Config, ModuleEvent, Phase, Request,
         connection::{self, Connection},
+        firmware::{self as fw, Updates},
         pieces::Pieces,
         play,
-        update::{self, Update},
     },
 };
 
 use crate::Navigator;
 
-const CHECK: Request = Request::Update(update::Request::Check);
+const CHECK: Request = Request::Updates(fw::Request::Check);
 
 /// Holds the menu in "Check for Updates" with a feed that never answers, so
 /// only injected reports move it on. The listener must outlive the test.
 async fn blocked_on_check() -> (Navigator, TcpListener) {
     let silent = TcpListener::bind("127.0.0.1:0").unwrap();
     let config = Config {
-        update: Some(format!("http://{}/", silent.local_addr().unwrap())),
+        firmware: Some(format!("http://{}/", silent.local_addr().unwrap())),
         ..Config::offline()
     };
     let mut panel = Navigator::new(FirmwareHarness::with_config(&config).unwrap());
@@ -47,10 +47,10 @@ async fn a_finished_report_releases_the_blocking_request() {
 
     let running = panel
         .firmware
-        .report(ModuleEvent::new::<Update>(
+        .report(ModuleEvent::new::<Updates>(
             Some(CHECK),
             Phase::Progress,
-            update::Status::Checking,
+            fw::Status::Checking,
         ))
         .await
         .unwrap();
@@ -58,10 +58,10 @@ async fn a_finished_report_releases_the_blocking_request() {
 
     let unrelated = panel
         .firmware
-        .report(ModuleEvent::new::<Update>(
+        .report(ModuleEvent::new::<Updates>(
             None,
             Phase::Finished,
-            update::Status::Checking,
+            fw::Status::Checking,
         ))
         .await
         .unwrap();
@@ -69,16 +69,16 @@ async fn a_finished_report_releases_the_blocking_request() {
 
     let done = panel
         .firmware
-        .report(ModuleEvent::new::<Update>(
+        .report(ModuleEvent::new::<Updates>(
             Some(CHECK),
             Phase::Finished,
-            update::Status::UpToDate,
+            fw::Status::UpToDate,
         ))
         .await
         .unwrap();
     assert_eq!(done.blocking, None);
-    assert_eq!(done.modules.update, update::Status::UpToDate);
-    panel.open(Request::Update(update::Request::Install)).await;
+    assert_eq!(done.modules.firmware, fw::Status::UpToDate);
+    panel.open(Request::Updates(fw::Request::Install)).await;
     panel.firmware.shutdown().await.unwrap();
 }
 
@@ -136,8 +136,8 @@ async fn offline_firmware_has_no_wifi_control_and_no_release_feed() {
         firmware.module::<Connection>().status().await,
         Err(connection::Error::Unavailable)
     ));
-    let update = firmware.module::<Update>();
+    let update = firmware.module::<Updates>();
     assert!(!update.is_enabled());
-    assert_eq!(update.check().await, update::Status::Disabled);
+    assert_eq!(update.check().await, fw::Status::Disabled);
     firmware.shutdown().await.unwrap();
 }

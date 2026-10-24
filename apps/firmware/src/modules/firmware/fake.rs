@@ -1,4 +1,4 @@
-//! A local stand-in for the release feed, shared by the update module's tests.
+//! A local stand-in for the release feed, shared by the firmware module's tests.
 
 use std::{
     io::{Read, Write},

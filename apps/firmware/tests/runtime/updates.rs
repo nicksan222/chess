@@ -16,14 +16,14 @@ use firmware::{
     harness::FirmwareHarness,
     modules::{
         Config, Request,
-        update::{self, Error, Release, Status},
+        firmware::{self as fw, Error, Release, Status},
     },
 };
 
 use crate::Navigator;
 
-const CHECK: Request = Request::Update(update::Request::Check);
-const INSTALL: Request = Request::Update(update::Request::Install);
+const CHECK: Request = Request::Updates(fw::Request::Check);
+const INSTALL: Request = Request::Updates(fw::Request::Install);
 
 /// Serves one canned HTTP response on a local port, counting requests.
 fn feed(response: String) -> (Navigator, Arc<AtomicUsize>) {
@@ -41,7 +41,7 @@ fn feed(response: String) -> (Navigator, Arc<AtomicUsize>) {
         }
     });
     let config = Config {
-        update: Some(url),
+        firmware: Some(url),
         ..Config::offline()
     };
     let panel = Navigator::new(FirmwareHarness::with_config(&config).unwrap());
@@ -64,7 +64,7 @@ async fn a_newer_release_reaches_the_snapshot() {
         .unwrap();
 
     assert_eq!(
-        snapshot.modules.update,
+        snapshot.modules.firmware,
         Status::Available(Release {
             version: semver::Version::new(99, 0, 0),
             page: "https://example.invalid/v99.0.0".into(),
@@ -78,7 +78,7 @@ async fn the_menu_holds_input_until_the_result_arrives() {
     // Accepts connections but never answers, so the check stays in flight.
     let silent = TcpListener::bind("127.0.0.1:0").unwrap();
     let config = Config {
-        update: Some(format!(
+        firmware: Some(format!(
             "http://{}/releases/latest",
             silent.local_addr().unwrap()
         )),
@@ -94,7 +94,7 @@ async fn the_menu_holds_input_until_the_result_arrives() {
         .await
         .unwrap();
     assert_eq!(blocked.selected_index, checking.selected_index);
-    assert_eq!(blocked.modules.update, Status::Checking);
+    assert_eq!(blocked.modules.firmware, Status::Checking);
     assert_eq!(blocked.requested_action, None);
     panel.firmware.shutdown().await.unwrap();
 }
@@ -113,7 +113,7 @@ async fn a_failed_check_releases_the_menu_and_can_be_retried() {
             .await
             .unwrap();
         assert_eq!(
-            failed.modules.update,
+            failed.modules.firmware,
             Status::Failed(Error::ServiceDown(503))
         );
         assert_eq!(requests.load(Ordering::SeqCst), attempt);
@@ -132,7 +132,7 @@ async fn offline_firmware_reports_disabled_and_stays_navigable() {
         .until(|snapshot| snapshot.blocking.is_none())
         .await
         .unwrap();
-    assert_eq!(snapshot.modules.update, Status::Disabled);
+    assert_eq!(snapshot.modules.firmware, Status::Disabled);
     panel.open(INSTALL).await;
     panel.firmware.shutdown().await.unwrap();
 }
@@ -141,7 +141,7 @@ async fn offline_firmware_reports_disabled_and_stays_navigable() {
 async fn without_internet_the_check_fails_offline_and_releases_the_menu() {
     // `.invalid` never resolves (RFC 6761), as when the device has no internet.
     let config = Config {
-        update: Some("https://update-check.invalid/releases/latest".into()),
+        firmware: Some("https://update-check.invalid/releases/latest".into()),
         ..Config::offline()
     };
     let mut panel = Navigator::new(FirmwareHarness::with_config(&config).unwrap());
@@ -153,7 +153,7 @@ async fn without_internet_the_check_fails_offline_and_releases_the_menu() {
         .await
         .unwrap();
     assert_eq!(
-        snapshot.modules.update,
+        snapshot.modules.firmware,
         Status::Failed(Error::Offline {
             host: "update-check.invalid".into()
         })

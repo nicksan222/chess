@@ -6,7 +6,7 @@
 
 use ::menu::{Menu, MenuItem};
 
-use crate::modules::{Request, connection, pairing, play, update};
+use crate::modules::{Request, connection, firmware, pairing, play};
 
 /// A user-visible screen controlled by the device coordinator.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -50,7 +50,7 @@ pub static MAIN_MENU: Menu<'static, Request> = Menu::new(
         MenuItem::submenu("Play", &play::MENU),
         MenuItem::submenu("Connection", &connection::MENU),
         MenuItem::submenu("Pairing", &pairing::MENU),
-        MenuItem::submenu("Update", &update::MENU),
+        MenuItem::submenu("Update", &firmware::MENU),
         MenuItem::submenu("Settings", &SETTINGS_MENU),
     ],
 );
@@ -66,7 +66,7 @@ mod tests {
             ("Play", &play::MENU),
             ("Connection", &connection::MENU),
             ("Pairing", &pairing::MENU),
-            ("Update", &update::MENU),
+            ("Update", &firmware::MENU),
             ("Settings", &SETTINGS_MENU),
         ];
 
@@ -115,24 +115,24 @@ mod tests {
                 ),
             ],
         );
-        assert_eq!(update::MENU.title(), "Update");
-        let [check, install] = update::MENU.items() else {
+        assert_eq!(firmware::MENU.title(), "Update");
+        let [check, install] = firmware::MENU.items() else {
             panic!("the update menu has two items");
         };
         assert_eq!(check.label(), "Check for Updates");
         assert_eq!(
             check.as_action(),
-            Some(&Request::Update(update::Request::Check))
+            Some(&Request::Updates(firmware::Request::Check))
         );
         assert!(check.is_blocking());
         assert_eq!(
             check.escape_action(),
-            Some(&Request::Update(update::Request::CancelCheck))
+            Some(&Request::Updates(firmware::Request::CancelCheck))
         );
         assert_eq!(install.label(), "Install Update");
         assert_eq!(
             install.as_action(),
-            Some(&Request::Update(update::Request::Install))
+            Some(&Request::Updates(firmware::Request::Install))
         );
         assert!(!install.is_blocking());
         assert!(SETTINGS_MENU.is_empty());
@@ -144,7 +144,7 @@ mod tests {
             &play::MENU,
             &connection::MENU,
             &pairing::MENU,
-            &update::MENU,
+            &firmware::MENU,
             &SETTINGS_MENU,
         ];
 

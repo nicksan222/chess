@@ -57,7 +57,7 @@ fn client() -> Result<Client, Error> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::modules::update::fake::{FakeFeed, answer, release};
+    use crate::modules::firmware::fake::{FakeFeed, answer, release};
 
     #[tokio::test]
     async fn asks_for_the_github_api_as_this_firmware() {

@@ -1,7 +1,7 @@
 //! The local firmware and its updates: what is installed, what is published,
 //! and whether newer firmware is available.
 //!
-//! Presentation-agnostic: menus and displays use [`Update`] and its typed
+//! Presentation-agnostic: menus and displays use [`Updates`] and its typed
 //! results. A check first asks the [`Connection`] module whether Wi-Fi is
 //! definitively disconnected, then runs preflight checks, cheapest first, and
 //! asks the GitHub Releases API for the latest stable release. Installing an
@@ -72,21 +72,21 @@ pub static MENU: Menu<'static, super::Request> = Menu::new(
     &[
         MenuItem::blocking_action(
             "Check for Updates",
-            super::Request::Update(Request::Check),
-            super::Request::Update(Request::CancelCheck),
+            super::Request::Updates(Request::Check),
+            super::Request::Updates(Request::CancelCheck),
         ),
-        MenuItem::action("Install Update", super::Request::Update(Request::Install)),
+        MenuItem::action("Install Update", super::Request::Updates(Request::Install)),
     ],
 );
 
 /// Firmware update discovery.
 #[derive(Clone)]
-pub struct Update {
+pub struct Updates {
     updater: Option<Updater>,
     connection: Connection,
 }
 
-impl Update {
+impl Updates {
     fn new(feed: &Settings, connection: Connection) -> Self {
         Self {
             updater: feed.as_deref().map(Updater::new),

@@ -56,10 +56,10 @@ review, not because the compiler forbids naming an engine. The `Facade` trait
 is sealed, so only the registry implements it.
 
 The registry in `src/modules/mod.rs` lists every module once, as
-`field: Facade`, for example `update: Update`. The `modules!` macro declares
+`field: Facade`, for example `firmware: Updates`. The `modules!` macro declares
 `pub mod field` and generates `Config` with `device()` and `offline()`,
 `ModuleStatus`, the top-level
-`Request` routed by type (`Request::Update(update::Request::Check)`), the
+`Request` routed by type (`Request::Updates(firmware::Request::Check)`), the
 dispatcher the runtime loop owns, and facade lookup. Menu requests go to the
 owning module's `request`; every hardware event goes to each module's `event`,
 in registry order, before the menu interprets it. `Firmware::module::<F>()` and
@@ -72,7 +72,7 @@ module asks for another's facade with `context.get::<Connection>()`. Modules are
 built in registry order, so a module may only use modules listed above it;
 asking for a later one fails startup with an error naming both modules, which
 every harness test would report. Dependencies therefore cannot form cycles.
-A facade call into another module must not hang its caller: `Update::check`
+A facade call into another module must not hang its caller: `Updates::check`
 gives the connection module one preflight probe (5 s) to answer and treats a
 slower answer as unknown, and the connection module bounds reaching
 NetworkManager by `connection::CONNECT_TIMEOUT` (5 s), retrying a failed or
@@ -121,10 +121,13 @@ The registered modules are:
   Wi-Fi support, `wpa-supplicant`, and `dnsmasq` for NetworkManager's shared
   hotspot mode. Its menu items (Status, Scan Wi-Fi, Network Settings) and the
   captive portal are not implemented yet.
-- `update` owns the local firmware and its updates, independent of menus and
-  displays. `update::NAME` and `update::version()` name the running firmware
+- `firmware` owns the local firmware and its updates, independent of menus and
+  displays. Its facade is `Updates`, not `Firmware`, which already names the
+  running instance in `runtime`; code outside the crate imports the module
+  under an alias such as `firmware::{self as fw}`, since the crate is also
+  `firmware`. `firmware::NAME` and `firmware::version()` name the running firmware
   and its Cargo version, used by `--version`, the startup log and the user
-  agent. `Update::check` first asks the connection module whether Wi-Fi is
+  agent. `Updates::check` first asks the connection module whether Wi-Fi is
   confirmed disconnected (`WifiDisconnected`), then runs preflight checks, cheapest
   first, so a failure names its cause: the system clock must be set
   (`ClockNotSet`), the release host must resolve (`Offline`) and accept a
@@ -136,7 +139,7 @@ The registered modules are:
   `RateLimited`, and other failures keep their cause chain. TLS uses `rustls` on
   `ring` with the image's `ca-certificates`, so it needs a synchronised clock.
   "Check for Updates" is blocking and presents the check as
-  `Snapshot::modules.update`: `Checking`, then the result, `Disabled`,
+  `Snapshot::modules.firmware`: `Checking`, then the result, `Disabled`,
   `WifiDisconnected` or `Failed`. No button is bound to escape yet, so a check
   ends with its result or a timeout: the Wi-Fi lookup and each preflight probe
   are bounded by 5 s and the release request by 15 s. Installing an update is

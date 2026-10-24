@@ -8,7 +8,7 @@ use ::menu::Menu;
 use logger::{info, warn};
 use tokio::task::JoinHandle;
 
-use super::{LATEST_RELEASE, Request, Settings, Status, Update};
+use super::{LATEST_RELEASE, Request, Settings, Status, Updates};
 use crate::modules::{
     MissingDependency,
     connection::Connection,
@@ -17,21 +17,21 @@ use crate::modules::{
 
 /// Update discovery owned by one firmware instance.
 pub(in crate::modules) struct Engine {
-    update: Update,
+    updates: Updates,
     running: Option<JoinHandle<()>>,
 }
 
 impl Engine {
     fn check(&mut self, report: Reporter<Status>) {
-        if !self.update.is_enabled() {
+        if !self.updates.is_enabled() {
             info!("update checks are disabled");
             report.finish(Status::Disabled);
             return;
         }
         report.progress(Status::Checking);
-        let update = self.update.clone();
+        let updates = self.updates.clone();
         let check = tokio::spawn(async move {
-            let status = update.check().await;
+            let status = updates.check().await;
             match &status {
                 Status::Failed(cause) => warn!("update check failed: {cause}"),
                 status => info!("update check finished: {status:?}"),
@@ -56,7 +56,7 @@ impl Module for Engine {
     type Settings = Settings;
     type Status = Status;
     type Request = Request;
-    type Facade = Update;
+    type Facade = Updates;
 
     const MENU: Option<&'static Menu<'static, crate::modules::Request>> = Some(&super::MENU);
 
@@ -66,13 +66,13 @@ impl Module for Engine {
 
     fn new(feed: &Settings, context: &Context<'_, Status>) -> Result<Self, MissingDependency> {
         Ok(Self {
-            update: Update::new(feed, context.get::<Connection>()?),
+            updates: Updates::new(feed, context.get::<Connection>()?),
             running: None,
         })
     }
 
-    fn facade(&self) -> Update {
-        self.update.clone()
+    fn facade(&self) -> Updates {
+        self.updates.clone()
     }
 
     fn request(&mut self, request: Request, report: Reporter<Status>) {
@@ -107,7 +107,7 @@ mod tests {
             Config, Facades, ModuleEvent, ModuleEventBus, Modules, Phase,
             connection::fake::{Failure, FakeWifi, Operation},
             module::sealed::Registered,
-            update::{
+            firmware::{
                 Error, Release,
                 fake::{FakeFeed, answer, release},
                 installed,
@@ -115,8 +115,8 @@ mod tests {
         },
     };
 
-    const CHECK: crate::modules::Request = crate::modules::Request::Update(Request::Check);
-    const CANCEL: crate::modules::Request = crate::modules::Request::Update(Request::CancelCheck);
+    const CHECK: crate::modules::Request = crate::modules::Request::Updates(Request::Check);
+    const CANCEL: crate::modules::Request = crate::modules::Request::Updates(Request::CancelCheck);
 
     /// The update engine reading `feed`, with what it reports.
     struct Fixture {
@@ -139,7 +139,7 @@ mod tests {
                 connection: Some(connection),
                 ..Facades::default()
             };
-            let context = Context::new("update", &facades, reporter(&events, None));
+            let context = Context::new("firmware", &facades, reporter(&events, None));
             let engine = Engine::new(&feed, &context).unwrap();
             Self {
                 engine,
@@ -149,7 +149,7 @@ mod tests {
         }
 
         fn request(&mut self, request: crate::modules::Request) {
-            let crate::modules::Request::Update(inner) = request else {
+            let crate::modules::Request::Updates(inner) = request else {
                 panic!("{request:?} is not an update request");
             };
             let report = reporter(&self.events, Some(request));
@@ -172,11 +172,11 @@ mod tests {
         events: &ModuleEventBus,
         request: Option<crate::modules::Request>,
     ) -> Reporter<Status> {
-        Reporter::new(events, request, <Update as Registered>::wrap)
+        Reporter::new(events, request, <Updates as Registered>::wrap)
     }
 
     fn event(request: crate::modules::Request, phase: Phase, status: Status) -> ModuleEvent {
-        ModuleEvent::new::<Update>(Some(request), phase, status)
+        ModuleEvent::new::<Updates>(Some(request), phase, status)
     }
 
     async fn stopped(running: task::AbortHandle) {
@@ -199,15 +199,15 @@ mod tests {
     fn registered_before_its_connection_it_fails_naming_both_modules() {
         let events = ModuleEventBus::new();
         let empty = Facades::default();
-        let context = Context::new("update", &empty, reporter(&events, None));
+        let context = Context::new("firmware", &empty, reporter(&events, None));
 
         let Err(error) = Engine::new(&None, &context) else {
             panic!("built without its connection dependency");
         };
         assert_eq!(
             error.to_string(),
-            "module `update` uses `connection`, which is not built yet; \
-             register `connection` before `update` in `modules!`"
+            "module `firmware` uses `connection`, which is not built yet; \
+             register `connection` before `firmware` in `modules!`"
         );
         assert_eq!(format!("{error:?}"), error.to_string(), "unwrap reads well");
     }
@@ -295,10 +295,10 @@ mod tests {
         let stalled = Connection::fake(FakeWifi::default().stalled());
         let started = tokio::time::Instant::now();
 
-        assert!(!crate::modules::update::wifi_disconnected(&stalled).await);
-        assert_eq!(started.elapsed(), crate::modules::update::preflight::PROBE);
+        assert!(!crate::modules::firmware::wifi_disconnected(&stalled).await);
+        assert_eq!(started.elapsed(), crate::modules::firmware::preflight::PROBE);
         assert!(
-            crate::modules::update::wifi_disconnected(&Connection::fake(FakeWifi::default())).await
+            crate::modules::firmware::wifi_disconnected(&Connection::fake(FakeWifi::default())).await
         );
     }
 
@@ -400,7 +400,7 @@ mod tests {
 
     #[tokio::test]
     async fn installing_is_a_placeholder_that_finishes_at_once() {
-        let install = crate::modules::Request::Update(Request::Install);
+        let install = crate::modules::Request::Updates(Request::Install);
         let mut updates = Fixture::new(None);
         updates.request(install);
         let done = updates.next().await;

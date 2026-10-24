@@ -1,7 +1,10 @@
 use std::{env, io};
 
 use firmware::{
-    board::GPIO_CHIP, hardware::button_panel::ButtonPanel, modules::update, runtime::Firmware,
+    board::GPIO_CHIP,
+    hardware::button_panel::ButtonPanel,
+    modules::firmware::{NAME, version},
+    runtime::Firmware,
 };
 use logger::{LevelFilter, implementations::SystemdLogger, info, register};
 
@@ -9,12 +12,12 @@ static LOGGER: SystemdLogger = SystemdLogger::new(LevelFilter::Info);
 
 fn main() -> io::Result<()> {
     if env::args().nth(1).as_deref() == Some("--version") {
-        println!("{} {}", update::NAME, update::version());
+        println!("{} {}", NAME, version());
         return Ok(());
     }
 
     register(&LOGGER).map_err(|_| io::Error::other("firmware logger already registered"))?;
-    info!("starting {} {}", update::NAME, update::version());
+    info!("starting {} {}", NAME, version());
 
     tokio::runtime::Builder::new_current_thread()
         .enable_all()
