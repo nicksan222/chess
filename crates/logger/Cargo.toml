@@ -20,3 +20,6 @@ path = "tests/unit/main.rs"
 [[test]]
 name = "unregistered"
 path = "tests/unregistered/main.rs"
+
+[lints]
+workspace = true

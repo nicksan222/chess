@@ -74,25 +74,41 @@ static OTHER: OtherLogger = OtherLogger;
 
 #[test]
 fn registered_logger_is_the_single_logging_path() {
+    assert_registration_is_permanent();
+    let records = assert_level_macros_reach_the_logger();
+    assert_macros_record_source_location(&records);
+    assert_target_and_source_location();
+    assert_filtering_skips_argument_evaluation();
+    assert_flush_and_nop_logger();
+}
+
+fn assert_registration_is_permanent() {
     assert!(get().is_none());
     register(&CAPTURE).unwrap();
     assert!(core::ptr::eq(get().unwrap(), &CAPTURE));
     assert_eq!(register(&CAPTURE), Ok(()));
     assert!(register(&OTHER).is_err());
+}
 
+fn emit_one_record_per_level() {
     error!("error");
     warn!("warn");
     info!("info");
     debug!("debug");
     trace!("trace");
     log!(level: Level::Info, "manual");
+}
+
+fn levels(records: &[Captured]) -> Vec<Level> {
+    records.iter().map(|record| record.level).collect()
+}
+
+fn assert_level_macros_reach_the_logger() -> Vec<Captured> {
+    emit_one_record_per_level();
 
     let records = CAPTURE.take();
     assert_eq!(
-        records
-            .iter()
-            .map(|record| record.level)
-            .collect::<Vec<_>>(),
+        levels(&records),
         [
             Level::Error,
             Level::Warn,
@@ -104,10 +120,16 @@ fn registered_logger_is_the_single_logging_path() {
     );
     assert_eq!(records[0].target, module_path!());
     assert_eq!(records[5].message, "manual");
+    records
+}
+
+fn assert_macros_record_source_location(records: &[Captured]) {
     assert!(records.iter().all(|record| record.module_path.is_some()));
     assert!(records.iter().all(|record| record.file.is_some()));
     assert!(records.iter().all(|record| record.line.is_some()));
+}
 
+fn assert_target_and_source_location() {
     let source_line = line!() + 1;
     info!(target: "board::sensors", "square {} is occupied", 12);
     assert_eq!(
@@ -121,18 +143,22 @@ fn registered_logger_is_the_single_logging_path() {
             message: "square 12 is occupied".to_owned(),
         }]
     );
+}
 
+fn assert_filtering_skips_argument_evaluation() {
     CAPTURE.set_max_level(LevelFilter::Warn);
     let evaluations = AtomicUsize::new(0);
     debug!("unused {}", evaluations.fetch_add(1, Ordering::Relaxed));
     assert_eq!(evaluations.load(Ordering::Relaxed), 0);
     assert!(CAPTURE.take().is_empty());
+}
 
+fn assert_flush_and_nop_logger() {
     flush();
     assert_eq!(CAPTURE.flushes.load(Ordering::Relaxed), 1);
 
     let nop = NopLogger;
-    let metadata = Metadata::new(Level::Error, "test", None, None, None);
+    let metadata = Metadata::new(Level::Error, "test");
     assert!(!nop.enabled(&metadata));
     nop.log(Record::new(metadata, format_args!("discarded")));
 }

@@ -3,6 +3,7 @@ use core::fmt;
 use crate::{Level, Metadata};
 
 /// One log event passed to a [`crate::Logger`].
+#[derive(Debug)]
 pub struct Record<'a> {
     metadata: Metadata<'a>,
     arguments: fmt::Arguments<'a>,

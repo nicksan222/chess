@@ -2,7 +2,7 @@ use logger::implementations::{StderrLogger, SystemdLogger};
 use logger::{Level, LevelFilter, Logger, Metadata, Record};
 
 fn metadata(level: Level) -> Metadata<'static> {
-    Metadata::new(level, "firmware", None, None, None)
+    Metadata::new(level, "firmware")
 }
 
 #[test]

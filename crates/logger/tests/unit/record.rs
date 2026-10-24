@@ -2,9 +2,7 @@ use logger::{Level, Metadata, Record};
 
 #[test]
 fn metadata_and_record_expose_complete_context() {
-    let metadata = Metadata::new(
-        Level::Warn,
-        "hardware",
+    let metadata = Metadata::new(Level::Warn, "hardware").with_source(
         Some("firmware::board"),
         Some("src/board.rs"),
         Some(42),
@@ -22,7 +20,7 @@ fn metadata_and_record_expose_complete_context() {
 
 #[test]
 fn manually_created_metadata_can_omit_source_location() {
-    let metadata = Metadata::new(Level::Info, "remote", None, None, None);
+    let metadata = Metadata::new(Level::Info, "remote");
 
     assert_eq!(metadata.module_path(), None);
     assert_eq!(metadata.file(), None);
