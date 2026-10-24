@@ -1,10 +1,11 @@
 //! Canonical hashing of the board that anchors a game history.
 
-use sha2::{Digest, Sha256};
-
 use crate::{Board, Color, PieceKind};
 
-use super::super::HistoryHash;
+use super::{
+    super::HistoryHash,
+    writer::{HashWriter, color_code},
+};
 
 const BOARD_DOMAIN: &[u8] = b"chess.board-anchor.sha256.v1\0";
 
@@ -19,34 +20,27 @@ const BOARD_DOMAIN: &[u8] = b"chess.board-anchor.sha256.v1\0";
 /// chain starting from it, so divergent initial boards fail as a
 /// previous-hash mismatch on the first [`Ply`](crate::Ply).
 pub(in crate::history) fn calculate_board_anchor(board: &Board) -> HistoryHash {
-    let mut digest = Sha256::new();
-    digest.update(BOARD_DOMAIN);
+    let mut writer = HashWriter::new(BOARD_DOMAIN);
     for square in crate::Square::all() {
-        digest.update([board.piece_at(square).map_or(0, |piece| {
+        writer.byte(board.piece_at(square).map_or(0, |piece| {
             color_code(piece.color()) * 6 + piece_kind_code(piece.kind()) + 1
-        })]);
+        }));
     }
-    digest.update([color_code(board.side_to_move())]);
+    writer.color(board.side_to_move());
     let rights = board.castling_rights();
-    digest.update([
-        rights.kingside(Color::White) as u8,
-        rights.queenside(Color::White) as u8,
-        rights.kingside(Color::Black) as u8,
-        rights.queenside(Color::Black) as u8,
-    ]);
-    digest.update([board
-        .en_passant_target()
-        .map_or(u8::MAX, |square| square.index().value())]);
-    digest.update(board.halfmove_clock().value().to_be_bytes());
-    digest.update(board.fullmove_number().value().to_be_bytes());
-    HistoryHash::from_bytes(digest.finalize().into())
-}
-
-const fn color_code(color: Color) -> u8 {
-    match color {
-        Color::White => 0,
-        Color::Black => 1,
-    }
+    writer
+        .byte(u8::from(rights.kingside(Color::White)))
+        .byte(u8::from(rights.queenside(Color::White)))
+        .byte(u8::from(rights.kingside(Color::Black)))
+        .byte(u8::from(rights.queenside(Color::Black)))
+        .byte(
+            board
+                .en_passant_target()
+                .map_or(u8::MAX, |square| square.index().value()),
+        )
+        .bytes(&board.halfmove_clock().value().to_be_bytes())
+        .bytes(&board.fullmove_number().value().to_be_bytes());
+    writer.finish()
 }
 
 const fn piece_kind_code(kind: PieceKind) -> u8 {
