@@ -223,3 +223,17 @@ device, uncomment a line, change the value and run `systemctl restart firmware`;
 rendered from `Tuning::VARIABLES` (`tuning::env_file`), and a test fails with the
 expected text when the shipped copy differs, so a new variable needs that file
 updated too.
+
+The `no-hardcoded-timing` ast-grep rule (`tooling/ast-grep/rules/`) reports
+literal `Duration`s and literal `sleep`/`interval`/`timeout` calls in `src/`
+outside `src/tuning/`, `src/harness.rs` and test code: a value worth adjusting on
+a prototype belongs in `tuning!`. A fixed protocol or network bound that is not
+a prototype knob stays a named constant with a comment saying why and
+`// ast-grep-ignore: no-hardcoded-timing`, as `CONNECT_TIMEOUT`,
+`REQUEST_TIMEOUT` and the preflight `PROBE` do. The `pins-only-in-pins` rule
+keeps BCM numbers in `src/hardware/pins.rs`. Clippy enforces the related
+boundaries: only `src/tuning/` reads the environment, only `src/events/` creates
+Tokio channels, and the firmware never shells out.
+
+`tests/yocto_manifest.rs` fails when `yocto/Cargo.toml` and `Cargo.toml`
+declare different dependencies or package versions.

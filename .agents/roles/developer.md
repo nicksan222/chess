@@ -15,7 +15,10 @@ signatures in source rather than copying an example blindly. Report any public
 API change so the lead can coordinate it with the firmware side.
 
 Do not duplicate chess or runtime logic in tests, and do not add a hardware
-abstraction merely to mirror PCB generation. Stored formats, errors and
+abstraction merely to mirror PCB generation. The workspace lint policy and the
+repository rules (including the cargo-deny crate boundaries) are listed in
+`docs/development.md` "Quality checks": fix a violation rather than allowing
+it, and give any scoped `#[allow]`/`#[expect]` a `reason`. Stored formats, errors and
 cross-crate behavior need focused regression coverage. Run the checks the brief
 names, otherwise `just --justfile <crate>/justfile check` for each touched crate.
 Never weaken a check, stage, or commit.
