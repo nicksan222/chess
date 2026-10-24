@@ -10,19 +10,32 @@ use super::{Credentials, Error, Hotspot, Ssid};
 
 /// A network as reported by the Wi-Fi stack, before product validation.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct VisibleNetwork {
+pub(super) struct VisibleNetwork {
     /// Raw network name; may not satisfy [`Ssid`]'s constraints.
-    pub ssid: String,
+    pub(super) ssid: String,
     /// Signal strength from zero through one hundred, when reported.
-    pub strength: Option<u8>,
+    pub(super) strength: Option<u8>,
     /// Whether any authentication is advertised.
-    pub secured: bool,
+    pub(super) secured: bool,
     /// Whether the advertised authentication is enterprise (802.1X).
-    pub enterprise: bool,
+    pub(super) enterprise: bool,
     /// Whether this network is the active connection.
-    pub active: bool,
+    pub(super) active: bool,
     /// Whether a saved profile exists.
-    pub known: bool,
+    pub(super) known: bool,
+}
+
+/// What the Wi-Fi stack reports about the board's radio.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(super) enum Radio {
+    /// Confirmed idle: enabled but not connected, or disabled.
+    Disconnected,
+    /// Connecting, authenticating, configuring addresses or disconnecting.
+    Changing,
+    /// Active, with the SSID of its connection when one is reported.
+    Active { ssid: Option<String> },
+    /// In a state the product cannot interpret, such as unmanaged or failed.
+    Unknown,
 }
 
 /// Wi-Fi operations on the board's radio.
@@ -30,9 +43,9 @@ pub struct VisibleNetwork {
 /// Used only through generics inside this crate, so each future's `Send`-ness is
 /// checked on the concrete backend rather than promised by the trait.
 #[allow(async_fn_in_trait)]
-pub trait WifiBackend {
-    /// SSID of the active client connection, if any.
-    async fn current_ssid(&self) -> Option<String>;
+pub(super) trait WifiBackend {
+    /// The radio's current state; a failed query is an error, never a state.
+    async fn radio(&self) -> Result<Radio, Error>;
     /// Requests a fresh scan, then lists the visible networks (unsorted).
     async fn scan(&self) -> Result<Vec<VisibleNetwork>, Error>;
     /// Removes the saved profile and any active connection for `ssid`.

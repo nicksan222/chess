@@ -3,8 +3,8 @@
 use tokio::sync::Mutex;
 
 use super::{
-    AccessPoint, Credentials, Error, Hotspot, Security, Ssid, Status,
-    backend::{VisibleNetwork, WifiBackend},
+    AccessPoint, Credentials, Error, Hotspot, Link, Security, Ssid,
+    backend::{Radio, VisibleNetwork, WifiBackend},
     network_manager::NetworkManagerBackend,
 };
 
@@ -13,39 +13,42 @@ use super::{
 /// The type parameter is the system backend. Callers use the default,
 /// NetworkManager, through [`Connectivity::network_manager`]; unit tests supply
 /// an in-memory backend with `Connectivity::with_backend`.
-pub struct Connectivity<B = NetworkManagerBackend> {
+pub(super) struct Connectivity<B = NetworkManagerBackend> {
     backend: B,
     hotspot_ssid: Mutex<Option<String>>,
 }
 
 impl Connectivity {
     /// Connects to the system NetworkManager service and the board Wi-Fi radio.
-    pub async fn network_manager() -> Result<Self, Error> {
+    pub(super) async fn network_manager() -> Result<Self, Error> {
         Ok(Self::with_backend(NetworkManagerBackend::connect().await?))
     }
 }
 
 impl<B: WifiBackend> Connectivity<B> {
-    pub(crate) fn with_backend(backend: B) -> Self {
+    pub(super) fn with_backend(backend: B) -> Self {
         Self {
             backend,
             hotspot_ssid: Mutex::new(None),
         }
     }
 
-    /// Reports the current client connection.
-    pub async fn status(&self) -> Result<Status, Error> {
-        self.backend
-            .current_ssid()
-            .await
-            .map(Ssid::new)
-            .transpose()
-            .map(|ssid| ssid.map_or(Status::Disconnected, Status::Connected))
-            .map_err(Error::InvalidSsid)
+    /// Reports the current client connection. Only a radio the stack
+    /// confirms idle is `Disconnected`; a state it cannot vouch for is
+    /// [`Error::UnknownState`].
+    pub(super) async fn status(&self) -> Result<Link, Error> {
+        match self.backend.radio().await? {
+            Radio::Disconnected => Ok(Link::Disconnected),
+            Radio::Changing => Ok(Link::Changing),
+            Radio::Active { ssid: Some(ssid) } => Ssid::new(ssid)
+                .map(Link::Connected)
+                .map_err(Error::InvalidSsid),
+            Radio::Active { ssid: None } | Radio::Unknown => Err(Error::UnknownState),
+        }
     }
 
     /// Refreshes and returns visible networks.
-    pub async fn scan(&self) -> Result<Vec<AccessPoint>, Error> {
+    pub(super) async fn scan(&self) -> Result<Vec<AccessPoint>, Error> {
         let mut networks = self
             .backend
             .scan()
@@ -63,7 +66,7 @@ impl<B: WifiBackend> Connectivity<B> {
     }
 
     /// Starts the provisioning hotspot.
-    pub async fn start_hotspot(&self, hotspot: &Hotspot) -> Result<(), Error> {
+    pub(super) async fn start_hotspot(&self, hotspot: &Hotspot) -> Result<(), Error> {
         self.stop_hotspot().await?;
         self.backend.forget(hotspot.ssid.as_str()).await?;
         self.backend.start_access_point(hotspot).await?;
@@ -72,7 +75,7 @@ impl<B: WifiBackend> Connectivity<B> {
     }
 
     /// Stops and removes the provisioning hotspot.
-    pub async fn stop_hotspot(&self) -> Result<(), Error> {
+    pub(super) async fn stop_hotspot(&self) -> Result<(), Error> {
         if let Some(ssid) = self.hotspot_ssid.lock().await.take() {
             self.backend.forget(&ssid).await?;
         }
@@ -80,7 +83,11 @@ impl<B: WifiBackend> Connectivity<B> {
     }
 
     /// Stops hotspot mode and joins the selected client network.
-    pub async fn connect(&self, ssid: &Ssid, credentials: &Credentials) -> Result<(), Error> {
+    pub(super) async fn connect(
+        &self,
+        ssid: &Ssid,
+        credentials: &Credentials,
+    ) -> Result<(), Error> {
         self.stop_hotspot().await?;
         self.backend.join(ssid, credentials).await
     }
@@ -111,7 +118,7 @@ mod tests {
     use nmrs::ConnectionError;
 
     use super::*;
-    use crate::connectivity::{
+    use crate::modules::connection::{
         Passphrase,
         fake::{Call, Failure, FakeWifi, Network, Operation},
     };
@@ -148,17 +155,47 @@ mod tests {
     async fn status_is_disconnected_when_no_network_is_active() {
         let wifi = connectivity(&FakeWifi::default());
 
-        assert_eq!(wifi.status().await.unwrap(), Status::Disconnected);
+        assert_eq!(wifi.status().await.unwrap(), Link::Disconnected);
     }
 
     #[tokio::test]
     async fn status_names_the_connected_network() {
         let wifi = connectivity(&FakeWifi::default().with_active_client("Home"));
 
-        assert_eq!(
-            wifi.status().await.unwrap(),
-            Status::Connected(ssid("Home"))
-        );
+        assert_eq!(wifi.status().await.unwrap(), Link::Connected(ssid("Home")));
+    }
+
+    #[tokio::test]
+    async fn status_is_only_disconnected_when_the_stack_confirms_it() {
+        for (radio, link) in [
+            (Radio::Disconnected, Some(Link::Disconnected)),
+            (Radio::Changing, Some(Link::Changing)),
+            (
+                Radio::Active {
+                    ssid: Some("Home".into()),
+                },
+                Some(Link::Connected(ssid("Home"))),
+            ),
+            (Radio::Active { ssid: None }, None),
+            (Radio::Unknown, None),
+        ] {
+            let wifi = connectivity(&FakeWifi::default().with_radio(radio.clone()));
+            match (wifi.status().await, link) {
+                (Ok(reported), Some(expected)) => assert_eq!(reported, expected, "{radio:?}"),
+                (Err(Error::UnknownState), None) => {}
+                (reported, _) => panic!("{radio:?}: {reported:?}"),
+            }
+        }
+    }
+
+    #[tokio::test]
+    async fn a_failed_radio_query_is_an_error_not_disconnected() {
+        let fake = FakeWifi::default();
+        fake.fail_next(Operation::Radio, Failure::Timeout);
+
+        let error = connectivity(&fake).status().await.unwrap_err();
+
+        assert!(matches!(error, Error::NetworkManager(_)), "{error:?}");
     }
 
     #[tokio::test]
@@ -427,10 +464,7 @@ mod tests {
             ]
         );
         assert_eq!(fake.access_point(), None);
-        assert_eq!(
-            wifi.status().await.unwrap(),
-            Status::Connected(ssid("Cafe"))
-        );
+        assert_eq!(wifi.status().await.unwrap(), Link::Connected(ssid("Cafe")));
     }
 
     #[tokio::test]
@@ -466,10 +500,7 @@ mod tests {
                 Call::Join(ssid("Home"), personal("home-password")),
             ]
         );
-        assert_eq!(
-            wifi.status().await.unwrap(),
-            Status::Connected(ssid("Home"))
-        );
+        assert_eq!(wifi.status().await.unwrap(), Link::Connected(ssid("Home")));
     }
 
     #[tokio::test]
@@ -488,7 +519,7 @@ mod tests {
             "{error:?}"
         );
         // The fake, like NetworkManager in the earlier VM runs, keeps no link after a failed join.
-        assert_eq!(wifi.status().await.unwrap(), Status::Disconnected);
+        assert_eq!(wifi.status().await.unwrap(), Link::Disconnected);
     }
 
     #[tokio::test]
@@ -507,14 +538,14 @@ mod tests {
             "{error:?}"
         );
         // The fake, like NetworkManager in the earlier VM runs, keeps no link after a failed join.
-        assert_eq!(wifi.status().await.unwrap(), Status::Disconnected);
+        assert_eq!(wifi.status().await.unwrap(), Link::Disconnected);
     }
 
     // --- known bugs: these assert the documented behaviour and fail today ---
 
     /// Evidence: the removed Linux VM run reported
     /// `status with only the hotspot running: Connected(Ssid("ChessSetup"))`.
-    /// `Status` is documented as the current *client* connection.
+    /// `Link` is documented as the current *client* connection.
     #[tokio::test]
     #[ignore = "bug (Q1): status() reports Connected(<hotspot SSID>) while only the hotspot runs"]
     async fn a_running_hotspot_is_not_a_client_connection() {
@@ -522,7 +553,7 @@ mod tests {
         let wifi = connectivity(&fake);
         wifi.start_hotspot(&hotspot("ChessSetup")).await.unwrap();
 
-        assert_eq!(wifi.status().await.unwrap(), Status::Disconnected);
+        assert_eq!(wifi.status().await.unwrap(), Link::Disconnected);
     }
 
     /// Evidence: in the removed VM run, after the first `Connectivity` was dropped a new

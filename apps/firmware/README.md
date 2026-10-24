@@ -39,58 +39,122 @@ cause; startup fails so systemd can restart the process. `ButtonPanel` owns the
 pollers and stops them when dropped. Its injected-reader constructor exercises the
 same panel startup and runtime delivery without GPIO hardware.
 
-`src/connectivity/` owns typed, presentation-agnostic Wi-Fi control. Its
-`Connectivity` API reports status, scans access points, manages the WPA
-provisioning hotspot, and joins open or WPA Personal networks. Product code sees
-validated SSIDs, redacted passphrases, and domain results rather than command
-arguments or NetworkManager types. The implementation uses the maintained `nmrs` D-Bus
-client; no shell or `nmcli` process is involved. The Yocto image
-includes NetworkManager Wi-Fi support, `wpa-supplicant`, and `dnsmasq` for
-NetworkManager's shared hotspot mode. Captive-portal presentation and menu
-transition wiring remain separate consumers of this module.
+### Modules
+
+Product behaviour lives in self-contained modules under `src/modules/`, one
+folder each. A module's `mod.rs` is its facade and re-exports the module's
+public surface: the facade type other code calls, `Settings` (its `Config`
+field; `Default` is the network-free value tests use), `Status` (its
+`Snapshot::modules` field), `Request` (its menu requests), `MENU` when it has
+menu items, and the domain types its facade returns. Implementation files are
+private modules; `#![deny(unreachable_pub)]` makes the compiler reject
+internals that drift public. The module's `Engine` implements the `Module`
+trait in `src/modules/module.rs`. It is `pub(super)` so the registry macro can
+build it, which makes it visible within `src/modules/` as a whole, not just to
+the registry; sibling modules use each other's facades by convention and
+review, not because the compiler forbids naming an engine. The `Facade` trait
+is sealed, so only the registry implements it.
+
+The registry in `src/modules/mod.rs` lists every module once, as
+`field: Facade`, for example `firmware: Updates`. The `modules!` macro declares
+`pub mod field` and generates `Config` with `device()` and `offline()`,
+`ModuleStatus`, the top-level
+`Request` routed by type (`Request::Updates(firmware::Request::Check)`), the
+dispatcher the runtime loop owns, and facade lookup. Menu requests go to the
+owning module's `request`; every hardware event goes to each module's `event`,
+in registry order, before the menu interprets it. `Firmware::module::<F>()` and
+`FirmwareHarness::module::<F>()` return a module's facade; integration tests use
+only facades, the harness, `Config`, `Request` and `Snapshot`.
+
+Modules use each other only through facades, which are cheap clones over `Arc`,
+channels or `watch`; no module lends out `&mut` state. While building, a
+module asks for another's facade with `context.get::<Connection>()`. Modules are
+built in registry order, so a module may only use modules listed above it;
+asking for a later one fails startup with an error naming both modules, which
+every harness test would report. Dependencies therefore cannot form cycles.
+A facade call into another module must not hang its caller: `Updates::check`
+gives the connection module one preflight probe (5 s) to answer and treats a
+slower answer as unknown, and the connection module bounds reaching
+NetworkManager by `connection::CONNECT_TIMEOUT` (5 s), retrying a failed or
+abandoned attempt on the next operation.
+
+To add a module:
+
+1. Create `src/modules/<name>/mod.rs` with `Settings`, `Status`, `Request`
+   (`Never` when it has no menu items), a facade type, and an `Engine`
+   implementing `Module` (`new`, `facade`, and `event` and/or `request`). A
+   menu-only placeholder needs only its `Request`, its `MENU` and
+   `super::module::placeholder! { Facade }`, as `play` and `pairing` show.
+2. Add one line `<name>: <Facade>,` to the registry, below every module it
+   uses.
+3. If it has menu items, define `pub static MENU` in its `mod.rs`, return it
+   from `Module::MENU`, and list it in `src/menu/definition.rs`, which alone
+   decides the product menu's layout. A test fails if a module with requests
+   has no `MENU` or its `MENU` is not listed, and another builds the registry
+   under both `Config::offline()` and `Config::device()`.
+
+A blocking menu item holds input until its request reports `finish`; its
+escape action is another request of the same module, which cancels the work.
+A plain item stays free while background work reports `progress` and
+`finish`; placeholders report `done` at once, leaving their status unchanged.
+Reports are `ModuleEvent`s carrying the request that started the work. The
+runtime loop receives them alongside hardware events, and one generic rule
+releases the menu when the request blocking it finishes. Background work may
+also start in `new`, reporting through the context; dropping the module stops
+it. `Snapshot::blocking` names the request holding input. Tests drive the real
+menu, inject reports with `FirmwareHarness::report` as they inject hardware with
+`trigger`, and wait for background results with `until`.
+
+The registered modules are:
+
+- `connection` owns typed, presentation-agnostic Wi-Fi control. Its
+  `Connection` facade reports status, scans access points, manages the WPA
+  provisioning hotspot, and joins open or WPA Personal networks. Product code
+  sees validated SSIDs, redacted passphrases, and domain results rather than
+  command arguments or NetworkManager types. The implementation uses the
+  maintained `nmrs` D-Bus client, reached lazily on the first operation; no
+  shell or `nmcli` process is involved. Status comes from the Wi-Fi device's
+  state, so only a radio NetworkManager confirms idle or switched off is
+  `Disconnected`; a failed query is an error and an unmanaged or failed device
+  is `UnknownState`. `Config::offline()` has no Wi-Fi
+  control, so tests never touch D-Bus. The Yocto image includes NetworkManager
+  Wi-Fi support, `wpa-supplicant`, and `dnsmasq` for NetworkManager's shared
+  hotspot mode. Its menu items (Status, Scan Wi-Fi, Network Settings) and the
+  captive portal are not implemented yet.
+- `firmware` owns the local firmware and its updates, independent of menus and
+  displays. Its facade is `Updates`, not `Firmware`, which already names the
+  running instance in `runtime`; code outside the crate imports the module
+  under an alias such as `firmware::{self as fw}`, since the crate is also
+  `firmware`. `firmware::NAME` and `firmware::version()` name the running firmware
+  and its Cargo version, used by `--version`, the startup log and the user
+  agent. `Updates::check` first asks the connection module whether Wi-Fi is
+  confirmed disconnected (`WifiDisconnected`), then runs preflight checks, cheapest
+  first, so a failure names its cause: the system clock must be set
+  (`ClockNotSet`), the release host must resolve (`Offline`) and accept a
+  connection (`Unreachable`). When Wi-Fi state is unknown, as without Wi-Fi
+  control, after an error or a 5 s silence, the preflight decides. It then asks the GitHub Releases API for this
+  repository's latest stable release over HTTPS and compares its `v<version>`
+  tag with the installed version: `NoRelease` (404), `UpToDate` or
+  `Available(Release)`. A failing service is `ServiceDown`, an exhausted quota
+  `RateLimited`, and other failures keep their cause chain. TLS uses `rustls` on
+  `ring` with the image's `ca-certificates`, so it needs a synchronised clock.
+  "Check for Updates" is blocking and presents the check as
+  `Snapshot::modules.firmware`: `Checking`, then the result, `Disabled`,
+  `WifiDisconnected` or `Failed`. No button is bound to escape yet, so a check
+  ends with its result or a timeout: the Wi-Fi lookup and each preflight probe
+  are bounded by 5 s and the release request by 15 s. Installing an update is
+  not implemented.
+- `play` and `pairing` hold the Play and Pairing menus' placeholders.
+- `pieces` has no menu items: it observes `PieceEvent`s and presents which
+  squares hold a piece, and the latest observation, as `Snapshot::modules.pieces`
+  and through its `Pieces` facade.
 
 `src/menu/definition.rs` is the single product menu definition. It composes the
-headless `menu` crate's primitives into the Play, Connection, Pairing, Update,
-and Settings submenus. Leaf requests are typed but deliberately immediate and
-non-blocking until their external modules define completion and cancellation
-behavior; the menu crate remains product-neutral and performs no operation.
-Each request is handled by a transition under `src/menu/transitions/`. A
-transition is defined entirely in its own file by implementing the `Transition`
-trait: the request it handles and, for a blocking item, the escape action that
-cancels it; its `Settings` (`Default` is the network-free value tests use,
-`device()` the product's); its `Status` for the snapshot; and `start` and
-`cancel`. One line in the `transitions!` registry in `mod.rs` wires it in,
-generating its `Config` field, its `Snapshot::transitions` field and its
-dispatch. Every request has a transition; those whose integration does not
-exist yet are placeholders that finish immediately. Tests require a transition
-for every menu request and check each against its menu item.
+headless `menu` crate's primitives and each module's `MENU` into the Play,
+Connection, Pairing, Update, and Settings submenus; the Settings submenu is
+empty. The menu crate remains product-neutral and performs no operation.
 
-The kind follows from the menu item and what the transition reports. A
-blocking item holds input until the transition reports `finish`; escape calls
-`cancel`. A plain item stays free while a background transition reports
-`progress` and `finish`, or an immediate one finishes inside `start`. Reports
-are `TransitionEvent`s, which the runtime loop receives alongside hardware
-events; one generic rule releases the menu when the request blocking it
-finishes. `Snapshot::blocking` names the operation holding input. Tests drive
-the real menu, inject reports with `FirmwareHarness::report` as they inject
-hardware with `trigger`, and wait for background results with `until`.
-
-`src/updater/` owns the local firmware and its updates, independent of menus
-and displays. `installed` names the running firmware and its Cargo version,
-used by `--version`, the startup log and the user agent. `Updater::check`
-first runs preflight checks, cheapest first, so a failure names its cause: the
-system clock must be set (`ClockNotSet`), the release host must resolve
-(`Offline`) and accept a connection (`Unreachable`). It then asks the GitHub
-Releases API for this repository's latest stable release over HTTPS and
-compares its `v<version>` tag with the installed version: `NoRelease` (404),
-`UpToDate` or `Available(Release)`. A failing service is `ServiceDown`, an
-exhausted quota `RateLimited`, and other failures keep their cause chain. TLS uses `rustls` on `ring` with the image's `ca-certificates`, so it
-needs a synchronised clock. Installing an update is not implemented.
-
-The Check for Updates transition only runs that check and presents it as
-`Snapshot::transitions.update`: `Checking`, then the result, `Disabled` or
-`Failed`. No button is bound to escape yet, so a check ends with its result or
-a 15 s timeout.
+### Hardware adapters
 
 `src/hardware/buttons.rs` and `src/hardware/debounce.rs` own polling, active-low
 translation, and mechanical debounce. Call `start_subscription` with a GPIO

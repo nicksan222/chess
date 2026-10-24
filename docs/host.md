@@ -106,10 +106,10 @@ A single radio cannot be an access point and a client at the same time, so
 provisioning is strictly sequential. The player types the passphrase on their own
 phone keyboard, which is why the board needs no on-device text entry.
 
-The firmware `connectivity` module implements the NetworkManager controller for
+The firmware `connection` module implements the NetworkManager controller for
 status, scanning, WPA-protected hotspot lifecycle, and joining a selected client
 network. It does not yet serve the captive portal, advertise DHCP option 114, or
-coordinate those operations with startup and menu transitions.
+coordinate those operations with startup and its menu items.
 
 ## What the player sees
 

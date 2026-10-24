@@ -1,4 +1,4 @@
-//! A local stand-in for the release feed, shared by updater and transition tests.
+//! A local stand-in for the release feed, shared by the firmware module's tests.
 
 use std::{
     io::{Read, Write},
@@ -8,8 +8,8 @@ use std::{
 };
 
 /// Serves one canned HTTP response on a local port and records each request.
-pub(crate) struct FakeFeed {
-    pub(crate) url: String,
+pub(super) struct FakeFeed {
+    pub(super) url: String,
     requests: Arc<Mutex<Vec<String>>>,
     // Keeps a silent feed's port open; answering feeds move theirs to a thread.
     _listener: Option<TcpListener>,
@@ -17,7 +17,7 @@ pub(crate) struct FakeFeed {
 
 impl FakeFeed {
     /// Answers every request with `response`.
-    pub(crate) fn answering(response: String) -> Self {
+    pub(super) fn answering(response: String) -> Self {
         let listener = TcpListener::bind("127.0.0.1:0").unwrap();
         let url = format!("http://{}/releases/latest", listener.local_addr().unwrap());
         let requests = Arc::new(Mutex::new(Vec::new()));
@@ -42,7 +42,7 @@ impl FakeFeed {
     }
 
     /// Accepts connections but never answers, so a check stays in flight.
-    pub(crate) fn silent() -> Self {
+    pub(super) fn silent() -> Self {
         let listener = TcpListener::bind("127.0.0.1:0").unwrap();
         Self {
             url: format!("http://{}/releases/latest", listener.local_addr().unwrap()),
@@ -52,13 +52,13 @@ impl FakeFeed {
     }
 
     /// The raw HTTP requests received so far.
-    pub(crate) fn requests(&self) -> Vec<String> {
+    pub(super) fn requests(&self) -> Vec<String> {
         self.requests.lock().unwrap().clone()
     }
 }
 
 /// An HTTP response with `status` such as `"404 Not Found"`.
-pub(crate) fn answer(status: &str, body: &str) -> String {
+pub(super) fn answer(status: &str, body: &str) -> String {
     format!(
         "HTTP/1.1 {status}\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",
         body.len()
@@ -66,7 +66,7 @@ pub(crate) fn answer(status: &str, body: &str) -> String {
 }
 
 /// A GitHub "latest release" answer for `tag`.
-pub(crate) fn release(tag: &str) -> String {
+pub(super) fn release(tag: &str) -> String {
     answer(
         "200 OK",
         &format!(r#"{{"tag_name": "{tag}", "html_url": "https://example.invalid/{tag}"}}"#),
