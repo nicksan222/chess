@@ -36,7 +36,7 @@ def configure_board[BoardNet: Net](
         settings.m_CopperEdgeClearance = pcbnew.FromMM(layout.edge_clearance_mm)
 
 
-def render_layout[BoardNet: Net](
+def _render_holes[BoardNet: Net](
     board: pcbnew.BOARD, layout: BoardLayout[BoardNet], outline: BoardOutline
 ) -> None:
     references = {footprint.GetReference() for footprint in board.GetFootprints()}
@@ -71,6 +71,11 @@ def render_layout[BoardNet: Net](
         pad.SetLayerSet(pad.UnplatedHoleMask())
         footprint.Add(pad)
         board.Add(footprint)
+
+
+def _render_labels[BoardNet: Net](
+    board: pcbnew.BOARD, layout: BoardLayout[BoardNet], outline: BoardOutline
+) -> None:
     for label in layout.labels:
         if not label.text or any(
             not math.isfinite(value) or value <= 0
@@ -85,6 +90,11 @@ def render_layout[BoardNet: Net](
         text.SetTextSize(pcbnew.VECTOR2I(height, height))
         text.SetTextThickness(pcbnew.FromMM(label.width_mm))
         board.Add(text)
+
+
+def _render_lines[BoardNet: Net](
+    board: pcbnew.BOARD, layout: BoardLayout[BoardNet], outline: BoardOutline
+) -> None:
     for line in layout.lines:
         if (
             line.start == line.end
@@ -101,6 +111,11 @@ def render_layout[BoardNet: Net](
         shape.SetWidth(pcbnew.FromMM(line.width_mm))
         shape.SetLayer(pcbnew.F_SilkS)
         board.Add(shape)
+
+
+def _render_planes[BoardNet: Net](
+    board: pcbnew.BOARD, layout: BoardLayout[BoardNet], outline: BoardOutline
+) -> None:
     for plane in layout.planes:
         if (
             not 0 < plane.inset_mm < min(outline.width_mm, outline.height_mm) / 2
@@ -122,3 +137,12 @@ def render_layout[BoardNet: Net](
             position = native_point(point, outline)
             zone.Outline().Append(position.x, position.y)
         board.Add(zone)
+
+
+def render_layout[BoardNet: Net](
+    board: pcbnew.BOARD, layout: BoardLayout[BoardNet], outline: BoardOutline
+) -> None:
+    _render_holes(board, layout, outline)
+    _render_labels(board, layout, outline)
+    _render_lines(board, layout, outline)
+    _render_planes(board, layout, outline)

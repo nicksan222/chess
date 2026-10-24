@@ -78,12 +78,13 @@ def move_to_collection(obj: bpy.types.Object, collection: bpy.types.Collection) 
     collection.objects.link(obj)
 
 
-def rounded_box(
+def rounded_box(  # noqa: PLR0913 -- runs only in Blender; call sites too numerous to regroup unverified
     name: str,
     dimensions: tuple[float, float, float],
     location: tuple[float, float, float],
     radius: float,
     collection: bpy.types.Collection,
+    *,
     bevel_segments: int = 4,
 ) -> bpy.types.Object:
     """A box of `dimensions` centred at `location`, edges rounded by `radius` (0 = sharp)."""
@@ -188,12 +189,13 @@ def _boolean_batch(
     bpy.data.objects.remove(combined, do_unlink=True)
 
 
-def cylinder(
+def cylinder(  # noqa: PLR0913 -- runs only in Blender; call sites too numerous to regroup unverified
     name: str,
     diameter: float,
     height: float,
     location: tuple[float, float, float],
     collection: bpy.types.Collection,
+    *,
     vertices: int = 64,
 ) -> bpy.types.Object:
     """A vertical cylinder of `diameter` and `height` centred at `location`."""
@@ -209,13 +211,14 @@ def cylinder(
     return obj
 
 
-def cylinder_between(
+def cylinder_between(  # noqa: PLR0913, PLR0917 -- runs only in Blender; call sites too numerous to regroup unverified
     name: str,
     diameter: float,
     position: tuple[float, float],
     bottom: float,
     top: float,
     collection: bpy.types.Collection,
+    *,
     vertices: int = 64,
 ) -> bpy.types.Object:
     """A vertical cylinder defined by its physical bottom and top faces."""
@@ -225,7 +228,7 @@ def cylinder_between(
         top - bottom,
         (*position, (bottom + top) / 2.0),
         collection,
-        vertices,
+        vertices=vertices,
     )
 
 
@@ -280,7 +283,7 @@ def load_objects(
         data_to.objects = requested
 
     loaded: dict[str, bpy.types.Object] = {}
-    for name, obj in zip(object_names, data_to.objects):
+    for name, obj in zip(object_names, data_to.objects, strict=True):
         if not isinstance(obj, bpy.types.Object):
             raise RuntimeError(f"{blend_path} returned no object for {name}")
         loaded[name] = obj

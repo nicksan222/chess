@@ -50,27 +50,6 @@ class ComponentSpec:
         return self.body_mm
 
 
-def part(
-    key: str,
-    description: str,
-    package: str,
-    manufacturer: str,
-    mpn: str,
-    body_mm: tuple[float, float, float] | None = None,
-    datasheet: str = "",
-    *,
-    purchase_unit: str = "each",
-    cut_length_mm: float | None = None,
-) -> ComponentSpec:
-    """Define one exact, purchasable component."""
-    return ComponentSpec(
-        key,
-        description,
-        package,
-        manufacturer,
-        mpn,
-        body_mm,
-        datasheet,
-        purchase_unit,
-        cut_length_mm,
-    )
+# Defining one exact, purchasable component is constructing its spec; the short
+# name keeps the component tables readable and takes the same fields.
+part = ComponentSpec

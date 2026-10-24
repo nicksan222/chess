@@ -19,7 +19,10 @@ from pcb.harness.base.pcbnew.model_export import source_digest
 from pcb.harness.base.pcbnew.render.assembly import write_assembly
 from pcb.harness.base.pcbnew.render.bom import write_bom
 from pcb.harness.base.pcbnew.render.connections import write_connections
-from pcb.harness.base.pcbnew.render.fabrication import write_fabrication
+from pcb.harness.base.pcbnew.render.fabrication import (
+    FabricationPackage,
+    write_fabrication,
+)
 from pcb.harness.base.pcbnew.render.fill import fill_planes
 from pcb.harness.base.pcbnew.render.models import attach_models, record_export
 from pcb.harness.base.pcbnew.render.preview import prepare_svg
@@ -242,7 +245,11 @@ def generate(destination: Path = GENERATED) -> Path:
         )
         write_assembly(declaration, stage)
         write_fabrication(
-            declaration, board_path, stage, NAME, declaration.fabrication_pending, run
+            declaration,
+            board_path,
+            stage,
+            FabricationPackage(NAME, declaration.fabrication_pending),
+            run,
         )
         write_report(
             declaration, stage, NAME, declaration.fabrication_pending, electrical_checks

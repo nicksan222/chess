@@ -66,9 +66,7 @@ def render_printable(part: PrintableComponent, output: Path) -> dict[str, object
         workspace.studio,
         floor,
         (10_000, 10_000),
-        part.camera_location,
-        part.camera_target,
-        56,
+        presentation.StudioCamera(part.camera_location, part.camera_target, 56),
         presentation.BOARD_STUDIO_LIGHTS,
     )
     mesh = objects[0]
@@ -82,6 +80,88 @@ def render_printable(part: PrintableComponent, output: Path) -> dict[str, object
         "boundary_edges": cast(int, mesh["mesh_boundary_edges"]),
         "non_manifold_edges": cast(int, mesh["mesh_non_manifold_edges"]),
     }
+
+
+def _require_plate_outline(plate: bpy.types.Object) -> None:
+    if any(
+        abs(a - b) > 0.01
+        for a, b in zip(
+            (plate.dimensions.x, plate.dimensions.y),
+            dimensions.TILE_PLATE_SIZE_MM,
+            strict=True,
+        )
+    ):
+        raise RuntimeError("Plate source does not match its declared outline")
+
+
+def _build_part_objects(
+    part: Component,
+    output: Path,
+    collection: bpy.types.Collection,
+    construction: bpy.types.Collection,
+    palette: dict[str, bpy.types.Material],
+) -> tuple[bpy.types.Object, ...]:
+    if isinstance(part, PrintableComponent):
+        obj = modeling.load_objects(
+            output / f"{part.output_name}.blend", (part.reference,)
+        )[part.reference]
+        collection.objects.link(obj)
+        objects = (obj,)
+    else:
+        objects = part.build(collection, construction, palette)
+    if tuple(obj.name for obj in objects) != part.object_names:
+        raise RuntimeError(
+            f"{part.reference}: generated object names differ from its definition"
+        )
+    return objects
+
+
+def _prepare_fit_meshes(
+    part: Component, objects: tuple[bpy.types.Object, ...]
+) -> tuple[bpy.types.Object, ...]:
+    meshes = tuple(
+        mesh
+        for obj in objects
+        for mesh in (obj, *obj.children_recursive)
+        if mesh.type == "MESH" and mesh.get("fit_check", True)
+    )
+    for mesh in meshes:
+        if mesh.get("source") != "chess-board.glb":
+            validation.weld_solid(mesh)
+        mesh["physical_reference"] = mesh.get(
+            "physical_reference", mesh.get("pcb_reference", part.reference)
+        )
+    return meshes
+
+
+def _largest_overlap_mm3(
+    checks: list[tuple[bpy.types.Object, bpy.types.Object]],
+) -> float:
+    largest_overlap = 0.0
+    for pair in checks:
+        first, second = (
+            (pair[1], pair[0])
+            if pair[1].get("connector") and not pair[0].get("connector")
+            else pair
+        )
+        points: tuple[tuple[float, float, float], ...] = ()
+        radius = 0.0
+        if first.get("connector") and second.get("physical_reference") in cast(
+            list[str], first.get("fit_mates", [])
+        ):
+            coordinates = cast(list[float], first["mating_points_mm"])
+            points = (
+                cast(tuple[float, float, float], tuple(coordinates[:3])),
+                cast(tuple[float, float, float], tuple(coordinates[3:])),
+            )
+            radius = cast(float, first["mating_radius_mm"])
+        volume = validation.overlap_volume_mm3(first, second, points, radius)
+        largest_overlap = max(largest_overlap, volume)
+        if volume > FIT_NOISE_TOLERANCE_MM3:
+            raise RuntimeError(
+                f"{first.name} and {second.name} overlap by {volume:.2f} mm3"
+            )
+    return largest_overlap
 
 
 def render_assembly(
@@ -107,13 +187,7 @@ def render_assembly(
         output / f"{plate_part.output_name}.blend", (plate_part.reference,)
     )[plate_part.reference]
     plate_collection.objects.link(plate)
-    if any(
-        abs(a - b) > 0.01
-        for a, b in zip(
-            (plate.dimensions.x, plate.dimensions.y), dimensions.TILE_PLATE_SIZE_MM
-        )
-    ):
-        raise RuntimeError("Plate source does not match its declared outline")
+    _require_plate_outline(plate)
     case_mesh = modeling.require_object(case.reference)
     palette = {
         "pcb": materials.solid("Circuit board", (0.02, 0.16, 0.07, 1), 0.38),
@@ -124,32 +198,9 @@ def render_assembly(
     }
     fitted: list[bpy.types.Object] = []
     for part in electronics:
-        if isinstance(part, PrintableComponent):
-            obj = modeling.load_objects(
-                output / f"{part.output_name}.blend", (part.reference,)
-            )[part.reference]
-            collection.objects.link(obj)
-            objects = (obj,)
-        else:
-            objects = part.build(collection, construction, palette)
-        if tuple(obj.name for obj in objects) != part.object_names:
-            raise RuntimeError(
-                f"{part.reference}: generated object names differ from its definition"
-            )
+        objects = _build_part_objects(part, output, collection, construction, palette)
         if part.fit_check:
-            meshes = tuple(
-                mesh
-                for obj in objects
-                for mesh in (obj, *obj.children_recursive)
-                if mesh.type == "MESH" and mesh.get("fit_check", True)
-            )
-            for mesh in meshes:
-                if mesh.get("source") != "chess-board.glb":
-                    validation.weld_solid(mesh)
-                mesh["physical_reference"] = mesh.get(
-                    "physical_reference", mesh.get("pcb_reference", part.reference)
-                )
-            fitted.extend(meshes)
+            fitted.extend(_prepare_fit_meshes(part, objects))
     construction.hide_render = True
     construction.hide_viewport = True
     checks = [
@@ -162,27 +213,7 @@ def render_assembly(
         if fit_pair_exempt(first, second):
             continue
         checks.append((first, second))
-    largest_overlap = 0.0
-    for first, second in checks:
-        if second.get("connector") and not first.get("connector"):
-            first, second = second, first
-        points: tuple[tuple[float, float, float], ...] = ()
-        radius = 0.0
-        if first.get("connector") and second.get("physical_reference") in cast(
-            list[str], first.get("fit_mates", [])
-        ):
-            coordinates = cast(list[float], first["mating_points_mm"])
-            points = (
-                cast(tuple[float, float, float], tuple(coordinates[:3])),
-                cast(tuple[float, float, float], tuple(coordinates[3:])),
-            )
-            radius = cast(float, first["mating_radius_mm"])
-        volume = validation.overlap_volume_mm3(first, second, points, radius)
-        largest_overlap = max(largest_overlap, volume)
-        if volume > FIT_NOISE_TOLERANCE_MM3:
-            raise RuntimeError(
-                f"{first.name} and {second.name} overlap by {volume:.2f} mm3"
-            )
+    largest_overlap = _largest_overlap_mm3(checks)
     render_views(plate, collection, output)
     bpy.ops.wm.save_as_mainfile(filepath=str(output / "board-assembly.blend"))
     return {

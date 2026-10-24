@@ -172,8 +172,8 @@ from .units import (
 )
 
 
-def validate() -> None:
-    """Reject dimension sets that are inconsistent or physically implausible."""
+def _validate_board_format() -> None:
+    """The board is an eight-by-eight compact board with a consistent case."""
     if GRID_COUNT != 8:
         raise ValueError("A chessboard must contain eight rows and eight columns")
     if BOARD_FORMAT != "compact electronic":
@@ -199,6 +199,9 @@ def validate() -> None:
     ):
         raise ValueError("Case depth must include the control strip and the frame")
 
+
+def _validate_internal_stack() -> None:
+    """The internal stack has to add up, or the plate will not sit flush."""
     # The internal stack has to add up, or the plate will not sit flush.
     if not isclose(
         CASE_HEIGHT_MM,
@@ -209,7 +212,7 @@ def validate() -> None:
         + CASE_FLOOR_MM,
     ):
         raise ValueError("Case height must equal the sum of the internal stack")
-    if PI_BAY_HEIGHT_MM < PI_BOARD_TO_BOARD_MM + PI_BOARD_SIZE_MM[2] + PI_CLEARANCE_MM:
+    if PI_BOARD_TO_BOARD_MM + PI_BOARD_SIZE_MM[2] + PI_CLEARANCE_MM > PI_BAY_HEIGHT_MM:
         raise ValueError(
             "Cavity below the board is too shallow for the Pi on its header"
         )
@@ -218,9 +221,12 @@ def validate() -> None:
         LED_PACKAGE_MAX_SIZE_MM[2],
         EXPANDER_BODY_MM[2],
     )
-    if PCB_TO_PLATE_GAP_MM < tallest_playing_area_component:
+    if tallest_playing_area_component > PCB_TO_PLATE_GAP_MM:
         raise ValueError("Plate would foul a component in the playing area")
 
+
+def _validate_printable_minimums() -> None:
+    """Fit clearance and printable minimum features of the case and plate."""
     if (
         not FDM_MIN_FIT_CLEARANCE_MM
         <= TILE_PLATE_CLEARANCE_MM
@@ -249,13 +255,16 @@ def validate() -> None:
         if not meets(dimension, minimum):
             raise ValueError(f"{name} is below the prototype printable minimum")
 
+
+def _validate_plate_pockets() -> None:
+    """Plate pockets, windows and screw recesses leave printable material."""
     if TILE_PLATE_LED_POCKET_MM[2] >= TILE_PLATE_THICKNESS_MM:
         raise ValueError("LED pocket must retain a roof around the open window")
     if TILE_PLATE_UNDERSIDE_POCKET_DEPTH_MM >= (
         TILE_PLATE_THICKNESS_MM - FDM_MIN_FLOOR_MM
     ):
         raise ValueError("Underside pockets must leave a printable plate floor")
-    if TILE_PLATE_UNDERSIDE_POCKET_SPAN_MM <= HALL_SENSOR_BODY_MM[0]:
+    if HALL_SENSOR_BODY_MM[0] >= TILE_PLATE_UNDERSIDE_POCKET_SPAN_MM:
         raise ValueError("Underside pocket must span the Hall sensor it clears")
     if TILE_PLATE_DARK_SQUARE_DEPTH_MM >= TILE_PLATE_DIFFUSER_SKIN_MM:
         raise ValueError("Dark-square recess must not reach the diffuser skin")
@@ -266,13 +275,17 @@ def validate() -> None:
     if any(
         pocket < required
         for pocket, required in zip(
-            TILE_PLATE_LED_POCKET_MM[:2], required_led_pocket_xy
+            TILE_PLATE_LED_POCKET_MM[:2],
+            required_led_pocket_xy,
+            strict=True,
         )
     ):
         raise ValueError("LED pocket does not clear the maximum 5050 package")
     if any(
         pocket < emitter + LED_PACKAGE_TOLERANCE_MM
-        for pocket, emitter in zip(TILE_PLATE_LED_POCKET_MM[:2], LED_EMITTER_WINDOW_MM)
+        for pocket, emitter in zip(
+            TILE_PLATE_LED_POCKET_MM[:2], LED_EMITTER_WINDOW_MM, strict=True
+        )
     ):
         raise ValueError("LED pocket does not clear the emitter window")
     if not meets(
@@ -287,11 +300,15 @@ def validate() -> None:
     if TILE_PLATE_SCREW_HEAD_DEPTH_MM >= TILE_PLATE_THICKNESS_MM:
         raise ValueError("Screw head recess must leave a bearing shoulder")
 
-    validate_board_pocket()
-    validate_plate_rim()
+
+def _validate_plate_ledge() -> None:
+    """The plate ledge is wider than the plate's own clearance."""
     if CASE_PLATE_LEDGE_MM <= TILE_PLATE_CLEARANCE_MM:
         raise ValueError("The plate ledge must be wider than the plate's own clearance")
 
+
+def _validate_square_features() -> None:
+    """Per-square features stay inside their own square."""
     # Per-square features must stay inside their own square, or two squares
     # would light or sense as one.
     half = SQUARE_SIZE_MM / 2.0
@@ -302,6 +319,9 @@ def validate() -> None:
     if HALL_SENSOR_BODY_MM[0] > SQUARE_SIZE_MM - 2.0 * FDM_MIN_FEATURE_MM:
         raise ValueError("Hall sensor body does not fit within one square")
 
+
+def _validate_support_bosses() -> None:
+    """Support bosses stand on the grid lines; nothing else may be there."""
     # Support bosses stand on the grid lines; nothing else may be there.
     boss_radius = PCB_SUPPORT_BOSS_DIAMETER_MM / 2.0
     for boss_x, boss_y in PCB_SUPPORT_POSITIONS_MM:
@@ -320,6 +340,9 @@ def validate() -> None:
     if PCB_SUPPORT_PILOT_DEPTH_MM >= PCB_SUPPORT_BOSS_DIAMETER_MM * 3.0:
         raise ValueError("Support pilot is too deep for its boss")
 
+
+def _validate_panel_layout() -> None:
+    """Control panel features stay on the control strip."""
     # Control panel features must stay on the control strip.
     strip_min_y = -PLAYING_SPAN_MM / 2.0 - PANEL_STRIP_DEPTH_MM
     strip_max_y = -PLAYING_SPAN_MM / 2.0
@@ -352,25 +375,42 @@ def validate() -> None:
         raise ValueError("Button positions must be unique")
     if PANEL_OLED_BEZEL_CLEARANCE_XY_MM <= 0.0:
         raise ValueError("Display recess must include positive XY assembly clearance")
+
+
+def _validate_display_recess() -> None:
+    """The display recess and window fit the module."""
     if any(
         recess <= module
-        for recess, module in zip(PANEL_OLED_BEZEL_INNER_MM, PANEL_OLED_MODULE_MM[:2])
+        for recess, module in zip(
+            PANEL_OLED_BEZEL_INNER_MM, PANEL_OLED_MODULE_MM[:2], strict=True
+        )
     ):
         raise ValueError("Display recess must be larger than the module")
     if any(
         window >= module
-        for window, module in zip(PANEL_OLED_SCREEN_SIZE_MM, PANEL_OLED_MODULE_MM[:2])
+        for window, module in zip(
+            PANEL_OLED_SCREEN_SIZE_MM, PANEL_OLED_MODULE_MM[:2], strict=True
+        )
     ):
         raise ValueError("Display window must be smaller than the module behind it")
 
+
+def _validate_led_windows() -> None:
+    """Each LED window exposes its emitter inside a printable roof."""
     for aperture, emitter, pocket in zip(
-        TILE_PLATE_LED_WINDOW_MM, LED_EMITTER_WINDOW_MM, TILE_PLATE_LED_POCKET_MM[:2]
+        TILE_PLATE_LED_WINDOW_MM,
+        LED_EMITTER_WINDOW_MM,
+        TILE_PLATE_LED_POCKET_MM[:2],
+        strict=True,
     ):
         if aperture < emitter + LED_PACKAGE_TOLERANCE_MM:
             raise ValueError("LED window must expose the whole emitter")
         if not meets((pocket - aperture) / 2, FDM_MIN_FEATURE_MM):
             raise ValueError("LED window must retain a printable surrounding roof")
 
+
+def _validate_display_mount() -> None:
+    """The display screw, pilot and bezel are printable and fit."""
     if not 0 < PANEL_SURFACE_RECESS_MM < TILE_PLATE_THICKNESS_MM:
         raise ValueError("Control surface must be recessed within the plate")
     screw_tip = (
@@ -397,7 +437,7 @@ def validate() -> None:
     ):
         raise ValueError("Display screw head does not fit below the bezel roof")
     for dx, dy in PANEL_OLED_MOUNT_HOLES_MM:
-        for center, span in zip((dx, dy), PANEL_OLED_BEZEL_OUTER_MM):
+        for center, span in zip((dx, dy), PANEL_OLED_BEZEL_OUTER_MM, strict=True):
             if not meets(
                 span / 2 - abs(center) - PANEL_OLED_FASTENER_ACCESS_DIAMETER_MM / 2,
                 FDM_MIN_FEATURE_MM,
@@ -421,9 +461,15 @@ def validate() -> None:
         raise ValueError("Display bezel needs printable walls and roof")
     if any(
         wire >= body
-        for wire, body in zip(PANEL_OLED_WIRE_OPENING_MM, PANEL_OLED_MODULE_MM[:2])
+        for wire, body in zip(
+            PANEL_OLED_WIRE_OPENING_MM, PANEL_OLED_MODULE_MM[:2], strict=True
+        )
     ):
         raise ValueError("Display wire opening must leave supporting material")
+
+
+def _validate_enclosure_parts() -> None:
+    """Piece seats, controls and bays pass their focused checks."""
     validate_piece_seats()
     validate_buttons()
     validate_rocker()
@@ -431,6 +477,10 @@ def validate() -> None:
     validate_pi_bay()
     validate_bottom_keepouts()
     validate_sd_slot()
+
+
+def _validate_board_composition() -> None:
+    """The board places its expanders and fits the print service."""
     if len(EXPANDER_POSITIONS_BY_BANK_MM) != 8:
         raise ValueError("Board composition must place eight GPIO expanders")
     if len(set(EXPANDER_POSITIONS_BY_BANK_MM.values())) != 8:
@@ -448,6 +498,25 @@ def validate() -> None:
             raise ValueError(
                 "A printed part exceeds the print-service reference volume"
             )
+
+
+def validate() -> None:
+    """Reject dimension sets that are inconsistent or physically implausible."""
+    _validate_board_format()
+    _validate_internal_stack()
+    _validate_printable_minimums()
+    _validate_plate_pockets()
+    validate_board_pocket()
+    validate_plate_rim()
+    _validate_plate_ledge()
+    _validate_square_features()
+    _validate_support_bosses()
+    _validate_panel_layout()
+    _validate_display_recess()
+    _validate_led_windows()
+    _validate_display_mount()
+    _validate_enclosure_parts()
+    _validate_board_composition()
 
 
 Point = tuple[float, float]
@@ -582,7 +651,10 @@ def validate_buttons() -> None:
 
 def validate_rocker() -> None:
     """The snap-in rocker fits its cutout in a wall pocketed to panel thickness."""
-    if any(a < c for a, c in zip(CASE_ROCKER_APERTURE_MM, CASE_ROCKER_CUTOUT_MM)):
+    if any(
+        a < c
+        for a, c in zip(CASE_ROCKER_APERTURE_MM, CASE_ROCKER_CUTOUT_MM, strict=True)
+    ):
         raise ValueError("Rocker aperture is smaller than the panel cutout")
     rear_wall = (CASE_DEPTH_MM - CASE_CAVITY_SIZE_MM[1]) / 2.0
     if not FDM_MIN_FEATURE_MM <= CASE_ROCKER_PANEL_THICKNESS_MM < rear_wall:
@@ -602,7 +674,7 @@ def validate_rocker() -> None:
         and meets(
             top - CASE_REAR_APERTURE_CENTER_Z_MM - half_z, CASE_ROCKER_LATCH_MARGIN_MM
         )
-        and CASE_FLOOR_MM <= bottom
+        and bottom >= CASE_FLOOR_MM
         and top <= PCB_UNDERSIDE_Z_MM
     ):
         raise ValueError("Rocker wall pocket leaves no room for the snap-in latches")
@@ -628,7 +700,7 @@ def validate_jack() -> None:
     rear_wall = (CASE_DEPTH_MM - CASE_CAVITY_SIZE_MM[1]) / 2.0
     if not (
         FDM_MIN_FEATURE_MM <= CASE_JACK_PANEL_THICKNESS_MM <= CASE_JACK_MAX_PANEL_MM
-        and CASE_JACK_PANEL_THICKNESS_MM < rear_wall
+        and rear_wall > CASE_JACK_PANEL_THICKNESS_MM
     ):
         raise ValueError("Jack panel thickness is outside the jack's thread range")
     if not meets(

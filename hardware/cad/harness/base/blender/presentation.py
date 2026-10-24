@@ -5,6 +5,8 @@ CAD project so all review renders look alike. Presentation only: nothing here af
 printable geometry.
 """
 
+from dataclasses import dataclass
+
 import bpy
 from mathutils import Vector
 
@@ -17,6 +19,15 @@ BOARD_STUDIO_LIGHTS = (
     ("Fill_Light", (-260.0, -150.0, 260.0), 1_050_000.0, 240.0, (0.86, 0.92, 1.0)),
     ("Rim_Light", (40.0, 260.0, 320.0), 950_000.0, 220.0, (1.0, 0.97, 0.92)),
 )
+
+
+@dataclass(frozen=True)
+class StudioCamera:
+    """Where the render camera sits, what it looks at and its focal length."""
+
+    location: tuple[float, float, float]
+    target: tuple[float, float, float]
+    lens: float
 
 
 def configure_scene(
@@ -58,9 +69,7 @@ def add_studio(
     collection: bpy.types.Collection,
     floor_material: bpy.types.Material,
     floor_size: tuple[float, float],
-    camera_location: tuple[float, float, float],
-    camera_target: tuple[float, float, float],
-    camera_lens: float,
+    camera: StudioCamera,
     lights: tuple[
         tuple[
             str,
@@ -72,7 +81,7 @@ def add_studio(
         ...,
     ],
 ) -> None:
-    """Add a rounded floor, a camera aimed at `camera_target` and the given lights.
+    """Add a rounded floor, a camera aimed at `camera.target` and the given lights.
 
     Everything goes into `collection` (the PRESENTATION collection) so it can be told
     apart from the printable part. Each light entry follows `BOARD_STUDIO_LIGHTS`.
@@ -86,15 +95,15 @@ def add_studio(
     )
     floor.data.materials.append(floor_material)
 
-    bpy.ops.object.camera_add(location=camera_location)
-    camera = modeling.active_object("creating the render camera")
-    camera.name = "Camera_Render"
-    camera_data = modeling.require_object_data(camera, bpy.types.Camera)
-    camera_data.lens = camera_lens
+    bpy.ops.object.camera_add(location=camera.location)
+    camera_object = modeling.active_object("creating the render camera")
+    camera_object.name = "Camera_Render"
+    camera_data = modeling.require_object_data(camera_object, bpy.types.Camera)
+    camera_data.lens = camera.lens
     camera_data.clip_end = max(floor_size)
-    modeling.point_at(camera, Vector(camera_target))
-    modeling.move_to_collection(camera, collection)
-    bpy.context.scene.camera = camera
+    modeling.point_at(camera_object, Vector(camera.target))
+    modeling.move_to_collection(camera_object, collection)
+    bpy.context.scene.camera = camera_object
 
     for name, location, energy, size, color in lights:
         bpy.ops.object.light_add(type="AREA", location=location)
@@ -105,5 +114,5 @@ def add_studio(
         light_data.shape = "DISK"
         light_data.size = size
         light_data.color = color
-        modeling.point_at(light, Vector(camera_target))
+        modeling.point_at(light, Vector(camera.target))
         modeling.move_to_collection(light, collection)

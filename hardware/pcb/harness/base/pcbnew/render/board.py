@@ -18,11 +18,55 @@ from ...circuit import Circuit
 from ...component import BoardComponent
 from ...connections import NetConnection
 from ...net import Net
+from ..outline import BoardOutline
 from .footprint import render_footprint
 from .identity import normalize_board_uuids
 from .layout import configure_board, render_layout
 from .outline import render_outline
 from .route import render_trace, render_via
+
+
+def _check_copper_inside_outline[BoardNet: Net](
+    circuit: Circuit[BoardNet], outline: BoardOutline
+) -> None:
+    for route in circuit.traces():
+        radius = route.width_mm / 2
+        if any(
+            abs(point.x_mm) + radius > outline.width_mm / 2
+            or abs(point.y_mm) + radius > outline.height_mm / 2
+            for point in (route.start, route.end)
+        ):
+            raise ValueError("trace copper exceeds board edge")
+    for route in circuit.vias():
+        radius = route.diameter_mm / 2
+        if (
+            abs(route.center.x_mm) + radius > outline.width_mm / 2
+            or abs(route.center.y_mm) + radius > outline.height_mm / 2
+        ):
+            raise ValueError("via copper exceeds board edge")
+
+
+def _check_enabled_layers[BoardNet: Net](circuit: Circuit[BoardNet]) -> None:
+    from ..route import CopperLayer
+
+    inner_layers = (
+        CopperLayer.INNER_1,
+        CopperLayer.INNER_2,
+        CopperLayer.INNER_3,
+        CopperLayer.INNER_4,
+        CopperLayer.INNER_5,
+        CopperLayer.INNER_6,
+    )
+    available = {
+        CopperLayer.TOP,
+        CopperLayer.BOTTOM,
+        *inner_layers[: circuit.layout.copper_layers - 2],
+    }
+    if any(route.layer not in available for route in circuit.traces()) or any(
+        plane.layer not in available or type(plane.net) is not circuit.net_type
+        for plane in circuit.layout.planes
+    ):
+        raise ValueError("copper must use the board's enabled layers and typed nets")
 
 
 def render_board[BoardNet: Net](circuit: Circuit[BoardNet]) -> pcbnew.BOARD:
@@ -62,41 +106,8 @@ def render_board[BoardNet: Net](circuit: Circuit[BoardNet]) -> pcbnew.BOARD:
     }
     if any(route.net not in declared for route in (*circuit.traces(), *circuit.vias())):
         raise ValueError("route net must appear on a component pin")
-    for route in circuit.traces():
-        radius = route.width_mm / 2
-        if any(
-            abs(point.x_mm) + radius > outline.width_mm / 2
-            or abs(point.y_mm) + radius > outline.height_mm / 2
-            for point in (route.start, route.end)
-        ):
-            raise ValueError("trace copper exceeds board edge")
-    for route in circuit.vias():
-        radius = route.diameter_mm / 2
-        if (
-            abs(route.center.x_mm) + radius > outline.width_mm / 2
-            or abs(route.center.y_mm) + radius > outline.height_mm / 2
-        ):
-            raise ValueError("via copper exceeds board edge")
-    from ..route import CopperLayer
-
-    inner_layers = (
-        CopperLayer.INNER_1,
-        CopperLayer.INNER_2,
-        CopperLayer.INNER_3,
-        CopperLayer.INNER_4,
-        CopperLayer.INNER_5,
-        CopperLayer.INNER_6,
-    )
-    available = {
-        CopperLayer.TOP,
-        CopperLayer.BOTTOM,
-        *inner_layers[: circuit.layout.copper_layers - 2],
-    }
-    if any(route.layer not in available for route in circuit.traces()) or any(
-        plane.layer not in available or type(plane.net) is not circuit.net_type
-        for plane in circuit.layout.planes
-    ):
-        raise ValueError("copper must use the board's enabled layers and typed nets")
+    _check_copper_inside_outline(circuit, outline)
+    _check_enabled_layers(circuit)
     board = pcbnew.BOARD()
     configure_board(board, circuit.layout)
     render_outline(board, outline)

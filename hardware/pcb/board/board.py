@@ -10,6 +10,7 @@ release validation remain pending.
 """
 
 from collections.abc import Callable
+from dataclasses import dataclass
 
 from pcb.components.capacitors.capacitor_1_microfarad import Capacitor1Microfarad
 from pcb.components.capacitors.capacitor_1_nanofarad import Capacitor1Nanofarad
@@ -516,9 +517,11 @@ class Board(Circuit[BoardNet]):
             BoardNet.FIVE_VOLTS,
             BoardNet.THREE_VOLTS_THREE,
             BoardNet.LED_5V,
-            edge_clearance_mm=self.design_rules.routing.edge_clearance_mm,
-            minimum_clearance_mm=minimum_clearance,
-            minimum_track_width_mm=minimum_width,
+            _LayoutLimits(
+                edge_clearance_mm=self.design_rules.routing.edge_clearance_mm,
+                minimum_clearance_mm=minimum_clearance,
+                minimum_track_width_mm=minimum_width,
+            ),
         )
         self.validate()
         from pcb.board.wiring import wiring as define_wiring
@@ -1096,15 +1099,21 @@ def _layout_point(x: float, y: float) -> Point:
     return Point(x, y + (dimensions.PCB_SIZE_MM[1] - dimensions.PLAYING_SPAN_MM) / 2)
 
 
+@dataclass(frozen=True)
+class _LayoutLimits:
+    """The copper clearances and widths the board layout must declare."""
+
+    edge_clearance_mm: float
+    minimum_clearance_mm: float
+    minimum_track_width_mm: float
+
+
 def _layout[BoardNet: Net](
     ground: BoardNet,
     supply: BoardNet,
     logic_supply: BoardNet,
     led_supply: BoardNet,
-    *,
-    edge_clearance_mm: float,
-    minimum_clearance_mm: float,
-    minimum_track_width_mm: float,
+    limits: _LayoutLimits,
 ) -> BoardLayout[BoardNet]:
     labels = [
         Label("CHESS BOARD", _layout_point(116, -165), 1.5),
@@ -1154,9 +1163,9 @@ def _layout[BoardNet: Net](
     return BoardLayout(
         copper_layers=8,
         thickness_mm=dimensions.PCB_THICKNESS_MM,
-        edge_clearance_mm=edge_clearance_mm,
-        minimum_clearance_mm=minimum_clearance_mm,
-        minimum_track_width_mm=minimum_track_width_mm,
+        edge_clearance_mm=limits.edge_clearance_mm,
+        minimum_clearance_mm=limits.minimum_clearance_mm,
+        minimum_track_width_mm=limits.minimum_track_width_mm,
         planes=(
             Plane(ground, CopperLayer.INNER_1),
             Plane(supply, CopperLayer.INNER_2),

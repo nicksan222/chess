@@ -20,7 +20,7 @@ class EngineTest(unittest.TestCase):
     def fixture(self, *, duplicate_receiver_pad: bool = False) -> RoutingContext:
         from pcb.harness.base.pcbnew.render.board import render_board
 
-        from .engine import context
+        from .engine import RoutingScope, context
         from .settings import RoutingSettings
 
         circuit = sample_board()
@@ -55,9 +55,7 @@ class EngineTest(unittest.TestCase):
             cast(Circuit[Net], circuit),
             render_board(circuit),
             RoutingSettings(),
-            "U1",
-            frozenset(),
-            frozenset(),
+            RoutingScope("U1", frozenset(), frozenset()),
         )
 
     def test_net_route_honours_width_and_local_area(self) -> None:

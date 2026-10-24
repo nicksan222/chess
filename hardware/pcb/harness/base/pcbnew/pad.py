@@ -101,6 +101,21 @@ class Pad[Pin: StrEnum]:
             or self.drill_mm < 0
         ):
             raise ValueError("pad drill must be finite and nonnegative")
+        self._validate_geometry()
+        self._validate_polygon()
+        for value in (self.solder_mask_margin_mm, self.thermal_spoke_width_mm):
+            if value is not None and (not math.isfinite(value) or value < 0):
+                raise ValueError(
+                    "pad mask and thermal settings must be finite and nonnegative"
+                )
+        if self.thermal_spoke_width_mm == 0:
+            raise ValueError("thermal spoke width must be positive")
+        if not isinstance(cast(object, self.physical_number), str) or not re.fullmatch(
+            r"[A-Za-z0-9_]+", self.physical_number
+        ):
+            raise ValueError("pad needs a safe physical number")
+
+    def _validate_geometry(self) -> None:
         if not isinstance(cast(object, self.kind), PadKind) or not isinstance(
             cast(object, self.shape), PadShape
         ):
@@ -113,6 +128,8 @@ class Pad[Pin: StrEnum]:
             raise ValueError("through-hole pad drill must fit inside copper")
         if self.shape is PadShape.CIRCLE and self.width_mm != self.height_mm:
             raise ValueError("circle pad needs equal width and height")
+
+    def _validate_polygon(self) -> None:
         if self.shape is PadShape.CUSTOM:
             if self.kind is not PadKind.SURFACE or len(self.polygon) < 3:
                 raise ValueError("custom surface pad needs a polygon")
@@ -124,23 +141,14 @@ class Pad[Pin: StrEnum]:
                 raise ValueError("custom pad polygon needs distinct vertices")
             area = sum(
                 a.x_mm * b.y_mm - b.x_mm * a.y_mm
-                for a, b in zip(self.polygon, self.polygon[1:] + self.polygon[:1])
+                for a, b in zip(
+                    self.polygon, self.polygon[1:] + self.polygon[:1], strict=True
+                )
             )
             if abs(area) < 1e-12:
                 raise ValueError("custom pad polygon needs nonzero area")
         elif self.polygon:
             raise ValueError("polygon requires a custom pad")
-        for value in (self.solder_mask_margin_mm, self.thermal_spoke_width_mm):
-            if value is not None and (not math.isfinite(value) or value < 0):
-                raise ValueError(
-                    "pad mask and thermal settings must be finite and nonnegative"
-                )
-        if self.thermal_spoke_width_mm == 0:
-            raise ValueError("thermal spoke width must be positive")
-        if not isinstance(cast(object, self.physical_number), str) or not re.fullmatch(
-            r"[A-Za-z0-9_]+", self.physical_number
-        ):
-            raise ValueError("pad needs a safe physical number")
 
     @property
     def physical_number(self) -> str:

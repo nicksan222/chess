@@ -110,7 +110,7 @@ def _nonnegative_integer(value: object, description: str) -> int:
     return value
 
 
-def _validate_geometry(document: dict[str, object], binary: bytes | None) -> None:
+def _check_asset(document: dict[str, object]) -> None:
     asset = document.get("asset")
     if (
         not isinstance(asset, dict)
@@ -118,10 +118,41 @@ def _validate_geometry(document: dict[str, object], binary: bytes | None) -> Non
     ):
         raise ValueError("GLB asset must declare version 2.0")
 
-    meshes = _array(document, "meshes")
-    accessors = _array(document, "accessors")
-    views = _array(document, "bufferViews")
-    buffers = _array(document, "buffers")
+
+def _collect_primitive_accessors(
+    primitive: dict[str, object],
+    accessor_count: int,
+    used_accessors: set[int],
+    position_accessors: set[int],
+) -> None:
+    attributes = primitive.get("attributes")
+    if not isinstance(attributes, dict) or not attributes:
+        raise ValueError("GLB primitive attributes must be a nonempty object")
+    typed_attributes = cast(dict[str, object], attributes)
+    position_accessors.add(
+        _index(typed_attributes.get("POSITION"), accessor_count, "POSITION accessor")
+    )
+    for accessor in typed_attributes.values():
+        used_accessors.add(_index(accessor, accessor_count, "primitive accessor"))
+    if "indices" in primitive:
+        used_accessors.add(
+            _index(primitive["indices"], accessor_count, "primitive accessor")
+        )
+    targets = primitive.get("targets", [])
+    if not isinstance(targets, list):
+        raise ValueError("GLB primitive targets are invalid")
+    for raw_target in cast(list[object], targets):
+        if not isinstance(raw_target, dict):
+            raise ValueError("GLB primitive targets are invalid")
+        target = cast(dict[str, object], raw_target)
+        for accessor in target.values():
+            used_accessors.add(_index(accessor, accessor_count, "primitive accessor"))
+
+
+def _collect_accessor_use(
+    meshes: list[object], accessor_count: int
+) -> tuple[set[int], set[int]]:
+    """Return the accessors used by any primitive and the POSITION subset."""
     used_accessors: set[int] = set()
     position_accessors: set[int] = set()
     for raw_mesh in meshes:
@@ -134,72 +165,63 @@ def _validate_geometry(document: dict[str, object], binary: bytes | None) -> Non
         for raw_primitive in cast(list[object], primitives):
             if not isinstance(raw_primitive, dict):
                 raise ValueError("GLB primitive must be an object")
-            primitive = cast(dict[str, object], raw_primitive)
-            attributes = primitive.get("attributes")
-            if not isinstance(attributes, dict) or not attributes:
-                raise ValueError("GLB primitive attributes must be a nonempty object")
-            typed_attributes = cast(dict[str, object], attributes)
-            position_accessors.add(
-                _index(
-                    typed_attributes.get("POSITION"),
-                    len(accessors),
-                    "POSITION accessor",
-                )
+            _collect_primitive_accessors(
+                cast(dict[str, object], raw_primitive),
+                accessor_count,
+                used_accessors,
+                position_accessors,
             )
-            for accessor in typed_attributes.values():
-                used_accessors.add(
-                    _index(accessor, len(accessors), "primitive accessor")
-                )
-            if "indices" in primitive:
-                used_accessors.add(
-                    _index(primitive["indices"], len(accessors), "primitive accessor")
-                )
-            targets = primitive.get("targets", [])
-            if not isinstance(targets, list):
-                raise ValueError("GLB primitive targets are invalid")
-            for raw_target in cast(list[object], targets):
-                if not isinstance(raw_target, dict):
-                    raise ValueError("GLB primitive targets are invalid")
-                target = cast(dict[str, object], raw_target)
-                for accessor in target.values():
-                    used_accessors.add(
-                        _index(accessor, len(accessors), "primitive accessor")
-                    )
+    return used_accessors, position_accessors
 
-    used_views: dict[int, list[tuple[int, int, int]]] = {}
-    for accessor_index in used_accessors:
-        raw_accessor = accessors[accessor_index]
-        if not isinstance(raw_accessor, dict):
-            raise ValueError("GLB accessor must be an object")
-        accessor = cast(dict[str, object], raw_accessor)
-        view_index = _index(
-            accessor.get("bufferView"), len(views), "accessor bufferView"
-        )
-        component_type = accessor.get("componentType")
-        accessor_type = accessor.get("type")
-        if accessor_index in position_accessors and (
-            component_type != 5126 or accessor_type != "VEC3"
-        ):
-            raise ValueError("GLB POSITION accessor must use float VEC3 values")
-        if (
-            component_type not in _COMPONENT_BYTES
-            or accessor_type not in _TYPE_COMPONENTS
-        ):
-            raise ValueError("GLB accessor format is invalid")
-        count = _nonnegative_integer(accessor.get("count"), "accessor count")
-        if count == 0:
-            raise ValueError("GLB accessor count must be positive")
-        byte_offset = _nonnegative_integer(
-            accessor.get("byteOffset", 0), "accessor byteOffset"
-        )
-        element_bytes = (
-            _COMPONENT_BYTES[cast(int, component_type)]
-            * _TYPE_COMPONENTS[cast(str, accessor_type)]
-        )
-        used_views.setdefault(view_index, []).append(
-            (byte_offset, element_bytes, count)
-        )
 
+def _accessor_span(
+    raw_accessor: object, view_count: int, is_position: bool
+) -> tuple[int, tuple[int, int, int]]:
+    """Return the bufferView index and (offset, element bytes, count) of one accessor."""
+    if not isinstance(raw_accessor, dict):
+        raise ValueError("GLB accessor must be an object")
+    accessor = cast(dict[str, object], raw_accessor)
+    view_index = _index(accessor.get("bufferView"), view_count, "accessor bufferView")
+    component_type = accessor.get("componentType")
+    accessor_type = accessor.get("type")
+    if is_position and (component_type != 5126 or accessor_type != "VEC3"):
+        raise ValueError("GLB POSITION accessor must use float VEC3 values")
+    if component_type not in _COMPONENT_BYTES or accessor_type not in _TYPE_COMPONENTS:
+        raise ValueError("GLB accessor format is invalid")
+    count = _nonnegative_integer(accessor.get("count"), "accessor count")
+    if count == 0:
+        raise ValueError("GLB accessor count must be positive")
+    byte_offset = _nonnegative_integer(
+        accessor.get("byteOffset", 0), "accessor byteOffset"
+    )
+    element_bytes = (
+        _COMPONENT_BYTES[cast(int, component_type)]
+        * _TYPE_COMPONENTS[cast(str, accessor_type)]
+    )
+    return view_index, (byte_offset, element_bytes, count)
+
+
+def _check_view_spans(
+    view: dict[str, object], spans: list[tuple[int, int, int]], view_length: int
+) -> None:
+    stride = view.get("byteStride")
+    for accessor_offset, element_length, count in spans:
+        stride_value = element_length
+        if stride is not None:
+            stride_value = _nonnegative_integer(stride, "bufferView byteStride")
+            if stride_value < element_length:
+                raise ValueError("GLB accessor bounds exceed its bufferView")
+        required = accessor_offset + stride_value * (count - 1) + element_length
+        if required > view_length:
+            raise ValueError("GLB accessor bounds exceed its bufferView")
+
+
+def _check_views(
+    views: list[object],
+    buffers: list[object],
+    used_views: dict[int, list[tuple[int, int, int]]],
+) -> set[int]:
+    """Check every used bufferView against its accessors and buffer."""
     used_buffers: set[int] = set()
     for view_index, spans in used_views.items():
         raw_view = views[view_index]
@@ -214,16 +236,7 @@ def _validate_geometry(document: dict[str, object], binary: bytes | None) -> Non
         view_length = _nonnegative_integer(
             view.get("byteLength"), "bufferView byteLength"
         )
-        stride = view.get("byteStride")
-        for accessor_offset, element_length, count in spans:
-            stride_value = element_length
-            if stride is not None:
-                stride_value = _nonnegative_integer(stride, "bufferView byteStride")
-                if stride_value < element_length:
-                    raise ValueError("GLB accessor bounds exceed its bufferView")
-            required = accessor_offset + stride_value * (count - 1) + element_length
-            if required > view_length:
-                raise ValueError("GLB accessor bounds exceed its bufferView")
+        _check_view_spans(view, spans, view_length)
         raw_buffer = buffers[buffer_index]
         if not isinstance(raw_buffer, dict):
             raise ValueError("GLB buffer must be an object")
@@ -233,7 +246,12 @@ def _validate_geometry(document: dict[str, object], binary: bytes | None) -> Non
         )
         if view_offset + view_length > buffer_length:
             raise ValueError("GLB bufferView bounds exceed its buffer")
+    return used_buffers
 
+
+def _check_embedded_buffers(
+    buffers: list[object], used_buffers: set[int], binary: bytes | None
+) -> None:
     for buffer_index in used_buffers:
         raw_buffer = cast(dict[str, object], buffers[buffer_index])
         if buffer_index != 0 or "uri" in raw_buffer:
@@ -245,48 +263,64 @@ def _validate_geometry(document: dict[str, object], binary: bytes | None) -> Non
             raise ValueError("GLB BIN chunk bounds do not match its buffer")
 
 
-def check_component_coverage(path: Path, references: set[str]) -> None:
-    document = glb_document(path)
-    raw_nodes = document.get("nodes")
-    meshes = document.get("meshes")
-    if not isinstance(raw_nodes, list) or not isinstance(meshes, list):
-        raise ValueError("GLB needs node and mesh arrays")
-    node_count, mesh_count = (
-        len(cast(list[object], raw_nodes)),
-        len(cast(list[object], meshes)),
-    )
-    nodes: list[dict[str, object]] = []
-    for raw in cast(list[object], raw_nodes):
-        if not isinstance(raw, dict):
-            raise ValueError("GLB node must be an object")
-        node = cast(dict[str, object], raw)
-        children = node.get("children", [])
-        if not isinstance(children, list) or any(
-            type(child) is not int or not 0 <= child < node_count
-            for child in cast(list[object], children)
-        ):
-            raise ValueError("GLB child indices are invalid")
-        if "mesh" in node and (
-            type(node["mesh"]) is not int or not 0 <= node["mesh"] < mesh_count
-        ):
-            raise ValueError("GLB mesh index is invalid")
-        name = node.get("name", "")
-        if not isinstance(name, str):
-            raise ValueError("GLB node name must be text")
-        # KiCad names package roots by reference and artwork by OCC labels.
-        if (
-            name not in references
-            and (children or re.fullmatch(r"[A-Z]+[0-9]+", name))
-            and name
-        ):
-            raise ValueError(f"Unexpected GLB component: {name}")
-        nodes.append(node)
+def _validate_geometry(document: dict[str, object], binary: bytes | None) -> None:
+    _check_asset(document)
+    meshes = _array(document, "meshes")
+    accessors = _array(document, "accessors")
+    views = _array(document, "bufferViews")
+    buffers = _array(document, "buffers")
+    used_accessors, position_accessors = _collect_accessor_use(meshes, len(accessors))
+    used_views: dict[int, list[tuple[int, int, int]]] = {}
+    for accessor_index in used_accessors:
+        view_index, span = _accessor_span(
+            accessors[accessor_index],
+            len(views),
+            accessor_index in position_accessors,
+        )
+        used_views.setdefault(view_index, []).append(span)
+    used_buffers = _check_views(views, buffers, used_views)
+    _check_embedded_buffers(buffers, used_buffers, binary)
+
+
+def _checked_node(
+    raw: object, node_count: int, mesh_count: int, references: set[str]
+) -> dict[str, object]:
+    if not isinstance(raw, dict):
+        raise ValueError("GLB node must be an object")
+    node = cast(dict[str, object], raw)
+    children = node.get("children", [])
+    if not isinstance(children, list) or any(
+        type(child) is not int or not 0 <= child < node_count
+        for child in cast(list[object], children)
+    ):
+        raise ValueError("GLB child indices are invalid")
+    if "mesh" in node and (
+        type(node["mesh"]) is not int or not 0 <= node["mesh"] < mesh_count
+    ):
+        raise ValueError("GLB mesh index is invalid")
+    name = node.get("name", "")
+    if not isinstance(name, str):
+        raise ValueError("GLB node name must be text")
+    # KiCad names package roots by reference and artwork by OCC labels.
+    if (
+        name not in references
+        and (children or re.fullmatch(r"[A-Z]+[0-9]+", name))
+        and name
+    ):
+        raise ValueError(f"Unexpected GLB component: {name}")
+    return node
+
+
+def _check_single_parents(nodes: list[dict[str, object]]) -> None:
     parents: set[int] = set()
     for node in nodes:
         for child in cast(list[int], node.get("children", [])):
             if child in parents:
                 raise ValueError("GLB node has multiple parents")
             parents.add(child)
+
+
+def _check_acyclic(nodes: list[dict[str, object]]) -> None:
     # Validate the complete graph, including disconnected/unexpected nodes.
     active: set[int] = set()
     done: set[int] = set()
@@ -307,6 +341,10 @@ def check_component_coverage(path: Path, references: set[str]) -> None:
             visit(index)
     except RecursionError as error:
         raise ValueError("GLB hierarchy is too deep") from error
+
+
+def _owned_node_ids(nodes: list[dict[str, object]], references: set[str]) -> set[int]:
+    """Return the ids of nodes under each reference's single component root."""
     owned_nodes: set[int] = set()
     for reference in references:
         matches = [node for node in nodes if node.get("name") == reference]
@@ -323,6 +361,26 @@ def check_component_coverage(path: Path, references: set[str]) -> None:
             )
         if not has_mesh:
             raise ValueError(f"{reference}: GLB component has no mesh")
+    return owned_nodes
+
+
+def check_component_coverage(path: Path, references: set[str]) -> None:
+    document = glb_document(path)
+    raw_nodes = document.get("nodes")
+    meshes = document.get("meshes")
+    if not isinstance(raw_nodes, list) or not isinstance(meshes, list):
+        raise ValueError("GLB needs node and mesh arrays")
+    node_count, mesh_count = (
+        len(cast(list[object], raw_nodes)),
+        len(cast(list[object], meshes)),
+    )
+    nodes = [
+        _checked_node(raw, node_count, mesh_count, references)
+        for raw in cast(list[object], raw_nodes)
+    ]
+    _check_single_parents(nodes)
+    _check_acyclic(nodes)
+    owned_nodes = _owned_node_ids(nodes, references)
     for node in nodes:
         # KiCad's board/artwork nodes use OpenCascade assembly labels.
         if (

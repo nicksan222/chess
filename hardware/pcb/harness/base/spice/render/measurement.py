@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from typing import cast
 
 from ...connections import Endpoint
@@ -20,44 +20,23 @@ from .nodes import NodeMap
 from .number import spice_number
 
 
-def render_measurement(
-    name: str,
-    requirement: SpiceRequirement,
-    analysis: Analysis,
-    nets: Mapping[Endpoint, Net],
-    nodes: NodeMap,
-) -> str:
-    """Render one measured scalar from a typed endpoint or source reference.
-
-    Operating point measurements become control-language ``let`` expressions.
-    Transient and AC measurements become ``meas`` commands. The caller checks
-    the result against ``requirement.allowed`` after this command executes.
-    A source current follows ngspice's current direction for that source.
-    """
-    if not re.fullmatch(r"result_[a-z0-9_]+", name):
-        raise ValueError("measurement result name must be safe and start result_")
-
-    def net_of(endpoint: Endpoint) -> str:
-        try:
-            return nodes.node(nets[endpoint])
-        except KeyError as error:
-            raise ValueError(
-                f"unknown endpoint: {endpoint.reference}/{endpoint.pin}"
-            ) from error
-
-    measurement = requirement.measurement
+def _expression(measurement: object, net_of: Callable[[Endpoint], str]) -> str:
     if isinstance(measurement, VoltageAt):
         # SPICE reports node voltage relative to node 0, which NodeMap assigns
         # to the scenario's declared ground net.
-        expression = f"v({net_of(measurement.pin)})"
-    elif isinstance(measurement, VoltageBetween):
-        expression = f"v({net_of(measurement.positive)},{net_of(measurement.negative)})"
-    elif isinstance(cast(object, measurement), CurrentThrough):
+        return f"v({net_of(measurement.pin)})"
+    if isinstance(measurement, VoltageBetween):
+        return f"v({net_of(measurement.positive)},{net_of(measurement.negative)})"
+    if isinstance(measurement, CurrentThrough):
         if not re.fullmatch(r"V[A-Za-z0-9_]+", measurement.source):
             raise ValueError("current measurement needs a voltage source name")
-        expression = f"i({measurement.source})"
-    else:
-        raise ValueError("unsupported measurement kind")
+        return f"i({measurement.source})"
+    raise ValueError("unsupported measurement kind")
+
+
+def _command(
+    name: str, expression: str, requirement: SpiceRequirement, analysis: Analysis
+) -> str:
     observation = requirement.observation
     if requirement.at_seconds is not None:
         if (
@@ -94,3 +73,33 @@ def render_measurement(
             )
         raise ValueError("AC sweep requires MINIMUM or MAXIMUM observation")
     raise ValueError("unsupported analysis kind")
+
+
+def render_measurement(
+    name: str,
+    requirement: SpiceRequirement,
+    analysis: Analysis,
+    nets: Mapping[Endpoint, Net],
+    nodes: NodeMap,
+) -> str:
+    """Render one measured scalar from a typed endpoint or source reference.
+
+    Operating point measurements become control-language ``let`` expressions.
+    Transient and AC measurements become ``meas`` commands. The caller checks
+    the result against ``requirement.allowed`` after this command executes.
+    A source current follows ngspice's current direction for that source.
+    """
+    if not re.fullmatch(r"result_[a-z0-9_]+", name):
+        raise ValueError("measurement result name must be safe and start result_")
+
+    def net_of(endpoint: Endpoint) -> str:
+        try:
+            return nodes.node(nets[endpoint])
+        except KeyError as error:
+            raise ValueError(
+                f"unknown endpoint: {endpoint.reference}/{endpoint.pin}"
+            ) from error
+
+    measurement = requirement.measurement
+    expression = _expression(measurement, net_of)
+    return _command(name, expression, requirement, analysis)
