@@ -1,0 +1,28 @@
+# Function limits shared with Ruff (see docs/development.md "Quality checks").
+cognitive-complexity-threshold = 15
+too-many-lines-threshold = 250
+
+# Tests may unwrap: a panic is the failure report.
+allow-unwrap-in-tests = true
+allow-expect-in-tests = true
+
+disallowed-methods = [
+    { path = "std::env::var", reason = "configuration comes from `firmware::tuning`; only apps/firmware/src/tuning reads the environment" },
+    { path = "std::env::var_os", reason = "configuration comes from `firmware::tuning`; only apps/firmware/src/tuning reads the environment" },
+    { path = "std::env::vars", reason = "configuration comes from `firmware::tuning`; only apps/firmware/src/tuning reads the environment" },
+    { path = "std::env::vars_os", reason = "configuration comes from `firmware::tuning`; only apps/firmware/src/tuning reads the environment" },
+    { path = "tokio::sync::broadcast::channel", reason = "channels stay inside apps/firmware/src/events; publish through `events::Bus`" },
+    { path = "tokio::sync::mpsc::channel", reason = "channels stay inside apps/firmware/src/events; use `events::direct_channel`" },
+    { path = "tokio::sync::mpsc::unbounded_channel", reason = "channels stay inside apps/firmware/src/events; use `events::direct_channel`" },
+]
+
+disallowed-types = [
+    { path = "std::process::Command", reason = "never shell out; talk to devices and services through typed Rust APIs" },
+    { path = "tokio::process::Command", reason = "never shell out; talk to devices and services through typed Rust APIs" },
+    { path = "tokio::sync::broadcast::Receiver", reason = "channels stay inside apps/firmware/src/events; use `events::Subscription`" },
+    { path = "tokio::sync::broadcast::Sender", reason = "channels stay inside apps/firmware/src/events; use `events::Bus`" },
+    { path = "tokio::sync::mpsc::Receiver", reason = "channels stay inside apps/firmware/src/events; use `events::DirectReceiver`" },
+    { path = "tokio::sync::mpsc::Sender", reason = "channels stay inside apps/firmware/src/events; use `events::DirectSender`" },
+    { path = "tokio::sync::mpsc::UnboundedReceiver", reason = "channels stay inside apps/firmware/src/events; use `events::DirectReceiver`" },
+    { path = "tokio::sync::mpsc::UnboundedSender", reason = "channels stay inside apps/firmware/src/events; use `events::DirectSender`" },
+]

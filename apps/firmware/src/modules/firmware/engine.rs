@@ -43,7 +43,7 @@ impl Engine {
         }
     }
 
-    fn cancel(&mut self, report: Reporter<Status>) {
+    fn cancel(&mut self, report: &Reporter<Status>) {
         if let Some(running) = self.running.take() {
             running.abort();
         }
@@ -78,7 +78,7 @@ impl Module for Engine {
     fn request(&mut self, request: Request, report: Reporter<Status>) {
         match request {
             Request::Check => self.check(report),
-            Request::CancelCheck => self.cancel(report),
+            Request::CancelCheck => self.cancel(&report),
             // Placeholder until installing is implemented.
             Request::Install => report.done(),
         }
@@ -127,12 +127,13 @@ mod tests {
 
     impl Fixture {
         /// Without Wi-Fi control, as in the offline configuration.
-        fn new(feed: Option<String>) -> Self {
+        fn new(feed: Option<&str>) -> Self {
             let (_, offline) = Modules::new(&Config::offline(), &ModuleEventBus::new()).unwrap();
             Self::with(feed, offline.connection.unwrap())
         }
 
-        fn with(feed: Option<String>, connection: Connection) -> Self {
+        fn with(feed: Option<&str>, connection: Connection) -> Self {
+            let feed = feed.map(str::to_owned);
             let events = ModuleEventBus::new();
             let reports = events.subscribe();
             let facades = Facades {
@@ -243,7 +244,7 @@ mod tests {
             ),
         ] {
             let feed = FakeFeed::answering(response);
-            let mut updates = Fixture::new(Some(feed.url.clone()));
+            let mut updates = Fixture::new(Some(feed.url.as_str()));
             updates.request(CHECK);
 
             assert_eq!(
@@ -258,7 +259,7 @@ mod tests {
     async fn disconnected_wifi_finishes_offline_without_asking_the_feed() {
         let feed = FakeFeed::answering(release("v99.0.0"));
         let mut updates = Fixture::with(
-            Some(feed.url.clone()),
+            Some(feed.url.as_str()),
             Connection::fake(FakeWifi::default()),
         );
         updates.request(CHECK);
@@ -279,7 +280,7 @@ mod tests {
         let feed = FakeFeed::answering(answer("404 Not Found", ""));
         let wifi = FakeWifi::default();
         wifi.fail_next(Operation::Radio, Failure::Timeout);
-        let mut updates = Fixture::with(Some(feed.url.clone()), Connection::fake(wifi));
+        let mut updates = Fixture::with(Some(feed.url.as_str()), Connection::fake(wifi));
         updates.request(CHECK);
 
         updates.next().await;
@@ -306,7 +307,7 @@ mod tests {
     async fn connected_wifi_checks_the_feed() {
         let feed = FakeFeed::answering(answer("404 Not Found", ""));
         let mut updates = Fixture::with(
-            Some(feed.url.clone()),
+            Some(feed.url.as_str()),
             Connection::fake(FakeWifi::default().with_active_client("Home")),
         );
         updates.request(CHECK);
@@ -326,7 +327,7 @@ mod tests {
             .local_addr()
             .unwrap()
             .port();
-        let mut updates = Fixture::new(Some(format!("http://127.0.0.1:{port}/")));
+        let mut updates = Fixture::new(Some(format!("http://127.0.0.1:{port}/").as_str()));
         updates.request(CHECK);
 
         updates.next().await;
@@ -345,7 +346,7 @@ mod tests {
     #[tokio::test]
     async fn cancelling_aborts_the_running_check() {
         let feed = FakeFeed::silent();
-        let mut updates = Fixture::new(Some(feed.url.clone()));
+        let mut updates = Fixture::new(Some(feed.url.as_str()));
 
         updates.request(CHECK);
         let running = updates.running();
@@ -376,7 +377,7 @@ mod tests {
     #[tokio::test]
     async fn starting_again_replaces_a_running_check() {
         let feed = FakeFeed::silent();
-        let mut updates = Fixture::new(Some(feed.url.clone()));
+        let mut updates = Fixture::new(Some(feed.url.as_str()));
 
         updates.request(CHECK);
         let first = updates.running();
@@ -389,7 +390,7 @@ mod tests {
     #[tokio::test]
     async fn dropping_the_module_stops_its_check() {
         let feed = FakeFeed::silent();
-        let mut updates = Fixture::new(Some(feed.url.clone()));
+        let mut updates = Fixture::new(Some(feed.url.as_str()));
 
         updates.request(CHECK);
         let running = updates.running();

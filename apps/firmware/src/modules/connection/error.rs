@@ -9,13 +9,13 @@ use super::InvalidSsid;
 pub enum Error {
     /// This firmware instance is configured without Wi-Fi control.
     Unavailable,
-    /// NetworkManager did not answer in time.
+    /// `NetworkManager` did not answer in time.
     TimedOut,
     /// The Wi-Fi stack reports a radio state the product cannot interpret.
     UnknownState,
-    /// The D-Bus client or NetworkManager rejected an operation.
+    /// The D-Bus client or `NetworkManager` rejected an operation.
     NetworkManager(Box<nmrs::ConnectionError>),
-    /// NetworkManager returned an SSID outside the product model's constraints.
+    /// `NetworkManager` returned an SSID outside the product model's constraints.
     InvalidSsid(InvalidSsid),
 }
 

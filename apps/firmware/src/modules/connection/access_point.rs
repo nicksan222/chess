@@ -11,7 +11,7 @@ pub struct AccessPoint {
     pub security: Security,
     /// Whether this network is currently active.
     pub connected: bool,
-    /// Whether NetworkManager already has a saved profile.
+    /// Whether `NetworkManager` already has a saved profile.
     pub known: bool,
 }
 

@@ -6,6 +6,11 @@ pub struct Ssid(String);
 
 impl Ssid {
     /// Validates the IEEE 802.11 maximum of 32 bytes.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`InvalidSsid`] for an empty name, one over 32 bytes or one
+    /// containing NUL.
     pub fn new(value: impl Into<String>) -> Result<Self, InvalidSsid> {
         let value = value.into();
         if value.is_empty() || value.len() > 32 || value.contains('\0') {

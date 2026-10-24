@@ -2,7 +2,7 @@
 //!
 //! The trait is the seam between product logic (SSID validation, security
 //! classification, sorting, hotspot bookkeeping) and the operating system. The
-//! production implementation talks to NetworkManager; tests substitute an
+//! production implementation talks to `NetworkManager`; tests substitute an
 //! in-memory one. The module is private to the crate, so the trait is not part
 //! of the public API.
 
@@ -10,6 +10,10 @@ use super::{Credentials, Error, Hotspot, Ssid};
 
 /// A network as reported by the Wi-Fi stack, before product validation.
 #[derive(Clone, Debug, Eq, PartialEq)]
+#[allow(
+    clippy::struct_excessive_bools,
+    reason = "these are independent facts the Wi-Fi stack reports about one network"
+)]
 pub(super) struct VisibleNetwork {
     /// Raw network name; may not satisfy [`Ssid`]'s constraints.
     pub(super) ssid: String,
@@ -42,7 +46,10 @@ pub(super) enum Radio {
 ///
 /// Used only through generics inside this crate, so each future's `Send`-ness is
 /// checked on the concrete backend rather than promised by the trait.
-#[allow(async_fn_in_trait)]
+#[allow(
+    async_fn_in_trait,
+    reason = "backends are used through generics inside this crate, never as public trait objects"
+)]
 pub(super) trait WifiBackend {
     /// The radio's current state; a failed query is an error, never a state.
     async fn radio(&self) -> Result<Radio, Error>;
