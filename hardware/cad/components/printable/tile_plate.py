@@ -13,6 +13,31 @@ if TYPE_CHECKING:
 TOP_Z_MM = shared.CASE_HEIGHT_MM
 UNDERSIDE_Z_MM = shared.CASE_HEIGHT_MM - shared.TILE_PLATE_THICKNESS_MM
 
+# Display-bezel Z allowances. The two cutter overshoots that pierce a face reuse the
+# shared through-cut overlap (numerically the same 0.4 mm); the rest are design
+# allowances of this part, named here so the bezel code states what each one is for.
+BEZEL_BODY_BELOW_RECESS_MM = 0.2  # bezel body starts this far below the control recess
+MODULE_CAVITY_ABOVE_SCREEN_MM = 0.1  # cavity top rises this far above the screen plane
+VIEWING_WINDOW_MARGIN_MM = 0.5  # window is the active area plus this on every side
+LEDGE_ROOT_TOP_OVERLAP_MM = 0.1  # ledge root reaches this far above the control recess
+PILOT_TOP_OVERSHOOT_MM = 0.2  # blind pilots run this far above the module PCB underside
+
+Bounds = tuple[float, float, float, float, float, float]
+
+
+def _span(centre: float, half: float) -> tuple[float, float]:
+    """The (low, high) interval of half-width `half` about `centre`."""
+    return centre - half, centre + half
+
+
+def _centered_bounds(
+    centre: tuple[float, float], half_x: float, half_y: float, z0: float, z1: float
+) -> Bounds:
+    """`box_between` bounds for a box centred on `centre` in XY, spanning z0..z1."""
+    x0, x1 = _span(centre[0], half_x)
+    y0, y1 = _span(centre[1], half_y)
+    return (x0, x1, y0, y1, z0, z1)
+
 
 class TilePlate(PrintableComponent):
     output_name = "tile-plate"
@@ -321,6 +346,30 @@ def _cut_dark_squares(
     modeling.cut_batch(plate, cutters, "Cutter_All_Dark_Squares")
 
 
+def _screw_cutters(
+    prefix: str,
+    diameter: float,
+    z0: float,
+    z1: float,
+    construction: bpy.types.Collection,
+) -> list[bpy.types.Object]:
+    """One cylinder per plate screw position, spanning z0..z1."""
+    from cad.harness.base.blender import modeling
+
+    return [
+        modeling.cylinder_between(
+            f"{prefix}_{index}",
+            diameter,
+            (x, y),
+            z0,
+            z1,
+            construction,
+            vertices=24,
+        )
+        for index, (x, y) in enumerate(shared.TILE_PLATE_SCREW_POSITIONS_MM)
+    ]
+
+
 def _cut_screws(plate: bpy.types.Object, construction: bpy.types.Collection) -> None:
     """Through-holes with a recessed head, so nothing stands above the surface.
 
@@ -328,43 +377,26 @@ def _cut_screws(plate: bpy.types.Object, construction: bpy.types.Collection) -> 
     """
     from cad.harness.base.blender import modeling
 
-    head_depth = shared.TILE_PLATE_SCREW_HEAD_DEPTH_MM
     # The shaft and its head recess are concentric, so they go in separate
     # batches; within a batch the eight screws are far apart.
     # Through holes use the larger `BOOLEAN_THROUGH_OVERLAP_MM` so both faces are
     # fully pierced.
-    modeling.cut_batch(
-        plate,
-        [
-            modeling.cylinder_between(
-                f"Cutter_Plate_Screw_{index}",
-                shared.TILE_PLATE_SCREW_CLEARANCE_DIAMETER_MM,
-                (x, y),
-                UNDERSIDE_Z_MM - shared.BOOLEAN_THROUGH_OVERLAP_MM,
-                TOP_Z_MM + shared.BOOLEAN_THROUGH_OVERLAP_MM,
-                construction,
-                vertices=24,
-            )
-            for index, (x, y) in enumerate(shared.TILE_PLATE_SCREW_POSITIONS_MM)
-        ],
-        "Cutter_All_Plate_Screw_Shafts",
+    shafts = _screw_cutters(
+        "Cutter_Plate_Screw",
+        shared.TILE_PLATE_SCREW_CLEARANCE_DIAMETER_MM,
+        UNDERSIDE_Z_MM - shared.BOOLEAN_THROUGH_OVERLAP_MM,
+        TOP_Z_MM + shared.BOOLEAN_THROUGH_OVERLAP_MM,
+        construction,
     )
-    modeling.cut_batch(
-        plate,
-        [
-            modeling.cylinder_between(
-                f"Cutter_Plate_Screw_Head_{index}",
-                shared.TILE_PLATE_SCREW_HEAD_DIAMETER_MM,
-                (x, y),
-                TOP_Z_MM - head_depth,
-                TOP_Z_MM + shared.BOOLEAN_RECESS_OVERLAP_MM,
-                construction,
-                vertices=24,
-            )
-            for index, (x, y) in enumerate(shared.TILE_PLATE_SCREW_POSITIONS_MM)
-        ],
-        "Cutter_All_Plate_Screw_Heads",
+    modeling.cut_batch(plate, shafts, "Cutter_All_Plate_Screw_Shafts")
+    heads = _screw_cutters(
+        "Cutter_Plate_Screw_Head",
+        shared.TILE_PLATE_SCREW_HEAD_DIAMETER_MM,
+        TOP_Z_MM - shared.TILE_PLATE_SCREW_HEAD_DEPTH_MM,
+        TOP_Z_MM + shared.BOOLEAN_RECESS_OVERLAP_MM,
+        construction,
     )
+    modeling.cut_batch(plate, heads, "Cutter_All_Plate_Screw_Heads")
 
 
 def _cut_control_surface(
@@ -408,17 +440,15 @@ def _cut_bezel(plate: bpy.types.Object, construction: bpy.types.Collection) -> N
         + 2.0 * shared.PANEL_BUTTON_RELIEF_CLEARANCE_MM
     ) / 2.0
     window_x, window_y = (axis / 2.0 for axis in shared.PANEL_OLED_WIRE_OPENING_MM)
-    oled_x, oled_y = shared.PANEL_OLED_CENTER_MM
     modeling.cut_batch(
         plate,
         [
             modeling.box_between(
                 f"Cutter_Button_Relief_{index:02d}",
-                (
-                    button.x_mm - relief,
-                    button.x_mm + relief,
-                    button.y_mm - relief,
-                    button.y_mm + relief,
+                _centered_bounds(
+                    button.position_mm,
+                    relief,
+                    relief,
                     underside,
                     UNDERSIDE_Z_MM + shared.PANEL_BUTTON_RELIEF_DEPTH_MM,
                 ),
@@ -444,12 +474,8 @@ def _cut_bezel(plate: bpy.types.Object, construction: bpy.types.Collection) -> N
         + [
             modeling.box_between(
                 "Cutter_Display_Wire_Opening",
-                (
-                    oled_x - window_x,
-                    oled_x + window_x,
-                    oled_y - window_y,
-                    oled_y + window_y,
-                    *through,
+                _centered_bounds(
+                    shared.PANEL_OLED_CENTER_MM, window_x, window_y, *through
                 ),
                 construction,
             )
@@ -462,96 +488,125 @@ def _add_display_bezel(
     plate: bpy.types.Object, construction: bpy.types.Collection
 ) -> None:
     """A concealed-carrier bezel with a full viewing window and mounting ears."""
+    _bezel_body(plate, construction)
+    _module_cavity(plate, construction)
+    _viewing_window(plate, construction)
+    _mount_ledges(plate, construction)
+
+
+def _bezel_body(plate: bpy.types.Object, construction: bpy.types.Collection) -> None:
+    """The raised bezel block, unioned into the plate."""
     from cad.harness.base.blender import modeling
 
-    x, y = shared.PANEL_OLED_CENTER_MM
     outer_x, outer_y = (v / 2 for v in shared.PANEL_OLED_BEZEL_OUTER_MM)
-    inner_x, inner_y = (v / 2 for v in shared.PANEL_OLED_BEZEL_INNER_MM)
-    top = shared.PANEL_OLED_BEZEL_TOP_Z_MM
     bezel = modeling.box_between(
         "Display_Bezel",
-        (
-            x - outer_x,
-            x + outer_x,
-            y - outer_y,
-            y + outer_y,
-            TOP_Z_MM - shared.PANEL_SURFACE_RECESS_MM - 0.2,
-            top,
+        _centered_bounds(
+            shared.PANEL_OLED_CENTER_MM,
+            outer_x,
+            outer_y,
+            TOP_Z_MM - shared.PANEL_SURFACE_RECESS_MM - BEZEL_BODY_BELOW_RECESS_MM,
+            shared.PANEL_OLED_BEZEL_TOP_Z_MM,
         ),
         construction,
     )
     modeling.union_batch(plate, [bezel], "Owning display bezel")
-    # Module cavity clears the PCB and iron frame below a 1 mm bezel roof.
+
+
+def _module_cavity(plate: bpy.types.Object, construction: bpy.types.Collection) -> None:
+    """Cavity that clears the module PCB and iron frame below the bezel roof."""
+    from cad.harness.base.blender import modeling
+
+    inner_x, inner_y = (v / 2 for v in shared.PANEL_OLED_BEZEL_INNER_MM)
     cavity = modeling.box_between(
         "Display_Module_Cavity",
-        (
-            x - inner_x,
-            x + inner_x,
-            y - inner_y,
-            y + inner_y,
-            UNDERSIDE_Z_MM - 0.4,
-            shared.PANEL_OLED_SCREEN_Z_MM + 0.1,
+        _centered_bounds(
+            shared.PANEL_OLED_CENTER_MM,
+            inner_x,
+            inner_y,
+            UNDERSIDE_Z_MM - shared.BOOLEAN_THROUGH_OVERLAP_MM,
+            shared.PANEL_OLED_SCREEN_Z_MM + MODULE_CAVITY_ABOVE_SCREEN_MM,
         ),
         construction,
     )
     modeling.cut_batch(plate, [cavity], "Display module cavity")
+
+
+def _viewing_window(
+    plate: bpy.types.Object, construction: bpy.types.Collection
+) -> None:
+    """Through-cut exposing the whole active area of the screen."""
+    from cad.harness.base.blender import modeling
+
+    x, y = shared.PANEL_OLED_CENTER_MM
     screen_x = x + shared.PANEL_OLED_SCREEN_OFFSET_MM[0]
     screen_y = y + shared.PANEL_OLED_SCREEN_OFFSET_MM[1]
-    hx, hy = (v / 2 + 0.5 for v in shared.PANEL_OLED_SCREEN_SIZE_MM)
+    hx, hy = (
+        v / 2 + VIEWING_WINDOW_MARGIN_MM for v in shared.PANEL_OLED_SCREEN_SIZE_MM
+    )
     window = modeling.box_between(
         "Display_Viewing_Window",
-        (
-            screen_x - hx,
-            screen_x + hx,
-            screen_y - hy,
-            screen_y + hy,
-            UNDERSIDE_Z_MM - 0.4,
-            top + 0.4,
+        _centered_bounds(
+            (screen_x, screen_y),
+            hx,
+            hy,
+            UNDERSIDE_Z_MM - shared.BOOLEAN_THROUGH_OVERLAP_MM,
+            shared.PANEL_OLED_BEZEL_TOP_Z_MM + shared.BOOLEAN_THROUGH_OVERLAP_MM,
         ),
         construction,
     )
     modeling.cut_batch(plate, [window], "Full OLED viewing window")
-    # Four supplier mounting holes sit on printed ledges beneath the carrier.
-    # Each ledge joins the outer wall, leaving the screen and SMD region clear.
+
+
+def _mount_ledges(plate: bpy.types.Object, construction: bpy.types.Collection) -> None:
+    """Four supplier mounting holes sit on printed ledges beneath the carrier.
+
+    Each ledge joins the outer wall, leaving the screen and SMD region clear.
+    """
+    from cad.harness.base.blender import modeling
+
+    x, y = shared.PANEL_OLED_CENTER_MM
+    outer_x = shared.PANEL_OLED_BEZEL_OUTER_MM[0] / 2
+    inner_x = shared.PANEL_OLED_BEZEL_INNER_MM[0] / 2
+    top = shared.PANEL_OLED_BEZEL_TOP_Z_MM
     bottom = shared.PANEL_OLED_LEDGE_BOTTOM_Z_MM
     half_ledge = shared.PANEL_OLED_LEDGE_WIDTH_MM / 2
+    overlap = shared.BOOLEAN_RECESS_OVERLAP_MM
     additions = []
     pilots = []
     for i, (dx, dy) in enumerate(shared.PANEL_OLED_MOUNT_HOLES_MM):
         cx, cy = x + dx, y + dy
         sign = 1 if dx > 0 else -1
         outer_edge = x + sign * (outer_x + shared.PANEL_OLED_LEDGE_WALL_REACH_MM)
-        outside_module = x + sign * (inner_x - shared.BOOLEAN_RECESS_OVERLAP_MM)
+        outside_module = x + sign * (inner_x - overlap)
+        arm_y0, arm_y1 = _span(cy, half_ledge)
         additions.append(
             modeling.box_between(
                 f"Display_ledge_{i}",
                 (
                     min(cx - half_ledge, outer_edge),
                     max(cx + half_ledge, outer_edge),
-                    cy - half_ledge,
-                    cy + half_ledge,
+                    arm_y0,
+                    arm_y1,
                     bottom,
                     shared.PANEL_OLED_PCB_BOTTOM_Z_MM,
                 ),
                 construction,
             )
         )
+        root_far = outer_edge - sign * overlap
         additions.append(
             modeling.box_between(
                 f"Display_ledge_root_{i}",
                 (
-                    min(
-                        outside_module,
-                        outer_edge - sign * shared.BOOLEAN_RECESS_OVERLAP_MM,
-                    ),
-                    max(
-                        outside_module,
-                        outer_edge - sign * shared.BOOLEAN_RECESS_OVERLAP_MM,
-                    ),
-                    cy - half_ledge + shared.BOOLEAN_RECESS_OVERLAP_MM,
-                    cy + half_ledge - shared.BOOLEAN_RECESS_OVERLAP_MM,
-                    bottom + shared.BOOLEAN_RECESS_OVERLAP_MM,
-                    TOP_Z_MM - shared.PANEL_SURFACE_RECESS_MM + 0.1,
+                    min(outside_module, root_far),
+                    max(outside_module, root_far),
+                    cy - half_ledge + overlap,
+                    cy + half_ledge - overlap,
+                    bottom + overlap,
+                    TOP_Z_MM
+                    - shared.PANEL_SURFACE_RECESS_MM
+                    + LEDGE_ROOT_TOP_OVERLAP_MM,
                 ),
                 construction,
             )
@@ -562,7 +617,7 @@ def _add_display_bezel(
                 shared.PANEL_OLED_PILOT_DIAMETER_MM,
                 (cx, cy),
                 bottom + shared.PANEL_OLED_PILOT_FLOOR_MM,
-                shared.PANEL_OLED_PCB_BOTTOM_Z_MM + 0.2,
+                shared.PANEL_OLED_PCB_BOTTOM_Z_MM + PILOT_TOP_OVERSHOOT_MM,
                 construction,
                 vertices=24,
             )
@@ -582,7 +637,7 @@ def _add_display_bezel(
                 (x + dx, y + dy),
                 shared.PANEL_OLED_PCB_BOTTOM_Z_MM
                 + shared.PANEL_OLED_PCB_THICKNESS_MM
-                - shared.BOOLEAN_RECESS_OVERLAP_MM,
+                - overlap,
                 top + shared.BOOLEAN_THROUGH_OVERLAP_MM,
                 construction,
                 vertices=32,
