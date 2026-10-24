@@ -31,7 +31,7 @@ precommit: _automation-format
     just --justfile hardware/pcb/justfile quality
     just --justfile tooling/quality/justfile quality
 
-# Formatting, linting, checking, documentation, and ast-grep patterns.
+# Formatting, linting, checking, documentation, patterns and file names.
 quality: _automation-format
     #!/usr/bin/env bash
     set -euo pipefail
