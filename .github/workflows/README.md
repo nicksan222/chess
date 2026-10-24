@@ -16,13 +16,17 @@ This directory owns GitHub Actions workflow definitions:
   after branch protection reports every required check green.
 
 `pr.yml` starts with a `Changed scopes` job that runs
-`.github/scripts/changed-scopes.sh` on the pull request's diff. Documentation-only
-changes skip every job including the container prebuild; `apps/`, `crates/` and
-Cargo files run Quality and Firmware checks without Hardware; `hardware/cad` and
-`hardware/pcb` run Hardware and Quality without Firmware checks. Any other path
-(shared contracts, tooling, workflows, new directories) runs everything, so
-unknown files fail safe. `Required checks` accepts skipped jobs but still fails
-on any failed or cancelled one. Pushes to `main` always run the full set.
+`.github/scripts/changed-scopes.sh` on the files the pull request changes since
+it branched (a three-dot diff from the merge base, so commits that later land on
+the base branch never count). Documentation-only changes skip every job
+including the container prebuild. `apps/`, `crates/`, Cargo files, `clippy.toml`
+and `deny.toml` run Quality and Firmware checks without Hardware. `hardware/` and
+`pyproject.toml` run Hardware and Quality without Firmware checks. Repository
+lint configuration (`tooling/`, the ast-grep, ls-lint, typos and EditorConfig
+files, `.githooks/`) runs Quality alone. Any other path (workflows, the dev
+container, the root `justfile`, new directories) runs everything, so unknown
+files fail safe. `Required checks` accepts skipped jobs but still fails on any
+failed or cancelled one. Pushes to `main` always run the full set.
 
 Workflows invoke the same package-local `justfile` capabilities used by
 developers. Workflow YAML contains only scheduling, caching, artifact,

@@ -19,6 +19,7 @@ jobs:
     outputs:
       hardware: ${{ steps.scopes.outputs.hardware }}
       rust: ${{ steps.scopes.outputs.rust }}
+      quality: ${{ steps.scopes.outputs.quality }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -32,7 +33,7 @@ jobs:
   prebuild:
     name: 🐳 Dev container
     needs: changes
-    if: ${{ needs.changes.outputs.hardware == 'true' || needs.changes.outputs.rust == 'true' }}
+    if: ${{ needs.changes.outputs.hardware == 'true' || needs.changes.outputs.rust == 'true' || needs.changes.outputs.quality == 'true' }}
     runs-on: ubuntu-latest
     outputs:
       image: ${{ steps.prebuild.outputs.image }}
@@ -114,7 +115,7 @@ jobs:
   quality:
     name: ✨ Quality
     needs: [changes, prebuild]
-    if: ${{ needs.changes.outputs.hardware == 'true' || needs.changes.outputs.rust == 'true' }}
+    if: ${{ needs.changes.outputs.hardware == 'true' || needs.changes.outputs.rust == 'true' || needs.changes.outputs.quality == 'true' }}
     permissions:
       contents: read
       packages: write
