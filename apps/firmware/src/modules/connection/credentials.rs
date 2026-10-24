@@ -107,7 +107,7 @@ mod tests {
 
     #[test]
     fn secrets_do_not_leak_through_containing_types_debug_output() {
-        use crate::connectivity::{Credentials, Hotspot, Ssid};
+        use crate::modules::connection::{Credentials, Hotspot, Ssid};
 
         let secret = "hunter2-hunter2";
         let credentials = Credentials::Personal(Passphrase::new(secret).unwrap());

@@ -14,14 +14,16 @@ use std::{
 use firmware::{
     hardware::pins::{Button, ButtonEvent},
     harness::FirmwareHarness,
-    menu::{
-        Request,
-        transitions::{Config, UpdateStatus},
+    modules::{
+        Config, Request,
+        update::{self, Error, Release, Status},
     },
-    updater::{Error, Release},
 };
 
 use crate::Navigator;
+
+const CHECK: Request = Request::Update(update::Request::Check);
+const INSTALL: Request = Request::Update(update::Request::Install);
 
 /// Serves one canned HTTP response on a local port, counting requests.
 fn feed(response: String) -> (Navigator, Arc<AtomicUsize>) {
@@ -54,7 +56,7 @@ async fn a_newer_release_reaches_the_snapshot() {
         body.len()
     ));
 
-    panel.open(Request::CheckForUpdates).await;
+    panel.open(CHECK).await;
     let snapshot = panel
         .firmware
         .until(|snapshot| snapshot.blocking.is_none())
@@ -62,8 +64,8 @@ async fn a_newer_release_reaches_the_snapshot() {
         .unwrap();
 
     assert_eq!(
-        snapshot.transitions.update,
-        UpdateStatus::Available(Release {
+        snapshot.modules.update,
+        Status::Available(Release {
             version: semver::Version::new(99, 0, 0),
             page: "https://example.invalid/v99.0.0".into(),
         })
@@ -84,15 +86,15 @@ async fn the_menu_holds_input_until_the_result_arrives() {
     };
     let mut panel = Navigator::new(FirmwareHarness::with_config(&config).unwrap());
 
-    let checking = panel.open(Request::CheckForUpdates).await;
-    assert_eq!(checking.blocking, Some(Request::CheckForUpdates));
+    let checking = panel.open(CHECK).await;
+    assert_eq!(checking.blocking, Some(CHECK));
     let blocked = panel
         .firmware
         .trigger(ButtonEvent::Pressed(Button::Up))
         .await
         .unwrap();
     assert_eq!(blocked.selected_index, checking.selected_index);
-    assert_eq!(blocked.transitions.update, UpdateStatus::Checking);
+    assert_eq!(blocked.modules.update, Status::Checking);
     assert_eq!(blocked.requested_action, None);
     panel.firmware.shutdown().await.unwrap();
 }
@@ -104,34 +106,34 @@ async fn a_failed_check_releases_the_menu_and_can_be_retried() {
     );
 
     for attempt in 1..=2 {
-        panel.open(Request::CheckForUpdates).await;
+        panel.open(CHECK).await;
         let failed = panel
             .firmware
             .until(|snapshot| snapshot.blocking.is_none())
             .await
             .unwrap();
         assert_eq!(
-            failed.transitions.update,
-            UpdateStatus::Failed(Error::ServiceDown(503))
+            failed.modules.update,
+            Status::Failed(Error::ServiceDown(503))
         );
         assert_eq!(requests.load(Ordering::SeqCst), attempt);
     }
     // The menu navigates normally again.
-    panel.open(Request::InstallUpdate).await;
+    panel.open(INSTALL).await;
     panel.firmware.shutdown().await.unwrap();
 }
 
 #[tokio::test]
 async fn offline_firmware_reports_disabled_and_stays_navigable() {
     let mut panel = Navigator::start();
-    panel.open(Request::CheckForUpdates).await;
+    panel.open(CHECK).await;
     let snapshot = panel
         .firmware
         .until(|snapshot| snapshot.blocking.is_none())
         .await
         .unwrap();
-    assert_eq!(snapshot.transitions.update, UpdateStatus::Disabled);
-    panel.open(Request::InstallUpdate).await;
+    assert_eq!(snapshot.modules.update, Status::Disabled);
+    panel.open(INSTALL).await;
     panel.firmware.shutdown().await.unwrap();
 }
 
@@ -144,18 +146,18 @@ async fn without_internet_the_check_fails_offline_and_releases_the_menu() {
     };
     let mut panel = Navigator::new(FirmwareHarness::with_config(&config).unwrap());
 
-    panel.open(Request::CheckForUpdates).await;
+    panel.open(CHECK).await;
     let snapshot = panel
         .firmware
         .until(|snapshot| snapshot.blocking.is_none())
         .await
         .unwrap();
     assert_eq!(
-        snapshot.transitions.update,
-        UpdateStatus::Failed(Error::Offline {
+        snapshot.modules.update,
+        Status::Failed(Error::Offline {
             host: "update-check.invalid".into()
         })
     );
-    panel.open(Request::InstallUpdate).await;
+    panel.open(INSTALL).await;
     panel.firmware.shutdown().await.unwrap();
 }

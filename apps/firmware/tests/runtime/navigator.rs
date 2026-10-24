@@ -4,7 +4,8 @@
 use firmware::{
     hardware::pins::{Button, ButtonEvent},
     harness::FirmwareHarness,
-    menu::{MAIN_MENU, Request},
+    menu::MAIN_MENU,
+    modules::Request,
     runtime::Snapshot,
 };
 use menu::{Menu, MenuItem};

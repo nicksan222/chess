@@ -9,7 +9,7 @@ use tokio::{runtime::Handle, sync::watch, task::JoinHandle};
 use crate::{
     events::ReceiveError,
     hardware::HardwareEventBus,
-    menu::transitions::{Config, TransitionEventBus, Transitions},
+    modules::{Config, Facade, Facades, ModuleEventBus, Modules},
 };
 use state::State;
 
@@ -18,7 +18,8 @@ pub use state::Snapshot;
 /// Owns one running firmware instance. Dropping it stops its event loop.
 pub struct Firmware {
     events: HardwareEventBus,
-    reports: TransitionEventBus,
+    reports: ModuleEventBus,
+    facades: Facades,
     updates: watch::Receiver<Snapshot>,
     worker: JoinHandle<Result<(), ReceiveError>>,
 }
@@ -30,8 +31,9 @@ impl Firmware {
         Self::start_with(&Config::device())
     }
 
-    /// Starts the loop with explicit integration settings. Stopping the loop
-    /// cancels background work its transitions started.
+    /// Starts the loop with explicit module settings. Stopping the loop
+    /// cancels background work its modules started. Fails without an async
+    /// runtime or when a module uses one registered after it.
     pub fn start_with(config: &Config) -> io::Result<Self> {
         let runtime = Handle::try_current().map_err(|error| {
             io::Error::other(format!(
@@ -41,9 +43,11 @@ impl Firmware {
         let events = HardwareEventBus::new();
         // Subscribe before returning so even the first injected event is handled.
         let mut subscription = events.subscribe();
-        let reports = TransitionEventBus::new();
+        let reports = ModuleEventBus::new();
+        // Likewise before building, so reports from startup work are kept.
         let mut reported = reports.subscribe();
-        let mut state = State::new(Transitions::new(config, reports.clone()));
+        let (modules, facades) = Modules::new(config, &reports).map_err(io::Error::other)?;
+        let mut state = State::new(modules);
         let (updates, receiver) = watch::channel(state.initial_snapshot());
         let worker = runtime.spawn(async move {
             loop {
@@ -65,6 +69,7 @@ impl Firmware {
         Ok(Self {
             events,
             reports,
+            facades,
             updates: receiver,
             worker,
         })
@@ -74,9 +79,15 @@ impl Firmware {
         self.events.clone()
     }
 
-    /// Where transitions report their work; tests inject reports through it too.
-    pub fn reports(&self) -> TransitionEventBus {
+    /// Where modules report their work; tests inject reports through it too.
+    pub fn reports(&self) -> ModuleEventBus {
         self.reports.clone()
+    }
+
+    /// The public API of a registered module, such as
+    /// `firmware.module::<Update>()`.
+    pub fn module<F: Facade>(&self) -> F {
+        F::find(&self.facades).expect("startup builds every registered module")
     }
 
     pub fn snapshot(&self) -> Snapshot {

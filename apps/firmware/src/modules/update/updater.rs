@@ -1,41 +1,22 @@
-//! The local firmware and its updates: what is installed, what is published,
-//! and whether newer firmware is available.
-//!
-//! Presentation-agnostic: menus and displays use [`Updater`] and its typed
-//! results. Installing an update is not implemented.
+//! Whether newer firmware than the installed one is published.
 
-mod error;
-#[cfg(test)]
-pub(crate) mod fake;
-mod github;
-pub mod installed;
-mod preflight;
-mod release;
-
-pub use error::Error;
-pub use github::LATEST_RELEASE;
-pub use release::{Availability, Release};
+use super::{Availability, Error, github, installed, preflight};
 
 /// Checks a release feed for firmware newer than the installed one.
 #[derive(Clone, Debug)]
-pub struct Updater {
+pub(super) struct Updater {
     feed: String,
 }
 
 impl Updater {
-    /// Checks the GitHub Releases feed of this repository.
-    pub fn github() -> Self {
-        Self::new(LATEST_RELEASE)
-    }
-
     /// Checks a GitHub-compatible "latest release" endpoint at `feed`.
-    pub fn new(feed: impl Into<String>) -> Self {
+    pub(super) fn new(feed: impl Into<String>) -> Self {
         Self { feed: feed.into() }
     }
 
     /// Compares the latest published release with the installed firmware,
     /// after checking the clock, the internet connection and the release host.
-    pub async fn check(&self) -> Result<Availability, Error> {
+    pub(super) async fn check(&self) -> Result<Availability, Error> {
         preflight::run(&self.feed).await?;
         match github::latest(&self.feed).await? {
             None => Ok(Availability::NoRelease),
@@ -48,9 +29,10 @@ impl Updater {
 mod tests {
     use semver::Version;
 
-    use super::{
+    use super::*;
+    use crate::modules::update::{
+        LATEST_RELEASE, Release,
         fake::{FakeFeed, answer, release},
-        *,
     };
 
     fn check(response: String) -> Updater {
@@ -120,7 +102,6 @@ mod tests {
 
     #[test]
     fn the_product_checks_this_repositorys_github_releases() {
-        assert_eq!(Updater::github().feed, LATEST_RELEASE);
         assert!(
             LATEST_RELEASE.starts_with("https://api.github.com/repos/nicksan222/chess/"),
             "{LATEST_RELEASE}"

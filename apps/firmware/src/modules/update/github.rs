@@ -8,7 +8,8 @@ use tokio::task;
 use super::{Error, installed};
 
 /// Newest non-draft, non-prerelease release of this repository.
-pub const LATEST_RELEASE: &str = "https://api.github.com/repos/nicksan222/chess/releases/latest";
+pub(super) const LATEST_RELEASE: &str =
+    "https://api.github.com/repos/nicksan222/chess/releases/latest";
 
 /// Bounds the whole feed request; longer than the preflight probes so a slow
 /// link is not mistaken for an unreachable one.
@@ -56,7 +57,7 @@ fn client() -> Result<Client, Error> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::updater::fake::{FakeFeed, answer, release};
+    use crate::modules::update::fake::{FakeFeed, answer, release};
 
     #[tokio::test]
     async fn asks_for_the_github_api_as_this_firmware() {

@@ -2,7 +2,7 @@
 //!
 //! It models only what the earlier Linux VM runs (real NetworkManager, hostapd and
 //! `mac80211_hwsim`, since removed) showed NetworkManager to do:
-//! - an active access point's SSID is what `current_ssid` reports (a running hotspot
+//! - an active access point's SSID is what the radio reports (a running hotspot
 //!   looked like `Connected("ChessSetup")`);
 //! - there is one radio, so activating an access point or joining a network replaces
 //!   whatever was active;
@@ -18,13 +18,13 @@ use std::sync::{Arc, Mutex, MutexGuard};
 
 use super::{
     Credentials, Error, Hotspot, Ssid,
-    backend::{VisibleNetwork, WifiBackend},
+    backend::{Radio, VisibleNetwork, WifiBackend},
 };
 
 /// One backend operation, in the order the product code issued it.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub enum Call {
-    CurrentSsid,
+pub(in crate::modules) enum Call {
+    Radio,
     Scan,
     Forget(String),
     StartAccessPoint(Hotspot),
@@ -33,7 +33,8 @@ pub enum Call {
 
 /// The operations a scripted failure can target.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum Operation {
+pub(in crate::modules) enum Operation {
+    Radio,
     Scan,
     Forget,
     StartAccessPoint,
@@ -42,7 +43,7 @@ pub enum Operation {
 
 /// A failure the fake can be told to report once.
 #[derive(Clone, Copy, Debug)]
-pub enum Failure {
+pub(in crate::modules) enum Failure {
     AuthFailed,
     NotFound,
     Timeout,
@@ -68,27 +69,27 @@ enum Auth {
 
 /// A network in range of the board.
 #[derive(Clone, Debug)]
-pub struct Network {
+pub(in crate::modules) struct Network {
     ssid: String,
     strength: Option<u8>,
     auth: Auth,
 }
 
 impl Network {
-    pub fn open(ssid: &str, strength: u8) -> Self {
+    pub(in crate::modules) fn open(ssid: &str, strength: u8) -> Self {
         Self::new(ssid, Some(strength), Auth::Open)
     }
 
-    pub fn wpa(ssid: &str, strength: u8, passphrase: &str) -> Self {
+    pub(in crate::modules) fn wpa(ssid: &str, strength: u8, passphrase: &str) -> Self {
         Self::new(ssid, Some(strength), Auth::Wpa(passphrase.to_owned()))
     }
 
-    pub fn enterprise(ssid: &str, strength: u8) -> Self {
+    pub(in crate::modules) fn enterprise(ssid: &str, strength: u8) -> Self {
         Self::new(ssid, Some(strength), Auth::Enterprise)
     }
 
     /// The stack does not report a signal strength for this network.
-    pub fn without_strength(mut self) -> Self {
+    pub(in crate::modules) fn without_strength(mut self) -> Self {
         self.strength = None;
         self
     }
@@ -115,6 +116,10 @@ struct State {
     active: Option<Active>,
     calls: Vec<Call>,
     failures: Vec<(Operation, Failure)>,
+    /// Reported instead of the modelled state, as a stack mid-change would.
+    radio: Option<Radio>,
+    /// The radio query never answers, as over a stalled bus.
+    stalled: bool,
 }
 
 impl State {
@@ -138,7 +143,7 @@ impl State {
 
 /// The fake Wi-Fi stack. Clones share one state.
 #[derive(Clone, Default)]
-pub struct FakeWifi {
+pub(in crate::modules) struct FakeWifi {
     state: Arc<Mutex<State>>,
 }
 
@@ -147,33 +152,45 @@ impl FakeWifi {
         self.state.lock().unwrap()
     }
 
-    pub fn with_network(self, network: Network) -> Self {
+    pub(in crate::modules) fn with_network(self, network: Network) -> Self {
         self.state().visible.push(network);
         self
     }
 
     /// Makes `ssid` the active client connection, as reported (even if invalid).
-    pub fn with_active_client(self, ssid: &str) -> Self {
+    pub(in crate::modules) fn with_active_client(self, ssid: &str) -> Self {
         self.state().active = Some(Active::Client(ssid.to_owned()));
         self
     }
 
+    /// Reports `radio` whatever the modelled connection.
+    pub(super) fn with_radio(self, radio: Radio) -> Self {
+        self.state().radio = Some(radio);
+        self
+    }
+
+    /// Radio queries never answer.
+    pub(in crate::modules) fn stalled(self) -> Self {
+        self.state().stalled = true;
+        self
+    }
+
     /// The next call of `operation` fails with `failure`; later calls succeed again.
-    pub fn fail_next(&self, operation: Operation, failure: Failure) {
+    pub(in crate::modules) fn fail_next(&self, operation: Operation, failure: Failure) {
         self.state().failures.push((operation, failure));
     }
 
     /// Every backend call so far, in order.
-    pub fn calls(&self) -> Vec<Call> {
+    pub(in crate::modules) fn calls(&self) -> Vec<Call> {
         self.state().calls.clone()
     }
 
-    pub fn clear_calls(&self) {
+    pub(in crate::modules) fn clear_calls(&self) {
         self.state().calls.clear();
     }
 
     /// The SSID of the access point currently running, if any.
-    pub fn access_point(&self) -> Option<String> {
+    pub(in crate::modules) fn access_point(&self) -> Option<String> {
         match &self.state().active {
             Some(Active::AccessPoint(ssid)) => Some(ssid.clone()),
             _ => None,
@@ -181,19 +198,32 @@ impl FakeWifi {
     }
 
     /// Saved profiles, in the order they were created.
-    pub fn profiles(&self) -> Vec<String> {
+    pub(in crate::modules) fn profiles(&self) -> Vec<String> {
         self.state().profiles.clone()
     }
 }
 
 impl WifiBackend for FakeWifi {
-    async fn current_ssid(&self) -> Option<String> {
-        let mut state = self.state();
-        state.calls.push(Call::CurrentSsid);
-        match &state.active {
-            Some(Active::Client(ssid) | Active::AccessPoint(ssid)) => Some(ssid.clone()),
-            None => None,
+    async fn radio(&self) -> Result<Radio, Error> {
+        let stalled = {
+            let mut state = self.state();
+            state.calls.push(Call::Radio);
+            state.stalled
+        };
+        if stalled {
+            std::future::pending::<()>().await;
         }
+        let mut state = self.state();
+        state.fail_if_scripted(Operation::Radio)?;
+        if let Some(radio) = &state.radio {
+            return Ok(radio.clone());
+        }
+        Ok(match &state.active {
+            Some(Active::Client(ssid) | Active::AccessPoint(ssid)) => Radio::Active {
+                ssid: Some(ssid.clone()),
+            },
+            None => Radio::Disconnected,
+        })
     }
 
     async fn scan(&self) -> Result<Vec<VisibleNetwork>, Error> {
