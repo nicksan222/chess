@@ -7,3 +7,4 @@ pub mod harness;
 pub mod menu;
 pub mod modules;
 pub mod runtime;
+pub mod tuning;

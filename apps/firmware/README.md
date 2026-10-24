@@ -159,6 +159,8 @@ empty. The menu crate remains product-neutral and performs no operation.
 `src/hardware/buttons.rs` and `src/hardware/debounce.rs` own polling, active-low
 translation, and mechanical debounce. Call `start_subscription` with a GPIO
 reader, then await `on_message` for debounced pressed/released transitions.
+`start_subscription` uses the default `ButtonTuning`; `ButtonPanel::open` and
+`start` take the tuning the executable loaded.
 `hardware::linux_gpio::LinuxGpioReader` requests inputs with internal pull-ups
 on a caller-selected Linux GPIO chip; the button adapter interprets a low level
 as pressed. `with_external_bias` leaves line bias to the board instead of
@@ -188,3 +190,36 @@ function-named GPIO identities and type-safe descriptors live in
 `src/hardware/linux_gpio.rs`). Unused header functions are deliberately absent.
 `BoardPins` describes the three interfaces in the hardware wiring contract:
 I2C for the shared bus, SPI for the LED chain, and direct GPIO button lines.
+
+## Tuning
+
+`src/tuning/` holds values worth adjusting on a prototype without rebuilding,
+currently the button poll interval and debounce. One `tuning!` declaration in
+`src/tuning/mod.rs` names each value's group, default, unit, range and
+`FIRMWARE_*` environment variable:
+
+```rust
+tuning! {
+    /// Control-panel buttons.
+    buttons: ButtonTuning {
+        /// How long a new level must hold before it counts as a press or release.
+        debounce: 20 ms in 1..=500 from "FIRMWARE_BUTTON_DEBOUNCE_MS";
+    }
+}
+```
+
+It generates a `ButtonTuning` struct with `DEFAULT`, its field in `Tuning`, and
+an entry in `Tuning::VARIABLES`. The unit picks the field type: `ms` is a
+`Duration`, `scans` a `u8`. `main.rs` calls `Tuning::from_env()` before
+starting anything and passes each group to its adapter. Overrides are logged;
+an unknown `FIRMWARE_*` name is a warning; a value that is not a whole number or
+is out of range fails startup with an error naming the variable and its range.
+
+The image installs `yocto/meta-firmware/recipes-firmware/firmware/files/firmware.env`
+as `/etc/default/firmware`, a conffile that `firmware.service` reads with
+`EnvironmentFile=`. It lists every variable commented out at its default. On the
+device, uncomment a line, change the value and run `systemctl restart firmware`;
+`journalctl -u firmware` shows the overrides or the rejection. The file is
+rendered from `Tuning::VARIABLES` (`tuning::env_file`), and a test fails with the
+expected text when the shipped copy differs, so a new variable needs that file
+updated too.

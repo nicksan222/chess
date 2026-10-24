@@ -1,14 +1,17 @@
 //! Control-panel buttons: debounce GPIO levels and publish typed events.
 
-use std::{error::Error as StdError, fmt, ops::Deref};
+use std::{error::Error as StdError, fmt, ops::Deref, time::Duration};
 
 use tokio::{runtime::Handle, task::JoinHandle, time::Instant};
 
-use crate::events::{Bus, ReceiveError, Subscription};
+use crate::{
+    events::{Bus, ReceiveError, Subscription},
+    tuning::ButtonTuning,
+};
 
 use super::{
     HardwareEventBus,
-    debounce::{Debouncer, POLL_INTERVAL},
+    debounce::Debouncer,
     pins::{GPIO, Input, Level, Pin, ReadLevel},
 };
 
@@ -87,7 +90,8 @@ impl<const BCM: u8> ButtonPin<BCM> {
         self.button
     }
 
-    /// Starts polling and debouncing this button.
+    /// Starts polling and debouncing this button with the default
+    /// [`ButtonTuning`].
     pub fn start_subscription<R>(
         &self,
         reader: R,
@@ -96,7 +100,7 @@ impl<const BCM: u8> ButtonPin<BCM> {
     where
         R: ReadLevel + Send + 'static,
     {
-        self.start_with_level(reader, events, None)
+        self.start_with_level(reader, events, None, ButtonTuning::DEFAULT)
     }
 
     pub(super) fn start_with_level<R>(
@@ -104,6 +108,7 @@ impl<const BCM: u8> ButtonPin<BCM> {
         reader: R,
         events: &HardwareEventBus,
         initial: Option<Level>,
+        tuning: ButtonTuning,
     ) -> Result<ButtonSubscription, StartSubscriptionError>
     where
         R: ReadLevel + Send + 'static,
@@ -118,6 +123,7 @@ impl<const BCM: u8> ButtonPin<BCM> {
             events.clone(),
             button_events,
             initial,
+            tuning,
         ));
 
         Ok(ButtonSubscription {
@@ -176,16 +182,18 @@ impl StdError for StartSubscriptionError {}
 struct ButtonPoller {
     gpio: GPIO,
     button: Button,
+    debounce: Duration,
     debouncer: Option<Debouncer>,
     read_failed: bool,
 }
 
 impl ButtonPoller {
-    fn new(gpio: GPIO, button: Button, initial: Option<Level>) -> Self {
+    fn new(gpio: GPIO, button: Button, initial: Option<Level>, debounce: Duration) -> Self {
         Self {
             gpio,
             button,
-            debouncer: initial.map(Debouncer::new),
+            debounce,
+            debouncer: initial.map(|level| Debouncer::new(level, debounce)),
             read_failed: false,
         }
     }
@@ -206,7 +214,10 @@ impl ButtonPoller {
         };
         self.read_failed = false;
 
-        let debouncer = self.debouncer.get_or_insert_with(|| Debouncer::new(level));
+        let debounce = self.debounce;
+        let debouncer = self
+            .debouncer
+            .get_or_insert_with(|| Debouncer::new(level, debounce));
         Some(match debouncer.observe(level, now)? {
             ButtonAction::Pressed => ButtonEvent::Pressed(self.button),
             ButtonAction::Released => ButtonEvent::Released(self.button),
@@ -221,12 +232,13 @@ async fn poll<R>(
     hardware_events: HardwareEventBus,
     button_events: Bus<ButtonEvent>,
     initial: Option<Level>,
+    tuning: ButtonTuning,
 ) where
     R: ReadLevel,
 {
-    let mut interval = tokio::time::interval(POLL_INTERVAL);
+    let mut interval = tokio::time::interval(tuning.poll_interval);
     interval.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip);
-    let mut poller = ButtonPoller::new(gpio, button, initial);
+    let mut poller = ButtonPoller::new(gpio, button, initial, tuning.debounce);
 
     loop {
         interval.tick().await;
@@ -250,7 +262,6 @@ mod tests {
             Arc,
             atomic::{AtomicUsize, Ordering},
         },
-        time::Duration,
     };
 
     use super::*;
@@ -264,7 +275,7 @@ mod tests {
         let mut reader = SequenceReader {
             levels: VecDeque::from([Level::High, Level::Low, Level::Low]),
         };
-        let mut poller = ButtonPoller::new(gpio, Button::Up, None);
+        let mut poller = ButtonPoller::new(gpio, Button::Up, None, ButtonTuning::DEFAULT.debounce);
 
         // The first valid read is the baseline, not a press.
         assert_eq!(poller.step(&mut reader, start), None);
@@ -471,6 +482,32 @@ mod tests {
         assert!(waited.is_err(), "no transition may be reported");
         assert_eq!(observed.try_recv(), Ok(None));
         assert!(reads.load(Ordering::SeqCst) > 50, "polling must continue");
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn a_tuned_poll_interval_and_debounce_set_when_a_press_lands() {
+        let events = HardwareEventBus::new();
+        let mut observed = events.subscribe();
+        let tuning = ButtonTuning {
+            poll_interval: Duration::from_millis(10),
+            debounce: Duration::from_millis(60),
+        };
+        let reader = ScriptedReader::new(&[Some(Level::High)], Some(Level::Low));
+        let reads = Arc::clone(&reader.reads);
+        let start = Instant::now();
+        let mut subscription = BoardPins::get()
+            .gpio
+            .left_button
+            .start_with_level(reader, &events, None, tuning)
+            .unwrap();
+
+        // Low is first seen at 10 ms; the default 20 ms debounce would report
+        // it by 30 ms, the tuned 60 ms one only at 70 ms.
+        tokio::time::sleep(Duration::from_millis(65)).await;
+        assert_eq!(observed.try_recv(), Ok(None));
+        assert_eq!(reads.load(Ordering::SeqCst), 7, "sampled every 10 ms");
+        assert_eq!(subscription.on_message().await, Ok(ButtonAction::Pressed));
+        assert_eq!(start.elapsed(), Duration::from_millis(70));
     }
 
     #[tokio::test(start_paused = true)]
