@@ -15,6 +15,16 @@ impl Color {
     /// Both colors in white-then-black order.
     pub const ALL: [Self; 2] = [Self::White, Self::Black];
 
+    /// Returns the position of this color in [`Color::ALL`].
+    ///
+    /// Gives per-color arrays a stable slot: White is `0` and Black is `1`.
+    pub(crate) const fn index(self) -> usize {
+        match self {
+            Self::White => 0,
+            Self::Black => 1,
+        }
+    }
+
     /// Returns the opposing color.
     ///
     /// Maps White to Black and Black to White. The operation is its own

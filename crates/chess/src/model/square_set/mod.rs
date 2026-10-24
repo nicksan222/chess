@@ -186,7 +186,7 @@ impl SquareSet {
         if self.is_empty() {
             None
         } else {
-            Square::from_raw_index((63 - self.0.leading_zeros()) as u8)
+            Square::from_raw_index((u64::BITS - 1 - self.0.leading_zeros()) as u8)
         }
     }
 

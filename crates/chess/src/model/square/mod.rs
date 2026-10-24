@@ -26,8 +26,14 @@ use core::fmt;
 pub struct Square(SquareIndex);
 
 impl Square {
+    /// The number of files on a chessboard.
+    pub const FILES: u8 = 8;
+
+    /// The number of ranks on a chessboard.
+    pub const RANKS: u8 = 8;
+
     /// The number of squares on a chessboard.
-    pub const COUNT: usize = 64;
+    pub const COUNT: usize = Self::FILES as usize * Self::RANKS as usize;
 
     /// Creates a square from validated file and rank values.
     ///
@@ -44,7 +50,7 @@ impl Square {
     /// ```
     #[must_use]
     pub const fn new(file: File, rank: Rank) -> Self {
-        Self(SquareIndex(rank.index() * 8 + file.index()))
+        Self(SquareIndex(rank.index() * Self::FILES + file.index()))
     }
 
     /// Creates a square from a validated index.
@@ -54,6 +60,17 @@ impl Square {
     #[must_use]
     pub const fn from_index(index: SquareIndex) -> Self {
         Self(index)
+    }
+
+    /// Creates a square from zero-based file and rank numbers.
+    ///
+    /// Returns `None` when either number is outside `0..8`.
+    pub(crate) const fn from_file_rank(file: u8, rank: u8) -> Option<Self> {
+        if file < Self::FILES && rank < Self::RANKS {
+            Some(Self(SquareIndex(rank * Self::FILES + file)))
+        } else {
+            None
+        }
     }
 
     /// Creates a square from a raw index, returning `None` when out of range.
@@ -93,7 +110,26 @@ impl Square {
     /// [`File`].
     #[must_use]
     pub const fn file(self) -> File {
-        File::ALL[(self.0.value() % 8) as usize]
+        File::ALL[self.file_index() as usize]
+    }
+
+    /// Returns the zero-based file number (`a` = 0 through `h` = 7).
+    pub(crate) const fn file_index(self) -> u8 {
+        self.0.value() % Self::FILES
+    }
+
+    /// Returns the zero-based rank number (`1` = 0 through `8` = 7).
+    pub(crate) const fn rank_index(self) -> u8 {
+        self.0.value() / Self::FILES
+    }
+
+    /// Returns whether this is a light square.
+    ///
+    /// `a1` is dark and colors alternate along every file and rank, so `h1`
+    /// and `a8` are light.
+    #[must_use]
+    pub const fn is_light(self) -> bool {
+        (self.file_index() + self.rank_index()) % 2 == 1
     }
 
     /// Returns the square's rank.
@@ -102,7 +138,7 @@ impl Square {
     /// [`Rank`].
     #[must_use]
     pub const fn rank(self) -> Rank {
-        Rank::ALL[(self.0.value() / 8) as usize]
+        Rank::ALL[self.rank_index() as usize]
     }
 
     /// Returns the board edges containing this square.
@@ -156,13 +192,13 @@ impl Square {
     /// ```
     #[must_use]
     pub const fn offset(self, offset: SquareOffset) -> Option<Self> {
-        let file = self.file().index() as i16 + offset.files().value() as i16;
-        let rank = self.rank().index() as i16 + offset.ranks().value() as i16;
-        if file >= 0 && file < 8 && rank >= 0 && rank < 8 {
-            Some(Self(SquareIndex((rank * 8 + file) as u8)))
-        } else {
-            None
+        // `Range::contains` is not `const`, so the bounds are explicit.
+        let file = self.file_index() as i16 + offset.files().value() as i16;
+        let rank = self.rank_index() as i16 + offset.ranks().value() as i16;
+        if file < 0 || rank < 0 {
+            return None;
         }
+        Self::from_file_rank(file as u8, rank as u8)
     }
 
     /// Returns the adjacent square in `direction`, if it is on-board.

@@ -5,7 +5,7 @@
 //! positions surface as `None` so callers report
 //! [`ComputerError::InvalidSquare`](crate::ComputerError::InvalidSquare).
 
-use crate::{Color, Piece, PieceKind, Square, SquareIndex};
+use crate::{Color, Piece, PieceKind, Square};
 use embedded_chess_engine::{Color as SearchColor, Piece as SearchPiece, Position};
 
 /// Maps a domain color onto its search-engine counterpart.
@@ -39,8 +39,8 @@ pub(super) fn to_search_piece(piece: Piece) -> SearchPiece {
 /// Total conversion; every domain square has a search-engine position.
 pub(super) fn to_position(square: Square) -> Position {
     Position::new(
-        i32::from(square.index().value() / 8),
-        i32::from(square.index().value() % 8),
+        i32::from(square.rank_index()),
+        i32::from(square.file_index()),
     )
 }
 
@@ -53,6 +53,5 @@ pub(super) fn to_position(square: Square) -> Position {
 pub(super) fn from_position(position: Position) -> Option<Square> {
     let rank = u8::try_from(position.get_row()).ok()?;
     let file = u8::try_from(position.get_col()).ok()?;
-    let index = SquareIndex::new(rank.checked_mul(8)?.checked_add(file)?).ok()?;
-    Some(Square::from_index(index))
+    Square::from_file_rank(file, rank)
 }
