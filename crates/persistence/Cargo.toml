@@ -24,3 +24,6 @@ path = "tests/unit/main.rs"
 name = "e2e"
 path = "tests/e2e/main.rs"
 required-features = ["sqlite"]
+
+[lints]
+workspace = true

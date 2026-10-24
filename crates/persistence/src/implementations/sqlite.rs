@@ -20,17 +20,28 @@ const CREATE_TABLE: &str = "
 ///
 /// The `sqlite` crate feature uses rusqlite's bundled SQLite build, so consumers
 /// do not need a system SQLite development package.
+#[derive(Debug)]
 pub struct SqliteStore {
     connection: Connection,
 }
 
 impl SqliteStore {
     /// Opens or creates a database at `path` and initializes its value table.
+    ///
+    /// # Errors
+    ///
+    /// Returns the SQLite error when the database cannot be opened or the value
+    /// table cannot be created.
     pub fn open(path: impl AsRef<Path>) -> rusqlite::Result<Self> {
         Self::from_connection(Connection::open(path)?)
     }
 
     /// Opens an isolated in-memory database and initializes its value table.
+    ///
+    /// # Errors
+    ///
+    /// Returns the SQLite error when the database cannot be created or the
+    /// value table cannot be created.
     pub fn in_memory() -> rusqlite::Result<Self> {
         Self::from_connection(Connection::open_in_memory()?)
     }
@@ -39,6 +50,10 @@ impl SqliteStore {
     ///
     /// This constructor lets applications configure pragmas, URI parameters,
     /// encryption, or connection flags before creating the store.
+    ///
+    /// # Errors
+    ///
+    /// Returns the SQLite error when the value table cannot be created.
     pub fn from_connection(connection: Connection) -> rusqlite::Result<Self> {
         connection.execute_batch(CREATE_TABLE)?;
         Ok(Self { connection })

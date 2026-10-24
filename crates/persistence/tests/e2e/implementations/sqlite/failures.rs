@@ -13,9 +13,8 @@ fn malformed_database_files_fail_during_open() {
     let database = DatabaseFile::new("malformed");
     fs::write(database.path(), b"this is not a sqlite database").expect("malformed fixture writes");
 
-    let error = match SqliteStore::open(database.path()) {
-        Ok(_) => panic!("malformed database must not open"),
-        Err(error) => error,
+    let Err(error) = SqliteStore::open(database.path()) else {
+        panic!("malformed database must not open")
     };
     assert!(
         error.to_string().contains("database") || error.to_string().contains("file"),
