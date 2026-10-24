@@ -1,5 +1,43 @@
 use core::fmt;
 
+/// A reported byte count that exceeds the buffer it claims to fill.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(super) struct LengthViolation {
+    reported: usize,
+    capacity: usize,
+}
+
+/// Returns `reported` when it fits within `capacity` bytes.
+pub(super) const fn checked_prefix(
+    reported: usize,
+    capacity: usize,
+) -> Result<usize, LengthViolation> {
+    if reported > capacity {
+        Err(LengthViolation { reported, capacity })
+    } else {
+        Ok(reported)
+    }
+}
+
+/// Implements `Error` for a backend/value error pair, exposing the listed
+/// single-field variants as the source.
+macro_rules! impl_error_source {
+    ($name:ident: $($variant:ident),+ $(,)?) => {
+        impl<S, V> core::error::Error for $name<S, V>
+        where
+            S: core::error::Error + 'static,
+            V: core::error::Error + 'static,
+        {
+            fn source(&self) -> Option<&(dyn core::error::Error + 'static)> {
+                match self {
+                    $(Self::$variant(error) => Some(error),)+
+                    _ => None,
+                }
+            }
+        }
+    };
+}
+
 /// A typed field could not be encoded or stored.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum SaveError<BackendError, ValueError> {
@@ -35,17 +73,11 @@ where
     }
 }
 
-impl<S, V> core::error::Error for SaveError<S, V>
-where
-    S: core::error::Error + 'static,
-    V: core::error::Error + 'static,
-{
-    fn source(&self) -> Option<&(dyn core::error::Error + 'static)> {
-        match self {
-            Self::Encode(error) => Some(error),
-            Self::Backend(error) => Some(error),
-            Self::InvalidEncodedLength { .. } => None,
-        }
+impl_error_source!(SaveError: Encode, Backend);
+
+impl<S, V> From<LengthViolation> for SaveError<S, V> {
+    fn from(LengthViolation { reported, capacity }: LengthViolation) -> Self {
+        Self::InvalidEncodedLength { reported, capacity }
     }
 }
 
@@ -101,16 +133,10 @@ where
     }
 }
 
-impl<S, V> core::error::Error for RetrieveError<S, V>
-where
-    S: core::error::Error + 'static,
-    V: core::error::Error + 'static,
-{
-    fn source(&self) -> Option<&(dyn core::error::Error + 'static)> {
-        match self {
-            Self::Backend(error) => Some(error),
-            Self::Decode(error) => Some(error),
-            Self::BufferTooSmall { .. } | Self::InvalidLoadedLength { .. } => None,
-        }
+impl_error_source!(RetrieveError: Backend, Decode);
+
+impl<S, V> From<LengthViolation> for RetrieveError<S, V> {
+    fn from(LengthViolation { reported, capacity }: LengthViolation) -> Self {
+        Self::InvalidLoadedLength { reported, capacity }
     }
 }
