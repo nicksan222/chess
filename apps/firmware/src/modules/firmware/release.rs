@@ -16,7 +16,7 @@ pub struct Release {
 
 /// Whether newer firmware than the installed one is published.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub enum Availability {
+pub(super) enum Availability {
     /// Nothing is published yet.
     NoRelease,
     /// The latest release is not newer than the installed firmware.

@@ -3,24 +3,24 @@
 
 use crate::board::WIFI_INTERFACE;
 use nmrs::{
-    NetworkManager, WifiScope, WifiSecurity,
+    DeviceState, NetworkManager, WifiScope, WifiSecurity,
     builders::{WifiConnectionBuilder, WifiMode},
 };
 
 use super::{
     Credentials, Error, Hotspot, Ssid,
-    backend::{VisibleNetwork, WifiBackend},
+    backend::{Radio, VisibleNetwork, WifiBackend},
 };
 
 /// Wi-Fi control through the system NetworkManager service.
-pub struct NetworkManagerBackend {
+pub(super) struct NetworkManagerBackend {
     manager: NetworkManager,
     wifi: WifiScope,
 }
 
 impl NetworkManagerBackend {
     /// Connects to the system NetworkManager service and the board Wi-Fi radio.
-    pub async fn connect() -> Result<Self, Error> {
+    pub(super) async fn connect() -> Result<Self, Error> {
         let manager = NetworkManager::new().await?;
         let wifi = manager.wifi(WIFI_INTERFACE);
         Ok(Self { manager, wifi })
@@ -28,8 +28,29 @@ impl NetworkManagerBackend {
 }
 
 impl WifiBackend for NetworkManagerBackend {
-    async fn current_ssid(&self) -> Option<String> {
-        self.manager.current_ssid().await
+    async fn radio(&self) -> Result<Radio, Error> {
+        // `current_ssid` turns every D-Bus failure into "no network", so the
+        // device state is read instead, keeping failures as errors.
+        let device = self
+            .manager
+            .wifi_device_by_interface(WIFI_INTERFACE)
+            .await?;
+        Ok(match device.state {
+            // `Unavailable` is a managed radio that is switched off.
+            DeviceState::Disconnected | DeviceState::Unavailable => Radio::Disconnected,
+            DeviceState::Activated => Radio::Active {
+                ssid: device.active_ssid,
+            },
+            DeviceState::Prepare
+            | DeviceState::Config
+            | DeviceState::NeedAuth
+            | DeviceState::IpConfig
+            | DeviceState::IpCheck
+            | DeviceState::Secondaries
+            | DeviceState::Deactivating => Radio::Changing,
+            // Unmanaged, failed, and states added after this was written.
+            _ => Radio::Unknown,
+        })
     }
 
     async fn scan(&self) -> Result<Vec<VisibleNetwork>, Error> {

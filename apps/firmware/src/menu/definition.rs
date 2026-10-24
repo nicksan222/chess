@@ -1,6 +1,12 @@
 //! Product menu definition composed from the headless `menu` crate.
+//!
+//! Each module defines its own submenu as `MENU`; this file decides which ones
+//! the product shows, and in what order. The menu performs no operation: every
+//! leaf is a [`Request`] routed to the module that owns it.
 
 use ::menu::{Menu, MenuItem};
+
+use crate::modules::{Request, connection, firmware, pairing, play};
 
 /// A user-visible screen controlled by the device coordinator.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -34,78 +40,6 @@ impl Screen {
     }
 }
 
-/// A request exposed by a selectable leaf in the product menu.
-///
-/// The menu does not execute these; each one is handled by the transition
-/// registered for it in `transitions`. `CheckForUpdates` is blocking, with
-/// `CancelUpdateCheck` as its escape action. The others have placeholder
-/// transitions that finish immediately, and stay non-blocking until their
-/// integrations define completion and cancellation behavior.
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum Request {
-    /// Select local game setup.
-    SelectLocalGame,
-    /// Select online game setup.
-    SelectOnlineGame,
-    /// Show current connection status.
-    ShowConnectionStatus,
-    /// Request a Wi-Fi scan.
-    ScanWifi,
-    /// Open externally managed network settings.
-    OpenNetworkSettings,
-    /// Start the externally managed pairing flow.
-    StartPairing,
-    /// Show current online-session status.
-    ShowSessionStatus,
-    /// Check whether a software update is available.
-    CheckForUpdates,
-    /// Abandon a running update check; the escape action of `CheckForUpdates`.
-    CancelUpdateCheck,
-    /// Start the externally managed update flow.
-    InstallUpdate,
-}
-
-/// Game-mode choices.
-pub static PLAY_MENU: Menu<'static, Request> = Menu::new(
-    "Play",
-    &[
-        MenuItem::action("Local Game", Request::SelectLocalGame),
-        MenuItem::action("Online Game", Request::SelectOnlineGame),
-    ],
-);
-
-/// Connectivity information and controls.
-pub static CONNECTION_MENU: Menu<'static, Request> = Menu::new(
-    "Connection",
-    &[
-        MenuItem::action("Status", Request::ShowConnectionStatus),
-        MenuItem::action("Scan Wi-Fi", Request::ScanWifi),
-        MenuItem::action("Network Settings", Request::OpenNetworkSettings),
-    ],
-);
-
-/// Pairing and online-session controls.
-pub static PAIRING_MENU: Menu<'static, Request> = Menu::new(
-    "Pairing",
-    &[
-        MenuItem::action("Start Pairing", Request::StartPairing),
-        MenuItem::action("Session Status", Request::ShowSessionStatus),
-    ],
-);
-
-/// Software update controls.
-pub static UPDATE_MENU: Menu<'static, Request> = Menu::new(
-    "Update",
-    &[
-        MenuItem::blocking_action(
-            "Check for Updates",
-            Request::CheckForUpdates,
-            Request::CancelUpdateCheck,
-        ),
-        MenuItem::action("Install Update", Request::InstallUpdate),
-    ],
-);
-
 /// Settings placeholder; preference definitions will be supplied later.
 pub static SETTINGS_MENU: Menu<'static, Request> = Menu::new("Settings", &[]);
 
@@ -113,10 +47,10 @@ pub static SETTINGS_MENU: Menu<'static, Request> = Menu::new("Settings", &[]);
 pub static MAIN_MENU: Menu<'static, Request> = Menu::new(
     "Main Menu",
     &[
-        MenuItem::submenu("Play", &PLAY_MENU),
-        MenuItem::submenu("Connection", &CONNECTION_MENU),
-        MenuItem::submenu("Pairing", &PAIRING_MENU),
-        MenuItem::submenu("Update", &UPDATE_MENU),
+        MenuItem::submenu("Play", &play::MENU),
+        MenuItem::submenu("Connection", &connection::MENU),
+        MenuItem::submenu("Pairing", &pairing::MENU),
+        MenuItem::submenu("Update", &firmware::MENU),
         MenuItem::submenu("Settings", &SETTINGS_MENU),
     ],
 );
@@ -129,10 +63,10 @@ mod tests {
     #[test]
     fn main_menu_composes_every_product_submenu() {
         let expected: [(&str, &Menu<'static, Request>); 5] = [
-            ("Play", &PLAY_MENU),
-            ("Connection", &CONNECTION_MENU),
-            ("Pairing", &PAIRING_MENU),
-            ("Update", &UPDATE_MENU),
+            ("Play", &play::MENU),
+            ("Connection", &connection::MENU),
+            ("Pairing", &pairing::MENU),
+            ("Update", &firmware::MENU),
             ("Settings", &SETTINGS_MENU),
         ];
 
@@ -148,36 +82,58 @@ mod tests {
     #[test]
     fn submenus_expose_image_derived_placeholder_requests() {
         assert_menu(
-            &PLAY_MENU,
+            &play::MENU,
+            "Play",
             &[
-                ("Local Game", Request::SelectLocalGame),
-                ("Online Game", Request::SelectOnlineGame),
+                ("Local Game", Request::Play(play::Request::LocalGame)),
+                ("Online Game", Request::Play(play::Request::OnlineGame)),
             ],
         );
         assert_menu(
-            &CONNECTION_MENU,
+            &connection::MENU,
+            "Connection",
             &[
-                ("Status", Request::ShowConnectionStatus),
-                ("Scan Wi-Fi", Request::ScanWifi),
-                ("Network Settings", Request::OpenNetworkSettings),
+                ("Status", Request::Connection(connection::Request::Status)),
+                (
+                    "Scan Wi-Fi",
+                    Request::Connection(connection::Request::ScanWifi),
+                ),
+                (
+                    "Network Settings",
+                    Request::Connection(connection::Request::NetworkSettings),
+                ),
             ],
         );
         assert_menu(
-            &PAIRING_MENU,
+            &pairing::MENU,
+            "Pairing",
             &[
-                ("Start Pairing", Request::StartPairing),
-                ("Session Status", Request::ShowSessionStatus),
+                ("Start Pairing", Request::Pairing(pairing::Request::Start)),
+                (
+                    "Session Status",
+                    Request::Pairing(pairing::Request::SessionStatus),
+                ),
             ],
         );
-        let [check, install] = UPDATE_MENU.items() else {
+        assert_eq!(firmware::MENU.title(), "Update");
+        let [check, install] = firmware::MENU.items() else {
             panic!("the update menu has two items");
         };
         assert_eq!(check.label(), "Check for Updates");
-        assert_eq!(check.as_action(), Some(&Request::CheckForUpdates));
+        assert_eq!(
+            check.as_action(),
+            Some(&Request::Updates(firmware::Request::Check))
+        );
         assert!(check.is_blocking());
-        assert_eq!(check.escape_action(), Some(&Request::CancelUpdateCheck));
+        assert_eq!(
+            check.escape_action(),
+            Some(&Request::Updates(firmware::Request::CancelCheck))
+        );
         assert_eq!(install.label(), "Install Update");
-        assert_eq!(install.as_action(), Some(&Request::InstallUpdate));
+        assert_eq!(
+            install.as_action(),
+            Some(&Request::Updates(firmware::Request::Install))
+        );
         assert!(!install.is_blocking());
         assert!(SETTINGS_MENU.is_empty());
     }
@@ -185,10 +141,10 @@ mod tests {
     #[test]
     fn every_submenu_is_navigable_without_requesting_external_work() {
         let submenus = [
-            &PLAY_MENU,
-            &CONNECTION_MENU,
-            &PAIRING_MENU,
-            &UPDATE_MENU,
+            &play::MENU,
+            &connection::MENU,
+            &pairing::MENU,
+            &firmware::MENU,
             &SETTINGS_MENU,
         ];
 
@@ -215,7 +171,7 @@ mod tests {
         assert_eq!(state.handle(Input::Ok), Event::Opened { depth: 1 });
         assert_eq!(
             state.handle(Input::Ok),
-            Event::Activated(&Request::SelectLocalGame)
+            Event::Activated(&Request::Play(play::Request::LocalGame))
         );
         assert!(!state.is_blocked());
     }
@@ -237,7 +193,8 @@ mod tests {
         assert!(visible.into_iter().all(Screen::shows_status_bar));
     }
 
-    fn assert_menu(menu: &Menu<'static, Request>, expected: &[(&str, Request)]) {
+    fn assert_menu(menu: &Menu<'static, Request>, title: &str, expected: &[(&str, Request)]) {
+        assert_eq!(menu.title(), title);
         assert_eq!(menu.items().len(), expected.len());
         for (item, (label, request)) in menu.items().iter().zip(expected) {
             assert_eq!(item.label(), *label);

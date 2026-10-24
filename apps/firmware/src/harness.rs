@@ -4,7 +4,7 @@ use std::{io, time::Duration};
 
 use crate::{
     hardware::HardwareEvent,
-    menu::transitions::{Config, TransitionEvent},
+    modules::{Config, Facade, ModuleEvent},
     runtime::{Firmware, Snapshot},
 };
 
@@ -20,7 +20,7 @@ impl FirmwareHarness {
         Self::with_config(&Config::offline())
     }
 
-    /// Starts firmware with explicit integration settings, such as a local fake.
+    /// Starts firmware with explicit module settings, such as a local fake.
     pub fn with_config(config: &Config) -> io::Result<Self> {
         Ok(Self {
             firmware: Firmware::start_with(config)?,
@@ -29,6 +29,11 @@ impl FirmwareHarness {
 
     pub fn snapshot(&self) -> Snapshot {
         self.firmware.snapshot()
+    }
+
+    /// The public API of a registered module, as other modules use it.
+    pub fn module<F: Facade>(&self) -> F {
+        self.firmware.module()
     }
 
     /// Injects a hardware observation and waits for the application to process
@@ -53,10 +58,10 @@ impl FirmwareHarness {
             })?
     }
 
-    /// Injects a transition report, as background work would send it, and waits
+    /// Injects a module report, as background work would send it, and waits
     /// for the application to apply it. Acknowledgement counts reports, so no
     /// real background report may be in flight.
-    pub async fn report(&mut self, event: TransitionEvent) -> io::Result<Snapshot> {
+    pub async fn report(&mut self, event: ModuleEvent) -> io::Result<Snapshot> {
         let reported = self.snapshot().reported_events;
         self.firmware
             .reports()

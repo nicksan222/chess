@@ -2,10 +2,8 @@ use ::menu::MenuState;
 
 use crate::{
     hardware::{HardwareEvent, pins::ButtonEvent},
-    menu::{
-        MAIN_MENU, Request,
-        transitions::{self, TransitionEvent, TransitionStatus, Transitions},
-    },
+    menu::MAIN_MENU,
+    modules::{self, ModuleEvent, ModuleStatus, Modules, Request},
 };
 
 /// A processed firmware state, suitable for displays and test assertions.
@@ -17,12 +15,12 @@ pub struct Snapshot {
     pub menu_depth: usize,
     /// Blocking menu operation holding input, if any.
     pub blocking: Option<Request>,
-    /// Menu request awaiting an external implementation.
+    /// Menu request raised by the last hardware event, if any.
     pub requested_action: Option<Request>,
-    /// Transition reports applied, counted separately from hardware events.
+    /// Module reports applied, counted separately from hardware events.
     pub reported_events: u64,
-    /// What the integrations behind menu requests last reported.
-    pub transitions: TransitionStatus,
+    /// What every module last reported or observed.
+    pub modules: ModuleStatus,
 }
 
 impl Snapshot {
@@ -35,23 +33,23 @@ impl Snapshot {
             blocking: None,
             requested_action: None,
             reported_events: 0,
-            transitions: TransitionStatus::default(),
+            modules: ModuleStatus::default(),
         }
     }
 }
 
-/// The menu and its integrations. The published [`Snapshot`] lives in the
+/// The menu and the modules. The published [`Snapshot`] lives in the
 /// caller's watch channel and is updated in place, so nothing is cloned per event.
 pub(super) struct State {
     menu: MenuState<'static, Request>,
-    transitions: Transitions,
+    modules: Modules,
 }
 
 impl State {
-    pub(super) fn new(transitions: Transitions) -> Self {
+    pub(super) fn new(modules: Modules) -> Self {
         Self {
             menu: MenuState::new(&MAIN_MENU),
-            transitions,
+            modules,
         }
     }
 
@@ -61,8 +59,9 @@ impl State {
 
     pub(super) fn handle(&mut self, event: HardwareEvent, snapshot: &mut Snapshot) {
         snapshot.requested_action = None;
+        self.modules.event(&event, &mut snapshot.modules);
         if let Some(request) = self.request_for(event) {
-            self.transitions.handle(request);
+            self.modules.request(request);
             snapshot.requested_action = Some(request);
         }
         self.refresh_snapshot(snapshot);
@@ -70,9 +69,9 @@ impl State {
         snapshot.last_event = Some(event);
     }
 
-    /// Presents a result a transition reported, possibly from background work.
-    pub(super) fn report(&mut self, event: TransitionEvent, snapshot: &mut Snapshot) {
-        transitions::report(event, &mut self.menu, &mut snapshot.transitions);
+    /// Presents a result a module reported, possibly from background work.
+    pub(super) fn report(&mut self, event: ModuleEvent, snapshot: &mut Snapshot) {
+        modules::report(event, &mut self.menu, &mut snapshot.modules);
         snapshot.blocking = self.menu.blocking_action().copied();
         snapshot.reported_events += 1;
     }
