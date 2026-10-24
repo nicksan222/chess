@@ -66,7 +66,7 @@ application and its async stack are banned per portable crate instead.
 | --- | --- | --- |
 | `cargo deny` | Advisories (vulnerable, unsound and yanked anywhere; unmaintained direct dependencies), MIT-compatible licences, bans and crate boundaries, wildcard versions, sources; duplicate versions warn | [`deny.toml`](../../deny.toml), run against `Cargo.lock` and `apps/firmware/yocto/Cargo.lock` |
 | `cargo shear` | Unused and misplaced (should be `dev-`) Rust dependencies | `[package.metadata.cargo-shear]`, each entry with a comment |
-| `pip-audit` | Known vulnerabilities in the pinned development-container Python tools | [`.devcontainer/requirements.txt`](../../.devcontainer/requirements.txt), `--no-deps` |
+| `pip-audit` | Known vulnerabilities in the pinned development-container Python tools | [`.devcontainer/requirements.txt`](../../.devcontainer/requirements.txt), `--no-deps`; vtk 9.3.1's advisories are ignored in the recipe because cadquery-ocp 7.8 pins it until a verified move to cadquery 2.8 |
 
 `cargo shear` was chosen over `cargo machete` because it parses Rust sources
 with rust-analyzer's parser instead of matching text, so renamed crates,
