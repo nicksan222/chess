@@ -3,6 +3,8 @@
 //! `Cargo.toml`; after changing both, refresh `yocto/Cargo.lock` and the crate
 //! metadata with `just firmware-update-crates`.
 
+#![allow(clippy::panic, reason = "a test helper panics to report a failure")]
+
 use std::{
     collections::BTreeMap,
     path::{Component, Path, PathBuf},
