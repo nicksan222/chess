@@ -22,7 +22,7 @@ use super::Error;
 const EARLIEST_PLAUSIBLE_EPOCH_SECS: u64 = 1_767_225_600;
 const EARLIEST_PLAUSIBLE: Duration = Duration::from_secs(EARLIEST_PLAUSIBLE_EPOCH_SECS);
 /// Bounds each network probe, well under the request timeout.
-const PROBE: Duration = Duration::from_secs(5);
+pub(super) const PROBE: Duration = Duration::from_secs(5);
 
 /// Runs every check against the host serving `feed`.
 pub(super) async fn run(feed: &str) -> Result<(), Error> {

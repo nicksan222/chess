@@ -1,9 +1,5 @@
-//! Product menu composition and externally implemented transitions.
+//! Product menu composition; the modules own the requests behind it.
 
 mod definition;
-pub mod transitions;
 
-pub use definition::{
-    CONNECTION_MENU, MAIN_MENU, PAIRING_MENU, PLAY_MENU, Request, SETTINGS_MENU, Screen,
-    UPDATE_MENU,
-};
+pub use definition::{MAIN_MENU, SETTINGS_MENU, Screen};

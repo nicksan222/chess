@@ -1,8 +1,8 @@
 //! Fast, Docker-free tests of the production runtime with injected hardware.
 
 mod gpio;
+mod modules;
 mod navigator;
-mod transitions;
 mod updates;
 
 use navigator::Navigator;
@@ -13,7 +13,7 @@ use firmware::{
         pins::{Button, ButtonEvent},
     },
     harness::FirmwareHarness,
-    menu::Request,
+    modules::{Request, connection, play},
     runtime::Snapshot,
 };
 
@@ -60,7 +60,10 @@ async fn injected_buttons_drive_the_real_menu() {
         .await
         .unwrap();
     assert_eq!(requested.menu_depth, 1);
-    assert_eq!(requested.requested_action, Some(Request::SelectLocalGame));
+    assert_eq!(
+        requested.requested_action,
+        Some(Request::Play(play::Request::LocalGame))
+    );
 
     let closed = firmware
         .trigger(ButtonEvent::Pressed(Button::Left))
@@ -207,7 +210,7 @@ async fn releasing_a_button_never_navigates_or_activates() {
     let requested = press(&mut firmware, Button::Ok).await;
     assert_eq!(
         requested.requested_action,
-        Some(Request::ShowConnectionStatus)
+        Some(Request::Connection(connection::Request::Status))
     );
     let released = release(&mut firmware, Button::Ok).await;
     assert_eq!(released.requested_action, None);
@@ -217,8 +220,9 @@ async fn releasing_a_button_never_navigates_or_activates() {
 #[tokio::test]
 async fn a_request_is_reported_by_exactly_one_snapshot() {
     let mut panel = Navigator::start();
-    let requested = panel.open(Request::ScanWifi).await;
-    assert_eq!(requested.requested_action, Some(Request::ScanWifi));
+    let scan = Request::Connection(connection::Request::ScanWifi);
+    let requested = panel.open(scan).await;
+    assert_eq!(requested.requested_action, Some(scan));
 
     let next = panel
         .firmware
@@ -261,7 +265,10 @@ async fn right_activates_like_ok() {
     let requested = press(&mut firmware, Button::Right).await;
 
     assert_eq!(requested.menu_depth, 1);
-    assert_eq!(requested.requested_action, Some(Request::SelectLocalGame));
+    assert_eq!(
+        requested.requested_action,
+        Some(Request::Play(play::Request::LocalGame))
+    );
     firmware.shutdown().await.unwrap();
 }
 
