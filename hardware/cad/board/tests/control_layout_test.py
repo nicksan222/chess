@@ -57,10 +57,12 @@ class ControlLayoutTest(unittest.TestCase):
             (-33.5, -188.73, 26.5),
             (-33.5, -186.19, 26.5),
         )
-        for wire, endpoint in zip(OLED_HARNESS, expected):
+        for wire, endpoint in zip(OLED_HARNESS, expected, strict=True):
             with self.subTest(cavity=wire.cavity):
                 for actual, wanted in zip(
-                    wire_route(wire, board.pcb_definition)[-1], endpoint
+                    wire_route(wire, board.pcb_definition)[-1],
+                    endpoint,
+                    strict=True,
                 ):
                     self.assertAlmostEqual(actual, wanted)
 

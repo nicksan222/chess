@@ -185,7 +185,9 @@ class CaseFitTest(unittest.TestCase):
 
     def test_rocker_aperture_is_the_panel_cutout_plus_print_allowance(self):
         d = dimensions
-        for aperture, cutout in zip(d.CASE_ROCKER_APERTURE_MM, d.CASE_ROCKER_CUTOUT_MM):
+        for aperture, cutout in zip(
+            d.CASE_ROCKER_APERTURE_MM, d.CASE_ROCKER_CUTOUT_MM, strict=True
+        ):
             self.assertAlmostEqual(
                 aperture - cutout, 2.0 * d.CASE_ROCKER_PRINT_ALLOWANCE_MM
             )

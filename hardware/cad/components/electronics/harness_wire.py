@@ -54,7 +54,7 @@ class HarnessWire(Component):
         curve.use_fill_caps = True
         spline = curve.splines.new("POLY")
         spline.points.add(len(self.route) - 1)
-        for point, position in zip(spline.points, self.route):
+        for point, position in zip(spline.points, self.route, strict=True):
             point.co = (*position, 1)
         obj = bpy.data.objects.new(self.reference, curve)
         collection.objects.link(obj)

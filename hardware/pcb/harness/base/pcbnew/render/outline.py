@@ -25,7 +25,7 @@ def render_outline(board: pcbnew.BOARD, outline: BoardOutline) -> None:
     """
     x, y = outline.width_mm / 2, outline.height_mm / 2
     corners = (Point(-x, y), Point(x, y), Point(x, -y), Point(-x, -y))
-    for start, end in zip(corners, corners[1:] + corners[:1]):
+    for start, end in zip(corners, corners[1:] + corners[:1], strict=True):
         edge = pcbnew.PCB_SHAPE(board)
         edge.SetShape(pcbnew.SHAPE_T_SEGMENT)
         edge.SetStart(native_point(start, outline))

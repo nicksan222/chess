@@ -624,7 +624,7 @@ def _mount_ledges(plate: bpy.types.Object, construction: bpy.types.Collection) -
         )
     # Roots overlap their arms on every axis, avoiding coplanar boolean seams.
     # Join each bracket before attaching it to the detailed plate mesh.
-    for arm, root in zip(additions[::2], additions[1::2]):
+    for arm, root in zip(additions[::2], additions[1::2], strict=True):
         modeling.union_batch(arm, [root], "Display bracket root")
         modeling.union_batch(plate, [arm], "Display mounting ledge")
     modeling.cut_batch(plate, pilots, "Display mounting pilots")
