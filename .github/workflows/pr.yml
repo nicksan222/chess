@@ -13,8 +13,26 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  changes:
+    name: 🔎 Changed scopes
+    runs-on: ubuntu-latest
+    outputs:
+      hardware: ${{ steps.scopes.outputs.hardware }}
+      rust: ${{ steps.scopes.outputs.rust }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - id: scopes
+        run: |
+          .github/scripts/changed-scopes.sh \
+            "${{ github.event.pull_request.base.sha }}" \
+            "${{ github.event.pull_request.head.sha }}" >> "${GITHUB_OUTPUT}"
+
   prebuild:
     name: 🐳 Dev container
+    needs: changes
+    if: ${{ needs.changes.outputs.hardware == 'true' || needs.changes.outputs.rust == 'true' }}
     runs-on: ubuntu-latest
     outputs:
       image: ${{ steps.prebuild.outputs.image }}
@@ -25,7 +43,8 @@ jobs:
 
   hardware:
     name: 🔧 Hardware
-    needs: prebuild
+    needs: [changes, prebuild]
+    if: ${{ needs.changes.outputs.hardware == 'true' }}
     permissions:
       contents: read
       packages: write
@@ -37,6 +56,7 @@ jobs:
   hardware-report:
     name: 📝 Hardware PR report
     needs: hardware
+    if: ${{ needs.hardware.result == 'success' }}
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -93,7 +113,8 @@ jobs:
 
   quality:
     name: ✨ Quality
-    needs: prebuild
+    needs: [changes, prebuild]
+    if: ${{ needs.changes.outputs.hardware == 'true' || needs.changes.outputs.rust == 'true' }}
     permissions:
       contents: read
       packages: write
@@ -103,7 +124,8 @@ jobs:
 
   firmware-check:
     name: 🔌 Firmware checks
-    needs: prebuild
+    needs: [changes, prebuild]
+    if: ${{ needs.changes.outputs.rust == 'true' }}
     permissions:
       contents: read
       packages: write
@@ -114,12 +136,13 @@ jobs:
   required-checks:
     name: Required checks
     if: always()
-    needs: [hardware, hardware-report, quality, firmware-check]
+    needs: [changes, prebuild, hardware, hardware-report, quality, firmware-check]
     runs-on: ubuntu-latest
     steps:
       - name: ✅ Verify required jobs succeeded
         env:
           RESULTS: ${{ toJSON(needs) }}
         run: |
-          jq --exit-status 'all(.[]; .result == "success")' \
+          # Jobs skipped because their scope is unchanged count as passing.
+          jq --exit-status 'all(.[]; .result == "success" or .result == "skipped")' \
             <<< "${RESULTS}"
