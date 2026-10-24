@@ -71,7 +71,9 @@ fn menus_may_reference_each_other_in_a_cycle() {
     static PING: Menu<'static, Action> = Menu::new("Ping", &[MenuItem::submenu("Pong", &PONG)]);
     static PONG: Menu<'static, Action> = Menu::new("Pong", &[MenuItem::submenu("Ping", &PING)]);
 
-    let pong = PING.items()[0].as_submenu().expect("ping links to pong");
-    let ping = pong.items()[0].as_submenu().expect("pong links to ping");
-    assert!(core::ptr::eq(ping, &PING));
+    let first_hop = PING.items()[0].as_submenu().expect("ping links to pong");
+    let second_hop = first_hop.items()[0]
+        .as_submenu()
+        .expect("pong links to ping");
+    assert!(core::ptr::eq(second_hop, &raw const PING));
 }

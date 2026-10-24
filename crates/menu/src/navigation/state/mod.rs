@@ -8,17 +8,20 @@ mod traversal;
 /// Maximum number of parent menus retained while navigating submenus.
 pub const MAX_MENU_DEPTH: usize = 8;
 
+#[derive(Debug)]
 struct Location<'a, A> {
     menu: &'a Menu<'a, A>,
     selected: usize,
 }
 
+#[derive(Debug)]
 struct BlockingOperation<'a, A> {
     action: &'a A,
     escape_action: &'a A,
 }
 
 /// Current location, cursor, and optional blocking operation within a menu tree.
+#[derive(Debug)]
 pub struct MenuState<'a, A> {
     root: &'a Menu<'a, A>,
     current: &'a Menu<'a, A>,
@@ -71,18 +74,12 @@ impl<'a, A> MenuState<'a, A> {
 
     /// Returns a read-only view suitable for external behavior and renderers.
     pub const fn snapshot(&self) -> MenuSnapshot<'a, A> {
-        let (blocking_action, escape_action) = match &self.blocking {
-            Some(blocking) => (Some(blocking.action), Some(blocking.escape_action)),
-            None => (None, None),
+        let blocking = match &self.blocking {
+            Some(blocking) => Some((blocking.action, blocking.escape_action)),
+            None => None,
         };
 
-        MenuSnapshot::new(
-            self.current,
-            self.selected,
-            self.depth,
-            blocking_action,
-            escape_action,
-        )
+        MenuSnapshot::new(self.current, self.selected, self.depth, blocking)
     }
 
     /// Returns the action whose operation is currently blocking input.

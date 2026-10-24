@@ -13,6 +13,10 @@ pub struct MenuControls<A> {
 
 impl<A> MenuControls<A> {
     /// Creates a complete set of explicit button bindings.
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "one command per semantic input is the complete binding; a parameter struct would duplicate `MenuControls` itself"
+    )]
     pub const fn new(
         up: Command<A>,
         down: Command<A>,

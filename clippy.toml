@@ -1,5 +1,6 @@
 # Function limits shared with Ruff (see docs/development.md "Quality checks").
 cognitive-complexity-threshold = 15
+too-many-arguments-threshold = 4
 too-many-lines-threshold = 250
 
 # Tests may unwrap: a panic is the failure report.
