@@ -4,6 +4,8 @@ Wants=NetworkManager.service
 After=NetworkManager.service network.target
 
 [Service]
+# Tuning overrides; the leading "-" keeps the service working without it.
+EnvironmentFile=-/etc/default/firmware
 ExecStart=/usr/bin/firmware
 Restart=on-failure
 
