@@ -22,6 +22,7 @@ just --justfile tooling/quality/justfile dependencies   # cargo deny, cargo shea
 | Shell scripts: `*.sh` and `.githooks/pre-commit` | ShellCheck (from the dev container's Ubuntu packages) | None |
 | Workflows: `.github/workflows/*.yml` and their `run:` scripts | actionlint (a checksum-verified release binary) | None |
 | Spelling in code, comments and docs | typos, [`../../typos.toml`](../../typos.toml) | Generated output, lockfiles, Lichess fixtures; domain words (`THT`, SPICE `Rsource`) listed with reasons |
+| Text hygiene: UTF-8, LF, final newline, no trailing whitespace, no tabs | editorconfig-checker, [`../../.editorconfig`](../../.editorconfig) and `.editorconfig-checker.json` | Markdown keeps trailing spaces (hard line breaks); generated output and lockfiles are excluded; indentation width is left to rustfmt, Ruff and `just --fmt` |
 | Yocto manifest sync | A plain test, `apps/firmware/tests/yocto_manifest.rs` | None |
 
 ## Adding a pattern rule

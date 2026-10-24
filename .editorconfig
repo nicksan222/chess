@@ -1,0 +1,23 @@
+# Shared editor settings; editorconfig-checker enforces them
+# (`just --justfile tooling/quality/justfile editorconfig`).
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+
+[*.{rs,py,toml,sh}]
+indent_size = 4
+
+[{justfile,*.just}]
+indent_size = 4
+
+[*.{yml,yaml,json,jsonc}]
+indent_size = 2
+
+[*.md]
+# A Markdown hard line break is two trailing spaces.
+trim_trailing_whitespace = false
