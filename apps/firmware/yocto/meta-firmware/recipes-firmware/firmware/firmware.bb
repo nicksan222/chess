@@ -33,14 +33,19 @@ python firmware_restore_source_basedir() {
 }
 do_unpack[postfuncs] =+ "firmware_restore_source_basedir"
 
-# Install and enable the systemd service. The unit file lives next to this
-# recipe rather than in the external source tree, so track its checksum here.
+# Install and enable the systemd service and its tuning env file. Both live
+# next to this recipe rather than in the external source tree, so track their
+# checksums here. The env file is a conffile: on-device edits survive upgrades.
 FIRMWARE_SERVICE := "${THISDIR}/files/firmware.service"
+FIRMWARE_ENV := "${THISDIR}/files/firmware.env"
 SYSTEMD_SERVICE:${PN} = "firmware.service"
 SYSTEMD_AUTO_ENABLE:${PN} = "enable"
+CONFFILES:${PN} += "${sysconfdir}/default/firmware"
 
-do_install[file-checksums] += "${FIRMWARE_SERVICE}:True"
+do_install[file-checksums] += "${FIRMWARE_SERVICE}:True ${FIRMWARE_ENV}:True"
 do_install:append() {
     install -d "${D}${systemd_system_unitdir}"
     install -m 0644 "${FIRMWARE_SERVICE}" "${D}${systemd_system_unitdir}/firmware.service"
+    install -d "${D}${sysconfdir}/default"
+    install -m 0644 "${FIRMWARE_ENV}" "${D}${sysconfdir}/default/firmware"
 }

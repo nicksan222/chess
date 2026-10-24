@@ -4,6 +4,8 @@ use std::{fmt::Display, io};
 
 use logger::{error, info};
 
+use crate::tuning::ButtonTuning;
+
 use super::{
     HardwareEventBus,
     pins::{BoardPins, ButtonPin, ButtonSubscription, GPIOPins, ReadLevel},
@@ -20,13 +22,23 @@ impl ButtonPanel {
     /// Logs the startup outcome and returns an error with chip, button and GPIO
     /// context if acquisition fails. No partial panel is returned.
     #[cfg(target_os = "linux")]
-    pub fn open(chip: impl AsRef<std::path::Path>, events: &HardwareEventBus) -> io::Result<Self> {
+    pub fn open(
+        chip: impl AsRef<std::path::Path>,
+        events: &HardwareEventBus,
+        tuning: ButtonTuning,
+    ) -> io::Result<Self> {
         let chip = chip.as_ref();
         info!(
-            "opening control-panel buttons on {} with internal pull-ups",
-            chip.display()
+            "opening control-panel buttons on {} with internal pull-ups, polling every {:?} with a {:?} debounce",
+            chip.display(),
+            tuning.poll_interval,
+            tuning.debounce
         );
-        match Self::start(|| super::linux_gpio::LinuxGpioReader::new(chip), events) {
+        match Self::start(
+            || super::linux_gpio::LinuxGpioReader::new(chip),
+            events,
+            tuning,
+        ) {
             Ok(panel) => {
                 info!(
                     "control-panel buttons ready on {}: {} inputs initialized, pollers started",
@@ -52,7 +64,11 @@ impl ButtonPanel {
     /// Starts the same panel with injected readers, one owned reader per button.
     /// Every line is read before its poller starts, so acquisition errors fail
     /// startup and an initially held button establishes a baseline without a press.
-    pub fn start<R>(mut reader: impl FnMut() -> R, events: &HardwareEventBus) -> io::Result<Self>
+    pub fn start<R>(
+        mut reader: impl FnMut() -> R,
+        events: &HardwareEventBus,
+        tuning: ButtonTuning,
+    ) -> io::Result<Self>
     where
         R: ReadLevel + Send + 'static,
         R::Error: Display,
@@ -63,7 +79,7 @@ impl ButtonPanel {
         let mut subscriptions = Vec::with_capacity(GPIOPins::COUNT);
         macro_rules! attach {
             ($($pin:ident),+ $(,)?) => {$(
-                subscriptions.push(start(&pins.$pin, reader(), events)?);
+                subscriptions.push(start(&pins.$pin, reader(), events, tuning)?);
             )+};
         }
         attach!(
@@ -90,6 +106,7 @@ fn start<const BCM: u8, R>(
     pin: &ButtonPin<BCM>,
     mut reader: R,
     events: &HardwareEventBus,
+    tuning: ButtonTuning,
 ) -> io::Result<ButtonSubscription>
 where
     R: ReadLevel + Send + 'static,
@@ -101,7 +118,7 @@ where
             pin.button()
         ))
     })?;
-    pin.start_with_level(reader, events, Some(initial))
+    pin.start_with_level(reader, events, Some(initial), tuning)
         .map_err(io::Error::other)
 }
 
@@ -166,7 +183,12 @@ mod tests {
         // An already-held Up must establish a baseline without moving the menu.
         state.lock().unwrap().levels[5] = Level::Low;
         let mut firmware = Firmware::start().unwrap();
-        let panel = ButtonPanel::start(|| Reader::new(&state), &firmware.events()).unwrap();
+        let panel = ButtonPanel::start(
+            || Reader::new(&state),
+            &firmware.events(),
+            ButtonTuning::DEFAULT,
+        )
+        .unwrap();
         assert_eq!(state.lock().unwrap().live, 12);
         tokio::time::sleep(Duration::from_millis(50)).await;
         assert_eq!(firmware.snapshot().processed_events, 0);
@@ -204,9 +226,13 @@ mod tests {
     async fn failed_acquisition_reports_the_line_and_rolls_back_the_panel() {
         let state = state();
         state.lock().unwrap().fail = Some(16);
-        let error = ButtonPanel::start(|| Reader::new(&state), &HardwareEventBus::new())
-            .err()
-            .expect("busy OK line must fail startup");
+        let error = ButtonPanel::start(
+            || Reader::new(&state),
+            &HardwareEventBus::new(),
+            ButtonTuning::DEFAULT,
+        )
+        .err()
+        .expect("busy OK line must fail startup");
         assert_eq!(
             error.to_string(),
             "initializing Ok button on GPIO 16: line busy"
@@ -218,9 +244,13 @@ mod tests {
     #[test]
     fn no_runtime_fails_before_acquiring_gpio() {
         let state = state();
-        let error = ButtonPanel::start(|| Reader::new(&state), &HardwareEventBus::new())
-            .err()
-            .expect("a runtime is required");
+        let error = ButtonPanel::start(
+            || Reader::new(&state),
+            &HardwareEventBus::new(),
+            ButtonTuning::DEFAULT,
+        )
+        .err()
+        .expect("a runtime is required");
         assert!(error.to_string().contains("active Tokio runtime"));
         assert_eq!(state.lock().unwrap().reads, 0);
         assert_eq!(state.lock().unwrap().live, 0);
@@ -229,9 +259,13 @@ mod tests {
     #[cfg(target_os = "linux")]
     #[tokio::test]
     async fn missing_chip_fails_panel_startup() {
-        let error = ButtonPanel::open("/dev/gpiochip-does-not-exist", &HardwareEventBus::new())
-            .err()
-            .expect("a missing chip must fail startup");
+        let error = ButtonPanel::open(
+            "/dev/gpiochip-does-not-exist",
+            &HardwareEventBus::new(),
+            ButtonTuning::DEFAULT,
+        )
+        .err()
+        .expect("a missing chip must fail startup");
         assert!(error.to_string().contains("Up button on GPIO 5"));
         assert!(
             error

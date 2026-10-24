@@ -118,6 +118,11 @@ it is a redesign item. Do not fit the Pi.
 
 ## Step 7: with the Pi (real GST18A05, firmware with the blank-frame contract)
 
+Button poll and debounce timing can be changed on the Pi without rebuilding: edit
+`/etc/default/firmware` and run `systemctl restart firmware` (see
+[firmware tuning](../apps/firmware/README.md#tuning)). Record any non-default
+value with the result it produced.
+
 | # | Do | Pass | Closes |
 |---|---|---|---|
 | 7.1 | Boot 10 times | No reset loop; `vcgencmd get_throttled` recorded | — |

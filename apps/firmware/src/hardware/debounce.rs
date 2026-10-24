@@ -5,17 +5,17 @@ use tokio::time::Instant;
 
 use super::{buttons::ButtonAction, pins::Level};
 
-pub(super) const POLL_INTERVAL: Duration = Duration::from_millis(5);
-const DEBOUNCE: Duration = Duration::from_millis(20);
-
+/// Accepts a new level once it has held for `debounce`.
 pub(super) struct Debouncer {
+    debounce: Duration,
     stable: Level,
     candidate: Option<(Level, Instant)>,
 }
 
 impl Debouncer {
-    pub(super) fn new(initial: Level) -> Self {
+    pub(super) fn new(initial: Level, debounce: Duration) -> Self {
         Self {
+            debounce,
             stable: initial,
             candidate: None,
         }
@@ -33,7 +33,7 @@ impl Debouncer {
 
         match self.candidate {
             Some((candidate, since)) if candidate == level => {
-                if observed_at.duration_since(since) < DEBOUNCE {
+                if observed_at.duration_since(since) < self.debounce {
                     return None;
                 }
             }
@@ -55,11 +55,15 @@ impl Debouncer {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::tuning::ButtonTuning;
+
+    const POLL_INTERVAL: Duration = ButtonTuning::DEFAULT.poll_interval;
+    const DEBOUNCE: Duration = ButtonTuning::DEFAULT.debounce;
 
     #[test]
     fn bounce_and_held_levels_emit_only_stable_edges() {
         let start = Instant::now();
-        let mut button = Debouncer::new(Level::High);
+        let mut button = Debouncer::new(Level::High, DEBOUNCE);
         assert_eq!(button.observe(Level::Low, start), None);
         assert_eq!(button.observe(Level::High, start + POLL_INTERVAL), None);
         assert_eq!(button.observe(Level::Low, start + DEBOUNCE), None);
@@ -78,7 +82,7 @@ mod tests {
     #[test]
     fn transition_waits_for_the_complete_debounce_period() {
         let start = Instant::now();
-        let mut button = Debouncer::new(Level::High);
+        let mut button = Debouncer::new(Level::High, DEBOUNCE);
 
         assert_eq!(button.observe(Level::Low, start), None);
         assert_eq!(
@@ -94,7 +98,7 @@ mod tests {
     #[test]
     fn returning_to_the_stable_level_cancels_the_candidate() {
         let start = Instant::now();
-        let mut button = Debouncer::new(Level::High);
+        let mut button = Debouncer::new(Level::High, DEBOUNCE);
 
         assert_eq!(button.observe(Level::Low, start), None);
         assert_eq!(button.observe(Level::High, start + POLL_INTERVAL), None);
@@ -108,7 +112,7 @@ mod tests {
     #[test]
     fn read_failure_restarts_debounce_without_losing_last_stable_level() {
         let start = Instant::now();
-        let mut button = Debouncer::new(Level::Low);
+        let mut button = Debouncer::new(Level::Low, DEBOUNCE);
         assert_eq!(button.observe(Level::High, start), None);
         button.interrupt();
         assert_eq!(button.observe(Level::High, start + DEBOUNCE), None);
@@ -121,7 +125,7 @@ mod tests {
     #[test]
     fn opposite_level_replaces_the_candidate_and_restarts_the_window() {
         let start = Instant::now();
-        let mut button = Debouncer::new(Level::Low);
+        let mut button = Debouncer::new(Level::Low, DEBOUNCE);
 
         // High becomes a candidate, then Low (stable) cancels it; a later High
         // must wait a full period from its own first sighting.
@@ -141,7 +145,7 @@ mod tests {
     #[test]
     fn press_release_press_chain_needs_a_full_window_for_each_edge() {
         let start = Instant::now();
-        let mut button = Debouncer::new(Level::High);
+        let mut button = Debouncer::new(Level::High, DEBOUNCE);
         let mut edges = Vec::new();
         // One sample per poll for 6 periods at each level.
         let mut now = start;
@@ -166,7 +170,7 @@ mod tests {
     #[test]
     fn interrupt_without_a_candidate_is_harmless() {
         let start = Instant::now();
-        let mut button = Debouncer::new(Level::High);
+        let mut button = Debouncer::new(Level::High, DEBOUNCE);
         button.interrupt();
         assert_eq!(button.observe(Level::High, start), None);
         assert_eq!(button.observe(Level::Low, start), None);
@@ -178,7 +182,25 @@ mod tests {
 
     #[test]
     fn initial_level_is_a_baseline_not_a_synthetic_press() {
-        let mut button = Debouncer::new(Level::Low);
+        let mut button = Debouncer::new(Level::Low, DEBOUNCE);
         assert_eq!(button.observe(Level::Low, Instant::now()), None);
+    }
+
+    #[test]
+    fn a_longer_debounce_holds_back_the_edge_until_it_elapses() {
+        let start = Instant::now();
+        let debounce = Duration::from_millis(50);
+        let mut button = Debouncer::new(Level::High, debounce);
+
+        assert_eq!(button.observe(Level::Low, start), None);
+        assert_eq!(button.observe(Level::Low, start + DEBOUNCE), None);
+        assert_eq!(
+            button.observe(Level::Low, start + debounce - POLL_INTERVAL),
+            None
+        );
+        assert_eq!(
+            button.observe(Level::Low, start + debounce),
+            Some(ButtonAction::Pressed)
+        );
     }
 }
