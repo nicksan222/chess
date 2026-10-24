@@ -44,17 +44,22 @@ impl Firmware {
         let reports = TransitionEventBus::new();
         let mut reported = reports.subscribe();
         let mut state = State::new(Transitions::new(config, reports.clone()));
-        let (updates, receiver) = watch::channel(state.snapshot());
+        let (updates, receiver) = watch::channel(state.initial_snapshot());
         let worker = runtime.spawn(async move {
             loop {
                 tokio::select! {
                     // Results first, so a finished operation unblocks the menu
                     // before the next input is interpreted.
                     biased;
-                    event = reported.recv() => state.report(event?),
-                    event = subscription.recv() => state.handle(event?),
+                    event = reported.recv() => {
+                        let event = event?;
+                        updates.send_modify(|snapshot| state.report(event, snapshot));
+                    }
+                    event = subscription.recv() => {
+                        let event = event?;
+                        updates.send_modify(|snapshot| state.handle(event, snapshot));
+                    }
                 }
-                updates.send_replace(state.snapshot());
             }
         });
         Ok(Self {

@@ -29,12 +29,14 @@ pub enum Level {
     High,
 }
 
+pub struct Input;
 pub struct Output;
 pub struct InputOutput;
 
 pub trait Readable {}
 pub trait Writable {}
 
+impl Readable for Input {}
 impl Readable for InputOutput {}
 impl Writable for Output {}
 impl Writable for InputOutput {}
@@ -59,7 +61,7 @@ pub struct Pin<const BCM: u8, Capability> {
 }
 
 impl<const BCM: u8, Capability> Pin<BCM, Capability> {
-    const fn new() -> Self {
+    pub(super) const fn new() -> Self {
         Self {
             gpio: GPIO::new(BCM),
             capability: PhantomData,

@@ -1,10 +1,7 @@
-use ::menu::{Input, MenuState};
+use ::menu::MenuState;
 
 use crate::{
-    hardware::{
-        HardwareEvent,
-        pins::{Button, ButtonEvent},
-    },
+    hardware::{HardwareEvent, pins::ButtonEvent},
     menu::{
         MAIN_MENU, Request,
         transitions::{self, TransitionEvent, TransitionStatus, Transitions},
@@ -28,10 +25,26 @@ pub struct Snapshot {
     pub transitions: TransitionStatus,
 }
 
+impl Snapshot {
+    fn initial() -> Self {
+        Self {
+            processed_events: 0,
+            last_event: None,
+            selected_index: 0,
+            menu_depth: 0,
+            blocking: None,
+            requested_action: None,
+            reported_events: 0,
+            transitions: TransitionStatus::default(),
+        }
+    }
+}
+
+/// The menu and its integrations. The published [`Snapshot`] lives in the
+/// caller's watch channel and is updated in place, so nothing is cloned per event.
 pub(super) struct State {
     menu: MenuState<'static, Request>,
     transitions: Transitions,
-    snapshot: Snapshot,
 }
 
 impl State {
@@ -39,70 +52,51 @@ impl State {
         Self {
             menu: MenuState::new(&MAIN_MENU),
             transitions,
-            snapshot: Snapshot {
-                processed_events: 0,
-                last_event: None,
-                selected_index: 0,
-                menu_depth: 0,
-                blocking: None,
-                requested_action: None,
-                reported_events: 0,
-                transitions: TransitionStatus::default(),
-            },
         }
     }
 
-    pub(super) fn snapshot(&self) -> Snapshot {
-        self.snapshot.clone()
+    pub(super) fn initial_snapshot(&self) -> Snapshot {
+        Snapshot::initial()
     }
 
-    pub(super) fn handle(&mut self, event: HardwareEvent) {
-        self.snapshot.requested_action = None;
-        if let HardwareEvent::Button(ButtonEvent::Pressed(button)) = event
-            && let Some(input) = menu_input(button)
-        {
-            let request = match self.menu.handle(input) {
-                ::menu::Event::Activated(action) | ::menu::Event::BlockingStarted(action) => {
-                    Some(*action)
-                }
-                ::menu::Event::BlockingAborted { escape_action, .. } => Some(*escape_action),
-                ::menu::Event::ExternalAction(action) => Some(action),
-                _ => None,
-            };
-            if let Some(request) = request {
-                self.transitions.handle(request);
-                self.snapshot.requested_action = Some(request);
-            }
+    pub(super) fn handle(&mut self, event: HardwareEvent, snapshot: &mut Snapshot) {
+        snapshot.requested_action = None;
+        if let Some(request) = self.request_for(event) {
+            self.transitions.handle(request);
+            snapshot.requested_action = Some(request);
         }
-        let menu = self.menu.snapshot();
-        self.snapshot.selected_index = menu.selected_index();
-        self.snapshot.menu_depth = menu.depth();
-        self.snapshot.blocking = self.menu.blocking_action().copied();
-        self.snapshot.processed_events += 1;
-        self.snapshot.last_event = Some(event);
+        self.refresh_snapshot(snapshot);
+        snapshot.processed_events += 1;
+        snapshot.last_event = Some(event);
     }
 
     /// Presents a result a transition reported, possibly from background work.
-    pub(super) fn report(&mut self, event: TransitionEvent) {
-        transitions::report(event, &mut self.menu, &mut self.snapshot.transitions);
-        self.snapshot.blocking = self.menu.blocking_action().copied();
-        self.snapshot.reported_events += 1;
+    pub(super) fn report(&mut self, event: TransitionEvent, snapshot: &mut Snapshot) {
+        transitions::report(event, &mut self.menu, &mut snapshot.transitions);
+        snapshot.blocking = self.menu.blocking_action().copied();
+        snapshot.reported_events += 1;
     }
-}
 
-fn menu_input(button: Button) -> Option<Input> {
-    match button {
-        Button::Up => Some(Input::Up),
-        Button::Down => Some(Input::Down),
-        Button::Left => Some(Input::Left),
-        Button::Right => Some(Input::Right),
-        Button::Ok => Some(Input::Ok),
-        Button::Reset
-        | Button::Pass
-        | Button::F1
-        | Button::F2
-        | Button::F3
-        | Button::F4
-        | Button::F5 => None,
+    /// Feeds a button press to the menu and returns the request it raised, if any.
+    fn request_for(&mut self, event: HardwareEvent) -> Option<Request> {
+        let HardwareEvent::Button(ButtonEvent::Pressed(button)) = event else {
+            return None;
+        };
+        let input = button.menu_input()?;
+        match self.menu.handle(input) {
+            ::menu::Event::Activated(action) | ::menu::Event::BlockingStarted(action) => {
+                Some(*action)
+            }
+            ::menu::Event::BlockingAborted { escape_action, .. } => Some(*escape_action),
+            ::menu::Event::ExternalAction(action) => Some(action),
+            _ => None,
+        }
+    }
+
+    fn refresh_snapshot(&self, snapshot: &mut Snapshot) {
+        let menu = self.menu.snapshot();
+        snapshot.selected_index = menu.selected_index();
+        snapshot.menu_depth = menu.depth();
+        snapshot.blocking = self.menu.blocking_action().copied();
     }
 }
