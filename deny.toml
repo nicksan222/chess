@@ -1,0 +1,57 @@
+# Dependency policy for both lockfiles: the workspace (Cargo.lock) and the
+# offline Yocto build (apps/firmware/yocto/Cargo.lock), which is what ships in
+# the image. Run by `just --justfile tooling/quality/justfile deny`; see
+# docs/development.md "Quality checks".
+
+[graph]
+all-features = true
+
+[advisories]
+# Vulnerable, unsound and yanked crates fail anywhere in the graph. An
+# unmaintained crate fails when a workspace package depends on it directly; a
+# transitive one is for its parent to replace (nmrs still pulls zbus 5's split
+# crates, RUSTSEC-2026-0370 to 0372). An `ignore` entry needs the advisory ID
+# and a reason.
+unmaintained = "workspace"
+yanked = "deny"
+ignore = []
+
+[licenses]
+# Every licence permits redistribution in an MIT-licensed project and image.
+allow = [
+    "Apache-2.0",
+    "BSD-3-Clause",
+    "CDLA-Permissive-2.0",
+    "ISC",
+    "MIT",
+    "Unicode-3.0",
+    "Zlib",
+]
+confidence-threshold = 0.93
+# One list serves both lockfiles; the Yocto graph uses a subset.
+unused-allowed-license = "allow"
+
+[bans]
+# Duplicate versions are reported for review but do not fail: most come from
+# upstream crates pinning different majors.
+multiple-versions = "warn"
+wildcards = "deny"
+# Workspace path dependencies carry no version; they never reach a registry.
+allow-wildcard-paths = true
+highlight = "all"
+# Crate boundaries: each crate below may be depended on directly only by its
+# `wrappers` (see crates/README.md). The firmware, Tokio and the other
+# application crates are kept out of crates/ by tooling/quality/portable.deny.toml,
+# which runs with each crate as the sole root: a `wrappers` ban cannot express
+# "no dependents" for a root crate, which it would ban outright.
+deny = [
+    { crate = "gpiocdev", wrappers = ["firmware"], reason = "GPIO access belongs to the firmware's hardware adapters" },
+    { crate = "nmrs", wrappers = ["firmware"], reason = "Wi-Fi control belongs to the firmware's connection module" },
+    { crate = "chess-core", wrappers = ["chess", "persistence"], reason = "crate boundary" },
+    { crate = "logger", wrappers = ["chess", "firmware"], reason = "crate boundary" },
+    { crate = "menu", wrappers = ["firmware"], reason = "crate boundary" },
+]
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"

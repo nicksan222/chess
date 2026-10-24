@@ -28,6 +28,18 @@ jobs:
           cache-restore-keys: |
             ${{ runner.os }}-cargo-
 
+  dependencies:
+    name: 🛡️ Dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v7
+      - name: 🛡️ Run dependency checks
+        uses: ./.github/actions/run-in-devcontainer
+        with:
+          image: ${{ inputs.image }}
+          command: just --justfile tooling/quality/justfile dependencies
+
   test-chess:
     name: ♟️ Test chess
     runs-on: ubuntu-latest
