@@ -70,70 +70,57 @@ where
     type Buffer = [u8; N];
 }
 
-impl EncodeValue for bool {
-    type Error = ValueEncodeError;
+/// Implements the inline value codec for `$type` through its single-byte
+/// `$repr`: `encode` converts a value to `$repr`; `decode` turns the decoded
+/// `$repr` into `Result<Self, ValueDecodeError>`.
+macro_rules! newtype_codec {
+    ($type:ty as $repr:ty, encode: |$value:ident| $encode:expr, decode: |$raw:ident| $decode:expr) => {
+        impl EncodeValue for $type {
+            type Error = ValueEncodeError;
 
-    fn encode_value(&self, output: &mut [u8]) -> Result<usize, Self::Error> {
-        u8::from(*self).encode_value(output)
-    }
-}
-
-impl DecodeValue for bool {
-    type Error = ValueDecodeError;
-
-    fn decode_value(input: &[u8]) -> Result<Self, Self::Error> {
-        match u8::decode_value(input)? {
-            0 => Ok(false),
-            1 => Ok(true),
-            value => Err(ValueDecodeError::InvalidDiscriminant { value }),
+            fn encode_value(&self, output: &mut [u8]) -> Result<usize, Self::Error> {
+                let $value = *self;
+                let repr: $repr = $encode;
+                repr.encode_value(output)
+            }
         }
+
+        impl DecodeValue for $type {
+            type Error = ValueDecodeError;
+
+            fn decode_value(input: &[u8]) -> Result<Self, Self::Error> {
+                let $raw = <$repr>::decode_value(input)?;
+                $decode
+            }
+        }
+
+        impl InlineValue for $type {
+            type Buffer = [u8; 1];
+        }
+    };
+}
+
+newtype_codec!(
+    bool as u8,
+    encode: |value| u8::from(value),
+    decode: |raw| match raw {
+        0 => Ok(false),
+        1 => Ok(true),
+        value => Err(ValueDecodeError::InvalidDiscriminant { value }),
     }
-}
+);
 
-impl InlineValue for bool {
-    type Buffer = [u8; 1];
-}
+newtype_codec!(
+    Toggle as bool,
+    encode: |value| bool::from(value),
+    decode: |raw| Ok(Self::from(raw))
+);
 
-impl EncodeValue for Toggle {
-    type Error = ValueEncodeError;
-
-    fn encode_value(&self, output: &mut [u8]) -> Result<usize, Self::Error> {
-        bool::from(*self).encode_value(output)
-    }
-}
-
-impl DecodeValue for Toggle {
-    type Error = ValueDecodeError;
-
-    fn decode_value(input: &[u8]) -> Result<Self, Self::Error> {
-        bool::decode_value(input).map(Self::from)
-    }
-}
-
-impl InlineValue for Toggle {
-    type Buffer = [u8; 1];
-}
-
-impl EncodeValue for Percentage {
-    type Error = ValueEncodeError;
-
-    fn encode_value(&self, output: &mut [u8]) -> Result<usize, Self::Error> {
-        self.get().encode_value(output)
-    }
-}
-
-impl DecodeValue for Percentage {
-    type Error = ValueDecodeError;
-
-    fn decode_value(input: &[u8]) -> Result<Self, Self::Error> {
-        let value = u8::decode_value(input)?;
-        Self::new(value).map_err(|_| ValueDecodeError::OutOfRange {
-            value,
-            maximum: 100,
-        })
-    }
-}
-
-impl InlineValue for Percentage {
-    type Buffer = [u8; 1];
-}
+newtype_codec!(
+    Percentage as u8,
+    encode: |value| value.get(),
+    decode: |value| Self::new(value).map_err(|_| ValueDecodeError::OutOfRange {
+        value,
+        maximum: Self::FULL.get(),
+    })
+);
