@@ -10,6 +10,7 @@ mod square_set;
 pub use board::{
     Board, BoardPieces, CastlingRights, FullmoveNumber, HalfmoveClock, InvalidFullmoveNumber,
 };
+pub(crate) use board::{Castle, CastleSide};
 pub use chess_move::{ChessMove, InvalidPromotion, ParseMoveError};
 pub use color::Color;
 pub use piece::{Piece, PieceKind};

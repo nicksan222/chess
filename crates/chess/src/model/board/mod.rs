@@ -1,10 +1,12 @@
 //! Complete board state required to continue a chess game.
 
+mod castle;
 mod castling;
 mod clocks;
 mod iter;
 mod setup;
 
+pub(crate) use castle::{Castle, CastleSide};
 pub use castling::CastlingRights;
 pub use clocks::{FullmoveNumber, HalfmoveClock, InvalidFullmoveNumber};
 pub use iter::BoardPieces;
