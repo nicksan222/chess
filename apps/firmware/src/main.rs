@@ -1,6 +1,8 @@
 use std::{env, io};
 
-use firmware::{hardware::button_panel::ButtonPanel, runtime::Firmware, updater::installed};
+use firmware::{
+    board::GPIO_CHIP, hardware::button_panel::ButtonPanel, runtime::Firmware, updater::installed,
+};
 use logger::{LevelFilter, implementations::SystemdLogger, info, register};
 
 static LOGGER: SystemdLogger = SystemdLogger::new(LevelFilter::Info);
@@ -19,7 +21,7 @@ fn main() -> io::Result<()> {
         .build()?
         .block_on(async {
             let mut firmware = Firmware::start()?;
-            let _buttons = ButtonPanel::open("/dev/gpiochip0", &firmware.events())?;
+            let _buttons = ButtonPanel::open(GPIO_CHIP, &firmware.events())?;
             firmware.wait().await
         })
 }

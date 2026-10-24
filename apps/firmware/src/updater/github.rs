@@ -10,6 +10,10 @@ use super::{Error, installed};
 /// Newest non-draft, non-prerelease release of this repository.
 pub const LATEST_RELEASE: &str = "https://api.github.com/repos/nicksan222/chess/releases/latest";
 
+/// Bounds the whole feed request; longer than the preflight probes so a slow
+/// link is not mistaken for an unreachable one.
+const REQUEST_TIMEOUT: Duration = Duration::from_secs(15);
+
 /// The tag and page of the latest release at `feed`, or `None` when GitHub
 /// answers 404, as it does before the first stable release.
 pub(super) async fn latest(feed: &str) -> Result<Option<(String, String)>, Error> {
@@ -45,7 +49,7 @@ fn client() -> Result<Client, Error> {
     Ok(Client::builder()
         // GitHub rejects API requests without a user agent.
         .user_agent(format!("{}/{}", installed::NAME, installed::version()))
-        .timeout(Duration::from_secs(15))
+        .timeout(REQUEST_TIMEOUT)
         .build()?)
 }
 

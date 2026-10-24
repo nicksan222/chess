@@ -1,6 +1,7 @@
 //! The NetworkManager implementation of [`WifiBackend`], using the typed `nmrs` D-Bus client.
 //! This is the only module that calls `nmrs`.
 
+use crate::board::WIFI_INTERFACE;
 use nmrs::{
     NetworkManager, WifiScope, WifiSecurity,
     builders::{WifiConnectionBuilder, WifiMode},
@@ -10,8 +11,6 @@ use super::{
     Credentials, Error, Hotspot, Ssid,
     backend::{VisibleNetwork, WifiBackend},
 };
-
-const WIFI_INTERFACE: &str = "wlan0";
 
 /// Wi-Fi control through the system NetworkManager service.
 pub struct NetworkManagerBackend {
