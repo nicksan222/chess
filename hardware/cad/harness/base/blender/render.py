@@ -87,7 +87,7 @@ def _require_plate_outline(plate: bpy.types.Object) -> None:
         abs(a - b) > 0.01
         for a, b in zip(
             (plate.dimensions.x, plate.dimensions.y),
-            dimensions.TILE_PLATE_SIZE_MM,
+            dimensions.TILE_PLATE_SIZE_MM[:2],
             strict=True,
         )
     ):
