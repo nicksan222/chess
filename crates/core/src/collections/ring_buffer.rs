@@ -82,9 +82,7 @@ impl<T, const N: usize> RingBuffer<T, N> {
             return Err(CapacityError::new(element));
         }
 
-        let index = self.logical_index(self.len);
-        self.slots[index] = Some(element);
-        self.len += 1;
+        self.push_unchecked(element);
         Ok(())
     }
 
@@ -102,10 +100,8 @@ impl<T, const N: usize> RingBuffer<T, N> {
             return displaced;
         }
 
-        match self.try_push(element) {
-            Ok(()) => None,
-            Err(_) => unreachable!("a non-full buffer must accept an element"),
-        }
+        self.push_unchecked(element);
+        None
     }
 
     /// Removes and returns the oldest element.
@@ -127,40 +123,28 @@ impl<T, const N: usize> RingBuffer<T, N> {
     /// Returns a shared reference to the oldest element.
     #[must_use]
     pub fn front(&self) -> Option<&T> {
-        if self.is_empty() {
-            None
-        } else {
-            self.slots[self.head].as_ref()
-        }
+        let index = self.slot_index(0)?;
+        self.slots[index].as_ref()
     }
 
     /// Returns an exclusive reference to the oldest element.
     #[must_use]
     pub fn front_mut(&mut self) -> Option<&mut T> {
-        if self.is_empty() {
-            None
-        } else {
-            self.slots[self.head].as_mut()
-        }
+        let index = self.slot_index(0)?;
+        self.slots[index].as_mut()
     }
 
     /// Returns a shared reference to the newest element.
     #[must_use]
     pub fn back(&self) -> Option<&T> {
-        if self.is_empty() {
-            None
-        } else {
-            self.slots[self.logical_index(self.len - 1)].as_ref()
-        }
+        let index = self.slot_index(self.len.checked_sub(1)?)?;
+        self.slots[index].as_ref()
     }
 
     /// Returns an exclusive reference to the newest element.
     #[must_use]
     pub fn back_mut(&mut self) -> Option<&mut T> {
-        if self.is_empty() {
-            return None;
-        }
-        let index = self.logical_index(self.len - 1);
+        let index = self.slot_index(self.len.checked_sub(1)?)?;
         self.slots[index].as_mut()
     }
 
@@ -188,6 +172,21 @@ impl<T, const N: usize> RingBuffer<T, N> {
             second: before_head[..second_len].iter_mut(),
             remaining: self.len,
         }
+    }
+
+    /// Returns the slot holding the element `offset` places after the oldest,
+    /// or `None` when `offset` is not an occupied position.
+    fn slot_index(&self, offset: usize) -> Option<usize> {
+        (offset < self.len).then(|| self.logical_index(offset))
+    }
+
+    /// Stores `element` after the newest one. The caller must ensure the
+    /// buffer is not full.
+    fn push_unchecked(&mut self, element: T) {
+        debug_assert!(!self.is_full());
+        let index = self.logical_index(self.len);
+        self.slots[index] = Some(element);
+        self.len += 1;
     }
 
     fn logical_index(&self, offset: usize) -> usize {
@@ -220,9 +219,7 @@ impl<T: Clone, const N: usize> Clone for RingBuffer<T, N> {
     fn clone(&self) -> Self {
         let mut clone = Self::new();
         for element in self {
-            clone
-                .try_push(element.clone())
-                .unwrap_or_else(|_| unreachable!("source length cannot exceed capacity"));
+            clone.push_unchecked(element.clone());
         }
         clone
     }
