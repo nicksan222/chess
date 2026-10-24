@@ -30,8 +30,12 @@ deny:
     cd "{{ root }}" && cargo deny --locked --config deny.toml check
     cd "{{ root }}" && cargo deny --locked --config deny.toml --manifest-path apps/firmware/yocto/Cargo.toml check --allow unused-wrapper
 
+# Unused or misplaced Rust dependencies, from the sources without compiling.
+unused-dependencies:
+    cd "{{ root }}" && cargo shear
+
 # Every dependency check; needs network access for advisories.
-dependencies: deny
+dependencies: deny unused-dependencies
 
 # Run every quality gate.
 check: quality dependencies
