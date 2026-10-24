@@ -261,7 +261,7 @@ mod tests {
             connection.status().await.unwrap(),
             Link::Connected(Ssid::new("Home").unwrap())
         );
-        assert!(connection.scan().await.unwrap().is_empty());
+        assert_eq!(connection.scan().await.unwrap(), Vec::new());
     }
 
     #[tokio::test(start_paused = true)]

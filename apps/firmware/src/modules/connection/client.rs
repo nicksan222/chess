@@ -386,7 +386,7 @@ mod tests {
 
         assert_eq!(fake.calls(), [Call::Forget("Setup".into())]);
         assert_eq!(fake.access_point(), None);
-        assert!(fake.profiles().is_empty());
+        assert_eq!(fake.profiles(), Vec::<String>::new());
     }
 
     #[tokio::test]
