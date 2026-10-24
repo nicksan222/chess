@@ -12,6 +12,10 @@ impl Percentage {
     pub const FULL: Self = Self(100);
 
     /// Creates a percentage when `value` is in `0..=100`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`InvalidPercentage`] when `value` is greater than 100.
     pub const fn new(value: u8) -> Result<Self, InvalidPercentage> {
         if value <= 100 {
             Ok(Self(value))

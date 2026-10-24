@@ -165,7 +165,7 @@ fn operation_sequence_matches_bounded_vec_deque_model() {
 
     for _ in 0..10_000 {
         state = state.wrapping_mul(1_664_525).wrapping_add(1_013_904_223);
-        let value = state as i32;
+        let value = i32::from_ne_bytes(state.to_ne_bytes());
         match state % 4 {
             0 => {
                 let actual = buffer.try_push(value).map_err(CapacityError::into_element);
