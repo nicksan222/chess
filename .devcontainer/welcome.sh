@@ -60,6 +60,7 @@ tool "🛡️ " "Deny" cargo-deny cargo-deny --version
 tool "✂️ " "Shear" cargo-shear cargo-shear --version
 tool "🔎" "ast-grep" ast-grep ast-grep --version
 tool "🏷️ " "ls-lint" ls-lint ls-lint --version
+tool "🎬" "actionlint" actionlint actionlint --version
 tool "🔌" "KiCad" kicad-cli kicad-cli version
 tool "🧊" "Blender" "${BLENDER_BIN:-blender}" "${BLENDER_BIN:-blender}" --version
 tool "🐳" "Docker" docker docker --version

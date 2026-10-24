@@ -67,6 +67,7 @@ networked ones; run an owner's recipe to check it alone.
 | ast-grep ([`sgconfig.yml`](../sgconfig.yml), `tooling/ast-grep/rules/`) | Syntax patterns: hardcoded firmware timing outside `tuning!`, BCM/GPIO numbers outside `hardware/pins.rs`, TODO-style comments in Rust | `just --justfile tooling/quality/justfile patterns` |
 | ls-lint ([`.ls-lint.yml`](../.ls-lint.yml)) | snake_case Rust and Python file names and module directories; one `Cargo.toml` and one `README.md` per Rust package root | `just --justfile tooling/quality/justfile names` |
 | ShellCheck | Shell scripts and the Git hook | `just --justfile tooling/quality/justfile shell` |
+| actionlint | GitHub Actions workflows: syntax, expressions, action inputs, and `run:` scripts through ShellCheck | `just --justfile tooling/quality/justfile workflows` |
 | cargo-deny bans ([`deny.toml`](../deny.toml), `tooling/quality/portable.deny.toml`) | Crate boundaries: `crates/*` never reach `firmware`, `tokio`, `gpiocdev` or `nmrs`, and depend on each other only as listed | `just --justfile tooling/quality/justfile boundaries` |
 | `apps/firmware/tests/yocto_manifest.rs` | `apps/firmware/yocto/Cargo.toml` declares the firmware's dependencies and package version | `just --justfile apps/firmware/justfile test` |
 | cargo-deny ([`deny.toml`](../deny.toml)) | Advisories, MIT-compatible licences, wildcard versions and sources for `Cargo.lock` and the Yocto lockfile | `just --justfile tooling/quality/justfile deny` |
