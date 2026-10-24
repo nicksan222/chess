@@ -48,7 +48,7 @@ fn empty_payload_is_distinct_and_valid() {
 
     assert_eq!(bytes.len(), HEADER_LEN);
     assert_eq!(record.schema_version(), 0);
-    assert!(record.payload().is_empty());
+    assert_eq!(record.payload(), &[] as &[u8]);
 }
 
 #[test]

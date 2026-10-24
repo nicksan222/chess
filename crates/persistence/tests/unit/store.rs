@@ -107,6 +107,10 @@ fn empty_keys_and_values_are_distinct_from_missing_entries() {
 }
 
 #[test]
+#[allow(
+    clippy::mut_mut,
+    reason = "passing `&mut &mut MemoryStore` makes the store under test `&mut MemoryStore`, the forwarding impl"
+)]
 fn mutable_references_forward_the_store_contract() {
     let mut store = MemoryStore::new();
     let mut reference = &mut store;
