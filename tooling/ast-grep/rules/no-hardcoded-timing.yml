@@ -1,0 +1,38 @@
+id: no-hardcoded-timing
+language: rust
+severity: error
+message: Hardcoded firmware timing; declare prototype-adjustable values in `tuning!`.
+note: |
+  Add the value to `tuning!` in apps/firmware/src/tuning/mod.rs (see the firmware
+  README "Tuning") and pass it in. A fixed protocol or network bound that is not a
+  prototype knob stays a named constant with a comment saying why, followed by
+  `// ast-grep-ignore: no-hardcoded-timing` on the line above it.
+files:
+  - apps/firmware/src/**/*.rs
+ignores:
+  - apps/firmware/src/tuning/**
+  # Test support: bounds how long a test waits for the runtime to acknowledge
+  # an event; not device behaviour.
+  - apps/firmware/src/harness.rs
+rule:
+  all:
+    - any:
+        - pattern: $TYPE::$CTOR($N)
+        - pattern: $TYPE::$CTOR($N, $$$REST)
+        - pattern: $CALL($N)
+        - pattern: $CALL($N, $$$REST)
+    - any:
+        - all:
+            - has: { field: function, regex: '(^|::)Duration::(from_(millis|secs|micros|nanos|secs_f32|secs_f64)|new)$' }
+        - has: { field: function, regex: '(^|::)(sleep|sleep_ms|interval|timeout)$' }
+    - not:
+        inside:
+          stopBy: end
+          any:
+            - kind: mod_item
+              follows: { kind: attribute_item, regex: '^#\[cfg\(test\)\]$' }
+            - kind: function_item
+              follows: { kind: attribute_item, regex: '^#\[(tokio::)?test\b' }
+constraints:
+  N:
+    regex: '^[0-9]'
