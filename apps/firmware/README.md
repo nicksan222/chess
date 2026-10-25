@@ -18,10 +18,19 @@ The flashable files are written to `dist/firmware`.
 
 `src/runtime/` is the one event-driven application loop used by both the
 executable and the runtime tests. Hardware adapters publish typed physical observations
-through `src/events/`; Tokio channels never escape that module. `src/harness.rs` starts
+through `src/events/`; Tokio channels never escape that module. `events::StatePublisher` and `StateSubscription` publish retained snapshots
+and facade status without exposing Tokio types or borrow guards. Their payloads
+and transitions remain owned by the application modules. The
+`events-no-domain-policy` rule keeps communication primitives free of domain
+imports, and Clippy confines raw queue and watch channels to that layer.
+`src/harness.rs` starts
 the same runtime without physical adapters and provides an acknowledged
 `trigger` operation, so tests never race the event loop or duplicate production
 behavior.
+
+`just --justfile apps/firmware/justfile format` formats all firmware sources,
+including modules declared through the registry macro. `format-check`, included
+in `quality`, checks those files explicitly as well as running Cargo formatting.
 
 `just --justfile apps/firmware/justfile test` runs unit tests and `tests/`: the
 production runtime with injected hardware (`tests/runtime/`), display rendering
@@ -67,7 +76,7 @@ in registry order, before the menu interprets it. `Firmware::module::<F>()` and
 only facades, the harness, `Config`, `Request` and `Snapshot`.
 
 Modules use each other only through facades, which are cheap clones over `Arc`,
-channels or `watch`; no module lends out `&mut` state. While building, a
+channels or retained-state subscriptions; no module lends out `&mut` state. While building, a
 module asks for another's facade with `context.get::<Connection>()`. Modules are
 built in registry order, so a module may only use modules listed above it;
 asking for a later one fails startup with an error naming both modules, which

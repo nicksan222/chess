@@ -45,6 +45,7 @@ highlight = "all"
 # which runs with each crate as the sole root: a `wrappers` ban cannot express
 # "no dependents" for a root crate, which it would ban outright.
 deny = [
+    { crate = "chess", wrappers = ["firmware"], reason = "chess owns board values and game rules; the firmware is their application adapter" },
     { crate = "gpiocdev", wrappers = ["firmware"], reason = "GPIO access belongs to the firmware's hardware adapters" },
     { crate = "nmrs", wrappers = ["firmware"], reason = "Wi-Fi control belongs to the firmware's connection module" },
     { crate = "chess-core", wrappers = ["chess", "persistence"], reason = "crate boundary" },

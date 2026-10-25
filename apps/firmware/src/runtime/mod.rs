@@ -4,10 +4,10 @@ mod state;
 
 use std::io;
 
-use tokio::{runtime::Handle, sync::watch, task::JoinHandle};
+use tokio::{runtime::Handle, task::JoinHandle};
 
 use crate::{
-    events::ReceiveError,
+    events::{ReceiveError, StatePublisher, StateSubscription},
     hardware::HardwareEventBus,
     modules::{Config, Facade, Facades, ModuleEventBus, Modules},
 };
@@ -20,7 +20,7 @@ pub struct Firmware {
     events: HardwareEventBus,
     reports: ModuleEventBus,
     facades: Facades,
-    updates: watch::Receiver<Snapshot>,
+    updates: StateSubscription<Snapshot>,
     worker: JoinHandle<Result<(), ReceiveError>>,
 }
 
@@ -28,7 +28,7 @@ impl std::fmt::Debug for Firmware {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         formatter
             .debug_struct("Firmware")
-            .field("snapshot", &*self.updates.borrow())
+            .field("snapshot", &self.updates.current())
             .finish_non_exhaustive()
     }
 }
@@ -65,7 +65,8 @@ impl Firmware {
         let mut reported = reports.subscribe();
         let (modules, facades) = Modules::new(config, &reports).map_err(io::Error::other)?;
         let mut state = State::new(modules);
-        let (updates, receiver) = watch::channel(State::initial_snapshot());
+        let updates = StatePublisher::new(State::initial_snapshot());
+        let receiver = updates.subscribe();
         let worker = runtime.spawn(async move {
             loop {
                 tokio::select! {
@@ -74,11 +75,11 @@ impl Firmware {
                     biased;
                     event = reported.recv() => {
                         let event = event?;
-                        updates.send_modify(|snapshot| state.report(event, snapshot));
+                        updates.modify(|snapshot| state.report(event, snapshot));
                     }
                     event = subscription.recv() => {
                         let event = event?;
-                        updates.send_modify(|snapshot| state.handle(event, snapshot));
+                        updates.modify(|snapshot| state.handle(event, snapshot));
                     }
                 }
             }
@@ -116,7 +117,7 @@ impl Firmware {
     }
 
     pub fn snapshot(&self) -> Snapshot {
-        self.updates.borrow().clone()
+        self.updates.current()
     }
 
     /// Waits for a processed state newer than the supplied event count.
@@ -136,15 +137,10 @@ impl Firmware {
     ///
     /// Fails when the event loop stops first.
     pub async fn until(&mut self, condition: impl Fn(&Snapshot) -> bool) -> io::Result<Snapshot> {
-        loop {
-            let snapshot = self.updates.borrow_and_update().clone();
-            if condition(&snapshot) {
-                return Ok(snapshot);
-            }
-            self.updates.changed().await.map_err(|_| {
-                io::Error::other("firmware event loop stopped before reaching the state")
-            })?;
-        }
+        self.updates
+            .wait_for(condition)
+            .await
+            .map_err(|_| io::Error::other("firmware event loop stopped before reaching the state"))
     }
 
     /// Runs until the application loop stops, reporting task failures and lag.

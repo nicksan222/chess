@@ -106,12 +106,12 @@ mod tests {
         modules::{
             Config, Facades, ModuleEvent, ModuleEventBus, Modules, Phase,
             connection::fake::{Failure, FakeWifi, Operation},
-            module::sealed::Registered,
             firmware::{
                 Error, Release,
                 fake::{FakeFeed, answer, release},
                 installed,
             },
+            module::sealed::Registered,
         },
     };
 
@@ -297,9 +297,13 @@ mod tests {
         let started = tokio::time::Instant::now();
 
         assert!(!crate::modules::firmware::wifi_disconnected(&stalled).await);
-        assert_eq!(started.elapsed(), crate::modules::firmware::preflight::PROBE);
+        assert_eq!(
+            started.elapsed(),
+            crate::modules::firmware::preflight::PROBE
+        );
         assert!(
-            crate::modules::firmware::wifi_disconnected(&Connection::fake(FakeWifi::default())).await
+            crate::modules::firmware::wifi_disconnected(&Connection::fake(FakeWifi::default()))
+                .await
         );
     }
 

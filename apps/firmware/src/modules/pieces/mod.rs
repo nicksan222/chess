@@ -5,7 +5,7 @@
 
 use chess::{Square, SquareSet};
 
-use tokio::sync::watch;
+use crate::events::{StatePublisher, StateSubscription};
 
 use super::{
     MissingDependency, Never,
@@ -58,19 +58,19 @@ impl Status {
 /// Current piece presence, for other modules.
 #[derive(Clone, Debug)]
 pub struct Pieces {
-    status: watch::Receiver<Status>,
+    status: StateSubscription<Status>,
 }
 
 impl Pieces {
     /// Presence as of the latest processed piece event.
     pub fn status(&self) -> Status {
-        *self.status.borrow()
+        self.status.current()
     }
 }
 
 /// The pieces module's engine.
 pub(super) struct Engine {
-    status: watch::Sender<Status>,
+    status: StatePublisher<Status>,
 }
 
 impl Module for Engine {
@@ -81,7 +81,7 @@ impl Module for Engine {
 
     fn new((): &Settings, _: &Context<'_, Status>) -> Result<Self, MissingDependency> {
         Ok(Self {
-            status: watch::Sender::new(Status::default()),
+            status: StatePublisher::new(Status::default()),
         })
     }
 
@@ -94,7 +94,7 @@ impl Module for Engine {
     fn event(&mut self, event: HardwareEvent, status: &mut Status) {
         if let HardwareEvent::Piece(piece) = event {
             status.observe(piece);
-            self.status.send_replace(*status);
+            self.status.replace(*status);
         }
     }
 }

@@ -39,7 +39,7 @@ impl Snapshot {
 }
 
 /// The menu and the modules. The published [`Snapshot`] lives in the
-/// caller's watch channel and is updated in place, so nothing is cloned per event.
+/// caller's state publisher and is updated in place, so nothing is cloned per event.
 pub(super) struct State {
     menu: MenuState<'static, Request>,
     modules: Modules,

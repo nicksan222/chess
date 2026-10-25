@@ -1,6 +1,6 @@
 # Firmware Domain Ownership Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Keep domain values with their owners and communication mechanisms generic.
 
@@ -24,22 +24,31 @@ Preserve sensor mappings, filtering, menu behavior, and snapshot acknowledgement
 
 ### Task 1: Canonical chess values
 
-- [ ] Change firmware integration tests to consume `chess::Square`; confirm the old event payload fails compilation.
-- [ ] Replace `BoardPosition` and `square!` with `Square`; use `SquareSet` in pieces status and retain the existing numeric count API.
-- [ ] Update both manifests, lockfiles, Yocto crate metadata, architecture guidance, and bank-contract tests as needed.
-- [ ] Run firmware/shared checks, AArch64 linkage, isolated Yocto checks, and the commit gate; submit the layer.
+- [x] Change firmware integration tests to consume `chess::Square`; confirm the old event payload fails compilation.
+- [x] Replace `BoardPosition` and `square!` with `Square`; use `SquareSet` in pieces status and retain the existing numeric count API.
+- [x] Update both manifests, lockfiles, Yocto crate metadata, architecture guidance, and bank-contract tests as needed.
+- [x] Run firmware/shared checks, AArch64 linkage, isolated Yocto checks, and the commit gate; submit the layer.
 
 ### Task 2: Application button bindings
 
-- [ ] Add literal mapping tests in `src/menu/input.rs`; verify the missing API fails compilation.
-- [ ] Move `Button::menu_input` to `menu::input` and call it from runtime state.
-- [ ] Run firmware checks and commit gate; submit the layer.
+- [x] Add literal mapping tests in `src/menu/input.rs`; verify the missing API fails compilation.
+- [x] Move `Button::menu_input` to `menu::input` and call it from runtime state.
+- [x] Run firmware checks and commit gate; submit the layer.
+
+### Additional regression guards
+
+Use the existing ast-grep fixtures and Clippy policy, following the local study
+and latch projects' approach. Reject application policy in production hardware
+and domain imports in generic communication. Restrict chess dependents with
+cargo-deny. Check every firmware source with rustfmt because registry macros
+hide modules from Cargo formatting. Temporary source mutations verify the
+hardware, communication and raw-watch guards reject their intended violations.
 
 ### Task 3: Generic latest-state communication
 
-- [ ] Test generic latest-state publication, coalescing, late readers, and closure in `src/events/state.rs`.
-- [ ] Implement typed publisher/subscriber wrappers, migrate runtime and pieces, and forbid raw Tokio watch channels outside events.
-- [ ] Run firmware/quality checks and commit gate; obtain independent review and submit the layer.
+- [x] Test generic latest-state publication, coalescing, late readers, and closure in `src/events/state.rs`.
+- [x] Implement typed publisher/subscriber wrappers, migrate runtime and pieces, and forbid raw Tokio watch channels outside events.
+- [x] Run firmware/quality checks and commit gate; obtain independent review and submit the layer.
 
 ## Delivery
 

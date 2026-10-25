@@ -1,0 +1,26 @@
+id: events-no-domain-policy
+language: rust
+severity: error
+message: Communication primitives must not import domain values or application policy.
+note: |
+  Keep channels generic over caller-defined payloads. Define domain messages
+  beside their owning module and pass them through events infrastructure.
+files:
+  - apps/firmware/src/events/**/*.rs
+rule:
+  all:
+    - any:
+        - kind: scoped_identifier
+          regex: '^(::)?(chess|menu|persistence)::|^crate::(hardware|modules|menu|runtime|harness|board|tuning)::'
+        - kind: scoped_type_identifier
+          regex: '^(::)?(chess|menu|persistence)::|^crate::(hardware|modules|menu|runtime|harness|board|tuning)::'
+        - kind: use_declaration
+          regex: '^use\s+(::)?(chess|menu|persistence)\b|^use\s+crate::(hardware|modules|menu|runtime|harness|board|tuning)\b|^use\s+crate::\{[^;]*\b(hardware|modules|menu|runtime|harness|board|tuning)\b'
+    - not:
+        inside:
+          stopBy: end
+          any:
+            - kind: mod_item
+              follows: { kind: attribute_item, regex: '^#\[cfg\(test\)\]$' }
+            - kind: function_item
+              follows: { kind: attribute_item, regex: '^#\[(tokio::)?test\b' }
