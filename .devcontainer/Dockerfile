@@ -9,6 +9,8 @@ ARG LS_LINT_VERSION="2.3.2"
 ARG LS_LINT_SHA256="571e382a0908fd22393869fd0dff575e6f17a6130211930fc43b37a1e0630068"
 ARG ACTIONLINT_VERSION="1.7.12"
 ARG ACTIONLINT_SHA256="8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8"
+ARG EDITORCONFIG_CHECKER_VERSION="4.0.2"
+ARG EDITORCONFIG_CHECKER_SHA256="44efaef3ed14c6ab52eb87481d78e5e5c204796dccf26e2f4598a61ba17f8003"
 ARG BLENDER_SHA256="da4e69b06b75b9e642d106496c50e7e240218b411d2f6e18271c1d1d819cef91"
 
 RUN apt-get update \
@@ -112,6 +114,13 @@ RUN archive="actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz" \
         "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/${archive}" \
     && printf '%s  %s\n' "${ACTIONLINT_SHA256}" "/tmp/${archive}" | sha256sum --check --status \
     && tar -xzf "/tmp/${archive}" -C /usr/local/bin actionlint \
+    && rm "/tmp/${archive}"
+
+RUN archive="editorconfig-checker-linux-amd64.tar.gz" \
+    && curl --fail --location --retry 3 --show-error --output "/tmp/${archive}" \
+        "https://github.com/editorconfig-checker/editorconfig-checker/releases/download/v${EDITORCONFIG_CHECKER_VERSION}/${archive}" \
+    && printf '%s  %s\n' "${EDITORCONFIG_CHECKER_SHA256}" "/tmp/${archive}" | sha256sum --check --status \
+    && tar -xzf "/tmp/${archive}" -C /usr/local/bin editorconfig-checker \
     && rm "/tmp/${archive}"
 
 ENV BLENDER_BIN=/opt/blender/blender \
