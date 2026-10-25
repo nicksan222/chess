@@ -61,7 +61,7 @@ test:
     just --justfile hardware/pcb/justfile review
     just --justfile tooling/quality/justfile patterns
 
-# Advisories, licences and bans; needs network access.
+# Advisories, licences, bans and unused dependencies; needs network access.
 dependencies:
     just --justfile tooling/quality/justfile dependencies
 
