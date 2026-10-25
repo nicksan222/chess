@@ -1,3 +1,9 @@
+#![allow(
+    clippy::unwrap_used,
+    clippy::expect_used,
+    reason = "integration-test helpers panic to report a failure"
+)]
+
 use std::sync::Mutex;
 
 use chess::{ChessMove, Game, MoveError, Square};

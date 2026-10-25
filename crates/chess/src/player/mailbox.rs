@@ -43,7 +43,7 @@ impl MoveMailbox {
     ///
     /// Peeking leaves the single-pending slot occupied; only
     /// [`cancel`](Self::cancel) or [`poll`](Self::poll) frees it.
-    pub(super) const fn pending(&self) -> Option<ChessMove> {
+    pub(super) const fn pending(self) -> Option<ChessMove> {
         self.pending
     }
 

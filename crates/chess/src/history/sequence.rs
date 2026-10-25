@@ -30,6 +30,17 @@ impl Ply {
         }
     }
 
+    /// Returns the ply that follows `count` earlier plies, saturating at the
+    /// largest representable ply.
+    pub(crate) const fn after(count: u64) -> Self {
+        Self(NonZeroU64::MIN.saturating_add(count))
+    }
+
+    /// Returns the next ply, saturating at the largest representable ply.
+    pub(crate) const fn successor(self) -> Self {
+        Self(self.0.saturating_add(1))
+    }
+
     /// Returns the primitive representation for serialization.
     ///
     /// The value is the one-based index committed to the step's

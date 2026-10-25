@@ -42,6 +42,16 @@ impl Game {
     /// game.play(ChessMove::new(Square::E2, Square::E4))?;
     /// # Ok::<(), Box<dyn core::error::Error>>(())
     /// ```
+    ///
+    /// # Panics
+    ///
+    /// Never in practice: after the blocking checks pass the history is
+    /// active, which always accepts a valid move event. A panic would mean
+    /// the game's internal history invariant was already broken.
+    #[expect(
+        clippy::expect_used,
+        reason = "a game that passed the blocking checks has active history, which accepts a valid move event"
+    )]
     pub fn play(&mut self, chess_move: ChessMove) -> Result<HistoryStep, MoveError> {
         if let Some(error) = self.blocking_move_error() {
             if error == MoveError::PendingInvalid {

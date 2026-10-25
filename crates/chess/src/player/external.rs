@@ -50,7 +50,7 @@ impl External {
     /// Peeking never affects the single-pending discipline: the move stays
     /// staged until [`poll`](Self::poll) consumes it or
     /// [`cancel`](Self::cancel) withdraws it.
-    pub(in crate::player) const fn pending(&self) -> Option<ChessMove> {
+    pub(in crate::player) const fn pending(self) -> Option<ChessMove> {
         self.mailbox.pending()
     }
 

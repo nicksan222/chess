@@ -86,7 +86,7 @@ impl Game {
     /// ```
     pub fn rebuild_board(&self) -> Result<Board, GameVerificationError> {
         let mut board = self.initial_board;
-        for step in self.history.iter() {
+        for step in &self.history {
             let HistoryEvent::Move(chess_move) = step.event() else {
                 continue;
             };

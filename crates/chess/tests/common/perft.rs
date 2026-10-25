@@ -1,6 +1,6 @@
 use chess::{Board, CastlingRights, Color, Game, Piece, PieceKind, Square};
 
-pub fn count(game: &Game, depth: u8) -> u64 {
+pub(crate) fn count(game: &Game, depth: u8) -> u64 {
     if depth == 0 {
         return 1;
     }
@@ -14,7 +14,7 @@ pub fn count(game: &Game, depth: u8) -> u64 {
         .sum()
 }
 
-pub fn kiwipete() -> Game {
+pub(crate) fn kiwipete() -> Game {
     use Color::{Black, White};
     use PieceKind::{Bishop, King, Knight, Pawn, Queen, Rook};
 

@@ -191,6 +191,11 @@ impl Square {
     /// assert_eq!(Square::H4.offset(offset), None);
     /// ```
     #[must_use]
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "both coordinates are checked to be non-negative and are at most 14, so they fit in `u8`"
+    )]
     pub const fn offset(self, offset: SquareOffset) -> Option<Self> {
         // `Range::contains` is not `const`, so the bounds are explicit.
         let file = self.file_index() as i16 + offset.files().value() as i16;

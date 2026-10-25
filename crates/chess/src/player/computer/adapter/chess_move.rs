@@ -26,6 +26,10 @@ use super::model::from_position;
 ///
 /// Returns [`ComputerError::InvalidSquare`] when the engine returns a
 /// square outside the domain board.
+#[expect(
+    clippy::expect_used,
+    reason = "a queen is always a valid promotion kind for `ChessMove::promotion`"
+)]
 pub(in crate::player::computer) fn from_search_move(
     search_move: SearchMove,
     view: PlayerView<'_>,

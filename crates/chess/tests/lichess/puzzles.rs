@@ -5,11 +5,11 @@ use chess::{Board, ChessMove, DrawReason, GameStatus};
 
 use crate::fen;
 
-pub struct Puzzle {
+pub(crate) struct Puzzle {
     pub positions: Vec<Position>,
 }
 
-pub struct Position {
+pub(crate) struct Position {
     pub puzzle_id: &'static str,
     pub ply: usize,
     pub chess_move: Option<ChessMove>,
@@ -70,7 +70,7 @@ impl fmt::Display for Position {
     }
 }
 
-pub fn load() -> Vec<Puzzle> {
+pub(crate) fn load() -> Vec<Puzzle> {
     let mut reference = include_str!("fixtures/expected_positions.tsv")
         .lines()
         .skip(1);
