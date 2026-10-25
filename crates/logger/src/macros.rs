@@ -3,9 +3,7 @@
 macro_rules! log {
     (level: $level:expr, target: $target:expr, $($argument:tt)+) => {{
         if let Some(__logger) = $crate::get() {
-            let __metadata = $crate::Metadata::new(
-                $level,
-                $target,
+            let __metadata = $crate::Metadata::new($level, $target).with_source(
                 Some(module_path!()),
                 Some(file!()),
                 Some(line!()),

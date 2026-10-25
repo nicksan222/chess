@@ -12,6 +12,10 @@ static LOGGER: Once<&'static (dyn Logger + Sync)> = Once::new();
 /// Registration is permanent because a global logger must remain valid for the
 /// rest of the program. Registering the same logger again is harmless;
 /// attempting to replace it returns [`RegistrationError`].
+///
+/// # Errors
+///
+/// Returns [`RegistrationError`] when a different logger is already registered.
 pub fn register(logger: &'static (dyn Logger + Sync)) -> Result<(), RegistrationError> {
     let registered = *LOGGER.call_once(|| logger);
     if ptr::eq(registered, logger) {
