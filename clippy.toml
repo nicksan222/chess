@@ -3,9 +3,10 @@ cognitive-complexity-threshold = 15
 too-many-arguments-threshold = 4
 too-many-lines-threshold = 250
 
-# Tests may unwrap: a panic is the failure report.
+# Tests may unwrap and panic: a panic is the failure report.
 allow-unwrap-in-tests = true
 allow-expect-in-tests = true
+allow-panic-in-tests = true
 
 disallowed-methods = [
     { path = "std::env::var", reason = "configuration comes from `firmware::tuning`; only apps/firmware/src/tuning reads the environment" },
