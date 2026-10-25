@@ -49,6 +49,18 @@ Offline chess behavior is the initial focus. Integration-specific code stays in
 adapter directories, so additional adapters can be introduced without changing
 bridge core or the shared crates.
 
+## Domain values and communication
+
+Domain modules own their vocabulary and behavior. Firmware uses `chess::Square`
+and `chess::SquareSet` for board coordinates and square collections; it does not
+maintain a parallel chess-coordinate model. Physical acquisition and the mapping
+from expander channels to squares remain in the firmware Hall adapter. A physical
+placement observation does not identify a chess piece or assert a legal move.
+
+Communication infrastructure owns generic delivery mechanisms. Event envelopes
+refer to domain types rather than defining their validation, notation, geometry,
+or game rules. Product UI policy belongs to the application menu and runtime.
+
 ## Mechanical shape
 
 One PCB carries the sensors, LEDs, buttons and display connector; two printed parts

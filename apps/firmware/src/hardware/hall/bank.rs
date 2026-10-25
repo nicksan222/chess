@@ -4,7 +4,7 @@
 //! `hardware/shared/tests/test_firmware_hall_banks.py` parses this table and
 //! fails if it disagrees with the contract.
 
-use crate::hardware::{BoardPosition, square};
+use chess::Square;
 
 /// Seven-bit I2C address of bank zero; bank `n` answers at `FIRST_ADDRESS + n`.
 pub const FIRST_ADDRESS: u8 = 0x20;
@@ -12,14 +12,14 @@ pub const FIRST_ADDRESS: u8 = 0x20;
 /// A table of square names, checked at compile time.
 macro_rules! banks {
     ($([$($square:ident),+ $(,)?]),+ $(,)?) => {
-        [$([$(square!($square)),+]),+]
+        [$([$(Square::$square),+]),+]
     };
 }
 
 /// The square on each expander channel, one row per bank in address order:
 /// left to right, then bottom to top. Each bank reads a 4-file by 2-rank block;
 /// P0–P3 serve its left half and P4–P7 its right.
-const BANKS: [[BoardPosition; HallBank::CHANNELS]; HallBank::COUNT] = banks![
+const BANKS: [[Square; HallBank::CHANNELS]; HallBank::COUNT] = banks![
     //P0 P1  P2  P3  P4  P5  P6  P7
     [A1, B1, A2, B2, C1, D1, C2, D2],
     [E1, F1, E2, F2, G1, H1, G2, H2],
@@ -53,14 +53,14 @@ impl HallBank {
     }
 
     /// The squares on channels P0–P7.
-    pub const fn squares(self) -> &'static [BoardPosition; Self::CHANNELS] {
+    pub const fn squares(self) -> &'static [Square; Self::CHANNELS] {
         &BANKS[self.index as usize]
     }
 
     /// Diagonal-corner name such as "A1-D2", matching the contract's labels.
     pub fn label(self) -> String {
         let squares = self.squares();
-        format!("{}-{}", squares[0], squares[Self::CHANNELS - 1])
+        format!("{}-{}", squares[0], squares[Self::CHANNELS - 1]).to_ascii_uppercase()
     }
 }
 
@@ -82,9 +82,18 @@ mod tests {
             let [origin, ..] = bank.squares();
             for (channel, square) in bank.squares().iter().enumerate() {
                 let (half, row, column) = (channel / 4, channel / 2 % 2, channel % 2);
-                assert_eq!(usize::from(square.row() - origin.row()), row);
                 assert_eq!(
-                    usize::from(square.column() - origin.column()),
+                    usize::from(
+                        square.index().value() / Square::FILES
+                            - origin.index().value() / Square::FILES
+                    ),
+                    row
+                );
+                assert_eq!(
+                    usize::from(
+                        square.index().value() % Square::FILES
+                            - origin.index().value() % Square::FILES
+                    ),
                     half * 2 + column
                 );
             }

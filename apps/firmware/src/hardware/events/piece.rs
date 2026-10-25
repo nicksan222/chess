@@ -1,14 +1,14 @@
-use super::BoardPosition;
+use chess::Square;
 
 /// A physical piece-presence transition observed at a board position.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum PieceEvent {
-    Placed(BoardPosition),
-    Removed(BoardPosition),
+    Placed(Square),
+    Removed(Square),
 }
 
 impl PieceEvent {
-    pub const fn position(self) -> BoardPosition {
+    pub const fn position(self) -> Square {
         match self {
             Self::Placed(position) | Self::Removed(position) => position,
         }
@@ -17,21 +17,15 @@ impl PieceEvent {
 
 #[cfg(test)]
 mod tests {
-    use super::{BoardPosition, PieceEvent};
+    use super::{PieceEvent, Square};
     use crate::hardware::HardwareEvent;
 
     #[test]
     fn every_board_position_round_trips_through_piece_events() {
-        for row in 0..BoardPosition::SIZE {
-            for column in 0..BoardPosition::SIZE {
-                let position = BoardPosition::new(row, column).unwrap();
-                assert_eq!(position.row(), row);
-                assert_eq!(position.column(), column);
-
-                for event in [PieceEvent::Placed(position), PieceEvent::Removed(position)] {
-                    assert_eq!(event.position(), position);
-                    assert_eq!(HardwareEvent::from(event), HardwareEvent::Piece(event));
-                }
+        for position in Square::all() {
+            for event in [PieceEvent::Placed(position), PieceEvent::Removed(position)] {
+                assert_eq!(event.position(), position);
+                assert_eq!(HardwareEvent::from(event), HardwareEvent::Piece(event));
             }
         }
     }

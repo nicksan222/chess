@@ -6,11 +6,10 @@ use std::{
     sync::{Arc, Mutex},
 };
 
+use chess::Square;
+
 use embedded_hal::i2c::{ErrorType, I2c, Operation};
-use firmware::hardware::{
-    BoardPosition,
-    hall::{FIRST_ADDRESS, HallBank},
-};
+use firmware::hardware::hall::{FIRST_ADDRESS, HallBank};
 
 /// Input-port levels of the eight expanders.
 #[derive(Clone)]
@@ -70,6 +69,6 @@ impl I2c for Board {
     }
 }
 
-pub(super) fn square(name: &str) -> BoardPosition {
-    BoardPosition::parse(name).unwrap()
+pub(super) fn square(name: &str) -> Square {
+    name.parse().unwrap()
 }

@@ -31,7 +31,7 @@ impl Change {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::hardware::square;
+    use chess::Square;
 
     #[test]
     fn only_changed_channels_become_events_in_channel_order() {
@@ -44,8 +44,8 @@ mod tests {
         assert_eq!(
             events,
             [
-                PieceEvent::Removed(square!(A1)),
-                PieceEvent::Placed(square!(D2))
+                PieceEvent::Removed(Square::A1),
+                PieceEvent::Placed(Square::D2)
             ]
         );
     }

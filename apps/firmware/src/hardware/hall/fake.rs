@@ -3,7 +3,7 @@
 use embedded_hal::i2c::{ErrorKind, ErrorType, I2c, NoAcknowledgeSource, Operation};
 
 use super::{FIRST_ADDRESS, HallBank};
-use crate::hardware::BoardPosition;
+use chess::Square;
 
 /// Power-on registers: inputs high, outputs high, no inversion, all inputs.
 pub(super) const POWER_ON: [u8; 4] = [0xFF, 0xFF, 0x00, 0xFF];
@@ -25,12 +25,12 @@ impl Expanders {
         }
     }
 
-    pub(super) fn place(&mut self, square: BoardPosition) {
+    pub(super) fn place(&mut self, square: Square) {
         let (input, bit) = self.input_bit(square);
         *input &= !bit;
     }
 
-    pub(super) fn remove(&mut self, square: BoardPosition) {
+    pub(super) fn remove(&mut self, square: Square) {
         let (input, bit) = self.input_bit(square);
         *input |= bit;
     }
@@ -45,7 +45,7 @@ impl Expanders {
     }
 
     /// The input-port register and channel bit reading `square`.
-    fn input_bit(&mut self, square: BoardPosition) -> (&mut u8, u8) {
+    fn input_bit(&mut self, square: Square) -> (&mut u8, u8) {
         for (bank, registers) in HallBank::all().into_iter().zip(&mut self.registers) {
             if let Some(channel) = bank.squares().iter().position(|&s| s == square) {
                 return (&mut registers[0], 1 << channel);

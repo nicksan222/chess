@@ -76,12 +76,13 @@ impl Monitor {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::hardware::{hall::fake::Expanders, square};
+    use crate::hardware::hall::fake::Expanders;
+    use chess::Square;
 
     #[test]
     fn configures_once_then_reads_occupancy_as_set_bits() {
         let mut expanders = Expanders::new();
-        expanders.place(square!(B1));
+        expanders.place(Square::B1);
         let mut monitor = Monitor::new(HallBank::all()[0]);
 
         assert_eq!(monitor.read(&mut expanders), Some(0b0000_0010));
