@@ -6,9 +6,9 @@ extend-exclude = ["**/generated"]
 force-exclude = true
 
 [tool.ruff.lint]
-# Ruff's defaults plus complexity and Pylint rules; see docs/development.md
-# "Quality checks".
-extend-select = ["C90", "PL"]
+# Ruff's defaults plus bug, complexity, simplification, upgrade, print, return
+# and pathlib rules; see docs/development.md "Quality checks".
+extend-select = ["B", "C90", "PL", "PTH", "RET", "SIM", "T20", "UP"]
 ignore = [
     # pcbnew and bpy exist only inside KiCad and Blender, so modules import
     # them where they run and stay importable by plain Python tests.
@@ -24,6 +24,13 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 # A component constructor takes one keyword per pin net, mirroring its pinout.
 "hardware/pcb/components/**" = ["PLR0913", "PLR0917"]
+# Command-line entry points report their result on standard output.
+"hardware/**/__main__.py" = ["T201"]
+"hardware/cad/harness/base/generation.py" = ["T201"]
+"hardware/cad/harness/base/pcb_export.py" = ["T201"]
+"hardware/pcb/board/generate.py" = ["T201"]
+"hardware/pcb/harness/checks/datasheets.py" = ["T201"]
+"hardware/pcb/harness/checks/run.py" = ["T201"]
 
 [tool.ruff.lint.mccabe]
 # Mirrors the Rust cognitive-complexity threshold in clippy.toml.

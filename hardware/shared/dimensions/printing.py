@@ -73,4 +73,6 @@ def fits_build_volume(
     """Check whether an axis-aligned part fits after rotation and bed margins."""
     part = sorted(part_dimensions_mm)
     usable = sorted(usable_build_volume(build_volume_mm))
-    return all(part_axis <= bed_axis for part_axis, bed_axis in zip(part, usable))
+    return all(
+        part_axis <= bed_axis for part_axis, bed_axis in zip(part, usable, strict=True)
+    )

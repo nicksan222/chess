@@ -306,6 +306,7 @@ class ControlPanelTest(unittest.TestCase):
             cad.PANEL_OLED_SCREEN_SIZE_MM,
             cad.PANEL_OLED_MODULE_MM[:2],
             cad.PANEL_OLED_BEZEL_INNER_MM,
+            strict=True,
         ):
             self.assertLess(window, module)
             self.assertEqual(
