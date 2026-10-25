@@ -54,6 +54,10 @@ generated artifacts. Pull requests without a semantic PCB change stay quiet;
 forked pull requests keep the report in the job summary because GitHub withholds
 write tokens. Physical measurements remain a separate release requirement.
 
-`quality.yml` lists one test job per workspace crate explicitly instead of
-discovering crates into a matrix, so every check has a stable name in the
-Actions graph. Adding a crate means adding its `test-<crate>` job there.
+`quality.yml` runs `just quality` (formatting, lints, documentation, ast-grep
+patterns, ls-lint file names and cargo-deny crate boundaries), a
+`🛡️ Dependencies` job (`cargo deny` on both lockfiles, `cargo shear` and
+`pip-audit`; it needs network access for advisory databases), and one test job
+per workspace crate. Crates are listed explicitly instead of discovered into a
+matrix, so every check has a stable name in the Actions graph. Adding a crate
+means adding its `test-<crate>` job there.

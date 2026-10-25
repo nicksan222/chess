@@ -13,7 +13,9 @@ configuration. This role does not rewrite application code; report runtime,
 package or service requirements that need firmware changes.
 
 Preserve pinned and checksum-verified tools, frozen lockfiles, the commit gate
-and required CI checks. Keep credentials out of image layers, configuration,
+and required CI checks. Quality and dependency tools (ast-grep, ls-lint,
+`cargo deny`, `cargo shear`, `pip-audit`) are pinned in `.devcontainer/` and run
+through `tooling/quality/justfile`; see `docs/development.md` "Quality checks". Keep credentials out of image layers, configuration,
 logs and artifacts. Keep offline tooling tests separate from authenticated
 provider requests. Run expensive Docker, QEMU or Yocto jobs only when the brief
 assigns them.

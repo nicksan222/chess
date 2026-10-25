@@ -22,6 +22,9 @@ The image provides:
   missing). Both read the shared [agent tooling](../.agents/README.md);
 - stable Rust with `rustfmt`, Clippy, Just, and the AArch64 GNU target/linker;
 - Ruff for CAD, PCB, and shared Python;
+- quality and dependency tools: ast-grep, ls-lint (checksum-verified),
+  cargo-deny, cargo-shear and pip-audit, pinned in the Dockerfile and
+  `requirements.txt` (see `tooling/quality/README.md`);
 - KiCad 9 with `kicad-cli` and `pcbnew`;
 - a checksum-verified Blender at `/opt/blender`;
 - X11/GL/EGL, Mesa, Xvfb, and `xauth` so headless Blender can render;

@@ -16,7 +16,11 @@ production event loop and harness for end-to-end tests; channels stay inside
 the event layer.
 
 Verify current implementations before claiming an adapter is wired into
-startup. Pi pin identities are hand-maintained, not generated from PCB output:
+startup. Prototype-adjustable timing belongs in `tuning!` and pin numbers in
+`hardware/pins.rs`; the `no-hardcoded-timing` and `pins-only-in-pins`
+ast-grep rules and Clippy's disallowed APIs (environment, shelling out, channels
+outside `events`) enforce this, as `docs/development.md` "Quality checks"
+lists. Pi pin identities are hand-maintained, not generated from PCB output:
 any change needs an explicit interface handoff with the hardware side through
 the lead. Do not add a second PCB-to-Rust generator, shell out for Wi-Fi
 control or duplicate the runtime for tests.
