@@ -25,6 +25,10 @@ impl<T: Clone> Bus<T> {
     }
 
     /// Sends to every subscriber without waiting for slow consumers.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`EmitError`] carrying the event when there are no subscribers.
     pub fn emit(&self, event: T) -> Result<(), EmitError<T>> {
         self.sender
             .send(event)
@@ -48,10 +52,21 @@ impl<T: Clone> Default for Bus<T> {
 pub struct Subscription<T>(broadcast::Receiver<T>);
 
 impl<T: Clone> Subscription<T> {
+    /// Waits for the next event.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ReceiveError::Closed`] when the bus is gone and
+    /// [`ReceiveError::Lagged`] when this cursor fell behind and skipped events.
     pub async fn recv(&mut self) -> Result<T, ReceiveError> {
         self.0.recv().await.map_err(Into::into)
     }
 
+    /// Returns the next event if one is ready, without waiting.
+    ///
+    /// # Errors
+    ///
+    /// Same conditions as [`Subscription::recv`].
     pub fn try_recv(&mut self) -> Result<Option<T>, ReceiveError> {
         match self.0.try_recv() {
             Ok(event) => Ok(Some(event)),

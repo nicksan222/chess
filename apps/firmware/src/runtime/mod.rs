@@ -24,9 +24,22 @@ pub struct Firmware {
     worker: JoinHandle<Result<(), ReceiveError>>,
 }
 
+impl std::fmt::Debug for Firmware {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter
+            .debug_struct("Firmware")
+            .field("snapshot", &*self.updates.borrow())
+            .finish_non_exhaustive()
+    }
+}
+
 impl Firmware {
     /// Starts the real application loop with no physical adapters attached.
     /// Hardware workers attach through `events()`; tests inject through it too.
+    ///
+    /// # Errors
+    ///
+    /// Fails without an active async runtime or when module startup fails.
     pub fn start() -> io::Result<Self> {
         Self::start_with(&Config::device())
     }
@@ -34,6 +47,10 @@ impl Firmware {
     /// Starts the loop with explicit module settings. Stopping the loop
     /// cancels background work its modules started. Fails without an async
     /// runtime or when a module uses one registered after it.
+    ///
+    /// # Errors
+    ///
+    /// Fails as described above.
     pub fn start_with(config: &Config) -> io::Result<Self> {
         let runtime = Handle::try_current().map_err(|error| {
             io::Error::other(format!(
@@ -48,7 +65,7 @@ impl Firmware {
         let mut reported = reports.subscribe();
         let (modules, facades) = Modules::new(config, &reports).map_err(io::Error::other)?;
         let mut state = State::new(modules);
-        let (updates, receiver) = watch::channel(state.initial_snapshot());
+        let (updates, receiver) = watch::channel(State::initial_snapshot());
         let worker = runtime.spawn(async move {
             loop {
                 tokio::select! {
@@ -86,6 +103,14 @@ impl Firmware {
 
     /// The public API of a registered module, such as
     /// `firmware.module::<Updates>()`.
+    ///
+    /// # Panics
+    ///
+    /// Panics if `F` is not a registered module, which startup rules out.
+    #[expect(
+        clippy::expect_used,
+        reason = "startup builds every registered module, so a facade is always found"
+    )]
     pub fn module<F: Facade>(&self) -> F {
         F::find(&self.facades).expect("startup builds every registered module")
     }
@@ -95,6 +120,10 @@ impl Firmware {
     }
 
     /// Waits for a processed state newer than the supplied event count.
+    ///
+    /// # Errors
+    ///
+    /// Fails when the event loop stops first.
     pub async fn after(&mut self, processed_events: u64) -> io::Result<Snapshot> {
         self.until(|snapshot| snapshot.processed_events > processed_events)
             .await
@@ -102,6 +131,10 @@ impl Firmware {
 
     /// Waits for a published state, including background results, that
     /// satisfies `condition`.
+    ///
+    /// # Errors
+    ///
+    /// Fails when the event loop stops first.
     pub async fn until(&mut self, condition: impl Fn(&Snapshot) -> bool) -> io::Result<Snapshot> {
         loop {
             let snapshot = self.updates.borrow_and_update().clone();
@@ -115,6 +148,10 @@ impl Firmware {
     }
 
     /// Runs until the application loop stops, reporting task failures and lag.
+    ///
+    /// # Errors
+    ///
+    /// Fails when the loop task panics or its subscriptions close or lag.
     pub async fn wait(&mut self) -> io::Result<()> {
         (&mut self.worker)
             .await
@@ -123,6 +160,10 @@ impl Firmware {
     }
 
     /// Stops the loop and waits until it has released its resources.
+    ///
+    /// # Errors
+    ///
+    /// Fails when the loop had already failed.
     pub async fn shutdown(mut self) -> io::Result<()> {
         self.worker.abort();
         match (&mut self.worker).await {

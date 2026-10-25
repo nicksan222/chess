@@ -1,6 +1,11 @@
 //! The `firmware` executable's command line. Startup, logging and signal handling are
 //! not asserted here: their intended behaviour is not decided yet.
 
+#![allow(
+    clippy::disallowed_types,
+    reason = "this test runs the built executable; the firmware itself never shells out"
+)]
+
 use std::process::Command;
 
 #[test]

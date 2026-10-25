@@ -22,3 +22,6 @@ tokio = { version = "1.53.1", features = ["macros", "net", "rt", "sync", "time"]
 [dev-dependencies]
 embedded-graphics-simulator = { version = "0.8.0", default-features = false }
 tokio = { version = "1.53.1", features = ["macros", "rt", "sync", "test-util", "time"] }
+
+[lints]
+workspace = true

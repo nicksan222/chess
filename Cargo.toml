@@ -14,3 +14,28 @@ edition = "2024"
 license = "MIT"
 rust-version = "1.85"
 version = "0.0.0"
+
+# One lint policy for every member; see docs/development.md "Quality checks".
+# Thresholds and disallowed APIs are in clippy.toml. A scoped `#[allow]` or
+# `#[expect]` needs a `reason`. The Yocto manifest in apps/firmware/yocto is a
+# separate workspace and only inherits these through its path dependencies.
+[workspace.lints.rust]
+missing_debug_implementations = "warn"
+unreachable_pub = "warn"
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+correctness = { level = "deny", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+suspicious = { level = "deny", priority = -1 }
+allow_attributes_without_reason = "warn"
+cognitive_complexity = "warn"
+expect_used = "warn"
+# `#[must_use]` on every pure getter is noise; it is applied where dropping a
+# value is a bug, and `Result` and iterators are already `#[must_use]`.
+must_use_candidate = "allow"
+print_stderr = "warn"
+print_stdout = "warn"
+too_many_arguments = "warn"
+too_many_lines = "warn"
+unwrap_used = "warn"

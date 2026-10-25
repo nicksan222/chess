@@ -1,4 +1,4 @@
-//! The NetworkManager implementation of [`WifiBackend`], using the typed `nmrs` D-Bus client.
+//! The `NetworkManager` implementation of [`WifiBackend`], using the typed `nmrs` D-Bus client.
 //! This is the only module that calls `nmrs`.
 
 use crate::board::WIFI_INTERFACE;
@@ -12,14 +12,14 @@ use super::{
     backend::{Radio, VisibleNetwork, WifiBackend},
 };
 
-/// Wi-Fi control through the system NetworkManager service.
+/// Wi-Fi control through the system `NetworkManager` service.
 pub(super) struct NetworkManagerBackend {
     manager: NetworkManager,
     wifi: WifiScope,
 }
 
 impl NetworkManagerBackend {
-    /// Connects to the system NetworkManager service and the board Wi-Fi radio.
+    /// Connects to the system `NetworkManager` service and the board Wi-Fi radio.
     pub(super) async fn connect() -> Result<Self, Error> {
         let manager = NetworkManager::new().await?;
         let wifi = manager.wifi(WIFI_INTERFACE);

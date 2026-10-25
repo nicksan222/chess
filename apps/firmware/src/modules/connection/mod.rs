@@ -1,9 +1,9 @@
 //! Typed, presentation-agnostic Wi-Fi control.
 //!
-//! Product types stay independent from NetworkManager, D-Bus, menus, and
+//! Product types stay independent from `NetworkManager`, D-Bus, menus, and
 //! displays; [`Connection`] translates them through an internal backend seam to
 //! the maintained `nmrs` implementation, which tests replace with an in-memory
-//! fake. NetworkManager is reached lazily, on the first operation, so building
+//! fake. `NetworkManager` is reached lazily, on the first operation, so building
 //! the module never touches D-Bus; reaching it is bounded by
 //! [`CONNECT_TIMEOUT`] and retried by the next operation after a failure. The
 //! menu items are placeholders that finish immediately.
@@ -44,7 +44,7 @@ pub enum Settings {
     /// No Wi-Fi control: every operation fails with [`Error::Unavailable`].
     #[default]
     Unavailable,
-    /// The system NetworkManager service and the board's radio.
+    /// The system `NetworkManager` service and the board's radio.
     NetworkManager,
 }
 
@@ -75,7 +75,7 @@ pub static MENU: Menu<'static, super::Request> = Menu::new(
     ],
 );
 
-/// How long reaching NetworkManager may take before an operation fails with
+/// How long reaching `NetworkManager` may take before an operation fails with
 /// [`Error::TimedOut`].
 pub const CONNECT_TIMEOUT: Duration = Duration::from_secs(5);
 
@@ -86,8 +86,17 @@ pub struct Connection {
     wifi: Arc<Wifi>,
 }
 
+impl std::fmt::Debug for Connection {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter.debug_struct("Connection").finish_non_exhaustive()
+    }
+}
+
 // One per firmware instance, shared behind an `Arc`, so size does not matter.
-#[allow(clippy::large_enum_variant)]
+#[allow(
+    clippy::large_enum_variant,
+    reason = "one short-lived value per client; boxing would only add indirection"
+)]
 enum Wifi {
     Unavailable,
     /// Connected on first use; a failed connection is retried on the next.
@@ -144,26 +153,46 @@ impl Connection {
     }
 
     /// Reports the current client connection.
+    ///
+    /// # Errors
+    ///
+    /// Fails when the Wi-Fi stack is unavailable or cannot be queried.
     pub async fn status(&self) -> Result<Link, Error> {
         with_wifi!(self, wifi => wifi.status())
     }
 
     /// Refreshes and returns visible networks, strongest first.
+    ///
+    /// # Errors
+    ///
+    /// Fails when the Wi-Fi stack is unavailable or the scan fails.
     pub async fn scan(&self) -> Result<Vec<AccessPoint>, Error> {
         with_wifi!(self, wifi => wifi.scan())
     }
 
     /// Starts the provisioning hotspot.
+    ///
+    /// # Errors
+    ///
+    /// Fails when the Wi-Fi stack is unavailable or refuses the hotspot.
     pub async fn start_hotspot(&self, hotspot: &Hotspot) -> Result<(), Error> {
         with_wifi!(self, wifi => wifi.start_hotspot(hotspot))
     }
 
     /// Stops and removes the provisioning hotspot.
+    ///
+    /// # Errors
+    ///
+    /// Fails when the Wi-Fi stack is unavailable or cannot remove it.
     pub async fn stop_hotspot(&self) -> Result<(), Error> {
         with_wifi!(self, wifi => wifi.stop_hotspot())
     }
 
     /// Stops hotspot mode and joins the selected client network.
+    ///
+    /// # Errors
+    ///
+    /// Fails when the Wi-Fi stack is unavailable or the join is rejected.
     pub async fn connect(&self, ssid: &Ssid, credentials: &Credentials) -> Result<(), Error> {
         with_wifi!(self, wifi => wifi.connect(ssid, credentials))
     }
@@ -199,9 +228,7 @@ impl Module for Engine {
     fn request(&mut self, request: Request, report: Reporter<Status>) {
         // Placeholders until the connection screens exist.
         match request {
-            Request::Status => report.done(),
-            Request::ScanWifi => report.done(),
-            Request::NetworkSettings => report.done(),
+            Request::Status | Request::ScanWifi | Request::NetworkSettings => report.done(),
         }
     }
 }
@@ -234,7 +261,7 @@ mod tests {
             connection.status().await.unwrap(),
             Link::Connected(Ssid::new("Home").unwrap())
         );
-        assert!(connection.scan().await.unwrap().is_empty());
+        assert_eq!(connection.scan().await.unwrap(), Vec::new());
     }
 
     #[tokio::test(start_paused = true)]

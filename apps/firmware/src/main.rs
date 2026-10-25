@@ -11,9 +11,17 @@ use logger::{LevelFilter, error, implementations::SystemdLogger, info, register}
 
 static LOGGER: SystemdLogger = SystemdLogger::new(LevelFilter::Info);
 
+#[allow(
+    clippy::print_stdout,
+    reason = "--version prints to stdout by CLI convention; diagnostics go through logger"
+)]
+fn print_version() {
+    println!("{} {}", NAME, version());
+}
+
 fn main() -> io::Result<()> {
     if env::args().nth(1).as_deref() == Some("--version") {
-        println!("{} {}", NAME, version());
+        print_version();
         return Ok(());
     }
 

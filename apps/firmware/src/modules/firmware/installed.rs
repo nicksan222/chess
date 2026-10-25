@@ -9,6 +9,14 @@ pub const NAME: &str = "firmware";
 ///
 /// Release tags name this version as `v<version>`, so a newer published tag
 /// means newer firmware.
+///
+/// # Panics
+///
+/// Never in a built package: Cargo rejects a non-semantic package version.
+#[expect(
+    clippy::expect_used,
+    reason = "Cargo itself rejects a package version that is not semantic"
+)]
 pub fn version() -> Version {
     Version::parse(env!("CARGO_PKG_VERSION")).expect("Cargo package versions are semantic")
 }
