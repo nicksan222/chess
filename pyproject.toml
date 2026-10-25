@@ -7,8 +7,9 @@ force-exclude = true
 
 [tool.ruff.lint]
 # Ruff's defaults plus bug, complexity, simplification, upgrade, print, return
-# and pathlib rules; see docs/development.md "Quality checks".
-extend-select = ["B", "C90", "PL", "PTH", "RET", "SIM", "T20", "UP"]
+# and pathlib rules, and no debugger calls, commented-out code or TODO markers;
+# see docs/development.md "Quality checks".
+extend-select = ["B", "C90", "ERA", "FIX", "PL", "PTH", "RET", "SIM", "T10", "T20", "UP"]
 ignore = [
     # pcbnew and bpy exist only inside KiCad and Blender, so modules import
     # them where they run and stay importable by plain Python tests.
