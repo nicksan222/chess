@@ -30,7 +30,10 @@ fn encoding_layout_and_decoding_round_trip() {
     assert_eq!(bytes[4], FORMAT_VERSION);
     assert_eq!(bytes[5], 0);
     assert_eq!(&bytes[6..8], &0x1234_u16.to_le_bytes());
-    assert_eq!(&bytes[8..12], &(payload.len() as u32).to_le_bytes());
+    assert_eq!(
+        &bytes[8..12],
+        &u32::try_from(payload.len()).unwrap().to_le_bytes()
+    );
     assert_eq!(bytes.len(), HEADER_LEN + payload.len());
 
     let record = decode(&bytes).expect("record is valid");
@@ -45,7 +48,7 @@ fn empty_payload_is_distinct_and_valid() {
 
     assert_eq!(bytes.len(), HEADER_LEN);
     assert_eq!(record.schema_version(), 0);
-    assert!(record.payload().is_empty());
+    assert_eq!(record.payload(), &[] as &[u8]);
 }
 
 #[test]
@@ -160,16 +163,16 @@ fn checksum_protects_schema_metadata_payload_and_checksum_field() {
 fn deterministic_payload_sample_round_trips() {
     let mut state = 0xDEAD_BEEF_u32;
 
-    for len in 0..512 {
-        let mut payload = Vec::with_capacity(len);
+    for len in 0..512_u16 {
+        let mut payload = Vec::with_capacity(usize::from(len));
         for _ in 0..len {
             state = state.wrapping_mul(1_664_525).wrapping_add(1_013_904_223);
-            payload.push(state as u8);
+            payload.push(state.to_le_bytes()[0]);
         }
 
-        let bytes = encoded(len as u16, &payload);
+        let bytes = encoded(len, &payload);
         let record = decode(&bytes).expect("record is valid");
-        assert_eq!(record.schema_version(), len as u16);
+        assert_eq!(record.schema_version(), len);
         assert_eq!(record.payload(), payload);
     }
 }

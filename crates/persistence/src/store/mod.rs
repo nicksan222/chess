@@ -17,24 +17,48 @@ pub trait KeyValueStore {
     type Error;
 
     /// Returns the stored value length, or `None` when `key` is absent.
+    ///
+    /// # Errors
+    ///
+    /// Returns the backend error when the lookup fails.
     fn value_len(&mut self, key: &[u8]) -> Result<Option<usize>, Self::Error>;
 
     /// Loads the complete value for `key` into `output`.
     ///
     /// Implementations must not partially copy a value. When `output` is too
     /// small, they return [`LoadOutcome::BufferTooSmall`] and leave it unchanged.
+    ///
+    /// # Errors
+    ///
+    /// Returns the backend error when the read fails.
     fn load(&mut self, key: &[u8], output: &mut [u8]) -> Result<LoadOutcome, Self::Error>;
 
     /// Stores `value` under `key`, replacing any previous value.
+    ///
+    /// # Errors
+    ///
+    /// Returns the backend error when the write fails.
     fn store(&mut self, key: &[u8], value: &[u8]) -> Result<(), Self::Error>;
 
     /// Removes `key`, returning whether a value existed.
+    ///
+    /// # Errors
+    ///
+    /// Returns the backend error when the removal fails.
     fn remove(&mut self, key: &[u8]) -> Result<bool, Self::Error>;
 
     /// Makes successful writes durable to the extent supported by the backend.
+    ///
+    /// # Errors
+    ///
+    /// Returns the backend error when the data cannot be made durable.
     fn flush(&mut self) -> Result<(), Self::Error>;
 
     /// Returns whether `key` exists.
+    ///
+    /// # Errors
+    ///
+    /// Returns the backend error when the lookup fails.
     fn contains(&mut self, key: &[u8]) -> Result<bool, Self::Error> {
         self.value_len(key).map(|len| len.is_some())
     }
