@@ -34,7 +34,7 @@ fn opening_a_submenu_shows_it_from_its_first_entry() {
     assert_eq!(state.selected_index(), 0);
     assert_eq!(state.depth(), 1);
     assert!(!state.is_at_root());
-    assert!(core::ptr::eq(state.root_menu(), &ROOT));
+    assert!(core::ptr::eq(state.root_menu(), &raw const ROOT));
 }
 
 #[test]

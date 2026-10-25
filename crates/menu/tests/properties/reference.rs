@@ -7,14 +7,14 @@ use crate::fixture::Act;
 /// `path` holds every open menu with its cursor; the last entry is the menu on
 /// screen. Unlike `MenuState` it uses an unbounded `Vec`, so the depth limit is
 /// an explicit rule rather than a storage constraint.
-pub struct Reference<'a> {
+pub(crate) struct Reference<'a> {
     root: &'a Menu<'a, Act>,
     path: Vec<(&'a Menu<'a, Act>, usize)>,
     blocking: Option<(&'a Act, &'a Act)>,
 }
 
 impl<'a> Reference<'a> {
-    pub fn new(root: &'a Menu<'a, Act>) -> Self {
+    pub(crate) fn new(root: &'a Menu<'a, Act>) -> Self {
         Self {
             root,
             path: vec![(root, 0)],
@@ -22,20 +22,20 @@ impl<'a> Reference<'a> {
         }
     }
 
-    pub fn menu(&self) -> &'a Menu<'a, Act> {
+    pub(crate) fn menu(&self) -> &'a Menu<'a, Act> {
         self.path.last().expect("the root is never closed").0
     }
 
-    pub fn selected(&self) -> usize {
+    pub(crate) fn selected(&self) -> usize {
         self.path.last().expect("the root is never closed").1
     }
 
-    pub fn depth(&self) -> usize {
+    pub(crate) fn depth(&self) -> usize {
         self.path.len() - 1
     }
 
     /// `MenuState::handle`.
-    pub fn press(&mut self, input: Input) -> Event<'a, Act> {
+    pub(crate) fn press(&mut self, input: Input) -> Event<'a, Act> {
         if let Some(event) = self.while_blocked(input) {
             return event;
         }
@@ -47,7 +47,11 @@ impl<'a> Reference<'a> {
     }
 
     /// `MenuState::handle_with`, given what the external behavior answered.
-    pub fn press_with(&mut self, input: Input, answer: Option<Command<Act>>) -> Event<'a, Act> {
+    pub(crate) fn press_with(
+        &mut self,
+        input: Input,
+        answer: Option<Command<Act>>,
+    ) -> Event<'a, Act> {
         if let Some(event) = self.while_blocked(input) {
             return event;
         }
@@ -60,7 +64,7 @@ impl<'a> Reference<'a> {
     }
 
     /// `MenuState::unblock`.
-    pub fn unblock(&mut self) -> Option<&'a Act> {
+    pub(crate) fn unblock(&mut self) -> Option<&'a Act> {
         self.blocking.take().map(|(action, _)| action)
     }
 
@@ -125,7 +129,16 @@ impl<'a> Reference<'a> {
 
     /// Asserts every observable property of `state` against this reference,
     /// plus invariants that must hold regardless of history.
-    pub fn assert_matches(&self, state: &MenuState<'a, Act>, context: &dyn core::fmt::Display) {
+    pub(crate) fn assert_matches(
+        &self,
+        state: &MenuState<'a, Act>,
+        context: &dyn core::fmt::Display,
+    ) {
+        self.assert_state(state, context);
+        self.assert_snapshot(state, context);
+    }
+
+    fn assert_state(&self, state: &MenuState<'a, Act>, context: &dyn core::fmt::Display) {
         let blocking_action = self.blocking.map(|(action, _)| action);
         let escape_action = self.blocking.map(|(_, escape)| escape);
 
@@ -157,6 +170,11 @@ impl<'a> Reference<'a> {
             ),
             "{context}"
         );
+    }
+
+    fn assert_snapshot(&self, state: &MenuState<'a, Act>, context: &dyn core::fmt::Display) {
+        let blocking_action = self.blocking.map(|(action, _)| action);
+        let escape_action = self.blocking.map(|(_, escape)| escape);
 
         let snapshot = state.snapshot();
         assert!(

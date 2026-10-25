@@ -47,7 +47,7 @@ fn snapshot_follows_submenus() {
     let _ = state.handle(Input::Right);
     let snapshot = state.snapshot();
 
-    assert!(core::ptr::eq(snapshot.menu(), &SETTINGS));
+    assert!(core::ptr::eq(snapshot.menu(), &raw const SETTINGS));
     assert_eq!(snapshot.depth(), 1);
     assert_mirrors(snapshot, &state);
 }

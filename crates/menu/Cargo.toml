@@ -19,3 +19,6 @@ path = "tests/e2e/main.rs"
 [[test]]
 name = "properties"
 path = "tests/properties/main.rs"
+
+[lints]
+workspace = true
