@@ -1,0 +1,9 @@
+# Python tools for the development container, pinned. The Dockerfile installs
+# this file, and `just --justfile tooling/quality/justfile python-audit` audits it.
+basedpyright==1.40.0
+blender-python-stubs==4.5.8.1
+cadquery==2.6.1
+kas==5.4
+pip-audit==2.10.1
+pytest==9.0.3
+ruff==0.16.5

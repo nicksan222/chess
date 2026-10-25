@@ -86,13 +86,9 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install --break-system-packages --no-cache-dir \
-        basedpyright==1.40.0 \
-        cadquery==2.6.1 \
-        blender-python-stubs==4.5.8.1 \
-        kas==5.2 \
-        pytest==8.3.5 \
-        ruff==0.16.5
+COPY .devcontainer/requirements.txt /tmp/requirements.txt
+RUN pip3 install --break-system-packages --no-cache-dir --requirement /tmp/requirements.txt \
+    && rm /tmp/requirements.txt
 
 RUN archive="blender-${BLENDER_VERSION}-linux-x64.tar.xz" \
     && curl --fail --location --retry 3 --show-error \
