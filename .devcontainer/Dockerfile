@@ -7,6 +7,8 @@ ARG BLENDER_VERSION="4.5.13"
 ARG KICAD_PPA="ppa:kicad/kicad-9.0-releases"
 ARG LS_LINT_VERSION="2.3.2"
 ARG LS_LINT_SHA256="571e382a0908fd22393869fd0dff575e6f17a6130211930fc43b37a1e0630068"
+ARG ACTIONLINT_VERSION="1.7.12"
+ARG ACTIONLINT_SHA256="8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8"
 ARG BLENDER_SHA256="da4e69b06b75b9e642d106496c50e7e240218b411d2f6e18271c1d1d819cef91"
 
 RUN apt-get update \
@@ -104,6 +106,13 @@ RUN curl --fail --location --retry 3 --show-error --output /usr/local/bin/ls-lin
         "https://github.com/loeffel-io/ls-lint/releases/download/v${LS_LINT_VERSION}/ls-lint-linux-amd64" \
     && printf '%s  %s\n' "${LS_LINT_SHA256}" /usr/local/bin/ls-lint | sha256sum --check --status \
     && chmod 0755 /usr/local/bin/ls-lint
+
+RUN archive="actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz" \
+    && curl --fail --location --retry 3 --show-error --output "/tmp/${archive}" \
+        "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/${archive}" \
+    && printf '%s  %s\n' "${ACTIONLINT_SHA256}" "/tmp/${archive}" | sha256sum --check --status \
+    && tar -xzf "/tmp/${archive}" -C /usr/local/bin actionlint \
+    && rm "/tmp/${archive}"
 
 ENV BLENDER_BIN=/opt/blender/blender \
     PATH="/home/vscode/.local/bin:/home/vscode/.cargo/bin:${PATH}"
