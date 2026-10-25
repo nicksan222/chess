@@ -3,6 +3,10 @@
 /// GPIO character device exposing the Pi's BCM-numbered header lines.
 pub const GPIO_CHIP: &str = "/dev/gpiochip0";
 
+/// I2C character device for the header's SDA/SCL pins, shared by the
+/// Hall-sensor banks and the display.
+pub const I2C_BUS: &str = "/dev/i2c-1";
+
 /// NetworkManager's name for the board's Wi-Fi radio.
 pub const WIFI_INTERFACE: &str = "wlan0";
 

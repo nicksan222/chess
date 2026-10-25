@@ -182,9 +182,28 @@ firmware driver there requires a separate supported-microcontroller harness and
 Wokwi CI credentials. No such harness is checked in because it would not execute
 the production Pi I2C adapter.
 
-The remaining hardware workers are not implemented yet. The board contract uses
-polled TCA9554 input-port reads at eight addresses, not a GPIO sensor interrupt;
-see [host acquisition](../../docs/host.md#reading-the-board). Reusable,
+`src/hardware/hall/` polls the eight TCA9554 Hall-sensor banks on
+`/dev/i2c-1`, following [host acquisition](../../docs/host.md#reading-the-board):
+there is no sensor interrupt. Every 25 ms it reads banks 0x20–0x27 in order and
+reports a bank's change as `PieceEvent::Placed`/`Removed` once two consecutive
+scans agree. Both are starting points for prototype tuning, set on the device
+by `FIRMWARE_HALL_SCAN_INTERVAL_MS` and `FIRMWARE_HALL_STABLE_SCANS` (see
+Tuning). The first
+stable scan reports every occupied square as placed, so consumers learn the
+starting position from the same event stream. A bank that fails a read is
+logged once, reports nothing (its squares are unknown, not empty), and is
+reconfigured before it is trusted again; only the squares that changed while it
+was unknown are reported on recovery. Failing to open the bus fails startup; an
+unresponsive bank does not. `bank.rs` is a hand-maintained table of the square
+on each channel, written in chess notation and checked against
+`hardware/shared/hall_banks.py` by a shared contract test.
+`src/hardware/linux_i2c/` implements `embedded-hal` I2C over `i2c-dev`, one
+`I2C_RDWR` transfer per transaction. Blocking transfers run off the application loop, with one scan in flight.
+Dropping the poller stops publication and cancels further banks; an in-flight
+bank finishes before its bus is released. The poller currently owns the bus: the
+display must share it through a bus-sharing handle when it is attached.
+
+The LED worker is not implemented yet. Reusable,
 function-named GPIO identities and type-safe descriptors live in
 `src/hardware/pins.rs`; OS-backed implementations live alongside them (currently
 `src/hardware/linux_gpio.rs`). Unused header functions are deliberately absent.
@@ -194,7 +213,7 @@ I2C for the shared bus, SPI for the LED chain, and direct GPIO button lines.
 ## Tuning
 
 `src/tuning/` holds values worth adjusting on a prototype without rebuilding,
-currently the button poll interval and debounce. One `tuning!` declaration in
+currently Hall scan timing and stability, and button polling and debounce. One `tuning!` declaration in
 `src/tuning/mod.rs` names each value's group, default, unit, range and
 `FIRMWARE_*` environment variable:
 

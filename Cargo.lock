@@ -503,6 +503,7 @@ dependencies = [
  "embedded-graphics-simulator",
  "embedded-hal",
  "gpiocdev",
+ "libc",
  "logger",
  "menu",
  "nmrs",

@@ -1,8 +1,8 @@
 use std::{env, io};
 
 use firmware::{
-    board::GPIO_CHIP,
-    hardware::button_panel::ButtonPanel,
+    board::{GPIO_CHIP, I2C_BUS},
+    hardware::{button_panel::ButtonPanel, hall::HallSensors},
     modules::firmware::{NAME, version},
     runtime::Firmware,
     tuning::Tuning,
@@ -30,6 +30,7 @@ fn main() -> io::Result<()> {
         .block_on(async {
             let mut firmware = Firmware::start()?;
             let _buttons = ButtonPanel::open(GPIO_CHIP, &firmware.events(), tuning.buttons)?;
+            let _hall = HallSensors::open(I2C_BUS, &firmware.events(), tuning.hall)?;
             firmware.wait().await
         })
 }

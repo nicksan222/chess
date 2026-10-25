@@ -4,7 +4,9 @@ Role: the single source of truth for which squares each Hall-sensor GPIO expande
 ("bank") reads, which expander channel (P0-P7) each square uses, and each bank's
 I2C address. `dimensions/board.py` builds `HALL_BANKS` from `banks()`; `wiring.py`,
 the PCB assemblies must agree with it, as must the host acquisition contract in
-`docs/host.md` (not yet implemented in `apps/firmware`).
+`docs/host.md` and the firmware's hand-maintained table in
+`apps/firmware/src/hardware/hall/bank.rs` (checked by
+`tests/test_firmware_hall_banks.py`).
 
 Compact 4x2 banks: each bank serves a 4-file x 2-rank block (8 squares = the 8
 expander channels). Design rationale (not stated in the repo docs): keeping a

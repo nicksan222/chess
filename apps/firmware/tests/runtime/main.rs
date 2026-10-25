@@ -1,6 +1,7 @@
 //! Fast, Docker-free tests of the production runtime with injected hardware.
 
 mod gpio;
+mod hall;
 mod modules;
 mod navigator;
 mod updates;

@@ -386,6 +386,7 @@ dependencies = [
  "embedded-graphics",
  "embedded-hal",
  "gpiocdev",
+ "libc",
  "logger",
  "menu",
  "nmrs",
