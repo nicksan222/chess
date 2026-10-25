@@ -1,0 +1,38 @@
+id: hardware-no-application-policy
+valid:
+  - |
+    use tokio::{runtime::Handle, time::Instant};
+  - |
+    use crate::{events::Bus, tuning::ButtonTuning};
+  - |
+    use chess::Square;
+    enum PieceEvent { Placed(Square), Removed(Square) }
+  - |
+    use super::{HardwareEventBus, pins::Button};
+  - |
+    fn read(button: Button) -> ButtonEvent { ButtonEvent::Pressed(button) }
+  - |
+    #[cfg(test)]
+    mod tests { use crate::runtime::Firmware; }
+  - |
+    #[tokio::test]
+    async fn integration() { crate::modules::report(); }
+invalid:
+  - |
+    fn binding() -> Option<::menu::Input> { None }
+  - |
+    fn binding() { let input = menu::Input::Up; }
+  - |
+    use ::menu::Input;
+  - |
+    use menu as navigation;
+  - |
+    use crate::menu::MAIN_MENU;
+  - |
+    use crate::runtime::Snapshot;
+  - |
+    use crate::{hardware::pins::Button, menu::{MAIN_MENU, Screen}};
+  - |
+    use crate::{modules as product, tuning::ButtonTuning};
+  - |
+    fn apply() { crate::modules::report(); }

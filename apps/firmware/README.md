@@ -149,6 +149,11 @@ The registered modules are:
   squares hold a piece, and the latest observation, as `Snapshot::modules.pieces`
   and through its `Pieces` facade.
 
+`src/menu/input.rs` owns the product button bindings; hardware button labels
+and electrical transitions have no menu behavior. The syntax-aware
+`hardware-no-application-policy` rule rejects application menu, module and runtime
+dependencies in production hardware code.
+
 `src/menu/definition.rs` is the single product menu definition. It composes the
 headless `menu` crate's primitives and each module's `MENU` into the Play,
 Connection, Pairing, Update, and Settings submenus; the Settings submenu is

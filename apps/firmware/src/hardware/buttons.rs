@@ -32,21 +32,6 @@ pub enum Button {
     F5,
 }
 
-impl Button {
-    /// The menu input this button drives, if it navigates the menu.
-    pub fn menu_input(self) -> Option<::menu::Input> {
-        use ::menu::Input;
-        match self {
-            Self::Up => Some(Input::Up),
-            Self::Down => Some(Input::Down),
-            Self::Left => Some(Input::Left),
-            Self::Right => Some(Input::Right),
-            Self::Ok => Some(Input::Ok),
-            Self::Reset | Self::Pass | Self::F1 | Self::F2 | Self::F3 | Self::F4 | Self::F5 => None,
-        }
-    }
-}
-
 /// A debounced electrical transition produced by a physical button adapter.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ButtonEvent {
