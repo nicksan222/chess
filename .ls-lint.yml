@@ -1,0 +1,14 @@
+# ls-lint: Rust and Python file names are snake_case (Python package and entry
+# modules keep their dunder names). Build output, caches and generated
+# CAD/PCB/Yocto output are not checked.
+ls:
+  .rs: snake_case
+  .py: snake_case | regex:__(init|main)__
+
+ignore:
+  - .git
+  - .cache
+  - dist
+  - target
+  - hardware/cad/generated
+  - hardware/pcb/generated

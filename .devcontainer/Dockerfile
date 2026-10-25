@@ -5,6 +5,8 @@ FROM mcr.microsoft.com/devcontainers/base:${VARIANT}
 ARG CLAUDE_VERSION="2.1.287"
 ARG BLENDER_VERSION="4.5.13"
 ARG KICAD_PPA="ppa:kicad/kicad-9.0-releases"
+ARG LS_LINT_VERSION="2.3.2"
+ARG LS_LINT_SHA256="571e382a0908fd22393869fd0dff575e6f17a6130211930fc43b37a1e0630068"
 ARG BLENDER_SHA256="da4e69b06b75b9e642d106496c50e7e240218b411d2f6e18271c1d1d819cef91"
 
 RUN apt-get update \
@@ -101,6 +103,11 @@ RUN archive="blender-${BLENDER_VERSION}-linux-x64.tar.xz" \
     && tar -xf "/tmp/${archive}" -C /opt \
     && mv "/opt/blender-${BLENDER_VERSION}-linux-x64" /opt/blender \
     && rm "/tmp/${archive}"
+
+RUN curl --fail --location --retry 3 --show-error --output /usr/local/bin/ls-lint \
+        "https://github.com/loeffel-io/ls-lint/releases/download/v${LS_LINT_VERSION}/ls-lint-linux-amd64" \
+    && printf '%s  %s\n' "${LS_LINT_SHA256}" /usr/local/bin/ls-lint | sha256sum --check --status \
+    && chmod 0755 /usr/local/bin/ls-lint
 
 ENV BLENDER_BIN=/opt/blender/blender \
     PATH="/home/vscode/.local/bin:/home/vscode/.cargo/bin:${PATH}"

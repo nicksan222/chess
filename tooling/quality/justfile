@@ -2,14 +2,19 @@ set shell := ["bash", "-euo", "pipefail", "-c"]
 
 root := justfile_directory() + "/../.."
 ast_grep := env_var_or_default("AST_GREP", "ast-grep")
+ls_lint := env_var_or_default("LS_LINT", "ls-lint")
 
 default:
     @just --list
 
-# Repository rules no compiler or linter covers: ast-grep patterns.
-quality: patterns
+# Repository rules no compiler or linter covers: patterns and file names.
+quality: patterns names
 
 # Test every ast-grep rule against its examples, then scan the repository.
 patterns:
     cd "{{ root }}" && {{ ast_grep }} test --skip-snapshot-tests
     cd "{{ root }}" && {{ ast_grep }} scan
+
+# Rust and Python file names (.ls-lint.yml).
+names:
+    cd "{{ root }}" && {{ ls_lint }}
