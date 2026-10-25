@@ -77,6 +77,10 @@ impl<T, const N: usize> RingBuffer<T, N> {
     ///
     /// If the buffer is full, the buffer remains unchanged and the error owns
     /// the rejected element.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CapacityError`] carrying `element` when the buffer is full.
     pub fn try_push(&mut self, element: T) -> Result<(), CapacityError<T>> {
         if self.is_full() {
             return Err(CapacityError::new(element));
@@ -241,6 +245,7 @@ impl<T, const N: usize> IntoIterator for RingBuffer<T, N> {
 }
 
 /// A consuming iterator over a [`RingBuffer`] from oldest to newest.
+#[derive(Debug)]
 pub struct IntoIter<T, const N: usize> {
     buffer: RingBuffer<T, N>,
 }
@@ -261,6 +266,7 @@ impl<T, const N: usize> ExactSizeIterator for IntoIter<T, N> {}
 impl<T, const N: usize> FusedIterator for IntoIter<T, N> {}
 
 /// An iterator over shared ring-buffer elements from oldest to newest.
+#[derive(Debug)]
 pub struct Iter<'a, T, const N: usize> {
     buffer: &'a RingBuffer<T, N>,
     offset: usize,
@@ -289,6 +295,7 @@ impl<T, const N: usize> ExactSizeIterator for Iter<'_, T, N> {}
 impl<T, const N: usize> FusedIterator for Iter<'_, T, N> {}
 
 /// An iterator over exclusive ring-buffer elements from oldest to newest.
+#[derive(Debug)]
 pub struct IterMut<'a, T> {
     first: slice::IterMut<'a, Option<T>>,
     second: slice::IterMut<'a, Option<T>>,
@@ -300,9 +307,8 @@ impl<'a, T> Iterator for IterMut<'a, T> {
 
     fn next(&mut self) -> Option<Self::Item> {
         let slot = self.first.next().or_else(|| self.second.next())?;
-        let element = slot
-            .as_mut()
-            .expect("occupied ring-buffer ranges contain elements");
+        // Occupied ranges always hold an element.
+        let element = slot.as_mut()?;
         self.remaining -= 1;
         Some(element)
     }

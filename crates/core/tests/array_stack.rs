@@ -151,8 +151,10 @@ fn operation_sequence_matches_bounded_vec_model() {
         state = state.wrapping_mul(1_664_525).wrapping_add(1_013_904_223);
         match state % 3 {
             0 | 1 => {
-                let value = state as i32;
-                let actual = stack.try_push(value).map_err(|error| error.into_element());
+                let value = i32::from_ne_bytes(state.to_ne_bytes());
+                let actual = stack
+                    .try_push(value)
+                    .map_err(chess_core::collections::CapacityError::into_element);
                 let expected = if model.len() == CAPACITY {
                     Err(value)
                 } else {

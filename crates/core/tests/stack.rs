@@ -184,7 +184,7 @@ fn operation_sequence_matches_vec_model() {
         state = state.wrapping_mul(1_664_525).wrapping_add(1_013_904_223);
         match state % 4 {
             0 | 1 => {
-                let value = state as i32;
+                let value = i32::from_ne_bytes(state.to_ne_bytes());
                 stack.push(value);
                 model.push(value);
             }

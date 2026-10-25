@@ -77,6 +77,10 @@ impl<T, const N: usize> ArrayStack<T, N> {
     ///
     /// If the stack is full, it remains unchanged and the error owns the
     /// rejected element.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CapacityError`] carrying `element` when the stack is full.
     pub fn try_push(&mut self, element: T) -> Result<(), CapacityError<T>> {
         if self.is_full() {
             return Err(CapacityError::new(element));
@@ -170,7 +174,7 @@ impl<T: Clone, const N: usize> Clone for ArrayStack<T, N> {
     fn clone(&self) -> Self {
         let mut clone = Self::new();
         for (destination, source) in clone.slots.iter_mut().zip(&self.slots) {
-            *destination = source.clone();
+            destination.clone_from(source);
         }
         clone.len = self.len;
         clone
@@ -193,6 +197,7 @@ impl<T, const N: usize> IntoIterator for ArrayStack<T, N> {
 }
 
 /// A consuming iterator over an [`ArrayStack`] in pop order.
+#[derive(Debug)]
 pub struct IntoIter<T, const N: usize> {
     stack: ArrayStack<T, N>,
 }
@@ -213,6 +218,7 @@ impl<T, const N: usize> ExactSizeIterator for IntoIter<T, N> {}
 impl<T, const N: usize> FusedIterator for IntoIter<T, N> {}
 
 /// An iterator over shared stack elements in pop order.
+#[derive(Debug)]
 pub struct Iter<'a, T> {
     slots: Rev<slice::Iter<'a, Option<T>>>,
 }
@@ -221,10 +227,8 @@ impl<'a, T> Iterator for Iter<'a, T> {
     type Item = &'a T;
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.slots.next().map(|slot| {
-            slot.as_ref()
-                .expect("occupied stack slots contain elements")
-        })
+        // Occupied slots always hold an element, so `and_then` never drops one.
+        self.slots.next().and_then(Option::as_ref)
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
@@ -236,6 +240,7 @@ impl<T> ExactSizeIterator for Iter<'_, T> {}
 impl<T> FusedIterator for Iter<'_, T> {}
 
 /// An iterator over exclusive stack elements in pop order.
+#[derive(Debug)]
 pub struct IterMut<'a, T> {
     slots: Rev<slice::IterMut<'a, Option<T>>>,
 }
@@ -244,10 +249,8 @@ impl<'a, T> Iterator for IterMut<'a, T> {
     type Item = &'a mut T;
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.slots.next().map(|slot| {
-            slot.as_mut()
-                .expect("occupied stack slots contain elements")
-        })
+        // Occupied slots always hold an element, so `and_then` never drops one.
+        self.slots.next().and_then(Option::as_mut)
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
