@@ -7,9 +7,13 @@ force-exclude = true
 
 [tool.ruff.lint]
 # Ruff's defaults plus bug, complexity, simplification, upgrade, print, return
-# and pathlib rules, and no debugger calls, commented-out code or TODO markers;
-# see docs/development.md "Quality checks".
-extend-select = ["B", "C90", "ERA", "FIX", "PL", "PTH", "RET", "SIM", "T10", "T20", "UP"]
+# and pathlib rules; no debugger calls, commented-out code or TODO markers; and
+# errors that keep their cause (no blind or silent excepts, raise from, logging
+# with tracebacks). See docs/development.md "Quality checks".
+extend-select = [
+    "B", "BLE", "C90", "ERA", "FIX", "G", "LOG", "PL", "PTH", "RET", "S110", "S112",
+    "SIM", "T10", "T20", "TRY", "UP",
+]
 ignore = [
     # pcbnew and bpy exist only inside KiCad and Blender, so modules import
     # them where they run and stay importable by plain Python tests.
@@ -20,6 +24,10 @@ ignore = [
     # Keep contract validation raising ValueError; TRY004 would switch those to
     # TypeError at isinstance gates and change caller-visible exceptions.
     "TRY004",
+    # Messages are written at the raise site, where the values are in scope.
+    "TRY003",
+    # Raising inside `try` lets one handler clean up partial output, then re-raise.
+    "TRY301",
 ]
 
 [tool.ruff.lint.per-file-ignores]
