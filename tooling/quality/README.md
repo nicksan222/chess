@@ -17,6 +17,7 @@ just --justfile tooling/quality/justfile dependencies   # cargo deny, cargo shea
 | `pins-only-in-pins`: BCM/GPIO numbers only in `apps/firmware/src/hardware/pins.rs` | ast-grep, [`../ast-grep/rules/pins-only-in-pins.yml`](../ast-grep/rules/pins-only-in-pins.yml) | Test items |
 | Crate boundaries: `crates/*` never reach `firmware`, `tokio`, `gpiocdev` or `nmrs`; internal dependencies only as listed | cargo-deny `[bans]`: `wrappers` in [`../../deny.toml`](../../deny.toml), and [`portable.deny.toml`](portable.deny.toml) run with each `crates/*` manifest as the sole root | None |
 | File names: snake_case `.rs` and `.py` | ls-lint, [`../../.ls-lint.yml`](../../.ls-lint.yml) | Python `__init__`/`__main__`; generated, build and cache directories are ignored |
+| Package layout: every `apps/*` and `crates/*` root holds exactly one `Cargo.toml` and one `README.md`; directories in Rust module trees and Python packages are snake_case | ls-lint, [`../../.ls-lint.yml`](../../.ls-lint.yml) | Yocto layers and `.github` keep their kebab-case names; the extensionless `justfile` cannot be matched |
 | Yocto manifest sync | A plain test, `apps/firmware/tests/yocto_manifest.rs` | None |
 
 ## Adding a pattern rule
@@ -47,11 +48,10 @@ application and its async stack are banned per portable crate instead.
 
 ## Not covered by a package
 
-- Package layout conventions (every Rust package has a
-  `justfile` and README, every package `justfile` is listed in the root
-  `justfile`, every crate has a CI test job) have no off-the-shelf tool and are
-  not enforced; the root `justfile` and `.github/workflows/README.md` document
-  them.
+- Package conventions ls-lint cannot express (every package has a `justfile`,
+  every package `justfile` is listed in the root `justfile`, every crate has a CI
+  test job) are not enforced; the root `justfile` and
+  `.github/workflows/README.md` document them.
 - File length: Clippy (`too_many_lines`) and Ruff (`PLR0915`, `C90`) limit
   functions, not files.
 - Physical number literals in `hardware/cad` and `hardware/pcb` outside

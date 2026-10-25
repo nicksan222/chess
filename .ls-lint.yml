@@ -1,14 +1,45 @@
-# ls-lint: Rust and Python file names are snake_case (Python package and entry
-# modules keep their dunder names). Build output, caches and generated
-# CAD/PCB/Yocto output are not checked.
-ls:
+# ls-lint: file and directory names, and the files every package root holds.
+# Build output, caches and generated CAD/PCB/Yocto output are not checked.
+# Rust modules and Python modules are snake_case; Python package and entry
+# modules keep their dunder names. A path entry replaces the rules above it
+# instead of adding to them, so every entry merges these back in.
+names: &names
   .rs: snake_case
   .py: snake_case | regex:__(init|main)__
+module-tree: &module-tree
+  <<: *names
+  .dir: snake_case
+
+ls:
+  <<: *names
+
+  # Every Rust package root holds exactly one manifest and one README. (ls-lint
+  # cannot match the extensionless `justfile`.)
+  apps/*:
+    <<: *names
+    .toml: exists:1
+    .md: exists:1
+  crates/*:
+    <<: *names
+    .toml: exists:1
+    .md: exists:1
+
+  # Directories inside Rust module trees and Python packages are module names.
+  apps/*/src: *module-tree
+  apps/*/tests: *module-tree
+  crates/*/src: *module-tree
+  crates/*/tests: *module-tree
+  crates/*/benches: *module-tree
+  hardware/cad: *module-tree
+  hardware/pcb: *module-tree
+  hardware/shared: *module-tree
 
 ignore:
   - .git
   - .cache
   - dist
   - target
+  - "**/__pycache__"
+  - "**/.pytest_cache"
   - hardware/cad/generated
   - hardware/pcb/generated
