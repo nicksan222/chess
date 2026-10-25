@@ -101,7 +101,7 @@ mod tests {
     }
 
     #[test]
-    fn the_product_checks_this_repositorys_github_releases() {
+    fn the_product_checks_this_repository_github_releases() {
         assert!(
             LATEST_RELEASE.starts_with("https://api.github.com/repos/nicksan222/chess/"),
             "{LATEST_RELEASE}"
