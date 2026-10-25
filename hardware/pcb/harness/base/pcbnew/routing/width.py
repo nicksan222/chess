@@ -89,8 +89,8 @@ def split_package_escapes(
         outer = max(width, track_width_mm)
         board.Remove(track)
         cut0, cut1 = _along(start, end, t0), _along(start, end, t1)
-        copper.add_trace(board, net, cut0, cut1, layer, width)
+        copper.add_trace(board, net, cut0, cut1, layer=layer, width=width)
         if t0 > 0.0:
-            copper.add_trace(board, net, start, cut0, layer, outer)
+            copper.add_trace(board, net, start, cut0, layer=layer, width=outer)
         if t1 < 1.0:
-            copper.add_trace(board, net, cut1, end, layer, outer)
+            copper.add_trace(board, net, cut1, end, layer=layer, width=outer)

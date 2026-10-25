@@ -6,9 +6,32 @@ extend-exclude = ["**/generated"]
 force-exclude = true
 
 [tool.ruff.lint]
-# Keep contract validation raising ValueError; TRY004 would switch those to
-# TypeError at isinstance gates and change caller-visible exceptions.
-ignore = ["TRY004"]
+# Ruff's defaults plus complexity and Pylint rules; see docs/development.md
+# "Quality checks".
+extend-select = ["C90", "PL"]
+ignore = [
+    # pcbnew and bpy exist only inside KiCad and Blender, so modules import
+    # them where they run and stay importable by plain Python tests.
+    "PLC0415",
+    # Comparisons are against counts, angles and file-format constants; the
+    # physical dimensions they guard are already named in hardware/shared.
+    "PLR2004",
+    # Keep contract validation raising ValueError; TRY004 would switch those to
+    # TypeError at isinstance gates and change caller-visible exceptions.
+    "TRY004",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# A component constructor takes one keyword per pin net, mirroring its pinout.
+"hardware/pcb/components/**" = ["PLR0913", "PLR0917"]
+
+[tool.ruff.lint.mccabe]
+# Mirrors the Rust cognitive-complexity threshold in clippy.toml.
+max-complexity = 15
+
+[tool.ruff.lint.pylint]
+max-args = 5
+max-positional-args = 5
 
 [tool.ruff.lint.isort]
 known-first-party = ["blocks", "components", "pcb", "shared"]

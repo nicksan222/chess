@@ -14,6 +14,7 @@ from pcb.harness.base.connections import NetConnection, NoConnect
 from pcb.harness.base.pcbnew.outline import BoardOutline
 from pcb.harness.base.pcbnew.pad import Pad, PadKind, PadShape
 from pcb.harness.base.pcbnew.point import Point
+from pcb.harness.base.pcbnew.render.pad import PadPlacement
 
 
 class Pin(StrEnum):
@@ -42,9 +43,8 @@ class RenderPadTest(unittest.TestCase):
             footprint,
             Pad(Pin.A, Point(1, 0), 1, 0.8),
             NetConnection(Nets.POWER),
-            BoardOutline(20, 10),
+            PadPlacement(BoardOutline(20, 10), Point(0, 0)),
             network,
-            Point(0, 0),
         )
         # Number and net preserve logical wiring; attribute and X position check physical conversion.
         self.assertEqual(native.GetNumber(), "1")
@@ -63,9 +63,8 @@ class RenderPadTest(unittest.TestCase):
             pcbnew.FOOTPRINT(board),
             Pad(Pin.A, Point(0, 0), 1.5, 1.5, PadKind.THROUGH_HOLE, drill_mm=0.8),
             NoConnect("unused"),
-            BoardOutline(20, 10),
+            PadPlacement(BoardOutline(20, 10), Point(0, 0)),
             None,
-            Point(0, 0),
         )
         # PTH attribute and drill describe its hole; net code zero confirms no net attached.
         self.assertEqual(native.GetAttribute(), pcbnew.PAD_ATTRIB_PTH)
@@ -83,9 +82,8 @@ class RenderPadTest(unittest.TestCase):
                 pcbnew.FOOTPRINT(pcbnew.BOARD()),
                 Pad(Pin.A, Point(0, 0), 1, 1),
                 NetConnection(Nets.POWER),
-                BoardOutline(20, 10),
+                PadPlacement(BoardOutline(20, 10), Point(0, 0)),
                 None,
-                Point(0, 0),
             )
 
     def test_connection_rejects_native_net_with_another_label(self) -> None:
@@ -102,9 +100,8 @@ class RenderPadTest(unittest.TestCase):
                 pcbnew.FOOTPRINT(board),
                 Pad(Pin.A, Point(0, 0), 1, 1),
                 NetConnection(Nets.POWER),
-                BoardOutline(20, 10),
+                PadPlacement(BoardOutline(20, 10), Point(0, 0)),
                 wrong,
-                Point(0, 0),
             )
 
     def test_each_declared_pad_shape_maps_to_its_native_shape(self) -> None:
@@ -126,9 +123,8 @@ class RenderPadTest(unittest.TestCase):
                     footprint,
                     Pad(Pin.A, Point(0, 0), 1, 1, shape=shape),
                     NoConnect("test pad"),
-                    BoardOutline(20, 10),
+                    PadPlacement(BoardOutline(20, 10), Point(0, 0)),
                     None,
-                    Point(0, 0),
                 )
                 # KiCad resolves padstack layers through its board-owned footprint.
                 board.Add(footprint)

@@ -124,7 +124,7 @@ def route_launched_nets(
             else:
                 raise RuntimeError(f"no connector fallback route for {name}")
             native.add_trace(
-                board, net, start, launch, layer, width=declaration.width_mm
+                board, net, start, launch, layer=layer, width=declaration.width_mm
             )
             grid_router.apply_route(
                 board, net, launch, primary.GetPosition(), route, settings=ctx.settings

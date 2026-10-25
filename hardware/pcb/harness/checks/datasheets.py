@@ -12,7 +12,7 @@ from collections.abc import Iterable
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from http.client import HTTPResponse
-from typing import cast
+from typing import cast, override
 from urllib.error import HTTPError
 from urllib.parse import urljoin, urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
@@ -70,6 +70,7 @@ def validate_response(
 class _NoRedirect(HTTPRedirectHandler):
     """Let check_url validate each redirect before requesting its target."""
 
+    @override
     def redirect_request(
         self,
         req: Request,

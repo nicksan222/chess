@@ -9,6 +9,7 @@ evidence that a real component, solder joint, or route will fit it.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from enum import StrEnum
 
 import pcbnew
@@ -20,13 +21,20 @@ from ..point import Point
 from .units import native_point
 
 
+@dataclass(frozen=True)
+class PadPlacement:
+    """The board outline and component centre a pad's offset is measured from."""
+
+    outline: BoardOutline
+    centre: Point
+
+
 def render_pad[Pin: StrEnum](
     footprint: pcbnew.FOOTPRINT,
     pad: Pad[Pin],
     connection: PinConnection,
-    outline: BoardOutline,
+    placement: PadPlacement,
     net: pcbnew.NETINFO_ITEM | None,
-    centre: Point,
 ) -> pcbnew.PAD:
     """Create one native copper land/drill and assign its intended network.
 
@@ -40,6 +48,7 @@ def render_pad[Pin: StrEnum](
     prove the pad fits the physical component lead, clears neighbouring
     copper, or is connected by a routed track.
     """
+    outline, centre = placement.outline, placement.centre
     if isinstance(connection, NetConnection) != (net is not None) or (
         isinstance(connection, NetConnection)
         and net is not None

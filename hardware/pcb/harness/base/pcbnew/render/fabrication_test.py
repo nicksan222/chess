@@ -13,7 +13,12 @@ from pcb.harness import BoardComponent, Circuit, LandPattern, PadKind, Placement
 from pcb.harness.base.pcbnew.layout import BoardLayout, MountingHole
 from pcb.harness.base.pcbnew.render.board_test import Nets, Pin, sample_board
 
-from .fabrication import fabrication_layers, package_fabrication, write_fabrication
+from .fabrication import (
+    FabricationPackage,
+    fabrication_layers,
+    package_fabrication,
+    write_fabrication,
+)
 
 
 class FabricationTest(unittest.TestCase):
@@ -89,7 +94,11 @@ class FabricationTest(unittest.TestCase):
                 )
 
             archive = write_fabrication(
-                circuit, board, root, "sample", ("Prototype validation pending.",), run
+                circuit,
+                board,
+                root,
+                FabricationPackage("sample", ("Prototype validation pending.",)),
+                run,
             )
             with ZipFile(archive) as output:
                 self.assertIsNone(output.testzip())
