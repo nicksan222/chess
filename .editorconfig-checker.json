@@ -1,0 +1,10 @@
+{
+  "Disable": {
+    "IndentSize": true
+  },
+  "Exclude": [
+    "/generated/",
+    "\\.lock$",
+    "firmware-crates\\.inc$"
+  ]
+}

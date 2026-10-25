@@ -25,6 +25,10 @@ impl Squares {
 impl Iterator for Squares {
     type Item = Square;
 
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "`trailing_zeros` of a non-zero `u64` is below 64"
+    )]
     fn next(&mut self) -> Option<Self::Item> {
         if self.bits == 0 {
             return None;
@@ -41,6 +45,10 @@ impl Iterator for Squares {
 }
 
 impl DoubleEndedIterator for Squares {
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "the index of the highest set bit of a non-zero `u64` is below 64"
+    )]
     fn next_back(&mut self) -> Option<Self::Item> {
         if self.bits == 0 {
             return None;

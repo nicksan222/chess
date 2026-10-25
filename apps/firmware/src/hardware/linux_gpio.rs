@@ -15,6 +15,7 @@ use super::pins::{GPIO, Level, ReadLevel};
 /// The caller chooses the chip: GPIO numbering is chip-relative, not global.
 /// Requests the Pi's internal pull-up; the button shorts the input to ground.
 /// This reader does not invert the level; button presses are wired active-low.
+#[derive(Debug)]
 pub struct LinuxGpioReader {
     chip: PathBuf,
     pull_up: bool,

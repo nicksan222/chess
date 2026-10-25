@@ -19,7 +19,7 @@ import math
 from collections.abc import Iterator
 from dataclasses import dataclass
 from itertools import pairwise
-from typing import TypedDict
+from typing import TypedDict, Unpack
 
 import pcbnew
 
@@ -142,16 +142,23 @@ def _rasterize_segment(
                 cells.add((ix, iy))
 
 
+@dataclass(frozen=True, slots=True)
+class GridScan:
+    """What to rasterize: a board, the net whose copper stays open, and the window."""
+
+    board: pcbnew.BOARD
+    netcode: int
+    bounds: CellBounds
+    layers: tuple[int, ...]
+    settings: RoutingSettings = DEFAULT_SETTINGS
+
+
 def _block_pads(
-    board: pcbnew.BOARD,
-    netcode: int,
-    bounds: CellBounds,
-    layers: tuple[int, ...],
-    blocked: dict[int, Cells],
-    via_forbidden: Cells,
-    settings: RoutingSettings,
+    scan: GridScan, blocked: dict[int, Cells], via_forbidden: Cells
 ) -> None:
     """Pads are the fixed obstacles; same-net pads stay open as destinations."""
+    board, netcode, bounds = scan.board, scan.netcode, scan.bounds
+    layers, settings = scan.layers, scan.settings
     for footprint in board.GetFootprints():
         for pad in footprint.Pads():
             is_hole = pad.GetAttribute() in {
@@ -208,15 +215,11 @@ def _block_vias(
 
 
 def _block_tracks(
-    board: pcbnew.BOARD,
-    netcode: int,
-    bounds: CellBounds,
-    layers: tuple[int, ...],
-    blocked: dict[int, Cells],
-    via_forbidden: Cells,
-    settings: RoutingSettings,
+    scan: GridScan, blocked: dict[int, Cells], via_forbidden: Cells
 ) -> None:
     """Copper already routed for other nets, including earlier routing stages."""
+    board, netcode, bounds = scan.board, scan.netcode, scan.bounds
+    layers, settings = scan.layers, scan.settings
     for track in board.GetTracks():
         if track.GetNetCode() == netcode and netcode != 0:
             continue
@@ -234,12 +237,7 @@ def _block_tracks(
 
 
 def blocked_cells(
-    board: pcbnew.BOARD,
-    netcode: int,
-    bounds: CellBounds,
-    layers: tuple[int, ...],
-    additional_via_keepouts: frozenset[tuple[int, int]],
-    settings: RoutingSettings = DEFAULT_SETTINGS,
+    scan: GridScan, additional_via_keepouts: frozenset[tuple[int, int]]
 ) -> tuple[dict[int, Cells], Cells]:
     """Rasterize foreign copper separately for tracks and full-stack vias.
 
@@ -250,10 +248,10 @@ def blocked_cells(
     (x0, y0, x1, y1 in cells); `additional_via_keepouts` adds caller-owned via bans.
     Copper on `netcode` is skipped (it is a legal destination); net 0 never matches.
     """
-    blocked: dict[int, Cells] = {layer: set() for layer in layers}
+    blocked: dict[int, Cells] = {layer: set() for layer in scan.layers}
     via_forbidden = set(additional_via_keepouts)
-    _block_pads(board, netcode, bounds, layers, blocked, via_forbidden, settings)
-    _block_tracks(board, netcode, bounds, layers, blocked, via_forbidden, settings)
+    _block_pads(scan, blocked, via_forbidden)
+    _block_tracks(scan, blocked, via_forbidden)
     return blocked, via_forbidden
 
 
@@ -328,13 +326,13 @@ UNREACHED = 1 << 60
 
 def _search_window(
     board: pcbnew.BOARD,
-    start: pcbnew.VECTOR2I,
-    end: pcbnew.VECTOR2I,
+    endpoints: tuple[pcbnew.VECTOR2I, pcbnew.VECTOR2I],
     margin_mm: float,
     routing_bounds_mm: tuple[float, float, float, float] | None,
     settings: RoutingSettings,
 ) -> tuple[CellBounds, CellBounds]:
     """Return (search cell bounds, via cell bounds), validating both endpoints."""
+    start, end = endpoints
     # Stay inside the board edge by the pour margin plus half a track. Check exact
     # endpoints before snapping: a legal cell can hide an illegal stub.
     start_cell, end_cell = grid_cell(start), grid_cell(end)
@@ -427,19 +425,24 @@ def _neighbours(
     return candidates
 
 
+@dataclass(frozen=True, slots=True)
+class _SearchGrid:
+    """The obstacle maps and windows one A* search moves through."""
+
+    layers: tuple[int, ...]
+    blocked: dict[int, Cells]
+    via_forbidden: Cells
+    bounds: CellBounds
+    via_bounds: CellBounds
+
+
 def _move_allowed(
-    node: GridNode,
-    nx: int,
-    ny: int,
-    nl: int,
-    layers: tuple[int, ...],
-    blocked: dict[int, Cells],
-    via_forbidden: Cells,
-    bounds: CellBounds,
-    via_bounds: CellBounds,
-    diagonals: bool,
+    node: GridNode, target: tuple[int, int, int], grid: _SearchGrid, diagonals: bool
 ) -> bool:
     """Whether a track or via may enter (nx, ny) on layer index `nl`."""
+    nx, ny, nl = target
+    layers, blocked, via_forbidden = grid.layers, grid.blocked, grid.via_forbidden
+    bounds, via_bounds = grid.bounds, grid.via_bounds
     if not (bounds[0] <= nx <= bounds[2] and bounds[1] <= ny <= bounds[3]):
         return False
     cell = (nx, ny)
@@ -486,20 +489,34 @@ def _reconstruct(
     return simple
 
 
+def _require_layer_indices(
+    layers: tuple[int, ...],
+    preferred_layer_index: int | None,
+    required_end_layer_index: int | None,
+) -> None:
+    if not layers:
+        raise ValueError("at least one routing layer is required")
+    for label, index in (
+        ("preferred start", preferred_layer_index),
+        ("required end", required_end_layer_index),
+    ):
+        if index is not None and not 0 <= index < len(layers):
+            raise ValueError(f"{label} layer index {index} is outside {layers}")
+
+
+class FindRouteOptions(RoutingOptions, total=False):
+    """Every optional `find_route` keyword: the shared policy plus board-level ones."""
+
+    additional_via_keepouts: frozenset[tuple[int, int]]
+    settings: RoutingSettings
+
+
 def find_route(
     board: pcbnew.BOARD,
     net: pcbnew.NETINFO_ITEM,
     start: pcbnew.VECTOR2I,
     end: pcbnew.VECTOR2I,
-    margin_mm: float = 150.0,
-    preferred_layer_index: int | None = None,
-    required_end_layer_index: int | None = None,
-    allow_vias: bool = True,
-    layers: tuple[int, ...] = LAYERS,
-    diagonals: bool = False,
-    additional_via_keepouts: frozenset[tuple[int, int]] = frozenset(),
-    routing_bounds_mm: tuple[float, float, float, float] | None = None,
-    settings: RoutingSettings = DEFAULT_SETTINGS,
+    **options: Unpack[FindRouteOptions],
 ) -> Route:
     """Find a path whose point layers are indices into ``layers``.
 
@@ -531,27 +548,26 @@ def find_route(
     are banned. Raises RuntimeError when no path exists, and ValueError when the
     endpoints themselves are illegal; callers rely on the former to try fallbacks.
     """
-    if not layers:
-        raise ValueError("at least one routing layer is required")
-    for label, index in (
-        ("preferred start", preferred_layer_index),
-        ("required end", required_end_layer_index),
-    ):
-        if index is not None and not 0 <= index < len(layers):
-            raise ValueError(f"{label} layer index {index} is outside {layers}")
+    margin_mm = options.get("margin_mm", 150.0)
+    preferred_layer_index = options.get("preferred_layer_index")
+    required_end_layer_index = options.get("required_end_layer_index")
+    allow_vias = options.get("allow_vias", True)
+    layers = options.get("layers", LAYERS)
+    diagonals = options.get("diagonals", False)
+    additional_via_keepouts = options.get("additional_via_keepouts", frozenset())
+    routing_bounds_mm = options.get("routing_bounds_mm")
+    settings = options.get("settings", DEFAULT_SETTINGS)
+    _require_layer_indices(layers, preferred_layer_index, required_end_layer_index)
 
     start_cell, end_cell = grid_cell(start), grid_cell(end)
     bounds, via_bounds = _search_window(
-        board, start, end, margin_mm, routing_bounds_mm, settings
+        board, (start, end), margin_mm, routing_bounds_mm, settings
     )
     blocked, via_forbidden = blocked_cells(
-        board,
-        net.GetNetCode(),
-        bounds,
-        layers,
+        GridScan(board, net.GetNetCode(), bounds, layers, settings),
         additional_via_keepouts,
-        settings,
     )
+    grid = _SearchGrid(layers, blocked, via_forbidden, bounds, via_bounds)
     # The endpoints sit on pads of this net, so they must be reachable even if a
     # neighbour's keepout touches their cell.
     for layer in layers:
@@ -595,18 +611,7 @@ def find_route(
         for nx, ny, nl, step_cost in _neighbours(
             node, len(layers), diagonals, allow_vias
         ):
-            if not _move_allowed(
-                node,
-                nx,
-                ny,
-                nl,
-                layers,
-                blocked,
-                via_forbidden,
-                bounds,
-                via_bounds,
-                diagonals,
-            ):
+            if not _move_allowed(node, (nx, ny, nl), grid, diagonals):
                 continue
             candidate = GridNode(nx, ny, nl)
             new_cost = cost + step_cost
@@ -622,19 +627,26 @@ def find_route(
     return Route(tuple(_reconstruct(found, starts, previous)), layers)
 
 
+class ApplyRouteOptions(TypedDict, total=False):
+    """Optional `apply_route` keywords."""
+
+    settings: RoutingSettings
+
+
 def apply_route(
     board: pcbnew.BOARD,
     net: pcbnew.NETINFO_ITEM,
     start: pcbnew.VECTOR2I,
     end: pcbnew.VECTOR2I,
     route: Route,
-    settings: RoutingSettings = DEFAULT_SETTINGS,
+    **options: Unpack[ApplyRouteOptions],
 ) -> None:
     """Materialize a raster route as exact KiCad tracks and vias.
 
     `start`/`end` are the true (possibly off-grid) pad positions; short stubs join
     them to the first/last grid cell. Each layer change becomes a via at that cell.
     """
+    settings = options.get("settings", DEFAULT_SETTINGS)
     points = list(route.points)
     first = position(points[0].cell)
     last = position(points[-1].cell)
@@ -643,7 +655,12 @@ def apply_route(
         if a == b:
             return
         native.add_trace(
-            board, net, a, b, route.layers[layer_index], settings.track_width_mm
+            board,
+            net,
+            a,
+            b,
+            layer=route.layers[layer_index],
+            width=settings.track_width_mm,
         )
 
     trace(start, first, points[0].layer_index)

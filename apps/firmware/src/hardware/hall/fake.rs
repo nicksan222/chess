@@ -6,18 +6,18 @@ use super::{FIRST_ADDRESS, HallBank};
 use crate::hardware::BoardPosition;
 
 /// Power-on registers: inputs high, outputs high, no inversion, all inputs.
-pub const POWER_ON: [u8; 4] = [0xFF, 0xFF, 0x00, 0xFF];
+pub(super) const POWER_ON: [u8; 4] = [0xFF, 0xFF, 0x00, 0xFF];
 
 /// Eight expanders answering at 0x20–0x27.
-pub struct Expanders {
-    pub registers: [[u8; 4]; HallBank::COUNT],
+pub(super) struct Expanders {
+    pub(super) registers: [[u8; 4]; HallBank::COUNT],
     /// Banks that do not acknowledge their address.
-    pub absent: [bool; HallBank::COUNT],
-    pub writes: Vec<(u8, Vec<u8>)>,
+    pub(super) absent: [bool; HallBank::COUNT],
+    pub(super) writes: Vec<(u8, Vec<u8>)>,
 }
 
 impl Expanders {
-    pub fn new() -> Self {
+    pub(super) fn new() -> Self {
         Self {
             registers: [POWER_ON; HallBank::COUNT],
             absent: [false; HallBank::COUNT],
@@ -25,18 +25,18 @@ impl Expanders {
         }
     }
 
-    pub fn place(&mut self, square: BoardPosition) {
+    pub(super) fn place(&mut self, square: BoardPosition) {
         let (input, bit) = self.input_bit(square);
         *input &= !bit;
     }
 
-    pub fn remove(&mut self, square: BoardPosition) {
+    pub(super) fn remove(&mut self, square: BoardPosition) {
         let (input, bit) = self.input_bit(square);
         *input |= bit;
     }
 
     /// Register settings written, in order; pointer-only writes are omitted.
-    pub fn settings(&self) -> Vec<(u8, Vec<u8>)> {
+    pub(super) fn settings(&self) -> Vec<(u8, Vec<u8>)> {
         self.writes
             .iter()
             .filter(|(_, bytes)| bytes.len() == 2)
@@ -56,7 +56,7 @@ impl Expanders {
 }
 
 #[derive(Debug, Eq, PartialEq)]
-pub struct Nack;
+pub(super) struct Nack;
 
 impl embedded_hal::i2c::Error for Nack {
     fn kind(&self) -> ErrorKind {

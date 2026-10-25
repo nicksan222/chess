@@ -53,13 +53,13 @@ impl State {
         }
     }
 
-    pub(super) fn initial_snapshot(&self) -> Snapshot {
+    pub(super) fn initial_snapshot() -> Snapshot {
         Snapshot::initial()
     }
 
     pub(super) fn handle(&mut self, event: HardwareEvent, snapshot: &mut Snapshot) {
         snapshot.requested_action = None;
-        self.modules.event(&event, &mut snapshot.modules);
+        self.modules.event(event, &mut snapshot.modules);
         if let Some(request) = self.request_for(event) {
             self.modules.request(request);
             snapshot.requested_action = Some(request);

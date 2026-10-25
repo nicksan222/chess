@@ -1,6 +1,7 @@
 use crate::model::{Menu, MenuItem};
 
 /// Read-only view of the current menu location.
+#[derive(Debug)]
 pub struct MenuSnapshot<'a, A> {
     menu: &'a Menu<'a, A>,
     selected: usize,
@@ -14,9 +15,13 @@ impl<'a, A> MenuSnapshot<'a, A> {
         menu: &'a Menu<'a, A>,
         selected: usize,
         depth: usize,
-        blocking_action: Option<&'a A>,
-        escape_action: Option<&'a A>,
+        blocking: Option<(&'a A, &'a A)>,
     ) -> Self {
+        let (blocking_action, escape_action) = match blocking {
+            Some((action, escape_action)) => (Some(action), Some(escape_action)),
+            None => (None, None),
+        };
+
         Self {
             menu,
             selected,

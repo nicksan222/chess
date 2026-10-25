@@ -64,6 +64,7 @@ pub enum ButtonAction {
 /// A control-panel button connected directly to a GPIO input.
 ///
 /// Dereferences to its [`Pin`] for the GPIO identity and level reads.
+#[derive(Debug)]
 pub struct ButtonPin<const BCM: u8> {
     pin: Pin<BCM, Input>,
     button: Button,
@@ -92,6 +93,10 @@ impl<const BCM: u8> ButtonPin<BCM> {
 
     /// Starts polling and debouncing this button with the default
     /// [`ButtonTuning`].
+    ///
+    /// # Errors
+    ///
+    /// Fails when no Tokio runtime is active.
     pub fn start_subscription<R>(
         &self,
         reader: R,
@@ -100,15 +105,21 @@ impl<const BCM: u8> ButtonPin<BCM> {
     where
         R: ReadLevel + Send + 'static,
     {
-        self.start_with_level(reader, events, None, ButtonTuning::DEFAULT)
+        self.start_with_level(
+            reader,
+            events,
+            PollConfig {
+                initial: None,
+                tuning: ButtonTuning::DEFAULT,
+            },
+        )
     }
 
     pub(super) fn start_with_level<R>(
         &self,
         reader: R,
         events: &HardwareEventBus,
-        initial: Option<Level>,
-        tuning: ButtonTuning,
+        config: PollConfig,
     ) -> Result<ButtonSubscription, StartSubscriptionError>
     where
         R: ReadLevel + Send + 'static,
@@ -117,13 +128,14 @@ impl<const BCM: u8> ButtonPin<BCM> {
         let button_events = Bus::new();
         let event_subscription = button_events.subscribe();
         let worker = runtime.spawn(poll(
-            self.gpio(),
-            self.button,
+            PollJob {
+                gpio: self.gpio(),
+                button: self.button,
+                hardware_events: events.clone(),
+                button_events,
+                config,
+            },
             reader,
-            events.clone(),
-            button_events,
-            initial,
-            tuning,
         ));
 
         Ok(ButtonSubscription {
@@ -144,6 +156,10 @@ pub struct ButtonSubscription {
 
 impl ButtonSubscription {
     /// Waits for the next debounced transition from this button.
+    ///
+    /// # Errors
+    ///
+    /// Fails when the event bus closes or this subscription lags behind it.
     pub async fn on_message(&mut self) -> Result<ButtonAction, ReceiveError> {
         loop {
             match self.events.recv().await? {
@@ -202,15 +218,21 @@ impl ButtonPoller {
     /// failures and restarts any debounce in progress; the first successful
     /// read becomes the baseline when none was supplied.
     fn step<R: ReadLevel>(&mut self, reader: &mut R, now: Instant) -> Option<ButtonEvent> {
-        let Ok(level) = reader.read_level(self.gpio) else {
-            if !self.read_failed {
-                logger::warn!("button GPIO {} read failed", self.gpio.bcm_number());
+        let level = match reader.read_level(self.gpio) {
+            Ok(level) => level,
+            Err(error) => {
+                if !self.read_failed {
+                    logger::warn!(
+                        "button GPIO {} read failed: {error:?}",
+                        self.gpio.bcm_number()
+                    );
+                }
+                self.read_failed = true;
+                if let Some(debouncer) = &mut self.debouncer {
+                    debouncer.interrupt();
+                }
+                return None;
             }
-            self.read_failed = true;
-            if let Some(debouncer) = &mut self.debouncer {
-                debouncer.interrupt();
-            }
-            return None;
         };
         self.read_failed = false;
 
@@ -225,20 +247,36 @@ impl ButtonPoller {
     }
 }
 
-async fn poll<R>(
+/// How a button poller starts: an optional known baseline and its timing.
+#[derive(Clone, Copy, Debug)]
+pub(super) struct PollConfig {
+    pub(super) initial: Option<Level>,
+    pub(super) tuning: ButtonTuning,
+}
+
+/// Everything the polling task owns except the level reader.
+struct PollJob {
     gpio: GPIO,
     button: Button,
-    mut reader: R,
     hardware_events: HardwareEventBus,
     button_events: Bus<ButtonEvent>,
-    initial: Option<Level>,
-    tuning: ButtonTuning,
-) where
+    config: PollConfig,
+}
+
+async fn poll<R>(job: PollJob, mut reader: R)
+where
     R: ReadLevel,
 {
-    let mut interval = tokio::time::interval(tuning.poll_interval);
+    let PollJob {
+        gpio,
+        button,
+        hardware_events,
+        button_events,
+        config,
+    } = job;
+    let mut interval = tokio::time::interval(config.tuning.poll_interval);
     interval.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip);
-    let mut poller = ButtonPoller::new(gpio, button, initial, tuning.debounce);
+    let mut poller = ButtonPoller::new(gpio, button, config.initial, config.tuning.debounce);
 
     loop {
         interval.tick().await;
@@ -498,7 +536,14 @@ mod tests {
         let mut subscription = BoardPins::get()
             .gpio
             .left_button
-            .start_with_level(reader, &events, None, tuning)
+            .start_with_level(
+                reader,
+                &events,
+                PollConfig {
+                    initial: None,
+                    tuning,
+                },
+            )
             .unwrap();
 
         // Low is first seen at 10 ms; the default 20 ms debounce would report

@@ -11,7 +11,7 @@ use super::{
 /// Product Wi-Fi operations.
 ///
 /// The type parameter is the system backend. Callers use the default,
-/// NetworkManager, through [`Connectivity::network_manager`]; unit tests supply
+/// `NetworkManager`, through [`Connectivity::network_manager`]; unit tests supply
 /// an in-memory backend with `Connectivity::with_backend`.
 pub(super) struct Connectivity<B = NetworkManagerBackend> {
     backend: B,
@@ -19,7 +19,7 @@ pub(super) struct Connectivity<B = NetworkManagerBackend> {
 }
 
 impl Connectivity {
-    /// Connects to the system NetworkManager service and the board Wi-Fi radio.
+    /// Connects to the system `NetworkManager` service and the board Wi-Fi radio.
     pub(super) async fn network_manager() -> Result<Self, Error> {
         Ok(Self::with_backend(NetworkManagerBackend::connect().await?))
     }
@@ -386,7 +386,7 @@ mod tests {
 
         assert_eq!(fake.calls(), [Call::Forget("Setup".into())]);
         assert_eq!(fake.access_point(), None);
-        assert!(fake.profiles().is_empty());
+        assert_eq!(fake.profiles(), Vec::<String>::new());
     }
 
     #[tokio::test]

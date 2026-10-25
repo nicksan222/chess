@@ -2,16 +2,16 @@ use menu::{Command, Input, Menu, MenuControls, MenuItem};
 
 /// An action named after where it is defined, so mismatches read clearly.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct Act(pub &'static str);
+pub(crate) struct Act(pub &'static str);
 
 /// Every operation a caller can perform on a `MenuState`.
 #[derive(Clone, Copy, Debug)]
-pub enum Op {
+pub(crate) enum Op {
     Press(Input),
     Unblock,
 }
 
-pub const OPS: [Op; 7] = [
+pub(crate) const OPS: [Op; 7] = [
     Op::Press(Input::Up),
     Op::Press(Input::Down),
     Op::Press(Input::Left),
@@ -21,7 +21,7 @@ pub const OPS: [Op; 7] = [
     Op::Unblock,
 ];
 
-pub static ROOT: Menu<'static, Act> = Menu::new(
+pub(crate) static ROOT: Menu<'static, Act> = Menu::new(
     "Root",
     &[
         MenuItem::action("Play", Act("root play")),

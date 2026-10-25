@@ -17,6 +17,7 @@ from .circuit import route_circuit
 from .definition import DirectLink, RoutingPlan, validate_routes
 from .engine import (
     RoutingContext,
+    RoutingScope,
     apply_paths,
     context,
     fanout_power,
@@ -56,53 +57,18 @@ def _apply(
         circuit,
         board,
         settings,
-        plan.root_reference,
-        launch_keepouts(board, nets),
-        frozenset(net.net.label for net in nets if net.prune_unused_vias),
+        RoutingScope(
+            plan.root_reference,
+            launch_keepouts(board, nets),
+            frozenset(net.net.label for net in nets if net.prune_unused_vias),
+        ),
     )
     fanout_power(
         ctx,
         frozenset(net.label for net in plan.power_nets),
         frozenset(plan.power_exclusions),
     )
-    # Package geometry is transformed from the actual instance, never a reference table.
-    for placed in circuit.components():
-        component = cast(BoardComponent[StrEnum], placed)
-        for path in component.definition.routing.paths:
-            net = ctx.nets_by_name[component.net(path.pin).label]
-            points = tuple(
-                native_point(component.local_point(point.x_mm, point.y_mm), ctx.outline)
-                for point in path.points
-            )
-            for start, end in pairwise(points):
-                copper.add_trace(
-                    board,
-                    net,
-                    start,
-                    end,
-                    pcbnew.B_Cu
-                    if component.placement.side is Side.BOTTOM
-                    else pcbnew.F_Cu,
-                    width=path.width_mm,
-                )
-            if path.via:
-                copper.add_via(
-                    board,
-                    net,
-                    points[-1],
-                    settings.via_diameter_mm,
-                    settings.via_drill_mm,
-                )
-        for via in component.definition.routing.vias:
-            copper.add_via(
-                board,
-                ctx.nets_by_name[component.net(via.pin).label],
-                native_point(
-                    component.local_point(via.center.x_mm, via.center.y_mm), ctx.outline
-                ),
-                settings.via_diameter_mm,
-                settings.via_drill_mm,
-            )
+    _route_package_paths(circuit, ctx, board, settings)
     deferred: list[DirectLink] = []
     for stage in plan.stages:
         apply_paths(ctx, stage.paths)
@@ -134,6 +100,52 @@ def _apply(
         component = cast(BoardComponent[StrEnum], placed)
         if component.definition.routing.clearance is not None:
             split_package_escapes(board, component, settings.track_width_mm)
+
+
+def _route_package_paths(
+    circuit: Circuit[Net],
+    ctx: RoutingContext,
+    board: pcbnew.BOARD,
+    settings: RoutingSettings,
+) -> None:
+    # Package geometry is transformed from the actual instance, never a reference table.
+    for placed in circuit.components():
+        component = cast(BoardComponent[StrEnum], placed)
+        for path in component.definition.routing.paths:
+            net = ctx.nets_by_name[component.net(path.pin).label]
+            points = tuple(
+                native_point(component.local_point(point.x_mm, point.y_mm), ctx.outline)
+                for point in path.points
+            )
+            for start, end in pairwise(points):
+                copper.add_trace(
+                    board,
+                    net,
+                    start,
+                    end,
+                    layer=pcbnew.B_Cu
+                    if component.placement.side is Side.BOTTOM
+                    else pcbnew.F_Cu,
+                    width=path.width_mm,
+                )
+            if path.via:
+                copper.add_via(
+                    board,
+                    net,
+                    points[-1],
+                    settings.via_diameter_mm,
+                    settings.via_drill_mm,
+                )
+        for via in component.definition.routing.vias:
+            copper.add_via(
+                board,
+                ctx.nets_by_name[component.net(via.pin).label],
+                native_point(
+                    component.local_point(via.center.x_mm, via.center.y_mm), ctx.outline
+                ),
+                settings.via_diameter_mm,
+                settings.via_drill_mm,
+            )
 
 
 def _direct_link(ctx: RoutingContext, link: DirectLink) -> bool:

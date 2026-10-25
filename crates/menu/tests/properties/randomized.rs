@@ -24,7 +24,8 @@ impl XorShift64 {
     }
 
     fn below(&mut self, bound: usize) -> usize {
-        (self.next() % bound as u64) as usize
+        let bound = u64::try_from(bound).expect("bounds fit in u64");
+        usize::try_from(self.next() % bound).expect("a value below a usize bound fits in usize")
     }
 }
 
@@ -127,6 +128,63 @@ const EVERY_KIND: [&str; 10] = [
     "DepthLimitReached",
 ];
 
+type Observed = (usize, usize, bool);
+
+/// The behavior is consulted exactly when an override entry point is used
+/// outside a blocking operation, and sees the state before input. Returns the
+/// state it is expected to have seen, or `None` when it must not be consulted.
+fn expected_sighting(entry: Entry, before: Observed) -> Option<Observed> {
+    let consulted = matches!(entry, Entry::HandleWith | Entry::HandleWithAndDispatch) && !before.2;
+    consulted.then_some(before)
+}
+
+fn assert_behavior_consulted(
+    behavior: &Scripted,
+    calls_before: usize,
+    expected: Option<Observed>,
+    context: &str,
+) {
+    assert_eq!(
+        behavior.calls - calls_before,
+        usize::from(expected.is_some()),
+        "{context}"
+    );
+    if expected.is_some() {
+        assert_eq!(behavior.seen, expected, "{context}");
+    }
+}
+
+/// Dispatching entry points invoke exactly the callback the event names.
+fn expected_dispatch(entry: Entry, event: &Event<'_, Act>) -> (usize, usize, usize) {
+    let dispatched = matches!(
+        entry,
+        Entry::HandleAndDispatch | Entry::HandleWithAndDispatch
+    );
+    match (event, dispatched) {
+        (Event::Activated(_) | Event::ExternalAction(_), true) => (1, 0, 0),
+        (Event::BlockingStarted(_), true) => (0, 1, 0),
+        (Event::BlockingAborted { .. }, true) => (0, 0, 1),
+        _ => (0, 0, 0),
+    }
+}
+
+fn assert_dispatch(
+    counts: &Counts,
+    before_counts: (usize, usize, usize),
+    expected: (usize, usize, usize),
+    context: &str,
+) {
+    assert_eq!(
+        (
+            counts.actions - before_counts.0,
+            counts.starts - before_counts.1,
+            counts.aborts - before_counts.2,
+        ),
+        expected,
+        "{context}"
+    );
+}
+
 #[test]
 fn long_random_sessions_through_every_entry_point_match_the_reference() {
     let mut reached = BTreeSet::new();
@@ -179,39 +237,10 @@ fn long_random_sessions_through_every_entry_point_match_the_reference() {
             reference.assert_matches(&state, &context);
             reached.insert(kind(&event));
 
-            // The behavior is consulted exactly when an override entry point is
-            // used outside a blocking operation, and sees the state before input.
-            let consulted =
-                matches!(entry, Entry::HandleWith | Entry::HandleWithAndDispatch) && !before.2;
-            assert_eq!(
-                behavior.calls - calls_before,
-                usize::from(consulted),
-                "{context}"
-            );
-            if consulted {
-                assert_eq!(behavior.seen, Some(before), "{context}");
-            }
-
-            // Dispatching entry points invoke exactly the callback the event names.
-            let dispatched = matches!(
-                entry,
-                Entry::HandleAndDispatch | Entry::HandleWithAndDispatch
-            );
-            let expected_counts = match (&event, dispatched) {
-                (Event::Activated(_) | Event::ExternalAction(_), true) => (1, 0, 0),
-                (Event::BlockingStarted(_), true) => (0, 1, 0),
-                (Event::BlockingAborted { .. }, true) => (0, 0, 1),
-                _ => (0, 0, 0),
-            };
-            assert_eq!(
-                (
-                    counts.actions - before_counts.0,
-                    counts.starts - before_counts.1,
-                    counts.aborts - before_counts.2,
-                ),
-                expected_counts,
-                "{context}"
-            );
+            let sighting = expected_sighting(entry, before);
+            assert_behavior_consulted(&behavior, calls_before, sighting, &context);
+            let dispatch = expected_dispatch(entry, &event);
+            assert_dispatch(&counts, before_counts, dispatch, &context);
         }
     }
 

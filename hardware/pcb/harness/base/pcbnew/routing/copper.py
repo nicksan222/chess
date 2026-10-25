@@ -1,6 +1,15 @@
 """Native copper primitives shared by exact escapes and grid paths."""
 
+from typing import TypedDict, Unpack
+
 import pcbnew
+
+
+class TraceStyle(TypedDict, total=False):
+    """Optional `add_trace` keywords: copper layer id and width in millimetres."""
+
+    layer: int
+    width: float
 
 
 def add_trace(
@@ -8,9 +17,10 @@ def add_trace(
     net: pcbnew.NETINFO_ITEM,
     start: pcbnew.VECTOR2I,
     end: pcbnew.VECTOR2I,
-    layer: int = pcbnew.F_Cu,
-    width: float = 0.31,
+    **style: Unpack[TraceStyle],
 ) -> None:
+    layer = style.get("layer", pcbnew.F_Cu)
+    width = style.get("width", 0.31)
     if start == end:
         return
     trace = pcbnew.PCB_TRACK(board)

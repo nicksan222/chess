@@ -11,14 +11,14 @@ use super::{
 };
 
 /// One bank's connection state.
-pub struct Monitor {
+pub(super) struct Monitor {
     bank: HallBank,
     configured: bool,
     faulted: bool,
 }
 
 impl Monitor {
-    pub const fn new(bank: HallBank) -> Self {
+    pub(super) const fn new(bank: HallBank) -> Self {
         Self {
             bank,
             configured: false,
@@ -26,14 +26,14 @@ impl Monitor {
         }
     }
 
-    pub const fn bank(&self) -> HallBank {
+    pub(super) const fn bank(&self) -> HallBank {
         self.bank
     }
 
     /// Reads the bank's occupancy, one bit per channel, or `None` if it is
     /// unknown. An expander that lost power or failed a read is configured
     /// again before it is trusted.
-    pub fn read<I: I2c>(&mut self, i2c: &mut I) -> Option<u8> {
+    pub(super) fn read<I: I2c>(&mut self, i2c: &mut I) -> Option<u8> {
         let address = self.bank.address();
         if !self.configured {
             if let Err(error) = tca9554::configure(i2c, address) {

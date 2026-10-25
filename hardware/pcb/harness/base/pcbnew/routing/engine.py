@@ -41,13 +41,20 @@ class RoutingContext:
     net_type: type[Net]
 
 
+@dataclass(frozen=True)
+class RoutingScope:
+    """The board-level routing choices a context carries beside the circuit."""
+
+    root_reference: str
+    via_keepouts: frozenset[tuple[int, int]]
+    optional_via_nets: frozenset[str]
+
+
 def context(
     circuit: Circuit[Net],
     board: pcbnew.BOARD,
     settings: RoutingSettings,
-    root_reference: str,
-    via_keepouts: frozenset[tuple[int, int]],
-    optional_via_nets: frozenset[str],
+    scope: RoutingScope,
 ) -> RoutingContext:
     if circuit.outline is None:
         raise ValueError("routing needs an outline")
@@ -78,11 +85,11 @@ def context(
         {net.GetNetname(): net for net in board.GetNetsByName().values()},
         pads,
         {name: tuple(sorted(members)) for name, members in sorted(nodes.items())},
-        via_keepouts,
+        scope.via_keepouts,
         packages,
         settings,
-        root_reference,
-        optional_via_nets,
+        scope.root_reference,
+        scope.optional_via_nets,
         circuit.outline,
         circuit.net_type,
     )
@@ -390,8 +397,8 @@ def apply_paths(ctx: RoutingContext, paths: Sequence[CopperPath]) -> None:
                 ctx.nets_by_name[path.net.label],
                 start,
                 end,
-                LAYER_IDS[path.layer],
-                path.width_mm,
+                layer=LAYER_IDS[path.layer],
+                width=path.width_mm,
             )
 
 

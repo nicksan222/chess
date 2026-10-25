@@ -7,10 +7,8 @@ use std::io;
 
 use embedded_hal::i2c::Operation;
 
-use super::{
-    LinuxI2cError,
-    ffi::{I2C_M_RD, Message},
-};
+use super::LinuxI2cError;
+use i2cdev::{core::I2CMessage, linux::LinuxI2CMessage};
 
 /// One message: the coalesced bytes of adjacent same-direction operations.
 struct Run {
@@ -19,14 +17,14 @@ struct Run {
 }
 
 /// A transaction's messages and where each operation's bytes sit in them.
-pub struct Plan {
+pub(super) struct Plan {
     runs: Vec<Run>,
     /// Per operation: its run and its offset within that run.
     placements: Vec<(usize, usize)>,
 }
 
 impl Plan {
-    pub fn new(operations: &[Operation<'_>]) -> Self {
+    pub(super) fn new(operations: &[Operation<'_>]) -> Self {
         let mut runs: Vec<Run> = Vec::new();
         let mut placements = Vec::with_capacity(operations.len());
         for operation in operations {
@@ -49,34 +47,37 @@ impl Plan {
         Self { runs, placements }
     }
 
-    pub fn is_empty(&self) -> bool {
+    pub(super) fn is_empty(&self) -> bool {
         self.runs.is_empty()
     }
 
     /// The kernel messages for this plan, each pointing into its run's bytes.
     /// They stay valid while the plan is alive and not otherwise borrowed.
-    pub fn messages(&mut self, address: u8) -> Result<Vec<Message>, LinuxI2cError> {
+    pub(super) fn messages(
+        &mut self,
+        address: u8,
+    ) -> Result<Vec<LinuxI2CMessage<'_>>, LinuxI2cError> {
         self.runs
             .iter_mut()
             .map(|run| {
-                let length = u16::try_from(run.bytes.len()).map_err(|_| {
-                    LinuxI2cError(io::Error::new(
+                if run.bytes.len() > usize::from(u16::MAX) {
+                    return Err(LinuxI2cError(io::Error::new(
                         io::ErrorKind::InvalidInput,
                         "I2C message longer than 65535 bytes",
-                    ))
-                })?;
-                Ok(Message {
-                    address: u16::from(address),
-                    flags: if run.read { I2C_M_RD } else { 0 },
-                    length,
-                    buffer: run.bytes.as_mut_ptr(),
-                })
+                    )));
+                }
+                let message = if run.read {
+                    LinuxI2CMessage::read(&mut run.bytes)
+                } else {
+                    LinuxI2CMessage::write(&run.bytes)
+                };
+                Ok(message.with_address(u16::from(address)))
             })
             .collect()
     }
 
     /// Copies the bytes the target sent into each read operation's buffer.
-    pub fn scatter(&self, operations: &mut [Operation<'_>]) {
+    pub(super) fn scatter(&self, operations: &mut [Operation<'_>]) {
         for (operation, &(run, offset)) in operations.iter_mut().zip(&self.placements) {
             if let Operation::Read(buffer) = operation {
                 let length = buffer.len();
@@ -125,15 +126,10 @@ mod tests {
     }
 
     #[test]
-    fn messages_flag_reads_and_address_the_target() {
-        let mut buffer = [0; 2];
-        let mut plan = Plan::new(&[Operation::Write(&[0x00]), Operation::Read(&mut buffer)]);
-        let messages = plan.messages(0x27).unwrap();
-        let shape: Vec<_> = messages
-            .iter()
-            .map(|message| (message.address, message.flags, message.length))
-            .collect();
-        assert_eq!(shape, [(0x27, 0, 1), (0x27, I2C_M_RD, 2)]);
+    fn oversized_messages_are_rejected_before_the_bus_is_called() {
+        let oversized = vec![0; usize::from(u16::MAX) + 1];
+        let mut plan = Plan::new(&[Operation::Write(&oversized)]);
+        assert!(plan.messages(0x20).is_err());
         assert!(Plan::new(&[]).is_empty());
     }
 }

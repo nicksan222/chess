@@ -82,6 +82,11 @@ impl<T> Stack<T> {
     /// Attempts to reserve capacity for at least `additional` more elements.
     ///
     /// The stack remains unchanged when reservation fails.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`TryReserveError`] when the capacity overflows or the allocator
+    /// reports a failure.
     pub fn try_reserve(&mut self, additional: usize) -> Result<(), TryReserveError> {
         self.elements.try_reserve(additional)
     }

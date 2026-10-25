@@ -23,7 +23,7 @@ pub static MENU: Menu<'static, super::Request> = Menu::new(
     ],
 );
 
-super::module::placeholder! {
+super::registry::placeholder! {
     /// Pairing and online sessions; it offers no operations yet.
     Pairing
 }

@@ -78,7 +78,7 @@ impl Module for Engine {
     type Request = Request;
     type Facade = Pieces;
 
-    fn new(_: &Settings, _: &Context<'_, Status>) -> Result<Self, MissingDependency> {
+    fn new((): &Settings, _: &Context<'_, Status>) -> Result<Self, MissingDependency> {
         Ok(Self {
             status: watch::Sender::new(Status::default()),
         })
@@ -90,8 +90,8 @@ impl Module for Engine {
         }
     }
 
-    fn event(&mut self, event: &HardwareEvent, status: &mut Status) {
-        if let HardwareEvent::Piece(piece) = *event {
+    fn event(&mut self, event: HardwareEvent, status: &mut Status) {
+        if let HardwareEvent::Piece(piece) = event {
             status.observe(piece);
             self.status.send_replace(*status);
         }

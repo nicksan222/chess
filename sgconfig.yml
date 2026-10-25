@@ -1,0 +1,6 @@
+# ast-grep: syntax-aware pattern rules, one YAML file per rule with its tests.
+# `just --justfile tooling/quality/justfile patterns` scans and tests them.
+ruleDirs:
+  - tooling/ast-grep/rules
+testConfigs:
+  - testDir: tooling/ast-grep/rule-tests

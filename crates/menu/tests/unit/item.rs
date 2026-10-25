@@ -36,7 +36,7 @@ fn submenu_entry_exposes_the_exact_child_menu() {
     assert!(!item.is_blocking());
     assert!(
         item.as_submenu()
-            .is_some_and(|menu| core::ptr::eq(menu, &CHILD))
+            .is_some_and(|menu| core::ptr::eq(menu, &raw const CHILD))
     );
 }
 

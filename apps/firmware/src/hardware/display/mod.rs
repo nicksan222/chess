@@ -27,6 +27,12 @@ pub struct Display<I2C> {
     controller: ssd1309::Controller<I2C>,
 }
 
+impl<I2C> core::fmt::Debug for Display<I2C> {
+    fn fmt(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        formatter.debug_struct("Display").finish_non_exhaustive()
+    }
+}
+
 impl<I2C: I2c> Display<I2C> {
     /// Creates the board display around an exclusive I2C bus handle.
     pub fn new(i2c: I2C) -> Self {
@@ -36,11 +42,19 @@ impl<I2C: I2c> Display<I2C> {
     }
 
     /// Initializes the panel and clears its in-memory frame.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`DisplayError`] when the I2C transfer fails.
     pub fn initialize(&mut self) -> Result<(), DisplayError> {
         self.controller.init()
     }
 
     /// Sends the in-memory frame to the panel.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`DisplayError`] when the I2C transfer fails.
     pub fn flush(&mut self) -> Result<(), DisplayError> {
         self.controller.flush()
     }
@@ -51,6 +65,10 @@ impl<I2C: I2c> Display<I2C> {
     }
 
     /// Turns the panel on or off without changing its in-memory frame.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`DisplayError`] when the I2C transfer fails.
     pub fn set_power(&mut self, enabled: bool) -> Result<(), DisplayError> {
         self.controller.set_display_on(enabled)
     }

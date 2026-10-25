@@ -18,7 +18,7 @@ fn state_starts_on_the_first_entry_of_the_root() {
     assert_eq!(state.selected_index(), 0);
     assert_eq!(state.selected_item().map(MenuItem::label), Some("One"));
     assert!(state.is_at_root());
-    assert!(core::ptr::eq(state.root_menu(), &THREE));
+    assert!(core::ptr::eq(state.root_menu(), &raw const THREE));
 }
 
 #[test]

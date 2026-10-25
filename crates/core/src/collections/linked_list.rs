@@ -18,6 +18,7 @@ pub struct LinkedList<T> {
 
 type Link<T> = Option<Box<Node<T>>>;
 
+#[derive(Debug)]
 struct Node<T> {
     element: T,
     next: Link<T>,
@@ -262,6 +263,7 @@ impl<T> IntoIterator for LinkedList<T> {
 }
 
 /// An iterator that consumes a [`LinkedList`].
+#[derive(Debug)]
 pub struct IntoIter<T> {
     list: LinkedList<T>,
 }
@@ -282,6 +284,7 @@ impl<T> ExactSizeIterator for IntoIter<T> {}
 impl<T> FusedIterator for IntoIter<T> {}
 
 /// An iterator over shared references in a [`LinkedList`].
+#[derive(Debug)]
 pub struct Iter<'a, T> {
     next: Option<&'a Node<T>>,
     remaining: usize,
@@ -307,6 +310,7 @@ impl<T> ExactSizeIterator for Iter<'_, T> {}
 impl<T> FusedIterator for Iter<'_, T> {}
 
 /// An iterator over exclusive references in a [`LinkedList`].
+#[derive(Debug)]
 pub struct IterMut<'a, T> {
     next: Option<&'a mut Node<T>>,
     remaining: usize,

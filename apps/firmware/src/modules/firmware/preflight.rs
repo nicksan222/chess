@@ -22,6 +22,8 @@ use super::Error;
 const EARLIEST_PLAUSIBLE_EPOCH_SECS: u64 = 1_767_225_600;
 const EARLIEST_PLAUSIBLE: Duration = Duration::from_secs(EARLIEST_PLAUSIBLE_EPOCH_SECS);
 /// Bounds each network probe, well under the request timeout.
+// Not a `tuning!` value: bounds one DNS or TCP probe; a network bound, not a prototype knob.
+// ast-grep-ignore: no-hardcoded-timing
 pub(super) const PROBE: Duration = Duration::from_secs(5);
 
 /// Runs every check against the host serving `feed`.
@@ -70,8 +72,14 @@ async fn resolve(host: &str, port: u16) -> Result<Vec<SocketAddr>, Error> {
     };
     let addresses: Vec<_> = timeout(PROBE, lookup_host((qualified.as_str(), port)))
         .await
-        .map_err(|_| offline())?
-        .map_err(|_| offline())?
+        .map_err(|_| {
+            logger::info!("resolving {qualified} took longer than {PROBE:?}");
+            offline()
+        })?
+        .map_err(|cause| {
+            logger::info!("resolving {qualified} failed: {cause}");
+            offline()
+        })?
         .collect();
     if addresses.is_empty() {
         return Err(offline());

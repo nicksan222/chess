@@ -1,0 +1,24 @@
+id: pins-only-in-pins
+valid:
+  - |
+    // GPIO26 must start low.
+  - |
+    let line = request.with_line(u32::from(gpio.bcm_number()));
+  - |
+    warn!("GPIO 5 failed");
+  - |
+    impl<const BCM: u8> ButtonPin<BCM> {}
+  - |
+    #[cfg(test)]
+    mod tests { const G: GPIO = GPIO::new(5); }
+invalid:
+  - |
+    pub struct Leds { enable: Pin<26, Output> }
+  - |
+    let gpio = GPIO::new(26);
+  - |
+    let request = builder.with_line(26);
+  - |
+    const GPIO26: u8 = 26;
+  - |
+    let pin: ButtonPin<5> = todo!();

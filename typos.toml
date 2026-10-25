@@ -1,0 +1,26 @@
+# typos: spelling in code, comments and docs (`just --justfile
+# tooling/quality/justfile spelling`). Each allowance says why the word is right.
+
+[files]
+extend-exclude = [
+    # Tool output and lockfiles are checked at their source.
+    "**/generated/**",
+    "*.lock",
+    "**/firmware-crates.inc",
+    # Lichess puzzle IDs are external data, not words.
+    "crates/chess/tests/lichess/fixtures/**",
+]
+
+[default.extend-words]
+# Through-hole technology, the component mounting style.
+THT = "THT"
+# "mis-wire": to wire incorrectly.
+mis = "mis"
+# A SPICE resistor element is named with an `R` prefix.
+Rsource = "Rsource"
+
+[default.extend-identifiers]
+# Grid index along y, beside `ix`.
+iy = "iy"
+# Plural of PNG.
+PNGs = "PNGs"

@@ -12,23 +12,23 @@ use menu::{Menu, MenuItem};
 
 const MAX_PRESSES: usize = 16;
 
-pub struct Navigator {
+pub(crate) struct Navigator {
     pub firmware: FirmwareHarness,
     snapshot: Snapshot,
 }
 
 impl Navigator {
-    pub fn start() -> Self {
+    pub(crate) fn start() -> Self {
         Self::new(FirmwareHarness::start().unwrap())
     }
 
-    pub fn new(firmware: FirmwareHarness) -> Self {
+    pub(crate) fn new(firmware: FirmwareHarness) -> Self {
         let snapshot = firmware.snapshot();
         Self { firmware, snapshot }
     }
 
     /// Returns to the main menu, then selects and activates `request`.
-    pub async fn open(&mut self, request: Request) -> Snapshot {
+    pub(crate) async fn open(&mut self, request: Request) -> Snapshot {
         let path = path_to(&MAIN_MENU, request)
             .unwrap_or_else(|| panic!("{request:?} is not reachable from the main menu"));
         // Every loop is bounded so a stuck menu fails the test instead of hanging it.
@@ -73,7 +73,7 @@ impl Navigator {
 }
 
 /// Every request the product menu exposes, in menu order.
-pub fn every_request() -> Vec<Request> {
+pub(crate) fn every_request() -> Vec<Request> {
     let mut found = Vec::new();
     collect(&MAIN_MENU, &mut found);
     found

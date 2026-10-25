@@ -24,12 +24,16 @@ struct PositionKey {
 /// exact key: piece placement, side to move, castling rights, and effective
 /// en-passant target. Non-move events are skipped. Threefold enables a
 /// [`crate::DrawClaim`]; fivefold ends the game automatically.
+#[expect(
+    clippy::expect_used,
+    reason = "history only contains moves that were accepted from the initial board, so replaying them cannot fail"
+)]
 pub(super) fn count(initial_board: Board, history: &GameHistory, current_board: &Board) -> u8 {
     let target = PositionKey::new(current_board);
     let mut board = initial_board;
     let mut repetitions = u8::from(PositionKey::new(&board) == target);
 
-    for step in history.iter() {
+    for step in history {
         let HistoryEvent::Move(chess_move) = step.event() else {
             continue;
         };

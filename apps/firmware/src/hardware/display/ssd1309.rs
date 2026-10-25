@@ -4,6 +4,8 @@
 //! The module supplies power-on reset; allow 200 ms after power becomes stable
 //! before initialization (the Pi's Linux startup already exceeds that delay).
 
+use core::fmt::Debug;
+
 use display_interface::DisplayError;
 use embedded_graphics::{
     Pixel,
@@ -17,35 +19,35 @@ use super::{HEIGHT, I2C_ADDRESS, WIDTH};
 
 /// SSD1309 command bytes, named after the controller datasheet.
 mod command {
-    pub const DISPLAY_OFF: u8 = 0xAE;
-    pub const DISPLAY_ON: u8 = 0xAF;
-    pub const SET_COMMAND_LOCK: u8 = 0xFD;
-    pub const COMMAND_LOCK_UNLOCKED: u8 = 0x12;
-    pub const SET_MEMORY_ADDRESSING: u8 = 0x20;
-    pub const PAGE_ADDRESSING: u8 = 0x02;
-    pub const LOW_COLUMN_START: u8 = 0x00;
-    pub const HIGH_COLUMN_START: u8 = 0x10;
-    pub const START_LINE_ZERO: u8 = 0x40;
-    pub const SET_CONTRAST: u8 = 0x81;
-    pub const CONTRAST: u8 = 0xBF;
-    pub const SEGMENT_REMAP: u8 = 0xA1;
-    pub const NORMAL_DISPLAY: u8 = 0xA6;
-    pub const SET_MULTIPLEX_RATIO: u8 = 0xA8;
-    pub const MULTIPLEX_64: u8 = 0x3F;
-    pub const COM_SCAN_REMAPPED: u8 = 0xC8;
-    pub const SET_DISPLAY_OFFSET: u8 = 0xD3;
-    pub const NO_OFFSET: u8 = 0x00;
-    pub const SET_CLOCK_DIVIDE: u8 = 0xD5;
-    pub const CLOCK_DIVIDE: u8 = 0xA0;
-    pub const SET_PRECHARGE: u8 = 0xD9;
-    pub const PRECHARGE: u8 = 0xF1;
-    pub const SET_COM_PINS: u8 = 0xDA;
-    pub const COM_PINS: u8 = 0x12;
-    pub const SET_VCOMH: u8 = 0xDB;
-    pub const VCOMH: u8 = 0x34;
-    pub const RESUME_FROM_RAM: u8 = 0xA4;
+    pub(super) const DISPLAY_OFF: u8 = 0xAE;
+    pub(super) const DISPLAY_ON: u8 = 0xAF;
+    pub(super) const SET_COMMAND_LOCK: u8 = 0xFD;
+    pub(super) const COMMAND_LOCK_UNLOCKED: u8 = 0x12;
+    pub(super) const SET_MEMORY_ADDRESSING: u8 = 0x20;
+    pub(super) const PAGE_ADDRESSING: u8 = 0x02;
+    pub(super) const LOW_COLUMN_START: u8 = 0x00;
+    pub(super) const HIGH_COLUMN_START: u8 = 0x10;
+    pub(super) const START_LINE_ZERO: u8 = 0x40;
+    pub(super) const SET_CONTRAST: u8 = 0x81;
+    pub(super) const CONTRAST: u8 = 0xBF;
+    pub(super) const SEGMENT_REMAP: u8 = 0xA1;
+    pub(super) const NORMAL_DISPLAY: u8 = 0xA6;
+    pub(super) const SET_MULTIPLEX_RATIO: u8 = 0xA8;
+    pub(super) const MULTIPLEX_64: u8 = 0x3F;
+    pub(super) const COM_SCAN_REMAPPED: u8 = 0xC8;
+    pub(super) const SET_DISPLAY_OFFSET: u8 = 0xD3;
+    pub(super) const NO_OFFSET: u8 = 0x00;
+    pub(super) const SET_CLOCK_DIVIDE: u8 = 0xD5;
+    pub(super) const CLOCK_DIVIDE: u8 = 0xA0;
+    pub(super) const SET_PRECHARGE: u8 = 0xD9;
+    pub(super) const PRECHARGE: u8 = 0xF1;
+    pub(super) const SET_COM_PINS: u8 = 0xDA;
+    pub(super) const COM_PINS: u8 = 0x12;
+    pub(super) const SET_VCOMH: u8 = 0xDB;
+    pub(super) const VCOMH: u8 = 0x34;
+    pub(super) const RESUME_FROM_RAM: u8 = 0xA4;
     /// OR-ed with the page number to select a page.
-    pub const PAGE_START: u8 = 0xB0;
+    pub(super) const PAGE_START: u8 = 0xB0;
 }
 
 /// I2C control byte announcing that command bytes follow.
@@ -91,6 +93,13 @@ pub(super) struct Controller<I2C> {
     frame: [u8; FRAME_BYTES],
 }
 
+/// `DisplayError` cannot carry the bus error, so log the I2C cause (such as a
+/// NACK or an errno) before it is lost.
+fn bus_write_error(error: impl Debug) -> DisplayError {
+    logger::warn!("display I2C write failed: {error:?}");
+    DisplayError::BusWriteError
+}
+
 pub(super) fn new<I2C: I2c>(bus: I2C) -> Controller<I2C> {
     Controller {
         bus,
@@ -114,8 +123,8 @@ impl<I2C: I2c> Controller<I2C> {
         let mut packet = [CONTROL_COMMAND; MAX_COMMAND_BYTES + 1];
         packet[1..=commands.len()].copy_from_slice(commands);
         self.bus
-            .write(I2C_ADDRESS, &packet[..commands.len() + 1])
-            .map_err(|_| DisplayError::BusWriteError)
+            .write(I2C_ADDRESS, &packet[..=commands.len()])
+            .map_err(bus_write_error)
     }
 
     pub(super) fn clear_buffer(&mut self) {
@@ -137,7 +146,7 @@ impl<I2C: I2c> Controller<I2C> {
                 packet[1..=bytes.len()].copy_from_slice(bytes);
                 self.bus
                     .write(I2C_ADDRESS, &packet[..=bytes.len()])
-                    .map_err(|_| DisplayError::BusWriteError)?;
+                    .map_err(bus_write_error)?;
             }
         }
         Ok(())
@@ -167,15 +176,14 @@ impl<I2C: I2c> DrawTarget for Controller<I2C> {
         I: IntoIterator<Item = Pixel<Self::Color>>,
     {
         for Pixel(point, color) in pixels {
-            if point.x < 0
-                || point.y < 0
-                || point.x >= i32::from(WIDTH)
-                || point.y >= i32::from(HEIGHT)
-            {
+            let (Ok(x), Ok(y)) = (usize::try_from(point.x), usize::try_from(point.y)) else {
+                continue;
+            };
+            if x >= usize::from(WIDTH) || y >= usize::from(HEIGHT) {
                 continue;
             }
-            let index = (point.y as usize / 8) * usize::from(WIDTH) + point.x as usize;
-            let mask = 1 << (point.y % 8);
+            let index = (y / 8) * usize::from(WIDTH) + x;
+            let mask = 1 << (y % 8);
             match color {
                 BinaryColor::On => self.frame[index] |= mask,
                 BinaryColor::Off => self.frame[index] &= !mask,

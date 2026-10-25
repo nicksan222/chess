@@ -23,6 +23,11 @@ impl<T> DirectSender<T> {
     /// Sends one value, waiting for queue capacity when the consumer is behind.
     ///
     /// Returns ownership of the value if the receiver has been dropped.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`DirectSendError`] carrying the value when the receiver has
+    /// been dropped.
     pub async fn send(&self, value: T) -> Result<(), DirectSendError<T>> {
         self.sender
             .send(value)

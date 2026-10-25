@@ -1,5 +1,6 @@
 """Export and package local Gerber/Excellon fabrication data from a checked PCB."""
 
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol
 from zipfile import ZIP_DEFLATED, ZipFile
@@ -56,14 +57,22 @@ def package_fabrication(
                 output.write(path, path.name)
 
 
+@dataclass(frozen=True)
+class FabricationPackage:
+    """The package name and the manufacturing approvals still pending for it."""
+
+    name: str
+    pending: tuple[str, ...]
+
+
 def write_fabrication[BoardNet: Net](
     circuit: Circuit[BoardNet],
     board: Path,
     directory: Path,
-    name: str,
-    pending: tuple[str, ...],
+    package: FabricationPackage,
     run: ToolRunner,
 ) -> Path:
+    name, pending = package.name, package.pending
     layers = fabrication_layers(circuit.layout.copper_layers)
     cam = directory / "fabrication"
     cam.mkdir()

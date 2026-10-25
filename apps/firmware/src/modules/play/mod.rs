@@ -20,7 +20,7 @@ pub static MENU: Menu<'static, super::Request> = Menu::new(
     ],
 );
 
-super::module::placeholder! {
+super::registry::placeholder! {
     /// Game setup; it offers no operations yet.
     Play
 }

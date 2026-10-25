@@ -20,7 +20,7 @@ from ...geometry import Side
 from ..outline import BoardOutline
 from ..pad import PadKind
 from ..point import Point
-from .pad import render_pad
+from .pad import PadPlacement, render_pad
 from .units import native_point
 
 
@@ -74,7 +74,7 @@ def render_footprint[Pin: StrEnum](
             if isinstance(connection, NetConnection)
             else None
         )
-        render_pad(native, pad, connection, outline, network, centre)
+        render_pad(native, pad, connection, PadPlacement(outline, centre), network)
     _courtyard(
         native,
         component.definition.courtyard.width_mm,
@@ -119,7 +119,7 @@ def _courtyard(
     """
     x, y = width_mm / 2, height_mm / 2
     corners = (Point(-x, y), Point(x, y), Point(x, -y), Point(-x, -y))
-    for start, end in zip(corners, corners[1:] + corners[:1]):
+    for start, end in zip(corners, corners[1:] + corners[:1], strict=True):
         line = pcbnew.PCB_SHAPE(footprint)
         line.SetShape(pcbnew.SHAPE_T_SEGMENT)
         line.SetStart(

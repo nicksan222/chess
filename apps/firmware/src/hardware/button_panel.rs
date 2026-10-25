@@ -8,19 +8,30 @@ use crate::tuning::ButtonTuning;
 
 use super::{
     HardwareEventBus,
+    buttons::PollConfig,
     pins::{BoardPins, ButtonPin, ButtonSubscription, GPIOPins, ReadLevel},
 };
 
 /// Dropping the panel stops all pollers and releases their GPIO requests.
 /// Startup errors roll back already-started pollers; no partial panel is returned.
+#[derive(Debug)]
 pub struct ButtonPanel {
-    _subscriptions: Vec<ButtonSubscription>,
+    #[allow(
+        dead_code,
+        reason = "held only so the pollers run until the panel is dropped"
+    )]
+    subscriptions: Vec<ButtonSubscription>,
 }
 
 impl ButtonPanel {
     /// Requests the board's inputs with internal pull-ups on the selected chip.
     /// Logs the startup outcome and returns an error with chip, button and GPIO
     /// context if acquisition fails. No partial panel is returned.
+    ///
+    /// # Errors
+    ///
+    /// Fails when the chip or any button line cannot be requested and read, or
+    /// when no Tokio runtime is active.
     #[cfg(target_os = "linux")]
     pub fn open(
         chip: impl AsRef<std::path::Path>,
@@ -43,7 +54,7 @@ impl ButtonPanel {
                 info!(
                     "control-panel buttons ready on {}: {} inputs initialized, pollers started",
                     chip.display(),
-                    panel._subscriptions.len()
+                    panel.subscriptions.len()
                 );
                 Ok(panel)
             }
@@ -64,6 +75,11 @@ impl ButtonPanel {
     /// Starts the same panel with injected readers, one owned reader per button.
     /// Every line is read before its poller starts, so acquisition errors fail
     /// startup and an initially held button establishes a baseline without a press.
+    ///
+    /// # Errors
+    ///
+    /// Fails when any line cannot be read or no Tokio runtime is active; already
+    /// started pollers are stopped.
     pub fn start<R>(
         mut reader: impl FnMut() -> R,
         events: &HardwareEventBus,
@@ -96,9 +112,7 @@ impl ButtonPanel {
             function_four_button,
             function_five_button,
         );
-        Ok(Self {
-            _subscriptions: subscriptions,
-        })
+        Ok(Self { subscriptions })
     }
 }
 
@@ -118,8 +132,15 @@ where
             pin.button()
         ))
     })?;
-    pin.start_with_level(reader, events, Some(initial), tuning)
-        .map_err(io::Error::other)
+    pin.start_with_level(
+        reader,
+        events,
+        PollConfig {
+            initial: Some(initial),
+            tuning,
+        },
+    )
+    .map_err(io::Error::other)
 }
 
 #[cfg(test)]
@@ -231,8 +252,7 @@ mod tests {
             &HardwareEventBus::new(),
             ButtonTuning::DEFAULT,
         )
-        .err()
-        .expect("busy OK line must fail startup");
+        .expect_err("busy OK line must fail startup");
         assert_eq!(
             error.to_string(),
             "initializing Ok button on GPIO 16: line busy"
@@ -249,8 +269,7 @@ mod tests {
             &HardwareEventBus::new(),
             ButtonTuning::DEFAULT,
         )
-        .err()
-        .expect("a runtime is required");
+        .expect_err("a runtime is required");
         assert!(error.to_string().contains("active Tokio runtime"));
         assert_eq!(state.lock().unwrap().reads, 0);
         assert_eq!(state.lock().unwrap().live, 0);
@@ -264,8 +283,7 @@ mod tests {
             &HardwareEventBus::new(),
             ButtonTuning::DEFAULT,
         )
-        .err()
-        .expect("a missing chip must fail startup");
+        .expect_err("a missing chip must fail startup");
         assert!(error.to_string().contains("Up button on GPIO 5"));
         assert!(
             error

@@ -11,21 +11,31 @@ pub struct Metadata<'a> {
 }
 
 impl<'a> Metadata<'a> {
-    /// Creates record metadata.
-    pub const fn new(
-        level: Level,
-        target: &'a str,
+    /// Creates record metadata without a source location.
+    ///
+    /// Attach the module path, file and line with [`Metadata::with_source`].
+    pub const fn new(level: Level, target: &'a str) -> Self {
+        Self {
+            level,
+            target,
+            module_path: None,
+            file: None,
+            line: None,
+        }
+    }
+
+    /// Returns these metadata with the originating source location attached.
+    #[must_use]
+    pub const fn with_source(
+        mut self,
         module_path: Option<&'a str>,
         file: Option<&'a str>,
         line: Option<u32>,
     ) -> Self {
-        Self {
-            level,
-            target,
-            module_path,
-            file,
-            line,
-        }
+        self.module_path = module_path;
+        self.file = file;
+        self.line = line;
+        self
     }
 
     /// Returns the record severity.

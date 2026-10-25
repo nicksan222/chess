@@ -60,7 +60,7 @@ impl From<reqwest::Error> for Error {
         let mut cause = error.to_string();
         let mut source = error.source();
         while let Some(next) = source {
-            cause += &format!(": {next}");
+            cause = format!("{cause}: {next}");
             source = next.source();
         }
         Self::Request(cause)

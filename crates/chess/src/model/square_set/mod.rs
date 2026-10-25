@@ -68,6 +68,10 @@ impl SquareSet {
     /// Counts the set bits, yielding `0` for [`SquareSet::EMPTY`] and
     /// `64` for [`SquareSet::FULL`].
     #[must_use]
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "`count_ones` of a `u64` is at most 64"
+    )]
     pub const fn len(self) -> SquareCount {
         SquareCount(self.0.count_ones() as u8)
     }
@@ -169,6 +173,10 @@ impl SquareSet {
     /// Scans from `a1` upward and returns `None` for an empty set.
     /// Useful for draining a set from the lowest square.
     #[must_use]
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "`trailing_zeros` of a non-zero `u64` is below 64"
+    )]
     pub const fn first(self) -> Option<Square> {
         if self.is_empty() {
             None
@@ -182,6 +190,10 @@ impl SquareSet {
     /// Scans from `h8` downward and returns `None` for an empty set.
     /// Useful for draining a set from the highest square.
     #[must_use]
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "the index of the highest set bit of a non-zero `u64` is below 64"
+    )]
     pub const fn last(self) -> Option<Square> {
         if self.is_empty() {
             None

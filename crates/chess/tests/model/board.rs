@@ -34,7 +34,7 @@ fn initial_board_has_self_locating_pieces_and_standard_state() {
         BOARD.piece_at(Square::D8),
         Some(Piece::new(Color::Black, PieceKind::Queen, Square::D8))
     );
-    for piece in BOARD.iter() {
+    for piece in &BOARD {
         assert_eq!(BOARD.piece_at(piece.square()), Some(piece));
     }
     assert_eq!(BOARD.side_to_move(), Color::White);

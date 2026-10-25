@@ -66,6 +66,15 @@ enum Applied {
 
 impl Tuning {
     /// Reads overrides from the process environment.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`TuningError`] for a `FIRMWARE_*` value that is not a number or is
+    /// out of range.
+    #[allow(
+        clippy::disallowed_methods,
+        reason = "tuning is the only reader of the process environment"
+    )]
     pub fn from_env() -> Result<Self, TuningError> {
         Self::from_vars(std::env::vars_os().map(|(name, value)| {
             (
@@ -79,6 +88,11 @@ impl Tuning {
     /// variable, logging each override. An unknown `FIRMWARE_*` name, most
     /// likely a typo, is logged as a warning and ignored; a value that is not
     /// a number or is out of range is an error.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`TuningError`] for a value that is not a number or is out of
+    /// range.
     pub fn from_vars(
         vars: impl IntoIterator<Item = (String, String)>,
     ) -> Result<Self, TuningError> {
@@ -235,9 +249,13 @@ mod tests {
         );
     }
 
-    /// The full `u8` range of the `scans` unit, beyond any range the firmware
-    /// declares.
+    /// The full `u8` range of the `scans` unit, beyond any range the firmware declares.
     mod scans {
+        #![allow(
+            unreachable_pub,
+            reason = "the macro declares pub items inside a test-only module"
+        )]
+
         use super::super::{TuningError, Variable, parse};
 
         tuning! {

@@ -1,5 +1,12 @@
 //! Fast, Docker-free tests of the production runtime with injected hardware.
 
+#![allow(
+    clippy::unwrap_used,
+    clippy::expect_used,
+    clippy::panic,
+    reason = "integration-test helpers panic to report a failure"
+)]
+
 mod gpio;
 mod hall;
 mod modules;

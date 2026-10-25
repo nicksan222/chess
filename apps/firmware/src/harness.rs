@@ -10,17 +10,26 @@ use crate::{
 
 /// An isolated real firmware instance, with hardware replaced by event injection.
 /// Events are injected sequentially so each returned snapshot acknowledges them.
+#[derive(Debug)]
 pub struct FirmwareHarness {
     firmware: Firmware,
 }
 
 impl FirmwareHarness {
     /// Starts firmware with [`Config::offline`], so tests never reach the network.
+    ///
+    /// # Errors
+    ///
+    /// Fails without an active async runtime.
     pub fn start() -> io::Result<Self> {
         Self::with_config(&Config::offline())
     }
 
     /// Starts firmware with explicit module settings, such as a local fake.
+    ///
+    /// # Errors
+    ///
+    /// Fails without an active async runtime or when module startup fails.
     pub fn with_config(config: &Config) -> io::Result<Self> {
         Ok(Self {
             firmware: Firmware::start_with(config)?,
@@ -38,6 +47,11 @@ impl FirmwareHarness {
 
     /// Injects a hardware observation and waits for the application to process
     /// it.
+    ///
+    /// # Errors
+    ///
+    /// Fails when the event cannot be emitted or is not processed within two
+    /// seconds.
     pub async fn trigger<E>(&mut self, event: E) -> io::Result<Snapshot>
     where
         E: Into<HardwareEvent>,
@@ -61,6 +75,11 @@ impl FirmwareHarness {
     /// Injects a module report, as background work would send it, and waits
     /// for the application to apply it. Acknowledgement counts reports, so no
     /// real background report may be in flight.
+    ///
+    /// # Errors
+    ///
+    /// Fails when the report cannot be emitted or is not applied within five
+    /// seconds.
     pub async fn report(&mut self, event: ModuleEvent) -> io::Result<Snapshot> {
         let reported = self.snapshot().reported_events;
         self.firmware
@@ -72,6 +91,10 @@ impl FirmwareHarness {
     }
 
     /// Waits for background work, such as an update check, to reach a state.
+    ///
+    /// # Errors
+    ///
+    /// Fails when the state is not reached within five seconds.
     pub async fn until(&mut self, condition: impl Fn(&Snapshot) -> bool) -> io::Result<Snapshot> {
         tokio::time::timeout(Duration::from_secs(5), self.firmware.until(condition))
             .await
@@ -86,6 +109,11 @@ impl FirmwareHarness {
             })?
     }
 
+    /// Stops the firmware and waits for its loop to release its resources.
+    ///
+    /// # Errors
+    ///
+    /// Fails when the event loop had already failed.
     pub async fn shutdown(self) -> io::Result<()> {
         self.firmware.shutdown().await
     }

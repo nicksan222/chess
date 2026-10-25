@@ -18,15 +18,27 @@ macro_rules! assert_integer_round_trip {
 }
 
 #[test]
-fn integers_use_stable_little_endian_encodings() {
+fn small_unsigned_integers_use_stable_little_endian_encodings() {
     assert_integer_round_trip!(u8, 0xA5);
     assert_integer_round_trip!(u16, 0xA1B2);
     assert_integer_round_trip!(u32, 0xA1B2_C3D4);
+}
+
+#[test]
+fn large_unsigned_integers_use_stable_little_endian_encodings() {
     assert_integer_round_trip!(u64, 0xA1B2_C3D4_E5F6_0718);
     assert_integer_round_trip!(u128, 0xA1B2_C3D4_E5F6_0718_192A_3B4C_5D6E_7F80);
+}
+
+#[test]
+fn small_signed_integers_use_stable_little_endian_encodings() {
     assert_integer_round_trip!(i8, -42);
     assert_integer_round_trip!(i16, -1234);
     assert_integer_round_trip!(i32, -123_456);
+}
+
+#[test]
+fn large_signed_integers_use_stable_little_endian_encodings() {
     assert_integer_round_trip!(i64, -1_234_567_890);
     assert_integer_round_trip!(i128, -12_345_678_901_234_567_890);
 }

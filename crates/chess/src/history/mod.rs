@@ -254,10 +254,10 @@ impl GameHistory {
         if current != Some(HistoryEventKind::Invalid) {
             return Err(HistoryError::NothingToResolve { current });
         }
-        let step = self
-            .steps
-            .pop_back()
-            .expect("the latest event proved that history is nonempty");
+        // The newest event was just proven to be invalid, so a step exists.
+        let Some(step) = self.steps.pop_back() else {
+            return Err(HistoryError::NothingToResolve { current });
+        };
         self.tip = step.previous_hash();
         Ok(step)
     }
@@ -296,10 +296,11 @@ impl GameHistory {
     /// ```
     pub fn verify(&self) -> Result<(), HistoryError> {
         let mut previous = self.anchor;
-        for (value, step) in (Ply::FIRST.value()..).zip(&self.steps) {
-            let expected_ply = Ply::new(value).expect("history ply is nonzero");
+        let mut expected_ply = Ply::FIRST;
+        for step in &self.steps {
             validate_step(*step, expected_ply, previous)?;
             previous = step.hash();
+            expected_ply = expected_ply.successor();
         }
         if previous != self.tip {
             return Err(HistoryError::Tip {
@@ -359,7 +360,15 @@ impl GameHistory {
     }
 
     fn next_ply(&self) -> Ply {
-        let value = u64::try_from(self.steps.len()).map_or(u64::MAX, |len| len.saturating_add(1));
-        Ply::new(value).expect("a history cannot contain enough allocated nodes to overflow")
+        Ply::after(u64::try_from(self.steps.len()).unwrap_or(u64::MAX))
+    }
+}
+
+impl<'a> IntoIterator for &'a GameHistory {
+    type Item = &'a HistoryStep;
+    type IntoIter = GameHistoryIter<'a>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.iter()
     }
 }

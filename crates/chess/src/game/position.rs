@@ -33,6 +33,10 @@ impl Game {
     }
 }
 
+#[expect(
+    clippy::into_iter_without_iter,
+    reason = "`Game::pieces` is the named piece iterator; a second `iter` would be redundant"
+)]
 impl<'a> IntoIterator for &'a Game {
     type Item = Piece;
     type IntoIter = BoardPieces<'a>;

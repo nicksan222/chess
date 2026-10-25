@@ -3,7 +3,7 @@
 use super::change::Change;
 
 /// Tracks what was last reported for a bank and what its recent reads agree on.
-pub struct Filter {
+pub(super) struct Filter {
     /// Consecutive reads that must agree before a change is reported.
     stable_scans: u8,
     /// Starts empty, so the first stable reading reports every occupied square.
@@ -14,7 +14,7 @@ pub struct Filter {
 }
 
 impl Filter {
-    pub const fn new(stable_scans: u8) -> Self {
+    pub(super) const fn new(stable_scans: u8) -> Self {
         Self {
             stable_scans,
             reported: 0,
@@ -25,7 +25,7 @@ impl Filter {
 
     /// Feeds one complete read, one bit per occupied channel. Returns the
     /// change once the reading has held for `stable_scans` reads.
-    pub fn observe(&mut self, occupied: u8) -> Option<Change> {
+    pub(super) fn observe(&mut self, occupied: u8) -> Option<Change> {
         if self.repeats > 0 && occupied == self.candidate {
             self.repeats = self.repeats.saturating_add(1);
         } else {
@@ -45,7 +45,7 @@ impl Filter {
 
     /// A missed read breaks the run: agreement must start again, while what
     /// was reported is kept so recovery reports only real changes.
-    pub fn interrupt(&mut self) {
+    pub(super) fn interrupt(&mut self) {
         self.repeats = 0;
     }
 }

@@ -3,7 +3,7 @@ use chess::{
     Board, CastlingRights, Color, FullmoveNumber, HalfmoveClock, Piece, PieceKind, Square,
 };
 
-pub fn board(fen: &str) -> Board {
+pub(crate) fn board(fen: &str) -> Board {
     let [placement, side, castling, en_passant, halfmove, fullmove]: [&str; 6] = fen
         .split_whitespace()
         .collect::<Vec<_>>()

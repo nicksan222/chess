@@ -43,6 +43,10 @@ impl<'a, A> MenuState<'a, A> {
     }
 
     /// Applies externally overridden input and dispatches action-bearing events.
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "input, context, behavior and callbacks are four independent collaborators; bundling them would only rename the parameters"
+    )]
     pub fn handle_with_and_dispatch<C, B, H>(
         &mut self,
         input: Input,
@@ -87,13 +91,12 @@ impl<'a, A> MenuState<'a, A> {
             return event;
         }
 
-        match external(self) {
-            Some(command) => self.apply_command(command, Event::ExternalAction),
-            None => {
-                let menu = self.current;
-                let command = borrowed(menu.controls().command(input));
-                self.apply_command(command, Event::Activated)
-            }
+        if let Some(command) = external(self) {
+            self.apply_command(command, Event::ExternalAction)
+        } else {
+            let menu = self.current;
+            let command = borrowed(menu.controls().command(input));
+            self.apply_command(command, Event::Activated)
         }
     }
 

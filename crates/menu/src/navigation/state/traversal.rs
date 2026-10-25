@@ -62,10 +62,11 @@ impl<'a, A> MenuState<'a, A> {
             return Event::Ignored;
         }
 
+        // Every opened child saved its parent, so the slot is always occupied.
+        let Some(parent) = self.history[self.depth - 1].take() else {
+            return Event::Ignored;
+        };
         self.depth -= 1;
-        let parent = self.history[self.depth]
-            .take()
-            .expect("every child menu has a saved parent");
         self.current = parent.menu;
         self.selected = parent.selected;
         Event::Closed { depth: self.depth }

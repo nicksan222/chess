@@ -86,6 +86,12 @@ pub struct Updates {
     connection: Connection,
 }
 
+impl std::fmt::Debug for Updates {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter.debug_struct("Updates").finish_non_exhaustive()
+    }
+}
+
 impl Updates {
     fn new(feed: &Settings, connection: Connection) -> Self {
         Self {

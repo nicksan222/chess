@@ -9,11 +9,12 @@
 #![deny(unreachable_pub)]
 
 mod module;
+mod registry;
 
 pub(crate) use module::report;
 pub use module::{Facade, MissingDependency, ModuleEvent, ModuleEventBus, Never, Phase};
 
-module::modules! {
+registry::modules! {
     /// Wi-Fi status, scanning and provisioning.
     connection: Connection,
     /// Firmware update discovery; uses `connection`.
@@ -166,9 +167,9 @@ mod tests {
 
     #[test]
     fn a_report_without_a_status_keeps_the_last_one() {
+        static EMPTY: Menu<'static, Request> = Menu::new("Empty", &[]);
         let events = ModuleEventBus::new();
         let mut reports = events.subscribe();
-        static EMPTY: Menu<'static, Request> = Menu::new("Empty", &[]);
         let mut menu = MenuState::new(&EMPTY);
         let mut status = ModuleStatus {
             firmware: firmware::Status::UpToDate,

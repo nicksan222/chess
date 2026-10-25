@@ -15,6 +15,11 @@ pub trait EncodeValue {
     type Error;
 
     /// Encodes this value into `output` and returns the bytes written.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Self::Error`] when the value cannot be encoded, for example
+    /// because `output` is too small.
     fn encode_value(&self, output: &mut [u8]) -> Result<usize, Self::Error>;
 }
 
@@ -24,6 +29,10 @@ pub trait DecodeValue: Sized {
     type Error;
 
     /// Decodes one value from the complete `input` slice.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Self::Error`] when `input` is not a valid representation.
     fn decode_value(input: &[u8]) -> Result<Self, Self::Error>;
 }
 

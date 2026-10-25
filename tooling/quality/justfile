@@ -1,0 +1,71 @@
+set shell := ["bash", "-euo", "pipefail", "-c"]
+
+root := justfile_directory() + "/../.."
+ast_grep := env_var_or_default("AST_GREP", "ast-grep")
+ls_lint := env_var_or_default("LS_LINT", "ls-lint")
+shellcheck := env_var_or_default("SHELLCHECK", "shellcheck")
+actionlint := env_var_or_default("ACTIONLINT", "actionlint")
+typos := env_var_or_default("TYPOS", "typos")
+editorconfig_checker := env_var_or_default("EDITORCONFIG_CHECKER", "editorconfig-checker")
+pip_audit := env_var_or_default("PIP_AUDIT", "pip-audit")
+
+# vtk 9.3.1 (PYSEC-2025-224..226) is pinned exactly by cadquery-ocp 7.8, which
+# cadquery 2.6 requires; the fix needs cadquery 2.8 and a verified `just cad`.
+
+pip_audit_ignored := "--ignore-vuln PYSEC-2025-224 --ignore-vuln PYSEC-2025-225 --ignore-vuln PYSEC-2025-226"
+
+default:
+    @just --list
+
+# Repository rules no compiler or linter covers: patterns, names, boundaries, shell, workflows, text.
+quality: patterns names boundaries shell workflows spelling editorconfig
+
+# Test every ast-grep rule against its examples, then scan the repository.
+patterns:
+    cd "{{ root }}" && {{ ast_grep }} test --skip-snapshot-tests
+    cd "{{ root }}" && {{ ast_grep }} scan
+
+# Rust and Python file names (.ls-lint.yml).
+names:
+    cd "{{ root }}" && {{ ls_lint }}
+
+# Shell scripts and the Git hook (ShellCheck).
+shell:
+    cd "{{ root }}" && git ls-files -z '*.sh' .githooks/pre-commit | xargs -0 {{ shellcheck }}
+
+# GitHub Actions workflows, including their `run:` scripts through ShellCheck (actionlint).
+workflows:
+    cd "{{ root }}" && {{ actionlint }}
+
+# Spelling in code, comments and docs (typos.toml).
+spelling:
+    cd "{{ root }}" && {{ typos }}
+
+# Encoding, line endings, final newlines, trailing whitespace and tabs in tracked files (.editorconfig).
+editorconfig:
+    cd "{{ root }}" && git ls-files -z | xargs -0 {{ editorconfig_checker }}
+
+# Crate boundaries: deny.toml wrappers (some unused in the smaller Yocto graph), then each portable crate as sole root.
+boundaries:
+    cd "{{ root }}" && cargo deny --locked --config deny.toml check bans
+    cd "{{ root }}" && cargo deny --locked --config deny.toml --manifest-path apps/firmware/yocto/Cargo.toml check bans --allow unused-wrapper
+    cd "{{ root }}" && for manifest in crates/*/Cargo.toml; do cargo deny --locked --config tooling/quality/portable.deny.toml --manifest-path "$manifest" check bans; done
+
+# Advisories, licences, bans and sources for both Cargo lockfiles; fetches the advisory database.
+deny:
+    cd "{{ root }}" && cargo deny --locked --config deny.toml check
+    cd "{{ root }}" && cargo deny --locked --config deny.toml --manifest-path apps/firmware/yocto/Cargo.toml check --allow unused-wrapper
+
+# Unused or misplaced Rust dependencies, from the sources without compiling.
+unused-dependencies:
+    cd "{{ root }}" && cargo shear
+
+# Known vulnerabilities in the development container's pinned Python tools; queries PyPI.
+python-audit:
+    cd "{{ root }}" && {{ pip_audit }} --requirement .devcontainer/requirements.txt --no-deps --progress-spinner off {{ pip_audit_ignored }}
+
+# Every dependency check; needs network access for advisories.
+dependencies: deny unused-dependencies python-audit
+
+# Run every quality gate.
+check: quality dependencies

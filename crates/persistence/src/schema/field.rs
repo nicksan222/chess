@@ -87,6 +87,13 @@ where
     ///
     /// The backend is not called when encoding fails. Bytes beyond the encoded
     /// prefix of `scratch` are never stored.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`SaveError::Encode`] when encoding fails,
+    /// [`SaveError::InvalidEncodedLength`] when the encoder reports more bytes
+    /// than `scratch` holds, or [`SaveError::Backend`] when the store rejects
+    /// the write.
     pub fn save<S>(
         &self,
         store: &mut S,
@@ -109,6 +116,10 @@ where
     T: InlineValue,
 {
     /// Saves an inline value without requiring a caller-provided buffer.
+    ///
+    /// # Errors
+    ///
+    /// Fails in the same cases as [`Field::save`].
     pub fn save_inline<S>(
         &self,
         store: &mut S,
@@ -122,6 +133,10 @@ where
     }
 
     /// Retrieves an inline value without requiring a caller-provided buffer.
+    ///
+    /// # Errors
+    ///
+    /// Fails in the same cases as [`Field::retrieve`].
     pub fn retrieve_inline<S>(
         &self,
         store: &mut S,
@@ -139,6 +154,13 @@ where
     T: DecodeValue,
 {
     /// Loads and decodes this field, returning `None` when it has not been saved.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`RetrieveError::Backend`] when the store fails,
+    /// [`RetrieveError::BufferTooSmall`] when `scratch` cannot hold the stored
+    /// value, [`RetrieveError::InvalidLoadedLength`] when the backend reports more
+    /// bytes than `scratch` holds, or [`RetrieveError::Decode`] when decoding fails.
     pub fn retrieve<S>(
         &self,
         store: &mut S,

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from enum import StrEnum
-from typing import TYPE_CHECKING, Self
+from typing import TYPE_CHECKING, NotRequired, Self, TypedDict, Unpack
 
 from .component import BoardComponent, RegisteredComponent
 from .connections import Endpoint
@@ -24,6 +24,33 @@ from .spice.state import ComponentState, StateChange
 
 if TYPE_CHECKING:
     from .circuit import Circuit
+
+
+class DcSupplyOptions(TypedDict):
+    """Keywords of `CircuitCheck.dc_supply`."""
+
+    volts: float
+    ac_volts: NotRequired[float | None]
+    output_resistance_ohms: NotRequired[float]
+
+
+class PulseSupplyOptions(TypedDict):
+    """Keywords of `CircuitCheck.pulse_supply`; each is a `PulseVoltage` field."""
+
+    low_volts: float
+    high_volts: float
+    delay_seconds: float
+    rise_seconds: float
+    fall_seconds: float
+    high_seconds: float
+    period_seconds: float
+
+
+class VoltageBandOptions(TypedDict):
+    """Keywords of `CircuitCheck.voltage_between`."""
+
+    between: tuple[float, float]
+    because: str
 
 
 class CircuitCheck[BoardNet: Net]:
@@ -154,12 +181,12 @@ class CircuitCheck[BoardNet: Net]:
         name: str,
         positive: BoardNet,
         negative: BoardNet,
-        *,
-        volts: float,
-        ac_volts: float | None = None,
-        output_resistance_ohms: float = 0.0,
+        **options: Unpack[DcSupplyOptions],
     ) -> VoltageSource:
         """Drive a fixed voltage, optionally through a declared source resistance."""
+        volts = options["volts"]
+        ac_volts = options.get("ac_volts")
+        output_resistance_ohms = options.get("output_resistance_ohms", 0.0)
         self._ensure_open()
         if (
             type(positive) is not self._board.net_type
@@ -177,14 +204,7 @@ class CircuitCheck[BoardNet: Net]:
         name: str,
         positive: BoardNet,
         negative: BoardNet,
-        *,
-        low_volts: float,
-        high_volts: float,
-        delay_seconds: float,
-        rise_seconds: float,
-        fall_seconds: float,
-        high_seconds: float,
-        period_seconds: float,
+        **timing: Unpack[PulseSupplyOptions],
     ) -> VoltageSource:
         """Drive a repeating low-to-high voltage for a time-domain check."""
         self._ensure_open()
@@ -193,15 +213,7 @@ class CircuitCheck[BoardNet: Net]:
             or type(negative) is not self._board.net_type
         ):
             raise ValueError("supply must use the board Net enum")
-        waveform = PulseVoltage(
-            low_volts,
-            high_volts,
-            delay_seconds,
-            rise_seconds,
-            fall_seconds,
-            high_seconds,
-            period_seconds,
-        )
+        waveform = PulseVoltage(**timing)
         source = VoltageSource(name, positive, negative, waveform)
         self._sources.append(source)
         return source
@@ -249,11 +261,10 @@ class CircuitCheck[BoardNet: Net]:
         positive_pin: PositivePin,
         negative_component: BoardComponent[NegativePin],
         negative_pin: NegativePin,
-        *,
-        between: tuple[float, float],
-        because: str,
+        **expectation: Unpack[VoltageBandOptions],
     ) -> None:
         """Require the first pin minus the second pin to lie in a voltage band."""
+        between, because = expectation["between"], expectation["because"]
         self._ensure_open()
         for component, pin in (
             (positive_component, positive_pin),

@@ -60,7 +60,15 @@ macro_rules! square {
         const {
             match $crate::hardware::BoardPosition::parse(stringify!($name)) {
                 Some(position) => position,
-                None => panic!(concat!("not a board square: ", stringify!($name))),
+                None => {
+                    #[allow(
+                        clippy::panic,
+                        reason = "invalid square literals must fail at compile time"
+                    )]
+                    {
+                        panic!(concat!("not a board square: ", stringify!($name)))
+                    }
+                }
             }
         }
     };

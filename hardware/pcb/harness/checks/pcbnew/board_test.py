@@ -71,7 +71,9 @@ class NativeBoardChecksTest(unittest.TestCase):
         points = [(edge.GetStart().x, edge.GetStart().y) for edge in edges]
         # A bow tie is closed and has four corners, but crosses itself.
         points = [points[0], points[2], points[1], points[3]]
-        for edge, start, end in zip(edges, points, points[1:] + points[:1]):
+        for edge, start, end in zip(
+            edges, points, points[1:] + points[:1], strict=True
+        ):
             edge.SetStart(pcbnew.VECTOR2I(*start))
             edge.SetEnd(pcbnew.VECTOR2I(*end))
         with self.assertRaisesRegex(ValueError, "crossed or disconnected"):

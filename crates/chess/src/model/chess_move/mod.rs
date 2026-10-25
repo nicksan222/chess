@@ -117,12 +117,11 @@ impl ChessMove {
     /// [`ChessMove::promotion`] rejects them at construction.
     pub(crate) const fn promotion_code(self) -> u8 {
         match self.promotion {
-            None => 0,
+            None | Some(PieceKind::Pawn | PieceKind::King) => 0,
             Some(PieceKind::Knight) => 1,
             Some(PieceKind::Bishop) => 2,
             Some(PieceKind::Rook) => 3,
             Some(PieceKind::Queen) => 4,
-            Some(PieceKind::Pawn | PieceKind::King) => 0,
         }
     }
 }

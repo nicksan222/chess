@@ -45,7 +45,7 @@ impl HallBank {
 
     /// Every bank, in the address order the board is scanned.
     pub fn all() -> [Self; Self::COUNT] {
-        std::array::from_fn(|index| Self { index: index as u8 })
+        [0, 1, 2, 3, 4, 5, 6, 7].map(|index| Self { index })
     }
 
     pub const fn address(self) -> u8 {

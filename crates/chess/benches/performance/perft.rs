@@ -1,3 +1,8 @@
+#![allow(
+    clippy::expect_used,
+    reason = "benchmark helpers panic to report a failure"
+)]
+
 #[path = "../../tests/common/perft.rs"]
 mod perft;
 
@@ -5,6 +10,11 @@ use std::{hint::black_box, time::Instant};
 
 use chess::Game;
 
+#[allow(
+    clippy::cast_precision_loss,
+    clippy::print_stdout,
+    reason = "a benchmark prints its results; the node count is far below 2^52, so the displayed rate is exact enough"
+)]
 fn benchmark(name: &str, game: &Game, depth: u8, expected_nodes: u64) {
     const SAMPLE_COUNT: u32 = 5;
 

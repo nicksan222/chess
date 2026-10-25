@@ -15,6 +15,10 @@ pub struct Passphrase(String);
 
 impl Passphrase {
     /// Accepts 8–63 non-control bytes or a 64-digit hexadecimal PSK.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`InvalidPassphrase`] for any other value.
     pub fn new(value: impl Into<String>) -> Result<Self, InvalidPassphrase> {
         let value = value.into();
         let bytes = value.as_bytes();

@@ -22,15 +22,16 @@ It reaches the hardware through Linux character devices:
 Suggested crates: `linux-embedded-hal` over `i2cdev`, `spidev` and `gpiocdev`.
 The standalone SSD1309 driver exists, but it is not connected to a physical I2C
 adapter or the runtime yet. The TCA9554 acquisition worker uses the Linux
-`I2C_RDWR` interface directly through `libc`. Note
+`I2C_RDWR` interface through `i2cdev`. Note
 that `rppal`, the obvious first choice for Pi peripherals in Rust, was retired by
 its author in July 2025, so the maintained character-device crates are the better
 foundation for new work.
 
-`apps/firmware/src/hardware/pins/` contains hand-maintained, function-named `GPIO`
+`apps/firmware/src/hardware/pins.rs` contains hand-maintained, function-named `GPIO`
 descriptors for every connected Raspberry Pi line. They record host identity,
 allowed direction and active-low behavior so drivers do not duplicate board
-knowledge. PCB-to-Rust generation was deliberately removed; coordinate changes
+knowledge; the `pins-only-in-pins` ast-grep rule keeps BCM numbers out of other
+firmware files. PCB-to-Rust generation was deliberately removed; coordinate changes
 to these descriptors with `hardware/shared/wiring.py` and the native PCB host
 connections.
 

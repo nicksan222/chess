@@ -35,6 +35,7 @@ pub use bank::{FIRST_ADDRESS, HallBank};
 
 /// A running Hall poller. Dropping it stops publication and further scans.
 /// An in-flight kernel transfer finishes before its bus can be released.
+#[derive(Debug)]
 pub struct HallSensors {
     worker: JoinHandle<()>,
     stopped: Arc<AtomicBool>,
@@ -43,6 +44,10 @@ pub struct HallSensors {
 impl HallSensors {
     /// Polls the banks on a Linux I2C character device such as `/dev/i2c-1`.
     /// Failing to open the device fails startup; an unresponsive bank does not.
+    ///
+    /// # Errors
+    /// Returns an error if the bus cannot be opened, no runtime is active,
+    /// or the scan interval or stability count is zero.
     #[cfg(target_os = "linux")]
     pub fn open(
         bus: impl AsRef<std::path::Path>,
@@ -70,6 +75,9 @@ impl HallSensors {
     }
 
     /// Starts the same poller with an injected bus.
+    ///
+    /// # Errors
+    /// Returns an error if no runtime is active or either tuning value is zero.
     pub fn start<I>(mut i2c: I, events: &HardwareEventBus, tuning: HallTuning) -> io::Result<Self>
     where
         I: I2c + Send + 'static,
@@ -107,9 +115,7 @@ impl HallSensors {
                         break;
                     }
                 };
-                for event in changes {
-                    let _ = events.emit(event.into());
-                }
+                publish(&events, changes).await;
             }
         });
         Ok(Self { worker, stopped })
@@ -120,5 +126,45 @@ impl Drop for HallSensors {
     fn drop(&mut self) {
         self.stopped.store(true, Ordering::Release);
         self.worker.abort();
+    }
+}
+
+/// A full-board reconciliation must leave room for concurrent button input.
+async fn publish(events: &HardwareEventBus, changes: Vec<super::PieceEvent>) {
+    for event in changes {
+        let _ = events.emit(event.into());
+        tokio::task::yield_now().await;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::hardware::{
+        PieceEvent,
+        pins::{Button, ButtonEvent},
+        square,
+    };
+
+    #[tokio::test]
+    async fn a_full_board_burst_preserves_already_queued_button_input() {
+        let events = HardwareEventBus::new();
+        let mut input = events.subscribe();
+        let button = ButtonEvent::Pressed(Button::Down).into();
+        events.emit(button).unwrap();
+        let changes: Vec<_> = HallBank::all()
+            .into_iter()
+            .flat_map(|bank| bank.squares().iter().copied().map(PieceEvent::Placed))
+            .collect();
+        let drain = async {
+            assert_eq!(input.recv().await.unwrap(), button);
+            let mut seen = Vec::new();
+            for _ in 0..64 {
+                seen.push(input.recv().await.unwrap());
+            }
+            assert!(seen.contains(&PieceEvent::Placed(square!(A1)).into()));
+            assert!(seen.contains(&PieceEvent::Placed(square!(H8)).into()));
+        };
+        tokio::join!(publish(&events, changes), drain);
     }
 }

@@ -1,9 +1,12 @@
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "each test crate uses a different subset of the shared helpers"
+)]
 
 use menu::{Command, Event, Input, Menu, MenuCallbacks, MenuControls, MenuItem, MenuState};
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub enum Action {
+pub(crate) enum Action {
     Start,
     CancelStart,
     Wifi,
@@ -12,7 +15,7 @@ pub enum Action {
     ShowHelp,
 }
 
-pub static SETTINGS: Menu<'static, Action> = Menu::with_controls(
+pub(crate) static SETTINGS: Menu<'static, Action> = Menu::with_controls(
     "Settings",
     &[MenuItem::action("WiFi", Action::Wifi)],
     MenuControls::new(
@@ -25,7 +28,7 @@ pub static SETTINGS: Menu<'static, Action> = Menu::with_controls(
     ),
 );
 
-pub static ROOT: Menu<'static, Action> = Menu::with_controls(
+pub(crate) static ROOT: Menu<'static, Action> = Menu::with_controls(
     "Chess",
     &[
         MenuItem::action("Start", Action::Start),
@@ -42,7 +45,7 @@ pub static ROOT: Menu<'static, Action> = Menu::with_controls(
 );
 
 /// Every semantic input, for tests that must hold for all of them.
-pub const ALL_INPUTS: [Input; 6] = [
+pub(crate) const ALL_INPUTS: [Input; 6] = [
     Input::Up,
     Input::Down,
     Input::Left,
@@ -53,14 +56,14 @@ pub const ALL_INPUTS: [Input; 6] = [
 
 /// One callback invocation, recorded with owned copies of its arguments.
 #[derive(Debug, Eq, PartialEq)]
-pub enum Call<A> {
+pub(crate) enum Call<A> {
     Action(A),
     BlockingStarted(A),
     BlockingAborted { operation: A, escape_action: A },
 }
 
 /// Callbacks that remember every invocation in order.
-pub struct Recorder<A> {
+pub(crate) struct Recorder<A> {
     pub calls: Vec<Call<A>>,
 }
 
@@ -88,12 +91,15 @@ impl<A: Clone> MenuCallbacks<A> for Recorder<A> {
 }
 
 /// Applies `inputs` in order and returns every resulting event.
-pub fn press_all<'a, A>(state: &mut MenuState<'a, A>, inputs: &[Input]) -> Vec<Event<'a, A>> {
+pub(crate) fn press_all<'a, A>(
+    state: &mut MenuState<'a, A>,
+    inputs: &[Input],
+) -> Vec<Event<'a, A>> {
     inputs.iter().map(|&input| state.handle(input)).collect()
 }
 
 /// Returns whether `state` is displaying exactly `menu`, by identity rather than
 /// structural equality.
-pub fn is_showing<A>(state: &MenuState<'_, A>, menu: &Menu<'_, A>) -> bool {
+pub(crate) fn is_showing<A>(state: &MenuState<'_, A>, menu: &Menu<'_, A>) -> bool {
     core::ptr::eq(state.current_menu(), menu)
 }

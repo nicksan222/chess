@@ -12,6 +12,16 @@ on:
         type: string
         required: false
         default: ""
+      pcb:
+        description: Review and regenerate the PCB
+        type: boolean
+        required: false
+        default: true
+      cad:
+        description: Check and regenerate CAD regardless of the PCB export
+        type: boolean
+        required: false
+        default: true
 
 permissions:
   contents: read
@@ -32,7 +42,7 @@ jobs:
           command: "true"
       - name: 🔍 Review PCB
         id: pcb_review
-        if: ${{ inputs.base-ref == '' }}
+        if: ${{ inputs.pcb && inputs.base-ref == '' }}
         uses: ./.github/actions/run-in-devcontainer
         with:
           image: ${{ inputs.image }}
@@ -40,14 +50,36 @@ jobs:
           command: just --justfile hardware/pcb/justfile review
       - name: 🔍 Review PCB and generate pull-request report
         id: pcb_pr_review
-        if: ${{ inputs.base-ref != '' }}
+        if: ${{ inputs.pcb && inputs.base-ref != '' }}
         uses: ./.github/actions/run-in-devcontainer
         with:
           image: ${{ inputs.image }}
           prepare: "false"
           command: just --justfile hardware/pcb/justfile pr-report ${{ inputs.base-ref }}
+      - name: 🔎 Decide whether CAD needs regenerating
+        id: cad_needed
+        shell: bash
+        env:
+          FORCE: ${{ inputs.cad }}
+          BASE_REF: ${{ inputs.base-ref }}
+        run: |
+          # CAD consumes only these PCB outputs. Without a CAD-scope change it
+          # runs only when the PCB review regenerated them differently from the
+          # pull request's merge base; on main (no base) it always runs.
+          export_files=(chess-board.glb 3d-models.json pcb-components.json chess-board.kicad_pcb)
+          paths=("${export_files[@]/#/hardware/pcb/generated/}")
+          if [[ "$FORCE" == true || -z "$BASE_REF" ]]; then
+            run=true
+          elif git diff --quiet "$(git merge-base "$BASE_REF" HEAD)" -- "${paths[@]}"; then
+            run=false
+            echo "The PCB export CAD consumes is unchanged; skipping CAD."
+          else
+            run=true
+          fi
+          echo "run=$run" >> "$GITHUB_OUTPUT"
       - name: 📐 Check CAD using the reviewed PCB model
         id: cad
+        if: ${{ steps.cad_needed.outputs.run == 'true' }}
         uses: ./.github/actions/run-in-devcontainer
         with:
           image: ${{ inputs.image }}

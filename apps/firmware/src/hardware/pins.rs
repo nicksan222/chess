@@ -10,7 +10,10 @@ pub use super::buttons::{
 };
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-#[allow(clippy::upper_case_acronyms)]
+#[allow(
+    clippy::upper_case_acronyms,
+    reason = "GPIO is the board's name for the pin identity; renaming it would churn every adapter"
+)]
 pub struct GPIO(u8);
 
 impl GPIO {
@@ -29,8 +32,11 @@ pub enum Level {
     High,
 }
 
+#[derive(Clone, Copy, Debug)]
 pub struct Input;
+#[derive(Clone, Copy, Debug)]
 pub struct Output;
+#[derive(Clone, Copy, Debug)]
 pub struct InputOutput;
 
 pub trait Readable {}
@@ -43,18 +49,27 @@ impl Writable for InputOutput {}
 
 /// Reads electrical levels from GPIOs.
 pub trait ReadLevel {
-    type Error;
+    /// Debug-printable, so a failure can be logged with its cause.
+    type Error: core::fmt::Debug;
 
+    /// # Errors
+    ///
+    /// Returns the adapter's error when the line cannot be read.
     fn read_level(&mut self, gpio: GPIO) -> Result<Level, Self::Error>;
 }
 
 /// Writes electrical levels to GPIOs.
 pub trait WriteLevel {
-    type Error;
+    /// Debug-printable, so a failure can be logged with its cause.
+    type Error: core::fmt::Debug;
 
+    /// # Errors
+    ///
+    /// Returns the adapter's error when the line cannot be written.
     fn write_level(&mut self, gpio: GPIO, level: Level) -> Result<(), Self::Error>;
 }
 
+#[derive(Debug)]
 pub struct Pin<const BCM: u8, Capability> {
     gpio: GPIO,
     capability: PhantomData<Capability>,
@@ -78,12 +93,22 @@ impl<const BCM: u8, Capability> Pin<BCM, Capability> {
 }
 
 impl<const BCM: u8, Capability: Readable> Pin<BCM, Capability> {
+    /// Reads this pin's level through `reader`.
+    ///
+    /// # Errors
+    ///
+    /// Returns the reader's error when the line cannot be read.
     pub fn read_level<R: ReadLevel>(&self, reader: &mut R) -> Result<Level, R::Error> {
         reader.read_level(self.gpio)
     }
 }
 
 impl<const BCM: u8, Capability: Writable> Pin<BCM, Capability> {
+    /// Drives this pin to `level` through `writer`.
+    ///
+    /// # Errors
+    ///
+    /// Returns the writer's error when the line cannot be written.
     pub fn set_level<W: WriteLevel>(&self, writer: &mut W, level: Level) -> Result<(), W::Error> {
         writer.write_level(self.gpio, level)
     }
@@ -94,6 +119,7 @@ impl<const BCM: u8, Capability: Writable> Pin<BCM, Capability> {
 macro_rules! button_pins {
     ($($field:ident: $bcm:literal => $button:ident),+ $(,)?) => {
         /// Direct high/low GPIO pins used by the control-panel buttons.
+        #[derive(Debug)]
         pub struct GPIOPins {
             $(pub $field: ButtonPin<$bcm>,)+
         }
@@ -133,6 +159,7 @@ button_pins! {
 }
 
 /// Pins for the board's shared I2C bus.
+#[derive(Debug)]
 pub struct I2CPins {
     pub data: Pin<2, InputOutput>,
     pub clock: Pin<3, InputOutput>,
@@ -148,6 +175,7 @@ impl I2CPins {
 }
 
 /// Pins for the SPI LED chain.
+#[derive(Debug)]
 pub struct SPIPins {
     pub data: Pin<10, Output>,
     pub clock: Pin<11, Output>,
@@ -165,7 +193,7 @@ impl SPIPins {
 /// Pins for the LED power rail.
 ///
 /// `enable` is net `LED_EN` (header pin 37), active high. The board holds it
-/// low with a 100 kΩ pull-down and the SoC resets it to pull-low, so the LED
+/// low with a 100 kΩ pull-down and the `SoC` resets it to pull-low, so the LED
 /// rail is off while the Pi boots, resets, or after this process exits; the
 /// kernel releases the line then, so safety never depends on firmware driving
 /// it low.
@@ -182,6 +210,7 @@ impl SPIPins {
 /// The future LED driver must request GPIO26 as an output with initial value
 /// Inactive/low (gpiocdev `as_output(Value::Inactive)`); a request that
 /// defaults high would glitch the LED rail on.
+#[derive(Debug)]
 pub struct LEDPins {
     pub enable: Pin<26, Output>,
 }
@@ -196,6 +225,7 @@ impl LEDPins {
 }
 
 /// The host interfaces connected by the board hardware.
+#[derive(Debug)]
 pub struct BoardPins {
     pub gpio: GPIOPins,
     pub i2c: I2CPins,
@@ -233,6 +263,9 @@ mod tests {
     impl WriteLevel for Lines {
         type Error = ();
 
+        /// # Errors
+        ///
+        /// Returns the adapter's error when the line cannot be written.
         fn write_level(&mut self, _: GPIO, level: Level) -> Result<(), Self::Error> {
             self.level = level;
             Ok(())

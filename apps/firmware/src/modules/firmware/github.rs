@@ -13,6 +13,8 @@ pub(super) const LATEST_RELEASE: &str =
 
 /// Bounds the whole feed request; longer than the preflight probes so a slow
 /// link is not mistaken for an unreachable one.
+// Not a `tuning!` value: bounds one HTTPS request to GitHub; a network bound, not a prototype knob.
+// ast-grep-ignore: no-hardcoded-timing
 const REQUEST_TIMEOUT: Duration = Duration::from_secs(15);
 
 /// The tag and page of the latest release at `feed`, or `None` when GitHub

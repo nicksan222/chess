@@ -2,6 +2,7 @@
 name = "chess"
 edition.workspace = true
 license.workspace = true
+publish.workspace = true
 rust-version.workspace = true
 version.workspace = true
 autotests = false
@@ -53,3 +54,6 @@ path = "tests/lichess/main.rs"
 name = "perft"
 path = "benches/performance/perft.rs"
 harness = false
+
+[lints]
+workspace = true

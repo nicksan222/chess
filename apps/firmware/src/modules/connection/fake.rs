@@ -1,7 +1,7 @@
 //! An in-memory Wi-Fi stack for unit tests of [`Connectivity`](super::Connectivity).
 //!
-//! It models only what the earlier Linux VM runs (real NetworkManager, hostapd and
-//! `mac80211_hwsim`, since removed) showed NetworkManager to do:
+//! It models only what the earlier Linux VM runs (real `NetworkManager`, hostapd and
+//! `mac80211_hwsim`, since removed) showed `NetworkManager` to do:
 //! - an active access point's SSID is what the radio reports (a running hotspot
 //!   looked like `Connected("ChessSetup")`);
 //! - there is one radio, so activating an access point or joining a network replaces
@@ -203,6 +203,10 @@ impl FakeWifi {
     }
 }
 
+#[allow(
+    clippy::unused_async_trait_impl,
+    reason = "the backend trait is async; this in-memory fake never waits"
+)]
 impl WifiBackend for FakeWifi {
     async fn radio(&self) -> Result<Radio, Error> {
         let stalled = {

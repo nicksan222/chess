@@ -71,22 +71,22 @@ async fn a_slow_hall_bus_does_not_stall_the_runtime() {
     use firmware::hardware::pins::{Button, ButtonEvent};
     use std::sync::{
         Arc,
-        atomic::{AtomicBool, Ordering},
+        atomic::{AtomicUsize, Ordering},
     };
 
-    struct SlowBus(Arc<AtomicBool>);
+    struct SlowBus(Arc<AtomicUsize>);
     impl ErrorType for SlowBus {
         type Error = std::convert::Infallible;
     }
     impl I2c for SlowBus {
         fn transaction(&mut self, _: u8, _: &mut [Operation<'_>]) -> Result<(), Self::Error> {
-            if !self.0.swap(true, Ordering::SeqCst) {
+            if self.0.fetch_add(1, Ordering::SeqCst) == 0 {
                 std::thread::sleep(Duration::from_millis(200));
             }
             Ok(())
         }
     }
-    let entered = Arc::new(AtomicBool::new(false));
+    let entered = Arc::new(AtomicUsize::new(0));
     let mut firmware = Firmware::start().unwrap();
     let start = std::time::Instant::now();
     let sensors = HallSensors::start(
@@ -95,7 +95,7 @@ async fn a_slow_hall_bus_does_not_stall_the_runtime() {
         HallTuning::DEFAULT,
     )
     .unwrap();
-    while !entered.load(Ordering::SeqCst) {
+    while entered.load(Ordering::SeqCst) == 0 {
         tokio::task::yield_now().await;
     }
     firmware
@@ -112,5 +112,56 @@ async fn a_slow_hall_bus_does_not_stall_the_runtime() {
     );
     assert!(start.elapsed() < Duration::from_millis(100));
     drop(sensors);
+    firmware.shutdown().await.unwrap();
+    // The first bank may finish its in-flight configuration; no next bank
+    // may be touched after cancellation.
+    tokio::time::sleep(Duration::from_millis(250)).await;
+    assert_eq!(entered.load(Ordering::SeqCst), 2);
+}
+
+#[tokio::test]
+async fn invalid_hall_tuning_returns_an_error_before_starting_a_worker() {
+    for tuning in [
+        HallTuning {
+            scan_interval: Duration::ZERO,
+            ..HallTuning::DEFAULT
+        },
+        HallTuning {
+            stable_scans: 0,
+            ..HallTuning::DEFAULT
+        },
+    ] {
+        let error =
+            HallSensors::start(Board::empty(), &HardwareEventBus::new(), tuning).unwrap_err();
+        assert_eq!(error.kind(), std::io::ErrorKind::InvalidInput);
+    }
+}
+
+#[tokio::test]
+async fn a_full_board_is_delivered_without_losing_square_events() {
+    let board = Board::empty();
+    for file in 'A'..='H' {
+        for rank in 1..=8 {
+            board.place(&format!("{file}{rank}"));
+        }
+    }
+    let mut firmware = Firmware::start().unwrap();
+    let _sensors =
+        HallSensors::start(board.clone(), &firmware.events(), HallTuning::DEFAULT).unwrap();
+    let full = tokio::time::timeout(Duration::from_secs(1), firmware.after(63))
+        .await
+        .unwrap()
+        .unwrap();
+    assert_eq!(full.modules.pieces.count(), 64);
+    for file in 'A'..='H' {
+        for rank in 1..=8 {
+            board.remove(&format!("{file}{rank}"));
+        }
+    }
+    let empty = tokio::time::timeout(Duration::from_secs(1), firmware.after(127))
+        .await
+        .unwrap()
+        .unwrap();
+    assert_eq!(empty.modules.pieces.count(), 0);
     firmware.shutdown().await.unwrap();
 }

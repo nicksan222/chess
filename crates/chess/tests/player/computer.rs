@@ -41,11 +41,7 @@ fn computer_illegal_engine_move_surfaces_error_without_polluting_history() {
     match session.poll() {
         Err(SessionError::Player {
             player: Color::White,
-            error: PlayerError::Computer(ComputerError::IllegalMove(_)),
-        }) => {}
-        Err(SessionError::Player {
-            player: Color::White,
-            error: PlayerError::Computer(ComputerError::Resigned),
+            error: PlayerError::Computer(ComputerError::IllegalMove(_) | ComputerError::Resigned),
         }) => {}
         Ok(SessionUpdate::MovePlayed { step, .. }) => {
             assert_eq!(step.event(), HistoryEvent::Move(forced));

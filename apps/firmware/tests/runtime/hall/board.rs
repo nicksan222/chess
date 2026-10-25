@@ -14,18 +14,18 @@ use firmware::hardware::{
 
 /// Input-port levels of the eight expanders.
 #[derive(Clone)]
-pub struct Board(Arc<Mutex<[u8; HallBank::COUNT]>>);
+pub(super) struct Board(Arc<Mutex<[u8; HallBank::COUNT]>>);
 
 impl Board {
-    pub fn empty() -> Self {
+    pub(super) fn empty() -> Self {
         Self(Arc::new(Mutex::new([0xFF; HallBank::COUNT])))
     }
 
-    pub fn place(&self, name: &str) {
+    pub(super) fn place(&self, name: &str) {
         self.update(name, |input, bit| input & !bit);
     }
 
-    pub fn remove(&self, name: &str) {
+    pub(super) fn remove(&self, name: &str) {
         self.update(name, |input, bit| input | bit);
     }
 
@@ -70,6 +70,6 @@ impl I2c for Board {
     }
 }
 
-pub fn square(name: &str) -> BoardPosition {
+pub(super) fn square(name: &str) -> BoardPosition {
     BoardPosition::parse(name).unwrap()
 }

@@ -2,7 +2,7 @@ use std::fmt;
 
 /// Why a bank could not be configured or read.
 #[derive(Debug, Eq, PartialEq)]
-pub enum BankError<E> {
+pub(in crate::hardware::hall) enum BankError<E> {
     Bus(E),
     /// A register read back a value other than the one written.
     Register {

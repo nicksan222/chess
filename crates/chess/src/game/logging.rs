@@ -29,7 +29,7 @@ impl Game {
     /// for every local push and every accepted peer step, so the log
     /// mirrors the authoritative [`GameHistory`](crate::GameHistory). A
     /// no-op without a `logger` subscriber.
-    pub(super) fn log_history_step(&self, step: HistoryStep) {
+    pub(super) fn log_history_step(step: HistoryStep) {
         match step.event() {
             HistoryEvent::Move(chess_move) => info!(
                 target: TARGET,
@@ -55,7 +55,7 @@ impl Game {
     /// resolved ply and event. Called by [`Game::resolve_latest_invalid`]
     /// after the tip is popped; a no-op without a `logger` subscriber and
     /// never a substitute for inspecting the history itself.
-    pub(super) fn log_invalid_resolved(&self, step: HistoryStep) {
+    pub(super) fn log_invalid_resolved(step: HistoryStep) {
         info!(
             target: TARGET,
             "resolved invalid state at ply {}: {:?}",

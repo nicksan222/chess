@@ -4,45 +4,33 @@
 //! with repeated starts and ends it with a single stop.
 
 mod error;
-mod ffi;
 mod plan;
 
-use std::{fs::File, io, os::fd::AsRawFd, path::Path};
+use i2cdev::{core::I2CTransfer, linux::LinuxI2CBus};
+use std::{io, path::Path};
 
 use embedded_hal::i2c::{ErrorType, I2c, Operation};
 
 pub use error::LinuxI2cError;
-use ffi::{I2C_RDWR, Message, Transfer};
 use plan::Plan;
 
 /// An open I2C bus such as `/dev/i2c-1`.
+#[derive(Debug)]
 pub struct LinuxI2c {
-    device: File,
+    device: LinuxI2CBus,
 }
 
 impl LinuxI2c {
+    /// Opens the Linux I2C character device.
+    ///
+    /// # Errors
+    /// Returns the operating-system error if the device cannot be opened.
     pub fn open(path: impl AsRef<Path>) -> io::Result<Self> {
-        let device = File::options().read(true).write(true).open(path)?;
+        let device = LinuxI2CBus::new(path).map_err(io::Error::from)?;
         Ok(Self { device })
     }
 
-    /// Performs `messages` as one combined transfer.
-    fn transfer(&self, messages: &mut [Message]) -> Result<(), LinuxI2cError> {
-        let mut transfer = Transfer {
-            messages: messages.as_mut_ptr(),
-            // At most one message per operation, and operations fit in memory.
-            count: messages.len() as u32,
-        };
-        // SAFETY: `transfer` describes `messages`, whose buffers the caller
-        // keeps alive and sized to their lengths for the duration of the call.
-        let result = unsafe { libc::ioctl(self.device.as_raw_fd(), I2C_RDWR, &mut transfer) };
-        Self::completed(result, messages.len())
-    }
-
-    fn completed(result: libc::c_int, expected: usize) -> Result<(), LinuxI2cError> {
-        if result < 0 {
-            return Err(LinuxI2cError(io::Error::last_os_error()));
-        }
+    fn completed(result: u32, expected: usize) -> Result<(), LinuxI2cError> {
         if usize::try_from(result).ok() != Some(expected) {
             return Err(LinuxI2cError(io::Error::new(
                 io::ErrorKind::UnexpectedEof,
@@ -68,7 +56,11 @@ impl I2c for LinuxI2c {
             return Ok(());
         }
         let mut messages = plan.messages(address)?;
-        self.transfer(&mut messages)?;
+        let completed = self
+            .device
+            .transfer(&mut messages)
+            .map_err(|error| LinuxI2cError(io::Error::from(error)))?;
+        Self::completed(completed, messages.len())?;
         plan.scatter(operations);
         Ok(())
     }

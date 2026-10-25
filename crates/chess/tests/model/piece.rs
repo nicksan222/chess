@@ -17,7 +17,7 @@ fn all_pieces() -> impl Iterator<Item = Piece> {
             Piece::new(
                 color,
                 kind,
-                Square::from_index(SquareIndex::new(index as u8).unwrap()),
+                Square::from_index(SquareIndex::new(u8::try_from(index).unwrap()).unwrap()),
             )
         })
 }

@@ -4,22 +4,42 @@ use persistence::{KeyValueStore, LoadOutcome};
 
 use crate::common::MemoryStore;
 
+const KEY: &[u8] = b"settings/brightness";
+
 fn verify_store_contract<S>(store: &mut S)
 where
     S: KeyValueStore,
     S::Error: Debug,
 {
-    let key = b"settings/brightness";
     let mut output = [0xAA; 8];
+    verify_absent_key(store, &mut output);
+    verify_stored_key(store, &mut output);
+    verify_overwrite_and_remove(store, &mut output);
+}
+
+fn verify_absent_key<S>(store: &mut S, output: &mut [u8; 8])
+where
+    S: KeyValueStore,
+    S::Error: Debug,
+{
+    let key = KEY;
 
     assert_eq!(store.value_len(key).expect("length succeeds"), None);
     assert!(!store.contains(key).expect("contains succeeds"));
     assert_eq!(
-        store.load(key, &mut output).expect("load succeeds"),
+        store.load(key, output).expect("load succeeds"),
         LoadOutcome::NotFound
     );
-    assert_eq!(output, [0xAA; 8]);
+    assert_eq!(*output, [0xAA; 8]);
     assert!(!store.remove(key).expect("remove succeeds"));
+}
+
+fn verify_stored_key<S>(store: &mut S, output: &mut [u8; 8])
+where
+    S: KeyValueStore,
+    S::Error: Debug,
+{
+    let key = KEY;
 
     store.store(key, &[1, 2, 3, 4]).expect("store succeeds");
     assert_eq!(store.value_len(key).expect("length succeeds"), Some(4));
@@ -33,16 +53,24 @@ where
     assert_eq!(too_small, [0xCC; 3]);
 
     assert_eq!(
-        store.load(key, &mut output).expect("load succeeds"),
+        store.load(key, output).expect("load succeeds"),
         LoadOutcome::Loaded { len: 4 }
     );
     assert_eq!(&output[..4], &[1, 2, 3, 4]);
     assert_eq!(&output[4..], &[0xAA; 4]);
+}
+
+fn verify_overwrite_and_remove<S>(store: &mut S, output: &mut [u8; 8])
+where
+    S: KeyValueStore,
+    S::Error: Debug,
+{
+    let key = KEY;
 
     store.store(key, &[9, 8]).expect("overwrite succeeds");
     assert_eq!(store.value_len(key).expect("length succeeds"), Some(2));
     assert_eq!(
-        store.load(key, &mut output).expect("load succeeds"),
+        store.load(key, output).expect("load succeeds"),
         LoadOutcome::Loaded { len: 2 }
     );
     assert_eq!(&output[..2], &[9, 8]);
@@ -79,6 +107,10 @@ fn empty_keys_and_values_are_distinct_from_missing_entries() {
 }
 
 #[test]
+#[allow(
+    clippy::mut_mut,
+    reason = "passing `&mut &mut MemoryStore` makes the store under test `&mut MemoryStore`, the forwarding impl"
+)]
 fn mutable_references_forward_the_store_contract() {
     let mut store = MemoryStore::new();
     let mut reference = &mut store;

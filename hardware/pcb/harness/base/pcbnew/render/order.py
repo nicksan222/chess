@@ -14,13 +14,17 @@ import re
 _REFERENCE = re.compile(r'\(property\s+"Reference"\s+"([^"]+)"')
 
 
-def order_footprints(source: str) -> str:
-    """Sort whole footprints by reference in a serialized KiCad board.
+def _opens_footprint(source: str, index: int, depth: int) -> bool:
+    end = index + len("(footprint")
+    return (
+        depth == 1
+        and source.startswith("(footprint", index)
+        and source[end : end + 1] in {" ", "\t", "\n", "\r"}
+    )
 
-    Parentheses within quoted text are ignored while finding block boundaries.
-    Missing or repeated references are errors because neither can provide an
-    unambiguous component identity. Other board content keeps its exact bytes.
-    """
+
+def _footprint_spans(source: str) -> list[tuple[int, int]]:
+    """Return the (start, end) of each top-level footprint block."""
     spans: list[tuple[int, int]] = []
     depth = 0
     quoted = False
@@ -38,12 +42,7 @@ def order_footprints(source: str) -> str:
         if char == '"':
             quoted = True
         elif char == "(":
-            if (
-                depth == 1
-                and source.startswith("(footprint", index)
-                and source[index + len("(footprint") : index + len("(footprint") + 1]
-                in {" ", "\t", "\n", "\r"}
-            ):
+            if _opens_footprint(source, index, depth):
                 footprint_start = index
             depth += 1
         elif char == ")":
@@ -55,7 +54,17 @@ def order_footprints(source: str) -> str:
                 footprint_start = None
     if depth != 0 or quoted:
         raise ValueError("unbalanced KiCad board text")
+    return spans
 
+
+def order_footprints(source: str) -> str:
+    """Sort whole footprints by reference in a serialized KiCad board.
+
+    Parentheses within quoted text are ignored while finding block boundaries.
+    Missing or repeated references are errors because neither can provide an
+    unambiguous component identity. Other board content keeps its exact bytes.
+    """
+    spans = _footprint_spans(source)
     blocks = [source[start:end] for start, end in spans]
     references: list[str] = []
     for block in blocks:
@@ -67,9 +76,12 @@ def order_footprints(source: str) -> str:
         raise ValueError("duplicate footprint reference")
 
     ordered = [
-        block for _, block in sorted(zip(references, blocks), key=lambda pair: pair[0])
+        block
+        for _, block in sorted(
+            zip(references, blocks, strict=True), key=lambda pair: pair[0]
+        )
     ]
     result = source
-    for (start, end), block in reversed(list(zip(spans, ordered))):
+    for (start, end), block in reversed(list(zip(spans, ordered, strict=True))):
         result = result[:start] + block + result[end:]
     return result

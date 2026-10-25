@@ -10,6 +10,86 @@ from .nodes import NodeMap
 from .number import spice_number
 
 
+def _button_contact(
+    reference: str, model: SpiceModel, nets: tuple[Net, ...], nodes: NodeMap
+) -> str:
+    if len(nets) != 2:
+        raise ValueError("button contact needs two terminals")
+    first, second = (nodes.node(net) for net in nets)
+    resistance = _parameter(model, "on_resistance", "ohm", positive=True)
+    return (
+        f"Scontact_{reference} {first} {second} state_{reference} 0 SW_{reference}\n"
+        f".model SW_{reference} SW(Ron={spice_number(resistance)} Roff=1e12 Vt=0.5 Vh=0)"
+    )
+
+
+def _open_drain_sensor(
+    reference: str, model: SpiceModel, nets: tuple[Net, ...], nodes: NodeMap
+) -> str:
+    if len(nets) != 3:
+        raise ValueError("open-drain sensor needs output, supply and ground terminals")
+    output, supply, ground = (nodes.node(net) for net in nets)
+    resistance = _parameter(model, "on_resistance", "ohm", positive=True)
+    leakage = _parameter(model, "off_leakage", "ampere", positive=False)
+    return (
+        f"Soutput_{reference} {output} {ground} state_{reference} 0 SW_{reference}\n"
+        f".model SW_{reference} SW(Ron={spice_number(resistance)} Roff=1e12 Vt=0.5 Vh=0)\n"
+        f"Ileak_{reference} {output} {ground} {spice_number(leakage)}\n"
+        f"Rbias_{reference} {supply} {ground} 1e12"
+    )
+
+
+def _input_pullup_bank(
+    reference: str, model: SpiceModel, nets: tuple[Net, ...], nodes: NodeMap
+) -> str:
+    if len(nets) != 10:
+        raise ValueError("input bank needs supply, ground and eight input terminals")
+    supply, ground, *inputs = (nodes.node(net) for net in nets)
+    resistance = _parameter(model, "pullup_resistance", "ohm", positive=True)
+    leakage = _parameter(model, "input_leakage", "ampere", positive=False)
+    return "\n".join(
+        row
+        for index, pin in enumerate(inputs)
+        for row in (
+            f"Rpull_{reference}_{index} {pin} {supply} {spice_number(resistance)}",
+            f"Ileak_{reference}_{index} {pin} {ground} {spice_number(leakage)}",
+        )
+    )
+
+
+def _two_terminal(
+    reference: str, model: SpiceModel, nets: tuple[Net, ...], nodes: NodeMap
+) -> str:
+    if len(nets) != 2:
+        raise ValueError(f"{model.key} model needs two terminals")
+    prefix = {
+        "resistor": "R",
+        "capacitor": "C",
+        "diode": "D",
+        "button_static": "SW",
+    }[model.key]
+    if not re.fullmatch(rf"{prefix}[A-Za-z0-9_]+", reference):
+        raise ValueError(f"{model.key} reference must start with {prefix}")
+    first, second = (nodes.node(net) for net in nets)
+    if model.key == "resistor":
+        resistance = _parameter(model, "resistance", "ohm", positive=True)
+        return f"{reference} {first} {second} {spice_number(resistance)}"
+    if model.key == "capacitor":
+        capacitance = _parameter(model, "capacitance", "farad", positive=True)
+        return f"{reference} {first} {second} {spice_number(capacitance)}"
+    if model.key == "button_static":
+        resistance = _parameter(model, "contact_resistance", "ohm", positive=True)
+        return f"Rcontact_{reference} {first} {second} {spice_number(resistance)}"
+    saturation = _parameter(model, "saturation_current", "ampere", positive=True)
+    ideality = _parameter(model, "ideality_factor", "ratio", positive=True)
+    series = _parameter(model, "series_resistance", "ohm", positive=False)
+    return (
+        f"{reference} {first} {second} D_{reference}\n"
+        f".model D_{reference} D(Is={spice_number(saturation)} "
+        f"N={spice_number(ideality)} Rs={spice_number(series)})"
+    )
+
+
 def render_model(
     reference: str, model: SpiceModel, nets: tuple[Net, ...], nodes: NodeMap
 ) -> str:
@@ -29,73 +109,13 @@ def render_model(
     } and not re.fullmatch(r"[A-Za-z][A-Za-z0-9_]*", reference):
         raise ValueError("unsafe component model reference")
     if model.key == "button_contact":
-        if len(nets) != 2:
-            raise ValueError("button contact needs two terminals")
-        first, second = (nodes.node(net) for net in nets)
-        resistance = _parameter(model, "on_resistance", "ohm", positive=True)
-        return (
-            f"Scontact_{reference} {first} {second} state_{reference} 0 SW_{reference}\n"
-            f".model SW_{reference} SW(Ron={spice_number(resistance)} Roff=1e12 Vt=0.5 Vh=0)"
-        )
+        return _button_contact(reference, model, nets, nodes)
     if model.key == "open_drain_sensor":
-        if len(nets) != 3:
-            raise ValueError(
-                "open-drain sensor needs output, supply and ground terminals"
-            )
-        output, supply, ground = (nodes.node(net) for net in nets)
-        resistance = _parameter(model, "on_resistance", "ohm", positive=True)
-        leakage = _parameter(model, "off_leakage", "ampere", positive=False)
-        return (
-            f"Soutput_{reference} {output} {ground} state_{reference} 0 SW_{reference}\n"
-            f".model SW_{reference} SW(Ron={spice_number(resistance)} Roff=1e12 Vt=0.5 Vh=0)\n"
-            f"Ileak_{reference} {output} {ground} {spice_number(leakage)}\n"
-            f"Rbias_{reference} {supply} {ground} 1e12"
-        )
+        return _open_drain_sensor(reference, model, nets, nodes)
     if model.key == "input_pullup_bank":
-        if len(nets) != 10:
-            raise ValueError(
-                "input bank needs supply, ground and eight input terminals"
-            )
-        supply, ground, *inputs = (nodes.node(net) for net in nets)
-        resistance = _parameter(model, "pullup_resistance", "ohm", positive=True)
-        leakage = _parameter(model, "input_leakage", "ampere", positive=False)
-        return "\n".join(
-            row
-            for index, pin in enumerate(inputs)
-            for row in (
-                f"Rpull_{reference}_{index} {pin} {supply} {spice_number(resistance)}",
-                f"Ileak_{reference}_{index} {pin} {ground} {spice_number(leakage)}",
-            )
-        )
+        return _input_pullup_bank(reference, model, nets, nodes)
     if model.key in {"resistor", "capacitor", "diode", "button_static"}:
-        if len(nets) != 2:
-            raise ValueError(f"{model.key} model needs two terminals")
-        prefix = {
-            "resistor": "R",
-            "capacitor": "C",
-            "diode": "D",
-            "button_static": "SW",
-        }[model.key]
-        if not re.fullmatch(rf"{prefix}[A-Za-z0-9_]+", reference):
-            raise ValueError(f"{model.key} reference must start with {prefix}")
-        first, second = (nodes.node(net) for net in nets)
-        if model.key == "resistor":
-            resistance = _parameter(model, "resistance", "ohm", positive=True)
-            return f"{reference} {first} {second} {spice_number(resistance)}"
-        if model.key == "capacitor":
-            capacitance = _parameter(model, "capacitance", "farad", positive=True)
-            return f"{reference} {first} {second} {spice_number(capacitance)}"
-        if model.key == "button_static":
-            resistance = _parameter(model, "contact_resistance", "ohm", positive=True)
-            return f"Rcontact_{reference} {first} {second} {spice_number(resistance)}"
-        saturation = _parameter(model, "saturation_current", "ampere", positive=True)
-        ideality = _parameter(model, "ideality_factor", "ratio", positive=True)
-        series = _parameter(model, "series_resistance", "ohm", positive=False)
-        return (
-            f"{reference} {first} {second} D_{reference}\n"
-            f".model D_{reference} D(Is={spice_number(saturation)} "
-            f"N={spice_number(ideality)} Rs={spice_number(series)})"
-        )
+        return _two_terminal(reference, model, nets, nodes)
     raise ValueError(f"unsupported model: {model.key}")
 
 

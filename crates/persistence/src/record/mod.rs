@@ -58,6 +58,12 @@ pub const fn encoded_len(payload_len: usize) -> Option<usize> {
 ///
 /// The output is left unchanged on error. Bytes after the returned encoded
 /// length are not modified.
+///
+/// # Errors
+///
+/// Returns [`EncodeError::PayloadTooLarge`] when the payload length cannot be
+/// represented by the format, or [`EncodeError::OutputTooSmall`] when `output`
+/// cannot hold the complete record.
 pub fn encode(
     schema_version: u16,
     payload: &[u8],
@@ -82,6 +88,12 @@ pub fn encode(
 ///
 /// Trailing bytes are rejected because persistent records have an exact length;
 /// callers must slice framing buffers before decoding.
+///
+/// # Errors
+///
+/// Returns a [`DecodeError`] when the input is shorter than the header, has an
+/// invalid magic, an unsupported format version or flags or payload length,
+/// its length does not match the declared payload, or the checksum differs.
 pub fn decode(input: &[u8]) -> Result<Record<'_>, DecodeError> {
     let header = Header::parse(input)?;
     let payload = &input[HEADER_LEN..];
@@ -118,6 +130,10 @@ struct Header {
 
 impl Header {
     /// Builds the header for `payload`, which must fit in `u32`.
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "`encode` rejects payloads over `u32::MAX` through `encoded_len` before building a header"
+    )]
     fn for_payload(schema_version: u16, payload: &[u8]) -> Self {
         let mut header = Self {
             schema_version,

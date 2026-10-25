@@ -6,7 +6,7 @@ from enum import StrEnum
 from typing import cast
 
 from .component import BoardComponent, RegisteredComponent
-from .connections import Endpoint, NetConnection, NoConnect
+from .connections import Endpoint, NetConnection, NoConnect, PinConnection
 from .geometry import courtyards_overlap
 from .net import Net
 from .pcbnew.outline import BoardOutline
@@ -208,82 +208,105 @@ class BoardRegistry:
         if len(net_types) > 1:
             raise ValueError("all board connections must use one Net enum")
         board_net_type = next(iter(net_types), None)
-        for endpoint, connection in assignments.items():
-            if not isinstance(connection, NetConnection):
-                continue
-            for peer in connection.peers:
-                other = assignments.get(peer)
-                if not isinstance(other, NetConnection) or other.net != connection.net:
-                    raise ValueError(
-                        f"{endpoint.reference}/{endpoint.pin} expects "
-                        f"{peer.reference}/{peer.pin} on {connection.net.label}"
-                    )
+        _check_peers(assignments)
         for scenario in self._scenarios.values():
-            if (
-                board_net_type is not None
-                and type(scenario.ground_net) is not board_net_type
-            ):
-                raise ValueError(
-                    f"{scenario.name}: scenario must use the board's one Net enum"
-                )
-            if scenario.ground_net not in nets:
-                raise ValueError(f"{scenario.name}: unknown ground net")
-            for source in scenario.sources:
-                if isinstance(source, VoltageSource):
-                    used = (source.positive_net, source.negative_net)
-                elif isinstance(source, CurrentSource):  # pyright: ignore[reportUnnecessaryIsInstance]
-                    used = (source.from_net, source.to_net)
-                else:
-                    raise ValueError(f"{scenario.name}: unknown source kind")
-                if any(type(net) is not board_net_type for net in used):
-                    raise ValueError(
-                        f"{scenario.name}/{source.name}: source must use the board's one Net enum"
-                    )
-                if unknown := set(used) - nets:
-                    raise ValueError(
-                        f"{scenario.name}/{source.name}: unknown nets {sorted(net.label for net in unknown)}"
-                    )
-            if isinstance(scenario.analysis, AcSweep) and not any(
-                isinstance(source, VoltageSource)
-                and source.ac_magnitude_volts is not None
-                for source in scenario.sources
-            ):
-                raise ValueError(f"{scenario.name}: AC excitation is required")
+            _check_scenario(scenario, nets, board_net_type)
         for reference, requirement in self.spice_requirements():
             scenario = self._scenarios.get(requirement.scenario)
             if scenario is None:
                 raise ValueError(
                     f"{reference}: unknown SPICE scenario {requirement.scenario}"
                 )
-            measurement = requirement.measurement
-            if isinstance(measurement, VoltageAt):
-                points = (measurement.pin,)
-            elif isinstance(measurement, VoltageBetween):
-                points = (measurement.positive, measurement.negative)
-            elif isinstance(measurement, CurrentThrough):  # pyright: ignore[reportUnnecessaryIsInstance]
-                sources = {s.name: s for s in scenario.sources}
-                if measurement.source not in sources:
-                    raise ValueError(
-                        f"{reference}: unknown source {measurement.source}"
-                    )
-                if not isinstance(sources[measurement.source], VoltageSource):
-                    raise ValueError(
-                        f"{reference}: current probe needs a voltage source"
-                    )
-                points = ()
-            else:
-                raise ValueError(f"{reference}: unknown measurement kind")
-            for point in points:
-                if (
-                    scenario.component_references is not None
-                    and point.reference not in scenario.component_references
-                ):
-                    raise ValueError(
-                        f"{reference}: measurement is outside the selected component scope"
-                    )
-                if point not in assignments or isinstance(
-                    assignments[point], NoConnect
-                ):
-                    raise ValueError(
-                        f"{reference}: cannot measure unconnected {point.reference}/{point.pin}"
-                    )
+            _check_measured_points(
+                reference,
+                _measured_points(reference, requirement, scenario),
+                scenario,
+                assignments,
+            )
+
+
+def _check_peers(assignments: dict[Endpoint, PinConnection]) -> None:
+    for endpoint, connection in assignments.items():
+        if not isinstance(connection, NetConnection):
+            continue
+        for peer in connection.peers:
+            other = assignments.get(peer)
+            if not isinstance(other, NetConnection) or other.net != connection.net:
+                raise ValueError(
+                    f"{endpoint.reference}/{endpoint.pin} expects "
+                    f"{peer.reference}/{peer.pin} on {connection.net.label}"
+                )
+
+
+def _check_scenario_sources(
+    scenario: SpiceScenario, nets: set[Net], board_net_type: type[Net] | None
+) -> None:
+    for source in scenario.sources:
+        if isinstance(source, VoltageSource):
+            used = (source.positive_net, source.negative_net)
+        elif isinstance(source, CurrentSource):  # pyright: ignore[reportUnnecessaryIsInstance]
+            used = (source.from_net, source.to_net)
+        else:
+            raise ValueError(f"{scenario.name}: unknown source kind")
+        if any(type(net) is not board_net_type for net in used):
+            raise ValueError(
+                f"{scenario.name}/{source.name}: source must use the board's one Net enum"
+            )
+        if unknown := set(used) - nets:
+            raise ValueError(
+                f"{scenario.name}/{source.name}: unknown nets {sorted(net.label for net in unknown)}"
+            )
+
+
+def _check_scenario(
+    scenario: SpiceScenario, nets: set[Net], board_net_type: type[Net] | None
+) -> None:
+    if board_net_type is not None and type(scenario.ground_net) is not board_net_type:
+        raise ValueError(f"{scenario.name}: scenario must use the board's one Net enum")
+    if scenario.ground_net not in nets:
+        raise ValueError(f"{scenario.name}: unknown ground net")
+    _check_scenario_sources(scenario, nets, board_net_type)
+    if isinstance(scenario.analysis, AcSweep) and not any(
+        isinstance(source, VoltageSource) and source.ac_magnitude_volts is not None
+        for source in scenario.sources
+    ):
+        raise ValueError(f"{scenario.name}: AC excitation is required")
+
+
+def _measured_points(
+    reference: str, requirement: SpiceRequirement, scenario: SpiceScenario
+) -> tuple[Endpoint, ...]:
+    """Return the endpoints a requirement measures, checking source probes."""
+    measurement = requirement.measurement
+    if isinstance(measurement, VoltageAt):
+        return (measurement.pin,)
+    if isinstance(measurement, VoltageBetween):
+        return (measurement.positive, measurement.negative)
+    if isinstance(measurement, CurrentThrough):  # pyright: ignore[reportUnnecessaryIsInstance]
+        sources = {s.name: s for s in scenario.sources}
+        if measurement.source not in sources:
+            raise ValueError(f"{reference}: unknown source {measurement.source}")
+        if not isinstance(sources[measurement.source], VoltageSource):
+            raise ValueError(f"{reference}: current probe needs a voltage source")
+        return ()
+    raise ValueError(f"{reference}: unknown measurement kind")
+
+
+def _check_measured_points(
+    reference: str,
+    points: tuple[Endpoint, ...],
+    scenario: SpiceScenario,
+    assignments: dict[Endpoint, PinConnection],
+) -> None:
+    for point in points:
+        if (
+            scenario.component_references is not None
+            and point.reference not in scenario.component_references
+        ):
+            raise ValueError(
+                f"{reference}: measurement is outside the selected component scope"
+            )
+        if point not in assignments or isinstance(assignments[point], NoConnect):
+            raise ValueError(
+                f"{reference}: cannot measure unconnected {point.reference}/{point.pin}"
+            )

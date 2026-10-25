@@ -7,7 +7,7 @@ import shutil
 import subprocess
 from collections.abc import Callable
 from pathlib import Path
-from typing import TypedDict, cast
+from typing import NotRequired, TypedDict, Unpack, cast
 
 from build_support import staged_output
 
@@ -74,14 +74,23 @@ def blender_command(
     return command
 
 
+class PublishHooks(TypedDict):
+    """Optional collaborators of `publish`, replaceable by tests."""
+
+    runner: NotRequired[Callable[..., object]]
+    prepare: NotRequired[Callable[[Path], None] | None]
+    identity_reader: NotRequired[Callable[[Path], BlenderIdentity]]
+
+
 def publish(
     blender: Path,
     entry: Path,
     destination: Path,
-    runner: Callable[..., object] = subprocess.run,
-    prepare: Callable[[Path], None] | None = None,
-    identity_reader: Callable[[Path], BlenderIdentity] = blender_identity,
+    **hooks: Unpack[PublishHooks],
 ) -> None:
+    runner = hooks.get("runner", subprocess.run)
+    prepare = hooks.get("prepare")
+    identity_reader = hooks.get("identity_reader", blender_identity)
     with staged_output(destination) as stage:
         if prepare is not None:
             prepare(stage)

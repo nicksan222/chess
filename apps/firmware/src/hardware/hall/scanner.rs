@@ -6,12 +6,12 @@ use embedded_hal::i2c::I2c;
 use super::{HallBank, filter::Filter, monitor::Monitor};
 use crate::{hardware::PieceEvent, tuning::HallTuning};
 
-pub struct Scanner {
+pub(super) struct Scanner {
     banks: [(Monitor, Filter); HallBank::COUNT],
 }
 
 impl Scanner {
-    pub fn new(tuning: HallTuning) -> Self {
+    pub(super) fn new(tuning: HallTuning) -> Self {
         Self {
             banks: HallBank::all()
                 .map(|bank| (Monitor::new(bank), Filter::new(tuning.stable_scans))),
@@ -22,11 +22,11 @@ impl Scanner {
     /// piece changes. A bank that fails reports nothing: its squares are
     /// unknown, not empty, and it is reconciled on recovery.
     #[cfg(test)]
-    pub fn scan<I: I2c>(&mut self, i2c: &mut I) -> Vec<PieceEvent> {
+    fn scan<I: I2c>(&mut self, i2c: &mut I) -> Vec<PieceEvent> {
         self.scan_while(i2c, || true)
     }
 
-    pub fn scan_while<I: I2c>(
+    pub(super) fn scan_while<I: I2c>(
         &mut self,
         i2c: &mut I,
         keep_scanning: impl Fn() -> bool,

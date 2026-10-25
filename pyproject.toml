@@ -6,9 +6,48 @@ extend-exclude = ["**/generated"]
 force-exclude = true
 
 [tool.ruff.lint]
-# Keep contract validation raising ValueError; TRY004 would switch those to
-# TypeError at isinstance gates and change caller-visible exceptions.
-ignore = ["TRY004"]
+# Ruff's defaults plus bug, complexity, simplification, upgrade, print, return
+# and pathlib rules; no debugger calls, commented-out code or TODO markers; and
+# errors that keep their cause (no blind or silent excepts, raise from, logging
+# with tracebacks). See docs/development.md "Quality checks".
+extend-select = [
+    "B", "BLE", "C90", "ERA", "FIX", "G", "LOG", "PL", "PTH", "RET", "S110", "S112",
+    "SIM", "T10", "T20", "TRY", "UP",
+]
+ignore = [
+    # pcbnew and bpy exist only inside KiCad and Blender, so modules import
+    # them where they run and stay importable by plain Python tests.
+    "PLC0415",
+    # Comparisons are against counts, angles and file-format constants; the
+    # physical dimensions they guard are already named in hardware/shared.
+    "PLR2004",
+    # Keep contract validation raising ValueError; TRY004 would switch those to
+    # TypeError at isinstance gates and change caller-visible exceptions.
+    "TRY004",
+    # Messages are written at the raise site, where the values are in scope.
+    "TRY003",
+    # Raising inside `try` lets one handler clean up partial output, then re-raise.
+    "TRY301",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# A component constructor takes one keyword per pin net, mirroring its pinout.
+"hardware/pcb/components/**" = ["PLR0913", "PLR0917"]
+# Command-line entry points report their result on standard output.
+"hardware/**/__main__.py" = ["T201"]
+"hardware/cad/harness/base/generation.py" = ["T201"]
+"hardware/cad/harness/base/pcb_export.py" = ["T201"]
+"hardware/pcb/board/generate.py" = ["T201"]
+"hardware/pcb/harness/checks/datasheets.py" = ["T201"]
+"hardware/pcb/harness/checks/run.py" = ["T201"]
+
+[tool.ruff.lint.mccabe]
+# Mirrors the Rust cognitive-complexity threshold in clippy.toml.
+max-complexity = 15
+
+[tool.ruff.lint.pylint]
+max-args = 5
+max-positional-args = 5
 
 [tool.ruff.lint.isort]
 known-first-party = ["blocks", "components", "pcb", "shared"]

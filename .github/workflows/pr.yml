@@ -18,7 +18,10 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       hardware: ${{ steps.scopes.outputs.hardware }}
+      pcb: ${{ steps.scopes.outputs.pcb }}
+      cad: ${{ steps.scopes.outputs.cad }}
       rust: ${{ steps.scopes.outputs.rust }}
+      quality: ${{ steps.scopes.outputs.quality }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -32,7 +35,7 @@ jobs:
   prebuild:
     name: 🐳 Dev container
     needs: changes
-    if: ${{ needs.changes.outputs.hardware == 'true' || needs.changes.outputs.rust == 'true' }}
+    if: ${{ needs.changes.outputs.hardware == 'true' || needs.changes.outputs.rust == 'true' || needs.changes.outputs.quality == 'true' }}
     runs-on: ubuntu-latest
     outputs:
       image: ${{ steps.prebuild.outputs.image }}
@@ -52,11 +55,14 @@ jobs:
     with:
       image: ${{ needs.prebuild.outputs.image }}
       base-ref: ${{ github.event.pull_request.base.sha }}
+      pcb: ${{ needs.changes.outputs.pcb == 'true' }}
+      cad: ${{ needs.changes.outputs.cad == 'true' }}
 
   hardware-report:
     name: 📝 Hardware PR report
-    needs: hardware
-    if: ${{ needs.hardware.result == 'success' }}
+    needs: [changes, hardware]
+    # The report comes from the PCB review, which a CAD-only change skips.
+    if: ${{ needs.hardware.result == 'success' && needs.changes.outputs.pcb == 'true' }}
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -114,7 +120,7 @@ jobs:
   quality:
     name: ✨ Quality
     needs: [changes, prebuild]
-    if: ${{ needs.changes.outputs.hardware == 'true' || needs.changes.outputs.rust == 'true' }}
+    if: ${{ needs.changes.outputs.hardware == 'true' || needs.changes.outputs.rust == 'true' || needs.changes.outputs.quality == 'true' }}
     permissions:
       contents: read
       packages: write

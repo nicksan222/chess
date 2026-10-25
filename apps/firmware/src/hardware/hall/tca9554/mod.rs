@@ -7,7 +7,7 @@ mod error;
 
 use embedded_hal::i2c::I2c;
 
-pub use error::BankError;
+pub(super) use error::BankError;
 
 const INPUT_PORT: u8 = 0x00;
 const POLARITY_INVERSION: u8 = 0x02;
@@ -18,7 +18,7 @@ const ALL_INPUTS: u8 = 0xFF;
 const NO_INVERSION: u8 = 0x00;
 
 /// Makes every pin an uninverted input and confirms both registers took effect.
-pub fn configure<I: I2c>(i2c: &mut I, address: u8) -> Result<(), BankError<I::Error>> {
+pub(super) fn configure<I: I2c>(i2c: &mut I, address: u8) -> Result<(), BankError<I::Error>> {
     for (register, value) in [
         (CONFIGURATION, ALL_INPUTS),
         (POLARITY_INVERSION, NO_INVERSION),
@@ -37,7 +37,7 @@ pub fn configure<I: I2c>(i2c: &mut I, address: u8) -> Result<(), BankError<I::Er
 }
 
 /// Reads the input port: bit `n` is the electrical level of channel P`n`.
-pub fn read_inputs<I: I2c>(i2c: &mut I, address: u8) -> Result<u8, BankError<I::Error>> {
+pub(super) fn read_inputs<I: I2c>(i2c: &mut I, address: u8) -> Result<u8, BankError<I::Error>> {
     Ok(read_register(i2c, address, INPUT_PORT)?)
 }
 
