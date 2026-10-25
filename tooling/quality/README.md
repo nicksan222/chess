@@ -19,6 +19,7 @@ just --justfile tooling/quality/justfile dependencies   # cargo deny, cargo shea
 | Crate boundaries: `crates/*` never reach `firmware`, `tokio`, `gpiocdev` or `nmrs`; internal dependencies only as listed | cargo-deny `[bans]`: `wrappers` in [`../../deny.toml`](../../deny.toml), and [`portable.deny.toml`](portable.deny.toml) run with each `crates/*` manifest as the sole root | None |
 | File names: snake_case `.rs` and `.py` | ls-lint, [`../../.ls-lint.yml`](../../.ls-lint.yml) | Python `__init__`/`__main__`; generated, build and cache directories are ignored |
 | Package layout: every `apps/*` and `crates/*` root holds exactly one `Cargo.toml` and one `README.md`; directories in Rust module trees and Python packages are snake_case | ls-lint, [`../../.ls-lint.yml`](../../.ls-lint.yml) | Yocto layers and `.github` keep their kebab-case names; the extensionless `justfile` cannot be matched |
+| Shell scripts: `*.sh` and `.githooks/pre-commit` | ShellCheck (from the dev container's Ubuntu packages) | None |
 | Yocto manifest sync | A plain test, `apps/firmware/tests/yocto_manifest.rs` | None |
 
 ## Adding a pattern rule
