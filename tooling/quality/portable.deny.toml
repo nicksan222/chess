@@ -1,0 +1,15 @@
+# Run with each crates/* manifest as the sole graph root (`just --justfile
+# tooling/quality/justfile boundaries`): portable crates, their tests included,
+# never reach the firmware or its OS and async stack, even transitively.
+
+[graph]
+all-features = true
+
+[bans]
+multiple-versions = "allow"
+deny = [
+    { crate = "firmware", reason = "crates/ never depend on the application" },
+    { crate = "gpiocdev", reason = "GPIO access belongs to the firmware's hardware adapters" },
+    { crate = "nmrs", reason = "Wi-Fi control belongs to the firmware's connection module" },
+    { crate = "tokio", reason = "the async runtime belongs to the firmware; crates/ stay runtime-free" },
+]

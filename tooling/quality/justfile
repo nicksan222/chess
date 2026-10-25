@@ -7,8 +7,8 @@ ls_lint := env_var_or_default("LS_LINT", "ls-lint")
 default:
     @just --list
 
-# Repository rules no compiler or linter covers: patterns and file names.
-quality: patterns names
+# Repository rules no compiler or linter covers: patterns, file names and crate boundaries.
+quality: patterns names boundaries
 
 # Test every ast-grep rule against its examples, then scan the repository.
 patterns:
@@ -18,3 +18,20 @@ patterns:
 # Rust and Python file names (.ls-lint.yml).
 names:
     cd "{{ root }}" && {{ ls_lint }}
+
+# Crate boundaries: deny.toml wrappers (some unused in the smaller Yocto graph), then each portable crate as sole root.
+boundaries:
+    cd "{{ root }}" && cargo deny --locked --config deny.toml check bans
+    cd "{{ root }}" && cargo deny --locked --config deny.toml --manifest-path apps/firmware/yocto/Cargo.toml check bans --allow unused-wrapper
+    cd "{{ root }}" && for manifest in crates/*/Cargo.toml; do cargo deny --locked --config tooling/quality/portable.deny.toml --manifest-path "$manifest" check bans; done
+
+# Advisories, licences, bans and sources for both Cargo lockfiles; fetches the advisory database.
+deny:
+    cd "{{ root }}" && cargo deny --locked --config deny.toml check
+    cd "{{ root }}" && cargo deny --locked --config deny.toml --manifest-path apps/firmware/yocto/Cargo.toml check --allow unused-wrapper
+
+# Every dependency check; needs network access for advisories.
+dependencies: deny
+
+# Run every quality gate.
+check: quality dependencies

@@ -56,6 +56,7 @@ tool "🦀" "Rust" cargo cargo --version
 tool "⚙️ " "Just" just just --version
 tool "🐍" "Python" python3 python3 --version
 tool "🧹" "Ruff" ruff ruff --version
+tool "🛡️ " "Deny" cargo-deny cargo-deny --version
 tool "🔎" "ast-grep" ast-grep ast-grep --version
 tool "🏷️ " "ls-lint" ls-lint ls-lint --version
 tool "🔌" "KiCad" kicad-cli kicad-cli version
@@ -70,6 +71,7 @@ section "🚀 Start here"
 cmd "just" "📋 list every repository recipe"
 cmd "just precommit" "✅ the fast commit gate (runs on every commit)"
 cmd "just quality" "🧹 lint, format-check, patterns and names"
+cmd "just dependencies" "🛡️  advisories, licences and crate bans"
 cmd "just test" "🧪 test every package"
 cmd "just check" "🏁 all domains, sequentially (slow)"
 

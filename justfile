@@ -20,6 +20,7 @@ check: _automation-format
     just --justfile hardware/shared/justfile check
     just --justfile hardware/pcb/justfile review
     just --justfile hardware/cad/justfile check
+    just --justfile tooling/quality/justfile check
 
 # Fast commit gate: lint and tests; no renders, PCB regeneration or cross-build (CI runs them).
 precommit: _automation-format
@@ -31,7 +32,7 @@ precommit: _automation-format
     just --justfile hardware/pcb/justfile quality
     just --justfile tooling/quality/justfile quality
 
-# Formatting, linting, checking, documentation, patterns and file names.
+# Formatting, linting, checking, documentation, patterns, names and crate boundaries.
 quality: _automation-format
     #!/usr/bin/env bash
     set -euo pipefail
@@ -59,6 +60,10 @@ test:
     just --justfile hardware/cad/justfile test
     just --justfile hardware/pcb/justfile review
     just --justfile tooling/quality/justfile patterns
+
+# Advisories, licences and bans; needs network access.
+dependencies:
+    just --justfile tooling/quality/justfile dependencies
 
 # Regenerate CAD and PCB review output.
 generate:
