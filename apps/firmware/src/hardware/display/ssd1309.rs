@@ -4,6 +4,8 @@
 //! The module supplies power-on reset; allow 200 ms after power becomes stable
 //! before initialization (the Pi's Linux startup already exceeds that delay).
 
+use core::fmt::Debug;
+
 use display_interface::DisplayError;
 use embedded_graphics::{
     Pixel,
@@ -91,6 +93,13 @@ pub(super) struct Controller<I2C> {
     frame: [u8; FRAME_BYTES],
 }
 
+/// `DisplayError` cannot carry the bus error, so log the I2C cause (such as a
+/// NACK or an errno) before it is lost.
+fn bus_write_error(error: impl Debug) -> DisplayError {
+    logger::warn!("display I2C write failed: {error:?}");
+    DisplayError::BusWriteError
+}
+
 pub(super) fn new<I2C: I2c>(bus: I2C) -> Controller<I2C> {
     Controller {
         bus,
@@ -115,7 +124,7 @@ impl<I2C: I2c> Controller<I2C> {
         packet[1..=commands.len()].copy_from_slice(commands);
         self.bus
             .write(I2C_ADDRESS, &packet[..=commands.len()])
-            .map_err(|_| DisplayError::BusWriteError)
+            .map_err(bus_write_error)
     }
 
     pub(super) fn clear_buffer(&mut self) {
@@ -137,7 +146,7 @@ impl<I2C: I2c> Controller<I2C> {
                 packet[1..=bytes.len()].copy_from_slice(bytes);
                 self.bus
                     .write(I2C_ADDRESS, &packet[..=bytes.len()])
-                    .map_err(|_| DisplayError::BusWriteError)?;
+                    .map_err(bus_write_error)?;
             }
         }
         Ok(())

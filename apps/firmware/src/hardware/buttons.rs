@@ -218,15 +218,21 @@ impl ButtonPoller {
     /// failures and restarts any debounce in progress; the first successful
     /// read becomes the baseline when none was supplied.
     fn step<R: ReadLevel>(&mut self, reader: &mut R, now: Instant) -> Option<ButtonEvent> {
-        let Ok(level) = reader.read_level(self.gpio) else {
-            if !self.read_failed {
-                logger::warn!("button GPIO {} read failed", self.gpio.bcm_number());
+        let level = match reader.read_level(self.gpio) {
+            Ok(level) => level,
+            Err(error) => {
+                if !self.read_failed {
+                    logger::warn!(
+                        "button GPIO {} read failed: {error:?}",
+                        self.gpio.bcm_number()
+                    );
+                }
+                self.read_failed = true;
+                if let Some(debouncer) = &mut self.debouncer {
+                    debouncer.interrupt();
+                }
+                return None;
             }
-            self.read_failed = true;
-            if let Some(debouncer) = &mut self.debouncer {
-                debouncer.interrupt();
-            }
-            return None;
         };
         self.read_failed = false;
 

@@ -72,8 +72,14 @@ async fn resolve(host: &str, port: u16) -> Result<Vec<SocketAddr>, Error> {
     };
     let addresses: Vec<_> = timeout(PROBE, lookup_host((qualified.as_str(), port)))
         .await
-        .map_err(|_| offline())?
-        .map_err(|_| offline())?
+        .map_err(|_| {
+            logger::info!("resolving {qualified} took longer than {PROBE:?}");
+            offline()
+        })?
+        .map_err(|cause| {
+            logger::info!("resolving {qualified} failed: {cause}");
+            offline()
+        })?
         .collect();
     if addresses.is_empty() {
         return Err(offline());

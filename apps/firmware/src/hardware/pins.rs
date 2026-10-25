@@ -49,7 +49,8 @@ impl Writable for InputOutput {}
 
 /// Reads electrical levels from GPIOs.
 pub trait ReadLevel {
-    type Error;
+    /// Debug-printable, so a failure can be logged with its cause.
+    type Error: core::fmt::Debug;
 
     /// # Errors
     ///
@@ -59,7 +60,8 @@ pub trait ReadLevel {
 
 /// Writes electrical levels to GPIOs.
 pub trait WriteLevel {
-    type Error;
+    /// Debug-printable, so a failure can be logged with its cause.
+    type Error: core::fmt::Debug;
 
     /// # Errors
     ///
