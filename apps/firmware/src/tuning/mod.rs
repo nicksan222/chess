@@ -17,6 +17,14 @@ use error::parse;
 pub use template::env_file;
 
 tuning! {
+    /// Hall-sensor scanning; see `docs/host.md#reading-the-board`.
+    hall: HallTuning {
+        /// Target period of one complete eight-bank scan.
+        scan_interval: 25 ms in 5..=1000 from "FIRMWARE_HALL_SCAN_INTERVAL_MS";
+        /// Consecutive complete scans that must agree before a piece change is
+        /// reported. The sensors themselves only sample every 27-75 ms.
+        stable_scans: 2 scans in 1..=20 from "FIRMWARE_HALL_STABLE_SCANS";
+    }
     /// Control-panel buttons.
     buttons: ButtonTuning {
         /// How often each button line is sampled.
@@ -241,8 +249,7 @@ mod tests {
         );
     }
 
-    /// The `scans` unit is not used by the firmware yet; declare it here so
-    /// its expansion is compiled and checked.
+    /// The full `u8` range of the `scans` unit, beyond any range the firmware declares.
     mod scans {
         #![allow(
             unreachable_pub,

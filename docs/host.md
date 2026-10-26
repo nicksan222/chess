@@ -21,7 +21,8 @@ It reaches the hardware through Linux character devices:
 
 Suggested crates: `linux-embedded-hal` over `i2cdev`, `spidev` and `gpiocdev`.
 The standalone SSD1309 driver exists, but it is not connected to a physical I2C
-adapter or the runtime yet; the TCA9554 acquisition worker is also pending. Note
+adapter or the runtime yet. The TCA9554 acquisition worker uses the Linux
+`I2C_RDWR` interface through `i2cdev`. Note
 that `rppal`, the obvious first choice for Pi peripherals in Rust, was retired by
 its author in July 2025, so the maintained character-device crates are the better
 foundation for new work.
@@ -84,8 +85,12 @@ now implies roughly 268 ns SDA rise time, but does not qualify 400 kHz operation
 retain the Pi's default 100 kHz (see [bus assumptions](hardware.md#buses-and-led-lines-s5)).
 The retained stackup and local Hall routes do not prove signal integrity.
 
-These are the contract for future hardware workers, not an implemented driver
-or evidence of physical operation.
+`apps/firmware/src/hardware/hall/` implements this contract against scripted
+I²C fakes; that is unit-test evidence, not evidence of physical operation. Its
+two-scan stability filter and 25 ms period are starting values awaiting
+prototype measurement, adjustable on the device through
+`FIRMWARE_HALL_STABLE_SCANS` and `FIRMWARE_HALL_SCAN_INTERVAL_MS` in
+`/etc/default/firmware`.
 
 ## Joining a WiFi network
 
@@ -137,6 +142,6 @@ clocked, scheduler jitter makes a frame late rather than corrupt.
 ## TODO
 
 The systemd-supervised process, Yocto packaging, display driver, button input,
-and NetworkManager control layer exist. LED output, Hall-sensor acquisition, the
+Hall-sensor acquisition, and NetworkManager control layer exist. LED output, the
 captive provisioning portal, runtime connectivity coordination, and game
 coordination are not implemented yet.

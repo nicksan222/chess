@@ -8,3 +8,6 @@ pub const WIFI_INTERFACE: &str = "wlan0";
 
 /// Consumer label the kernel shows for lines this process has requested.
 pub const GPIO_CONSUMER: &str = "firmware-button";
+
+/// I2C character device shared by the Hall banks and the OLED.
+pub const I2C_BUS: &str = "/dev/i2c-1";

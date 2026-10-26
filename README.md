@@ -152,8 +152,9 @@ session you start delegates to them as needed.
 > complete board has been built yet. Prototype one sensor/LED square before
 > ordering the full PCB.
 
-The chess model and supervised firmware process exist. Hardware workers,
-provisioning workers, and final physical validation are still open territory.
+The chess model and supervised firmware process exist, and the firmware polls
+buttons and Hall-sensor banks. The LED worker, provisioning workers, and final
+physical validation are still open territory.
 That makes this a particularly good time to challenge assumptions and shape the
 project rather than only polish a finished product.
 

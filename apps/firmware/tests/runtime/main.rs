@@ -8,6 +8,7 @@
 )]
 
 mod gpio;
+mod hall;
 mod modules;
 mod navigator;
 mod updates;

@@ -5,12 +5,15 @@
 //! chess-piece identity belong outside the hardware layer.
 
 mod piece;
+mod position;
 
 use crate::events::{Bus, Subscription};
 
 use super::pins::ButtonEvent;
 
-pub use piece::{BoardPosition, PieceEvent};
+pub use piece::PieceEvent;
+pub use position::BoardPosition;
+pub(crate) use position::square;
 
 /// An observation emitted by an input hardware adapter.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
