@@ -52,7 +52,8 @@ impl Scanner {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::hardware::{hall::fake::Expanders, square};
+    use crate::hardware::hall::fake::Expanders;
+    use chess::Square;
 
     const TUNING: HallTuning = HallTuning::DEFAULT;
 
@@ -66,8 +67,8 @@ mod tests {
     #[test]
     fn startup_configures_every_bank_then_reports_the_stable_position() {
         let mut expanders = Expanders::new();
-        expanders.place(square!(A1));
-        expanders.place(square!(H8));
+        expanders.place(Square::A1);
+        expanders.place(Square::H8);
         let mut scanner = Scanner::new(TUNING);
 
         assert_eq!(scanner.scan(&mut expanders), []);
@@ -81,8 +82,8 @@ mod tests {
         assert_eq!(
             scanner.scan(&mut expanders),
             [
-                PieceEvent::Placed(square!(A1)),
-                PieceEvent::Placed(square!(H8))
+                PieceEvent::Placed(Square::A1),
+                PieceEvent::Placed(Square::H8)
             ]
         );
         assert_eq!(scanner.scan(&mut expanders), []);
@@ -94,28 +95,28 @@ mod tests {
         let mut scanner = Scanner::new(TUNING);
         settle(&mut scanner, &mut expanders);
 
-        expanders.place(square!(D3));
+        expanders.place(Square::D3);
         assert_eq!(scanner.scan(&mut expanders), []);
-        expanders.remove(square!(D3));
+        expanders.remove(Square::D3);
         assert_eq!(settle(&mut scanner, &mut expanders), []);
 
-        expanders.place(square!(D3));
+        expanders.place(Square::D3);
         assert_eq!(
             settle(&mut scanner, &mut expanders),
-            [PieceEvent::Placed(square!(D3))]
+            [PieceEvent::Placed(Square::D3)]
         );
-        expanders.remove(square!(D3));
+        expanders.remove(Square::D3);
         assert_eq!(
             settle(&mut scanner, &mut expanders),
-            [PieceEvent::Removed(square!(D3))]
+            [PieceEvent::Removed(Square::D3)]
         );
     }
 
     #[test]
     fn a_failed_bank_is_reconciled_with_what_changed_while_it_was_unknown() {
         let mut expanders = Expanders::new();
-        expanders.place(square!(E1));
-        expanders.place(square!(G1));
+        expanders.place(Square::E1);
+        expanders.place(Square::G1);
         let mut scanner = Scanner::new(TUNING);
         settle(&mut scanner, &mut expanders);
 
@@ -125,14 +126,14 @@ mod tests {
 
         // Meanwhile G1 left and F1 arrived; E1 never moved, so it is not
         // reported again.
-        expanders.remove(square!(G1));
-        expanders.place(square!(F1));
+        expanders.remove(Square::G1);
+        expanders.place(Square::F1);
         expanders.absent[1] = false;
         assert_eq!(
             settle(&mut scanner, &mut expanders),
             [
-                PieceEvent::Placed(square!(F1)),
-                PieceEvent::Removed(square!(G1))
+                PieceEvent::Placed(Square::F1),
+                PieceEvent::Removed(Square::G1)
             ]
         );
     }

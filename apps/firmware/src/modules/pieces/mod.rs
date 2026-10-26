@@ -3,13 +3,15 @@
 //! A module without menu items: it only observes [`PieceEvent`]s. Presence is
 //! physical; which chess piece stands where belongs to game logic.
 
+use chess::{Square, SquareSet};
+
 use tokio::sync::watch;
 
 use super::{
     MissingDependency, Never,
     module::{Context, Module},
 };
-use crate::hardware::{BoardPosition, HardwareEvent, PieceEvent};
+use crate::hardware::{HardwareEvent, PieceEvent};
 
 /// The module needs no settings.
 pub type Settings = ();
@@ -21,8 +23,7 @@ pub type Request = Never;
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct Status {
     last: Option<PieceEvent>,
-    /// One bit per square, at `row * 8 + column`.
-    occupied: u64,
+    occupied: SquareSet,
 }
 
 impl Status {
@@ -32,25 +33,25 @@ impl Status {
     }
 
     /// Whether a piece was last seen standing at `position`.
-    pub const fn is_occupied(&self, position: BoardPosition) -> bool {
-        self.occupied & Self::bit(position) != 0
+    pub const fn is_occupied(&self, position: Square) -> bool {
+        self.occupied.contains(position)
     }
 
     /// How many squares hold a piece.
     pub const fn count(&self) -> u32 {
-        self.occupied.count_ones()
+        self.occupied.len().value() as u32
     }
 
     fn observe(&mut self, event: PieceEvent) {
         match event {
-            PieceEvent::Placed(position) => self.occupied |= Self::bit(position),
-            PieceEvent::Removed(position) => self.occupied &= !Self::bit(position),
+            PieceEvent::Placed(position) => {
+                self.occupied.insert(position);
+            }
+            PieceEvent::Removed(position) => {
+                self.occupied.remove(position);
+            }
         }
         self.last = Some(event);
-    }
-
-    const fn bit(position: BoardPosition) -> u64 {
-        1 << (position.row() * BoardPosition::SIZE + position.column())
     }
 }
 
@@ -103,19 +104,31 @@ mod tests {
     use super::*;
 
     #[test]
+    fn duplicate_observations_preserve_set_membership() {
+        let mut status = Status::default();
+        for _ in 0..2 {
+            status.observe(PieceEvent::Placed(Square::E4));
+        }
+        assert!(status.is_occupied(Square::E4));
+        assert_eq!(status.count(), 1);
+        for _ in 0..2 {
+            status.observe(PieceEvent::Removed(Square::E4));
+        }
+        assert!(!status.is_occupied(Square::E4));
+        assert_eq!(status.count(), 0);
+    }
+
+    #[test]
     fn placing_and_removing_tracks_every_square() {
         let mut status = Status::default();
-        for row in 0..BoardPosition::SIZE {
-            for column in 0..BoardPosition::SIZE {
-                let position = BoardPosition::new(row, column).unwrap();
-                status.observe(PieceEvent::Placed(position));
-                assert!(status.is_occupied(position));
-                assert_eq!(status.last(), Some(PieceEvent::Placed(position)));
-            }
+        for position in Square::all() {
+            status.observe(PieceEvent::Placed(position));
+            assert!(status.is_occupied(position));
+            assert_eq!(status.last(), Some(PieceEvent::Placed(position)));
         }
         assert_eq!(status.count(), 64);
 
-        let corner = BoardPosition::new(7, 7).unwrap();
+        let corner = Square::H8;
         status.observe(PieceEvent::Removed(corner));
         assert!(!status.is_occupied(corner));
         assert_eq!(status.count(), 63);

@@ -143,8 +143,8 @@ mod tests {
     use crate::hardware::{
         PieceEvent,
         pins::{Button, ButtonEvent},
-        square,
     };
+    use chess::Square;
 
     #[tokio::test]
     async fn a_full_board_burst_preserves_already_queued_button_input() {
@@ -162,8 +162,8 @@ mod tests {
             for _ in 0..64 {
                 seen.push(input.recv().await.unwrap());
             }
-            assert!(seen.contains(&PieceEvent::Placed(square!(A1)).into()));
-            assert!(seen.contains(&PieceEvent::Placed(square!(H8)).into()));
+            assert!(seen.contains(&PieceEvent::Placed(Square::A1).into()));
+            assert!(seen.contains(&PieceEvent::Placed(Square::H8).into()));
         };
         tokio::join!(publish(&events, changes), drain);
     }

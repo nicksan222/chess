@@ -2,10 +2,12 @@
 //! blocking request, driven by injected reports, and modules seen only through
 //! their facades.
 
+use chess::Square;
+
 use std::net::TcpListener;
 
 use firmware::{
-    hardware::{BoardPosition, PieceEvent},
+    hardware::PieceEvent,
     harness::FirmwareHarness,
     modules::{
         Config, ModuleEvent, Phase, Request,
@@ -103,7 +105,7 @@ async fn a_placeholder_finishes_at_once_and_leaves_the_menu_free() {
 #[tokio::test]
 async fn a_module_without_menu_items_observes_piece_events() {
     let mut firmware = FirmwareHarness::start().unwrap();
-    let square = BoardPosition::new(3, 4).unwrap();
+    let square = Square::E4;
     assert_eq!(firmware.snapshot().modules.pieces.last(), None);
 
     let placed = firmware.trigger(PieceEvent::Placed(square)).await.unwrap();

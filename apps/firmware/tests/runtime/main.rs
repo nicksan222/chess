@@ -13,11 +13,12 @@ mod modules;
 mod navigator;
 mod updates;
 
+use chess::Square;
 use navigator::Navigator;
 
 use firmware::{
     hardware::{
-        BoardPosition, HardwareEvent, PieceEvent,
+        HardwareEvent, PieceEvent,
         pins::{Button, ButtonEvent},
     },
     harness::FirmwareHarness,
@@ -113,7 +114,7 @@ async fn empty_settings_menu_opens_and_closes_without_a_request() {
 #[tokio::test]
 async fn piece_events_are_observed_without_driving_the_menu() {
     let mut firmware = FirmwareHarness::start().unwrap();
-    let piece = PieceEvent::Placed(BoardPosition::new(3, 4).unwrap());
+    let piece = PieceEvent::Placed(Square::E4);
 
     let snapshot = firmware.trigger(piece).await.unwrap();
 
@@ -234,7 +235,7 @@ async fn a_request_is_reported_by_exactly_one_snapshot() {
 
     let next = panel
         .firmware
-        .trigger(PieceEvent::Removed(BoardPosition::new(0, 0).unwrap()))
+        .trigger(PieceEvent::Removed(Square::A1))
         .await
         .unwrap();
 
@@ -285,17 +286,14 @@ async fn every_board_position_is_observed_placed_and_removed_without_side_effect
     let mut firmware = FirmwareHarness::start().unwrap();
     let mut processed = 0;
 
-    for row in 0..BoardPosition::SIZE {
-        for column in 0..BoardPosition::SIZE {
-            let position = BoardPosition::new(row, column).unwrap();
-            for piece in [PieceEvent::Placed(position), PieceEvent::Removed(position)] {
-                let snapshot = firmware.trigger(piece).await.unwrap();
-                processed += 1;
-                assert_eq!(snapshot.processed_events, processed);
-                assert_eq!(snapshot.last_event, Some(HardwareEvent::Piece(piece)));
-                assert_eq!((snapshot.selected_index, snapshot.menu_depth), (0, 0));
-                assert_eq!(snapshot.requested_action, None);
-            }
+    for position in Square::all() {
+        for piece in [PieceEvent::Placed(position), PieceEvent::Removed(position)] {
+            let snapshot = firmware.trigger(piece).await.unwrap();
+            processed += 1;
+            assert_eq!(snapshot.processed_events, processed);
+            assert_eq!(snapshot.last_event, Some(HardwareEvent::Piece(piece)));
+            assert_eq!((snapshot.selected_index, snapshot.menu_depth), (0, 0));
+            assert_eq!(snapshot.requested_action, None);
         }
     }
     firmware.shutdown().await.unwrap();

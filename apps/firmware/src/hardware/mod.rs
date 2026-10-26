@@ -12,7 +12,4 @@ pub mod linux_gpio;
 pub mod linux_i2c;
 pub mod pins;
 
-pub(crate) use events::square;
-pub use events::{
-    BoardPosition, HardwareEvent, HardwareEventBus, HardwareEventSubscription, PieceEvent,
-};
+pub use events::{HardwareEvent, HardwareEventBus, HardwareEventSubscription, PieceEvent};

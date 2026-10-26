@@ -145,7 +145,7 @@ The registered modules are:
   are bounded by 5 s and the release request by 15 s. Installing an update is
   not implemented.
 - `play` and `pairing` hold the Play and Pairing menus' placeholders.
-- `pieces` has no menu items: it observes `PieceEvent`s and presents which
+- `pieces` uses `chess::Square` and `chess::SquareSet` for its domain values. It has no menu items: it observes `PieceEvent`s and presents which
   squares hold a piece, and the latest observation, as `Snapshot::modules.pieces`
   and through its `Pieces` facade.
 
