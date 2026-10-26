@@ -81,7 +81,7 @@ impl State {
         let HardwareEvent::Button(ButtonEvent::Pressed(button)) = event else {
             return None;
         };
-        let input = button.menu_input()?;
+        let input = crate::menu::input(button)?;
         match self.menu.handle(input) {
             ::menu::Event::Activated(action) | ::menu::Event::BlockingStarted(action) => {
                 Some(*action)

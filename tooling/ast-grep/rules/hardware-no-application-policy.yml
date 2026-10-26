@@ -1,0 +1,26 @@
+id: hardware-no-application-policy
+language: rust
+severity: error
+message: Hardware adapters must not depend on application menus, modules or runtime state.
+note: |
+  Hardware reports physical observations. Put product bindings and coordination
+  in apps/firmware/src/menu or apps/firmware/src/runtime.
+files:
+  - apps/firmware/src/hardware/**/*.rs
+rule:
+  all:
+    - any:
+        - kind: scoped_identifier
+          regex: '^(::)?menu::|^crate::(menu|runtime|modules)::'
+        - kind: scoped_type_identifier
+          regex: '^(::)?menu::|^crate::(menu|runtime|modules)::'
+        - kind: use_declaration
+          regex: '^use\s+(::)?menu\b|^use\s+crate::(menu|runtime|modules)\b|^use\s+crate::\{[^;]*\b(menu|runtime|modules)\b'
+    - not:
+        inside:
+          stopBy: end
+          any:
+            - kind: mod_item
+              follows: { kind: attribute_item, regex: '^#\[cfg\(test\)\]$' }
+            - kind: function_item
+              follows: { kind: attribute_item, regex: '^#\[(tokio::)?test\b' }
