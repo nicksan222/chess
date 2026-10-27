@@ -13,7 +13,7 @@ quality:
 
 # Run CAD unit tests.
 test:
-    cd "{{ root }}" && PYTHONPATH=hardware python3 -m pytest hardware/cad/board/tests
+    cd "{{ root }}" && python3 -m pytest hardware/cad/board/tests
     cd "{{ root }}" && PYTHONPATH=hardware python3 -m unittest discover -s hardware/cad/harness -t hardware -p '*_test.py'
 
 # Regenerate printable components and assemble their exact saved meshes.

@@ -6,6 +6,7 @@ import re
 import shutil
 import subprocess
 import tempfile
+from contextlib import nullcontext
 from pathlib import Path
 
 from ...registry import BoardRegistry
@@ -70,22 +71,12 @@ def run_deck(
     expected = dict(zip(names, requirements, strict=True))
     if output is not None:
         output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_text(deck)
-        process = subprocess.run(
-            (resolved, "-b", output.name),
-            cwd=output.parent,
-            check=False,
-            capture_output=True,
-            text=True,
-            timeout=30,
-        )
-        transcript = process.stdout + process.stderr
-        output.with_suffix(".log").write_text(transcript)
-        if process.returncode != 0:
-            raise ValueError(f"ngspice exited {process.returncode}:\n{transcript}")
-        return parse_output(transcript, expected)
-    with tempfile.TemporaryDirectory(prefix="chess-harness-spice-") as directory:
-        path = Path(directory) / "scenario.cir"
+    with (
+        nullcontext(output.parent)
+        if output is not None
+        else tempfile.TemporaryDirectory(prefix="chess-harness-spice-")
+    ) as directory:
+        path = output if output is not None else Path(directory) / "scenario.cir"
         path.write_text(deck)
         process = subprocess.run(
             (resolved, "-b", path.name),
@@ -95,7 +86,9 @@ def run_deck(
             text=True,
             timeout=30,
         )
-    transcript = process.stdout + process.stderr
-    if process.returncode != 0:
-        raise ValueError(f"ngspice exited {process.returncode}:\n{transcript}")
-    return parse_output(transcript, expected)
+        transcript = process.stdout + process.stderr
+        if output is not None:
+            output.with_suffix(".log").write_text(transcript)
+        if process.returncode != 0:
+            raise ValueError(f"ngspice exited {process.returncode}:\n{transcript}")
+        return parse_output(transcript, expected)

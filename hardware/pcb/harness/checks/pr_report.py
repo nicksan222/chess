@@ -156,10 +156,6 @@ def _project(netlist: Mapping[str, object]) -> dict[str, object]:
     return _json_object(projects.get("board"), "netlist board")
 
 
-def _mapping(value: object, label: str) -> dict[str, object]:
-    return _json_object(value, label)
-
-
 def _endpoint(value: object) -> str:
     """Format a netlist `[reference, pin]` pair as "REF.PIN"."""
     if not isinstance(value, list):
@@ -351,7 +347,7 @@ def _details(summary: str, items: list[str]) -> list[str]:
 
 def _component_label(reference: str, component: object) -> str:
     """One-line description: reference, purpose, and (value, package) if known."""
-    fields = _mapping(component, f"component {reference}")
+    fields = _json_object(component, f"component {reference}")
     description = str(fields.get("description", "component"))
     value = str(fields.get("value", ""))
     package = str(fields.get("package", ""))
@@ -389,19 +385,15 @@ def _component_changes(
     only the names of the fields that differ. The other `_*_changes` helpers below
     follow the same (summary, details) shape.
     """
-    before = _mapping(base.get("components", {}), "base components")
-    after = _mapping(current.get("components", {}), "current components")
+    before = _json_object(base.get("components", {}), "base components")
+    after = _json_object(current.get("components", {}), "current components")
     added, removed, modified = _added_removed_changed(before, after)
     details = [f"Added {_component_label(key, after[key])}" for key in added]
     details += [f"Removed {_component_label(key, before[key])}" for key in removed]
     for key in modified:
-        old_fields = _mapping(before[key], f"base component {key}")
-        new_fields = _mapping(after[key], f"current component {key}")
-        fields = sorted(
-            name
-            for name in set(old_fields) | set(new_fields)
-            if old_fields.get(name) != new_fields.get(name)
-        )
+        old_fields = _json_object(before[key], f"base component {key}")
+        new_fields = _json_object(after[key], f"current component {key}")
+        fields = _differing_keys(old_fields, new_fields)
         details.append(f"Changed `{key}`: {', '.join(fields)}")
     summary = (
         f"{len(after)} total ({_signed(len(added))} added, "
@@ -414,8 +406,8 @@ def _net_changes(
     base: Mapping[str, object], current: Mapping[str, object]
 ) -> tuple[str, list[str]]:
     """Added, removed and rewired nets; a rewired net shows +/- pin differences."""
-    before = _mapping(base.get("nets", {}), "base nets")
-    after = _mapping(current.get("nets", {}), "current nets")
+    before = _json_object(base.get("nets", {}), "base nets")
+    after = _json_object(current.get("nets", {}), "current nets")
     added, removed, rewired = _added_removed_changed(before, after)
     details: list[str] = []
     for name in added:
@@ -450,8 +442,8 @@ def _placement_changes(
     Each placement is [x_mm, y_mm, rotation_degrees] in shared centre-origin Y-up
     coordinates, shown as-is for before/after comparison.
     """
-    before = _mapping(base_layout.get("placements", {}), "base placements")
-    after = _mapping(current_layout.get("placements", {}), "current placements")
+    before = _json_object(base_layout.get("placements", {}), "base placements")
+    after = _json_object(current_layout.get("placements", {}), "current placements")
     changed = _differing_keys(before, after)
     details: list[str] = []
     for reference in changed:
