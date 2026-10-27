@@ -35,16 +35,10 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - name: 🐳 Prepare hardware container
-        uses: ./.github/actions/run-in-devcontainer
-        with:
-          image: ${{ inputs.image }}
-          command: "true"
       - name: 🔎 Check shared hardware contracts
         uses: ./.github/actions/run-in-devcontainer
         with:
           image: ${{ inputs.image }}
-          prepare: "false"
           command: just --justfile hardware/shared/justfile check
       - name: 🔍 Review PCB
         id: pcb_review

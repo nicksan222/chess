@@ -1,17 +1,15 @@
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
 root := justfile_directory() + "/../.."
-ruff := env_var_or_default("RUFF", "ruff")
-basedpyright := env_var_or_default("BASEDPYRIGHT", "basedpyright")
 
 default:
     @just --list
 
 # Lint and format-check CAD Python.
 quality:
-    cd "{{ root }}" && {{ ruff }} check hardware/cad
-    cd "{{ root }}" && {{ ruff }} format --check hardware/cad
-    cd "{{ root }}" && {{ basedpyright }} --project hardware/cad/pyrightconfig.json
+    cd "{{ root }}" && ruff check hardware/cad
+    cd "{{ root }}" && ruff format --check hardware/cad
+    cd "{{ root }}" && basedpyright --project hardware/cad/pyrightconfig.json
 
 # Run CAD unit tests.
 test:

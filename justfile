@@ -34,14 +34,11 @@ precommit: _automation-format
 
 # Formatting, linting, documentation, patterns and crate boundaries.
 
-# Set hardware=false only when a companion hardware workflow owns Python quality.
-quality hardware="true": _automation-format
+quality: _automation-format
     #!/usr/bin/env bash
     set -euo pipefail
     for package in {{ rust_packages }}; do just --justfile "$package/justfile" quality; done
-    if [[ "{{ hardware }}" == true ]]; then
-        for package in {{ python_packages }}; do just --justfile "$package/justfile" quality; done
-    fi
+    for package in {{ python_packages }}; do just --justfile "$package/justfile" quality; done
     just --justfile tooling/quality/justfile quality
 
 # Verify every package-owned justfile uses the canonical format.
@@ -63,7 +60,7 @@ rust-test:
 test:
     #!/usr/bin/env bash
     set -euo pipefail
-    for package in {{ rust_packages }}; do just --justfile "$package/justfile" test; done
+    just rust-test
     just --justfile hardware/shared/justfile test
     just --justfile hardware/cad/justfile test
     just --justfile hardware/pcb/justfile review

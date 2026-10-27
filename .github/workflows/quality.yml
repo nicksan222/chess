@@ -8,10 +8,6 @@ on:
         type: string
         required: true
 
-      hardware:
-        description: Hardware workflow owns Python quality checks
-        type: boolean
-        default: false
       rust:
         description: Run Rust tests and networked dependency checks
         type: boolean
@@ -32,7 +28,7 @@ jobs:
         uses: ./.github/actions/rust-in-devcontainer
         with:
           image: ${{ inputs.image }}
-          command: just quality ${{ !inputs.hardware }}
+          command: just quality
           cache-key: ${{ runner.os }}-quality-${{ hashFiles('**/Cargo.lock') }}
           cache-restore-keys: |
             ${{ runner.os }}-cargo-

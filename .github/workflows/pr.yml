@@ -127,7 +127,6 @@ jobs:
     uses: ./.github/workflows/quality.yml
     with:
       image: ${{ needs.prebuild.outputs.image }}
-      hardware: ${{ needs.changes.outputs.hardware == 'true' }}
       rust: ${{ needs.changes.outputs.rust == 'true' }}
 
   firmware-check:

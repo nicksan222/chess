@@ -1,12 +1,6 @@
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
 root := justfile_directory() + "/../.."
-ast_grep := env_var_or_default("AST_GREP", "ast-grep")
-shellcheck := env_var_or_default("SHELLCHECK", "shellcheck")
-actionlint := env_var_or_default("ACTIONLINT", "actionlint")
-typos := env_var_or_default("TYPOS", "typos")
-editorconfig_checker := env_var_or_default("EDITORCONFIG_CHECKER", "editorconfig-checker")
-pip_audit := env_var_or_default("PIP_AUDIT", "pip-audit")
 
 # vtk 9.3.1 (PYSEC-2025-224..226) is pinned exactly by cadquery-ocp 7.8, which
 # cadquery 2.6 requires; the fix needs cadquery 2.8 and a verified `just cad`.
@@ -21,8 +15,8 @@ quality: patterns boundaries shell workflows spelling editorconfig
 
 # Test every ast-grep rule against its examples, then scan the repository.
 patterns:
-    cd "{{ root }}" && {{ ast_grep }} test --skip-snapshot-tests
-    cd "{{ root }}" && {{ ast_grep }} scan
+    cd "{{ root }}" && ast-grep test --skip-snapshot-tests
+    cd "{{ root }}" && ast-grep scan
 
 # Shell scripts and the Git hook (ShellCheck).
 shell:
@@ -32,16 +26,16 @@ shell:
     git ls-files --cached --others --exclude-standard -z '*.sh' .githooks/pre-commit | \
         while IFS= read -r -d '' path; do
             if [[ -f "$path" ]]; then printf '%s\0' "$path"; fi
-        done | xargs -0 --no-run-if-empty {{ shellcheck }}
+        done | xargs -0 --no-run-if-empty shellcheck
 
 # GitHub Actions workflows, including their `run:` scripts through ShellCheck (actionlint).
 workflows:
-    cd "{{ root }}" && {{ actionlint }}
+    cd "{{ root }}" && actionlint
     cd "{{ root }}" && bash .github/scripts/changed-scopes-test.sh
 
 # Spelling in code, comments and docs (typos.toml).
 spelling:
-    cd "{{ root }}" && {{ typos }}
+    cd "{{ root }}" && typos
 
 # Encoding, line endings, final newlines, trailing whitespace and tabs in tracked files (.editorconfig).
 editorconfig:
@@ -51,7 +45,7 @@ editorconfig:
     git ls-files --cached --others --exclude-standard -z | \
         while IFS= read -r -d '' path; do
             if [[ -f "$path" ]]; then printf '%s\0' "$path"; fi
-        done | xargs -0 --no-run-if-empty {{ editorconfig_checker }}
+        done | xargs -0 --no-run-if-empty editorconfig-checker
 
 # Crate boundaries: deny.toml wrappers (some unused in the smaller Yocto graph), then each portable crate as sole root.
 boundaries:
@@ -75,7 +69,7 @@ unused-dependencies:
 
 # Known vulnerabilities in the development container's pinned Python tools; queries PyPI.
 python-audit:
-    cd "{{ root }}" && {{ pip_audit }} --requirement .devcontainer/requirements.txt --no-deps --progress-spinner off {{ pip_audit_ignored }}
+    cd "{{ root }}" && pip-audit --requirement .devcontainer/requirements.txt --no-deps --progress-spinner off {{ pip_audit_ignored }}
 
 # Every dependency check; needs network access for advisories.
 dependencies: deny unused-dependencies python-audit

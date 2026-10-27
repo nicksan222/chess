@@ -22,7 +22,7 @@
   "containerEnv": {
     "RUST_BACKTRACE": "1"
   },
-  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "postCreateCommand": "git config --local core.hooksPath .githooks",
   "customizations": {
     "vscode": {
       "extensions": [

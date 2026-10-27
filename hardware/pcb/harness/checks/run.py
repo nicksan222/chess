@@ -1,6 +1,5 @@
 """Validate the new board, its component catalog and the reusable harness."""
 
-import os
 import subprocess
 import sys
 from pathlib import Path
@@ -51,7 +50,7 @@ def quality() -> None:
         ("ruff", "check", str(PCB_ROOT)),
         ("ruff", "format", "--check", str(PCB_ROOT)),
         (
-            os.environ.get("BASEDPYRIGHT", "basedpyright"),
+            "basedpyright",
             "--project",
             str(PCB_ROOT / "pyrightconfig.json"),
         ),

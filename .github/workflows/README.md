@@ -61,8 +61,10 @@ separate dependency job checks advisories, licences and sources without repeatin
 the global bans already checked by offline quality; it also runs `cargo shear`
 and `pip-audit`. Rust tests and dependency audits run for Rust and broad changes.
 
-When Hardware runs, it owns Python quality: shared checks run once, PCB review
-runs its lint and harness/catalog checks before generation records the electrical
-suite, and CAD runs lint, tests and generation against that export. Standalone
+Quality always lints every package, regardless of hardware change scopes. Hardware
+review is independently complete: its first shared-contract check prepares the
+container, PCB review runs lint and harness/catalog checks before generation
+records the electrical suite, and CAD runs lint, tests and generation against
+that export. Standalone
 package `check` recipes retain their complete prerequisites. Branch protection
 uses the PR workflow's `Required checks` aggregator rather than per-crate jobs.

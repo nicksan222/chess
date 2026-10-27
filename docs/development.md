@@ -82,8 +82,10 @@ builds it.
 
 The pre-commit hook runs the offline checks (`just precommit`); CI runs
 code quality, the `🛡️ Dependencies` job and one `just rust-test` workspace run.
-Hardware CI owns its Python quality checks when it runs; other quality runs check
-all packages. Tooling-only changes skip Rust tests and network dependency audits.
+`just quality` always checks every package. Hardware review remains independently
+complete, including its own lint checks. Tooling-only changes skip Rust tests and
+network dependency audits. Root `just test` and CI share `just rust-test`; package
+checks and precommit still test crates individually as well.
 
 ## CI
 
