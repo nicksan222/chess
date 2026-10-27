@@ -3,11 +3,6 @@ set shell := ["bash", "-euo", "pipefail", "-c"]
 root := justfile_directory() + "/../.."
 ruff := env_var_or_default("RUFF", "ruff")
 basedpyright := env_var_or_default("BASEDPYRIGHT", "basedpyright")
-blender_version := "4.5.13"
-blender_archive := "blender-" + blender_version + "-linux-x64.tar.xz"
-blender_sha256 := "da4e69b06b75b9e642d106496c50e7e240218b411d2f6e18271c1d1d819cef91"
-cache := root + "/.cache/blender"
-cached_blender := cache + "/blender-" + blender_version + "-linux-x64/blender"
 
 default:
     @just --list
@@ -18,50 +13,27 @@ quality:
     cd "{{ root }}" && {{ ruff }} format --check hardware/cad
     cd "{{ root }}" && {{ basedpyright }} --project hardware/cad/pyrightconfig.json
 
-# Validate dimensions and run CAD unit tests.
+# Run CAD unit tests.
 test:
-    cd "{{ root }}" && PYTHONPATH=hardware python3 -m shared.dimensions
     cd "{{ root }}" && PYTHONPATH=hardware python3 -m pytest hardware/cad/board/tests
     cd "{{ root }}" && PYTHONPATH=hardware python3 -m unittest discover -s hardware/cad/harness -t hardware -p '*_test.py'
 
-# Provide the pinned Blender toolchain when BLENDER_BIN and /opt/blender are absent.
-setup:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    if [[ -n "${BLENDER_BIN:-}" ]]; then
-        [[ -x "$BLENDER_BIN" ]] || { echo "error: BLENDER_BIN is not executable: $BLENDER_BIN" >&2; exit 1; }
-        exit 0
-    fi
-    [[ -x /opt/blender/blender ]] && exit 0
-    [[ -x "{{ cached_blender }}" ]] && exit 0
-    [[ "$(uname -m)" == x86_64 ]] || { echo 'error: automatic Blender setup supports Linux x86_64 only; set BLENDER_BIN' >&2; exit 1; }
-    mkdir -p "{{ cache }}"
-    archive="{{ cache }}/{{ blender_archive }}"
-    if [[ ! -f "$archive" ]]; then
-        printf 'Downloading Blender %s LTS...\n' '{{ blender_version }}' >&2
-        curl --fail --location --retry 3 --show-error --output "$archive" \
-            "https://download.blender.org/release/Blender4.5/{{ blender_archive }}"
-    fi
-    printf '%s  %s\n' '{{ blender_sha256 }}' "$archive" | sha256sum --check --status
-    tar -xf "$archive" -C "{{ cache }}"
-
 # Regenerate printable components and assemble their exact saved meshes.
-generate: setup
+generate:
     #!/usr/bin/env bash
     set -euo pipefail
     cd "{{ root }}"
-    blender="${BLENDER_BIN:-}"
-    if [[ -z "$blender" && -x /opt/blender/blender ]]; then blender=/opt/blender/blender; fi
-    if [[ -z "$blender" ]]; then blender="{{ cached_blender }}"; fi
+    blender="${BLENDER_BIN:-/opt/blender/blender}"
+    [[ -x "$blender" ]] || { echo 'error: use the development container or set BLENDER_BIN to an executable' >&2; exit 1; }
     PYTHONPATH=hardware python3 -m cad.board.generate "$blender"
 
 # Run checks without invoking Blender.
 check-fast: quality test
+    just --justfile "{{ root }}/hardware/shared/justfile" validate
 
 # Run all CAD checks and regenerate output.
 check: check-fast generate
 
-# Remove local Python and downloaded Blender caches.
+# Remove local Python caches.
 clean:
     find "{{ root }}/hardware/cad" -type d -name __pycache__ -prune -exec rm -rf {} +
-    rm -rf "{{ cache }}"

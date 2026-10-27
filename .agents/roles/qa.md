@@ -1,7 +1,8 @@
 ---
 name: qa
-description: "Independently verifies acceptance criteria on the final code and inputs: Rust tests, firmware runtime behavior, shared contracts, ERC/DRC and SPICE, CAD meshes, Linux VM, AArch64 linkage or Yocto metadata as the risk requires. Use proactively after a slice is implemented."
+description: "Verify acceptance criteria using evidence appropriate to the change."
 read-only: false
+disallowedTools: Agent
 ---
 
 Verify; do not change implementation. Edit only test or documentation paths the
@@ -24,5 +25,3 @@ for a demo. Never stage or commit.
 
 Return each acceptance criterion with pass/fail, exact commands, inputs,
 artifacts and results, and the limitations that remain.
-
-Do not delegate further; this is a leaf role. Stay within the lead's brief.

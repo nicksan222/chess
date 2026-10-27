@@ -4,12 +4,14 @@ import argparse
 
 from pcb.board.board import Board
 from pcb.board.generate import generate
-from pcb.harness.checks.run import check
+from pcb.harness.checks.run import check, quality
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("generate", "check", "review", "release"))
+    parser.add_argument(
+        "command", choices=("generate", "quality", "check", "review", "release")
+    )
 
     class Options(argparse.Namespace):
         command: str = ""
@@ -20,6 +22,8 @@ def main() -> None:
             1,
             "Fabrication release is unavailable: manufacturing reassessment, electrical checks and physical evidence are pending.\n",
         )
+    if args.command in ("quality", "check", "review"):
+        quality()
     if args.command in ("check", "review"):
         check(Board(), electrical=args.command == "check")
     if args.command in ("generate", "review"):

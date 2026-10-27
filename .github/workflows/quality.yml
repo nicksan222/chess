@@ -8,6 +8,15 @@ on:
         type: string
         required: true
 
+      hardware:
+        description: Hardware workflow owns Python quality checks
+        type: boolean
+        default: false
+      rust:
+        description: Run Rust tests and networked dependency checks
+        type: boolean
+        default: true
+
 permissions:
   contents: read
   packages: read
@@ -23,13 +32,22 @@ jobs:
         uses: ./.github/actions/rust-in-devcontainer
         with:
           image: ${{ inputs.image }}
-          command: just quality
+          command: just quality ${{ !inputs.hardware }}
           cache-key: ${{ runner.os }}-quality-${{ hashFiles('**/Cargo.lock') }}
           cache-restore-keys: |
             ${{ runner.os }}-cargo-
 
+      - name: 🧪 Test Rust workspace
+        if: ${{ inputs.rust }}
+        uses: ./.github/actions/run-in-devcontainer
+        with:
+          image: ${{ inputs.image }}
+          prepare: "false"
+          command: just rust-test
+
   dependencies:
     name: 🛡️ Dependencies
+    if: ${{ inputs.rust }}
     runs-on: ubuntu-latest
     steps:
       - name: 📥 Checkout
@@ -38,100 +56,4 @@ jobs:
         uses: ./.github/actions/run-in-devcontainer
         with:
           image: ${{ inputs.image }}
-          command: just --justfile tooling/quality/justfile dependencies
-
-  test-chess:
-    name: ♟️ Test chess
-    runs-on: ubuntu-latest
-    steps:
-      - name: 📥 Checkout
-        uses: actions/checkout@v7
-      - name: 🧪 Run chess tests
-        uses: ./.github/actions/rust-in-devcontainer
-        with:
-          image: ${{ inputs.image }}
-          command: just --justfile crates/chess/justfile test
-          cache-key: ${{ runner.os }}-crate-chess-${{ hashFiles('**/Cargo.lock') }}
-          cache-restore-keys: |
-            ${{ runner.os }}-crate-chess-
-            ${{ runner.os }}-cargo-
-
-  test-chess-core:
-    name: 🧱 Test chess-core
-    runs-on: ubuntu-latest
-    steps:
-      - name: 📥 Checkout
-        uses: actions/checkout@v7
-      - name: 🧪 Run chess-core tests
-        uses: ./.github/actions/rust-in-devcontainer
-        with:
-          image: ${{ inputs.image }}
-          command: just --justfile crates/core/justfile test
-          cache-key: ${{ runner.os }}-crate-chess-core-${{ hashFiles('**/Cargo.lock') }}
-          cache-restore-keys: |
-            ${{ runner.os }}-crate-chess-core-
-            ${{ runner.os }}-cargo-
-
-  test-logger:
-    name: 📜 Test logger
-    runs-on: ubuntu-latest
-    steps:
-      - name: 📥 Checkout
-        uses: actions/checkout@v7
-      - name: 🧪 Run logger tests
-        uses: ./.github/actions/rust-in-devcontainer
-        with:
-          image: ${{ inputs.image }}
-          command: just --justfile crates/logger/justfile test
-          cache-key: ${{ runner.os }}-crate-logger-${{ hashFiles('**/Cargo.lock') }}
-          cache-restore-keys: |
-            ${{ runner.os }}-crate-logger-
-            ${{ runner.os }}-cargo-
-
-  test-menu:
-    name: 🎛️ Test menu
-    runs-on: ubuntu-latest
-    steps:
-      - name: 📥 Checkout
-        uses: actions/checkout@v7
-      - name: 🧪 Run menu tests
-        uses: ./.github/actions/rust-in-devcontainer
-        with:
-          image: ${{ inputs.image }}
-          command: just --justfile crates/menu/justfile test
-          cache-key: ${{ runner.os }}-crate-menu-${{ hashFiles('**/Cargo.lock') }}
-          cache-restore-keys: |
-            ${{ runner.os }}-crate-menu-
-            ${{ runner.os }}-cargo-
-
-  test-persistence:
-    name: 💾 Test persistence
-    runs-on: ubuntu-latest
-    steps:
-      - name: 📥 Checkout
-        uses: actions/checkout@v7
-      - name: 🧪 Run persistence tests
-        uses: ./.github/actions/rust-in-devcontainer
-        with:
-          image: ${{ inputs.image }}
-          command: just --justfile crates/persistence/justfile test
-          cache-key: ${{ runner.os }}-crate-persistence-${{ hashFiles('**/Cargo.lock') }}
-          cache-restore-keys: |
-            ${{ runner.os }}-crate-persistence-
-            ${{ runner.os }}-cargo-
-
-  test-firmware:
-    name: 🔌 Test firmware
-    runs-on: ubuntu-latest
-    steps:
-      - name: 📥 Checkout
-        uses: actions/checkout@v7
-      - name: 🧪 Run firmware tests
-        uses: ./.github/actions/rust-in-devcontainer
-        with:
-          image: ${{ inputs.image }}
-          command: just --justfile apps/firmware/justfile test
-          cache-key: ${{ runner.os }}-crate-firmware-${{ hashFiles('**/Cargo.lock') }}
-          cache-restore-keys: |
-            ${{ runner.os }}-crate-firmware-
-            ${{ runner.os }}-cargo-
+          command: just --justfile tooling/quality/justfile audit unused-dependencies python-audit

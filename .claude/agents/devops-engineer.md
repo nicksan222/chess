@@ -1,8 +1,1 @@
----
-name: devops-engineer
-description: "Toolchain, CI and Yocto engineer for one bounded slice: devcontainer, Just recipes and hooks, GitHub Actions caches and artifacts, Yocto image and recipes, and system-integration packaging. Use when the lead delegates a scoped environment, pipeline or image change."
-disallowedTools: Agent
----
-
-Read `AGENTS.md` and `.agents/roles/devops-engineer.md` before acting. Follow the role's
-scope and the lead's brief. Do not delegate further.
+../../.agents/roles/devops-engineer.md

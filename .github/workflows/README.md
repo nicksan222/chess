@@ -10,8 +10,7 @@ This directory owns GitHub Actions workflow definitions:
   `Required checks` branch-protection gate;
 - `hardware.yml`, `quality.yml`, and `firmware-check.yml` are reusable domain
   workflows that group those jobs in the Actions graph;
-- `firmware.yml` is the full image build, started after successful `main` CI,
-  weekly, manually, or by a gated release-tag CI run; and
+- `firmware.yml` is the full image build, started weekly, manually, or by a gated release-tag CI run; and
 - `dependabot-automerge.yml` queues trusted Dependabot updates for squash merge
   after branch protection reports every required check green.
 
@@ -27,9 +26,10 @@ CAD (Blender) runs only if the review regenerated the export it consumes
 (`chess-board.glb`, `3d-models.json`, `pcb-components.json`,
 `chess-board.kicad_pcb`) differently from the merge base, and the PR report
 runs only when the PCB was reviewed. Repository lint configuration
-(`tooling/`, the ast-grep, ls-lint, typos and EditorConfig files, `.githooks/`)
-and `pyproject.toml` run Quality alone; it already runs Ruff, basedpyright and
-the PCB checks with board tests. Any other path (workflows, the dev
+(`tooling/`, ast-grep, typos and EditorConfig files, `.githooks/`)
+run offline Quality alone, without Rust tests or network dependency audits.
+`pyproject.toml` runs both hardware pipelines so pytest policy changes exercise
+the affected tests. Any other path (workflows, the dev
 container, the root `justfile`, new directories) runs everything, so unknown
 files fail safe. `Required checks` accepts skipped jobs but still fails on any
 failed or cancelled one. Pushes to `main` always run the full set.
@@ -54,10 +54,15 @@ generated artifacts. Pull requests without a semantic PCB change stay quiet;
 forked pull requests keep the report in the job summary because GitHub withholds
 write tokens. Physical measurements remain a separate release requirement.
 
-`quality.yml` runs `just quality` (formatting, lints, documentation, ast-grep
-patterns, ls-lint file names and cargo-deny crate boundaries), a
-`🛡️ Dependencies` job (`cargo deny` on both lockfiles, `cargo shear` and
-`pip-audit`; it needs network access for advisory databases), and one test job
-per workspace crate. Crates are listed explicitly instead of discovered into a
-matrix, so every check has a stable name in the Actions graph. Adding a crate
-means adding its `test-<crate>` job there.
+`quality.yml` runs formatting, compilation, lints, documentation, pin/timing
+patterns and portable crate boundaries. Rust tests run in the same container and
+Cargo cache with one `just rust-test` invocation across the workspace. The
+separate dependency job checks advisories, licences and sources without repeating
+the global bans already checked by offline quality; it also runs `cargo shear`
+and `pip-audit`. Rust tests and dependency audits run for Rust and broad changes.
+
+When Hardware runs, it owns Python quality: shared checks run once, PCB review
+runs its lint and harness/catalog checks before generation records the electrical
+suite, and CAD runs lint, tests and generation against that export. Standalone
+package `check` recipes retain their complete prerequisites. Branch protection
+uses the PR workflow's `Required checks` aggregator rather than per-crate jobs.

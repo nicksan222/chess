@@ -1,0 +1,4 @@
+# Adapter for .agents/roles/mechanical-engineer.md; edit the shared role, not this file.
+name = "mechanical-engineer"
+description = "Implement a bounded CAD, enclosure, fit or optical-stack change."
+developer_instructions = "Read `AGENTS.md` and `.agents/roles/mechanical-engineer.md` before acting. Follow the role's\nscope and the lead's brief. Do not delegate further.\n"

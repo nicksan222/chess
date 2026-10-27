@@ -40,6 +40,12 @@ jobs:
         with:
           image: ${{ inputs.image }}
           command: "true"
+      - name: 🔎 Check shared hardware contracts
+        uses: ./.github/actions/run-in-devcontainer
+        with:
+          image: ${{ inputs.image }}
+          prepare: "false"
+          command: just --justfile hardware/shared/justfile check
       - name: 🔍 Review PCB
         id: pcb_review
         if: ${{ inputs.pcb && inputs.base-ref == '' }}
@@ -84,7 +90,7 @@ jobs:
         with:
           image: ${{ inputs.image }}
           prepare: "false"
-          command: just --justfile hardware/cad/justfile check
+          command: just --justfile hardware/cad/justfile quality test generate
       - uses: actions/upload-artifact@v7
         if: ${{ !cancelled() && (steps.pcb_review.outcome == 'success' || steps.pcb_pr_review.outcome == 'success') }}
         with:

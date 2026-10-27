@@ -20,7 +20,6 @@ config="${config_dir}/devcontainer.json"
 
 python3 - "${config}" "${image}" "${GITHUB_RUN_ID:-}" "${GITHUB_SERVER_URL:-}" <<'PY'
 import json
-import os
 import sys
 from pathlib import Path
 

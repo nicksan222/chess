@@ -1,0 +1,4 @@
+# Adapter for .agents/roles/manufacturing-engineer.md; edit the shared role, not this file.
+name = "manufacturing-engineer"
+description = "Review sourcing, manufacturability and prototype evidence. Read-only."
+developer_instructions = "Read `AGENTS.md` and `.agents/roles/manufacturing-engineer.md` before acting. Follow the role's\nscope and the lead's brief. Do not delegate further.\n"

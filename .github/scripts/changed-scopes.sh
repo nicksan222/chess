@@ -19,7 +19,12 @@ cad=false
 rust=false
 quality=false
 
-while IFS= read -r file; do
+# Check diff success before classification; process substitution hides its status.
+changes=$(mktemp)
+trap 'rm -f "$changes"' EXIT
+git diff --name-only -z "$base...$head" > "$changes"
+
+while IFS= read -r -d '' file; do
     case "$file" in
     # Inert: prose and repository metadata that no job reads.
     *.md | docs/* | LICENSE | .github/CODEOWNERS | .github/ISSUE_TEMPLATE/* | \
@@ -43,11 +48,14 @@ while IFS= read -r file; do
         pcb=true
         cad=true
         ;;
-    # Quality job only: repository lint rules and their tools, the Git hook, and
-    # pyproject.toml (Ruff and pytest settings change no generated artifact; the
-    # Quality job runs Ruff, basedpyright and the PCB checks with board tests).
-    tooling/* | sgconfig.yml | .ls-lint.yml | typos.toml | .editorconfig | \
-        .editorconfig-checker.json | .githooks/* | pyproject.toml)
+    # Python lint and pytest policy needs both domain test pipelines.
+    pyproject.toml)
+        pcb=true
+        cad=true
+        ;;
+    # Quality job only: repository lint rules and their tools, and the Git hook.
+    tooling/* | sgconfig.yml | typos.toml | .editorconfig | \
+        .editorconfig-checker.json | .githooks/*)
         quality=true
         ;;
     # Everything else (workflows, the dev container, the root justfile, unknown paths).
@@ -58,7 +66,7 @@ while IFS= read -r file; do
         quality=true
         ;;
     esac
-done < <(git diff --name-only "$base...$head")
+done < "$changes"
 
 hardware=false
 if [[ "$pcb" == true || "$cad" == true ]]; then hardware=true; fi

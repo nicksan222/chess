@@ -16,16 +16,6 @@ def check[BoardNet: Net](
     declaration: Circuit[BoardNet], *, electrical: bool = True
 ) -> None:
     declaration.validate()
-    for command in (
-        ("ruff", "check", str(PCB_ROOT)),
-        ("ruff", "format", "--check", str(PCB_ROOT)),
-        (
-            os.environ.get("BASEDPYRIGHT", "basedpyright"),
-            "--project",
-            str(PCB_ROOT / "pyrightconfig.json"),
-        ),
-    ):
-        subprocess.run(command, check=True)
     for directory, pattern in (
         (PCB_ROOT / "harness", "*_test.py"),
         (PCB_ROOT / "components", "*_test.py"),
@@ -53,3 +43,17 @@ def check[BoardNet: Net](
         if result["complete"] is not True:
             raise ValueError("board electrical checks are incomplete")
         print(f"Board pytest checks: {result['passed']} passed")
+
+
+def quality() -> None:
+    """Lint and type-check PCB sources without running board tests."""
+    for command in (
+        ("ruff", "check", str(PCB_ROOT)),
+        ("ruff", "format", "--check", str(PCB_ROOT)),
+        (
+            os.environ.get("BASEDPYRIGHT", "basedpyright"),
+            "--project",
+            str(PCB_ROOT / "pyrightconfig.json"),
+        ),
+    ):
+        subprocess.run(command, check=True)

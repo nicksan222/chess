@@ -24,7 +24,8 @@ release:
     cd "{{ root }}" && PYTHONPATH=hardware python3 -m pcb release
 
 # Root/CI entry point.
-quality: check
+quality:
+    cd "{{ root }}" && PYTHONPATH=hardware python3 -m pcb quality
 
 # Colocated tests of harness behavior, without live documentation requests.
 harness-tests:

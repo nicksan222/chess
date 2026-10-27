@@ -1,0 +1,4 @@
+# Adapter for .agents/roles/reviewer.md; edit the shared role, not this file.
+name = "reviewer"
+description = "Review code, contracts and compatibility for a bounded change. Read-only."
+developer_instructions = "Read `AGENTS.md` and `.agents/roles/reviewer.md` before acting. Follow the role's\nscope and the lead's brief. Do not delegate further.\n"

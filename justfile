@@ -7,7 +7,7 @@ python_packages := "hardware/shared hardware/cad hardware/pcb"
 default:
     @just --list
 
-# Show the devcontainer welcome: toolchain, logins and starter commands.
+# Show the on-demand development tool overview.
 welcome:
     @bash .devcontainer/welcome.sh
 
@@ -19,7 +19,7 @@ check: _automation-format
     just firmware-binary
     just --justfile hardware/shared/justfile check
     just --justfile hardware/pcb/justfile review
-    just --justfile hardware/cad/justfile check
+    just --justfile hardware/cad/justfile quality test generate
     just --justfile tooling/quality/justfile check
 
 # Fast commit gate: lint and tests; no renders, PCB regeneration or cross-build (CI runs them).
@@ -28,16 +28,20 @@ precommit: _automation-format
     set -euo pipefail
     for package in {{ rust_packages }}; do just --justfile "$package/justfile" check; done
     just --justfile hardware/shared/justfile check
-    just --justfile hardware/cad/justfile check-fast
-    just --justfile hardware/pcb/justfile quality
+    just --justfile hardware/cad/justfile quality test
+    just --justfile hardware/pcb/justfile check
     just --justfile tooling/quality/justfile quality
 
-# Formatting, linting, checking, documentation, patterns, names and crate boundaries.
-quality: _automation-format
+# Formatting, linting, documentation, patterns and crate boundaries.
+
+# Set hardware=false only when a companion hardware workflow owns Python quality.
+quality hardware="true": _automation-format
     #!/usr/bin/env bash
     set -euo pipefail
     for package in {{ rust_packages }}; do just --justfile "$package/justfile" quality; done
-    for package in {{ python_packages }}; do just --justfile "$package/justfile" quality; done
+    if [[ "{{ hardware }}" == true ]]; then
+        for package in {{ python_packages }}; do just --justfile "$package/justfile" quality; done
+    fi
     just --justfile tooling/quality/justfile quality
 
 # Verify every package-owned justfile uses the canonical format.
@@ -50,6 +54,10 @@ _automation-format:
     for file in "${files[@]}"; do
         just --unstable --justfile "$file" --fmt --check
     done
+
+# Run every Rust test target with one shared compilation graph.
+rust-test:
+    cargo test --locked --workspace --all-targets --all-features
 
 # All package tests, including hardware validation.
 test:

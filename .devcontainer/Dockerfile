@@ -2,11 +2,8 @@
 ARG VARIANT="ubuntu-24.04"
 FROM mcr.microsoft.com/devcontainers/base:${VARIANT}
 
-ARG CLAUDE_VERSION="2.1.287"
 ARG BLENDER_VERSION="4.5.13"
 ARG KICAD_PPA="ppa:kicad/kicad-9.0-releases"
-ARG LS_LINT_VERSION="2.3.2"
-ARG LS_LINT_SHA256="571e382a0908fd22393869fd0dff575e6f17a6130211930fc43b37a1e0630068"
 ARG ACTIONLINT_VERSION="1.7.12"
 ARG ACTIONLINT_SHA256="8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8"
 ARG EDITORCONFIG_CHECKER_VERSION="4.0.2"
@@ -104,11 +101,6 @@ RUN archive="blender-${BLENDER_VERSION}-linux-x64.tar.xz" \
     && mv "/opt/blender-${BLENDER_VERSION}-linux-x64" /opt/blender \
     && rm "/tmp/${archive}"
 
-RUN curl --fail --location --retry 3 --show-error --output /usr/local/bin/ls-lint \
-        "https://github.com/loeffel-io/ls-lint/releases/download/v${LS_LINT_VERSION}/ls-lint-linux-amd64" \
-    && printf '%s  %s\n' "${LS_LINT_SHA256}" /usr/local/bin/ls-lint | sha256sum --check --status \
-    && chmod 0755 /usr/local/bin/ls-lint
-
 RUN archive="actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz" \
     && curl --fail --location --retry 3 --show-error --output "/tmp/${archive}" \
         "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/${archive}" \
@@ -126,10 +118,12 @@ RUN archive="editorconfig-checker-linux-amd64.tar.gz" \
 ENV BLENDER_BIN=/opt/blender/blender \
     PATH="/home/vscode/.local/bin:/home/vscode/.cargo/bin:${PATH}"
 
+COPY rust-toolchain.toml /tmp/rust-toolchain.toml
 USER vscode
-RUN curl --fail --location --proto '=https' --tlsv1.2 --show-error \
+RUN rust_version=$(sed -n 's/^channel = "\(.*\)"$/\1/p' /tmp/rust-toolchain.toml) \
+    && curl --fail --location --proto '=https' --tlsv1.2 --show-error \
         https://sh.rustup.rs \
-        | sh -s -- -y --profile minimal --default-toolchain stable \
+        | sh -s -- -y --profile minimal --default-toolchain "${rust_version}" \
     && rustup component add clippy rustfmt rust-src \
     && rustup target add aarch64-unknown-linux-gnu \
     && cargo install just --locked --version 1.40.0 \
@@ -138,10 +132,4 @@ RUN curl --fail --location --proto '=https' --tlsv1.2 --show-error \
     && cargo install ast-grep --locked --version 0.51.0 \
     && cargo install typos-cli --locked --version 1.51.1
 
-# Native Claude Code; login happens only at runtime.
-ENV DISABLE_AUTOUPDATER=1
-RUN curl --fail --location --retry 3 --show-error \
-        --output /tmp/claude-install.sh https://claude.ai/install.sh \
-    && bash /tmp/claude-install.sh "${CLAUDE_VERSION}" \
-    && rm /tmp/claude-install.sh
 USER root

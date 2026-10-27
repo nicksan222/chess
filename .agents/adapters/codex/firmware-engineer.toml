@@ -1,0 +1,4 @@
+# Adapter for .agents/roles/firmware-engineer.md; edit the shared role, not this file.
+name = "firmware-engineer"
+description = "Implement and test a bounded Raspberry Pi runtime or device adapter change."
+developer_instructions = "Read `AGENTS.md` and `.agents/roles/firmware-engineer.md` before acting. Follow the role's\nscope and the lead's brief. Do not delegate further.\n"

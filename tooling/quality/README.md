@@ -6,7 +6,7 @@ tool; there is no checker code here. [`docs/development.md`](../../docs/developm
 lists which tool enforces what across the repository.
 
 ```sh
-just --justfile tooling/quality/justfile quality        # patterns, names, crate boundaries (offline)
+just --justfile tooling/quality/justfile quality        # patterns, crate boundaries (offline)
 just --justfile tooling/quality/justfile patterns       # ast-grep rule tests, then a scan
 just --justfile tooling/quality/justfile dependencies   # cargo deny, cargo shear, pip-audit (network)
 ```
@@ -16,10 +16,7 @@ just --justfile tooling/quality/justfile dependencies   # cargo deny, cargo shea
 | `no-hardcoded-timing`: firmware delays, intervals and timeouts live in `tuning!` | ast-grep, [`../ast-grep/rules/no-hardcoded-timing.yml`](../ast-grep/rules/no-hardcoded-timing.yml) | `src/tuning/`, `src/harness.rs` (test wait bounds) and test items; `CONNECT_TIMEOUT`, `REQUEST_TIMEOUT` and the preflight `PROBE` are network or D-Bus bounds marked with `// ast-grep-ignore: no-hardcoded-timing` and a reason |
 | `hardware-no-application-policy`: hardware reports observations without application UI or module dependencies | ast-grep, [`../ast-grep/rules/hardware-no-application-policy.yml`](../ast-grep/rules/hardware-no-application-policy.yml) | Test items may exercise the production runtime |
 | `pins-only-in-pins`: BCM/GPIO numbers only in `apps/firmware/src/hardware/pins.rs` | ast-grep, [`../ast-grep/rules/pins-only-in-pins.yml`](../ast-grep/rules/pins-only-in-pins.yml) | Test items |
-| `no-todo-comments`: no TODO, FIXME, XXX or HACK markers in Rust comments (Ruff `FIX` covers Python); unfinished work is an issue | ast-grep, [`../ast-grep/rules/no-todo-comments.yml`](../ast-grep/rules/no-todo-comments.yml) | None |
 | Crate boundaries: `crates/*` never reach `firmware`, `tokio`, `gpiocdev` or `nmrs`; internal dependencies only as listed | cargo-deny `[bans]`: `wrappers` in [`../../deny.toml`](../../deny.toml), and [`portable.deny.toml`](portable.deny.toml) run with each `crates/*` manifest as the sole root | None |
-| File names: snake_case `.rs` and `.py` | ls-lint, [`../../.ls-lint.yml`](../../.ls-lint.yml) | Python `__init__`/`__main__`; generated, build and cache directories are ignored |
-| Package layout: every `apps/*` and `crates/*` root holds exactly one `Cargo.toml` and one `README.md`; directories in Rust module trees and Python packages are snake_case | ls-lint, [`../../.ls-lint.yml`](../../.ls-lint.yml) | Yocto layers and `.github` keep their kebab-case names; the extensionless `justfile` cannot be matched |
 | Shell scripts: `*.sh` and `.githooks/pre-commit` | ShellCheck (from the dev container's Ubuntu packages) | None |
 | Workflows: `.github/workflows/*.yml` and their `run:` scripts | actionlint (a checksum-verified release binary) | None |
 | Spelling in code, comments and docs | typos, [`../../typos.toml`](../../typos.toml) | Generated output, lockfiles, Lichess fixtures; domain words (`THT`, SPICE `Rsource`) listed with reasons |
@@ -54,10 +51,9 @@ application and its async stack are banned per portable crate instead.
 
 ## Not covered by a package
 
-- Package conventions ls-lint cannot express (every package has a `justfile`,
-  every package `justfile` is listed in the root `justfile`, every crate has a CI
-  test job) are not enforced; the root `justfile` and
-  `.github/workflows/README.md` document them.
+- File naming and package layout are review conventions. Package recipes remain
+  discoverable through their owning `justfile`; Rust workspace tests discover
+  crates through Cargo.
 - File length: Clippy (`too_many_lines`) and Ruff (`PLR0915`, `C90`) limit
   functions, not files.
 - Physical number literals in `hardware/cad` and `hardware/pcb` outside
@@ -78,6 +74,10 @@ application and its async stack are banned per portable crate instead.
 with rust-analyzer's parser instead of matching text, so renamed crates,
 macros and `use` trees produce fewer false positives, and it also flags
 dependencies only tests use. Like `machete`, it needs no compilation.
+
+The combined gate uses `audit` (advisories, licences and sources) after offline
+quality already checked bans; standalone `dependencies` still runs full `deny`.
+Workflow checks also run the changed-scope regression fixtures.
 
 All tools are pinned in [`.devcontainer/`](../../.devcontainer/README.md); CI
 runs these recipes in the prebuilt container.

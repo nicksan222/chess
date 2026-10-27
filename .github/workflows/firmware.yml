@@ -8,13 +8,6 @@ on:
         type: boolean
         required: false
         default: false
-  workflow_run:
-    workflows:
-      - CI
-    types:
-      - completed
-    branches:
-      - main
   workflow_dispatch:
   schedule:
     - cron: "17 3 * * 1"
@@ -24,15 +17,13 @@ permissions:
   packages: write
 
 concurrency:
-  # One writer per branch; do not discard hours of useful compilation when a
-  # newer main commit arrives. GitHub keeps only the latest pending build.
+  # Preserve in-progress scheduled, manual and release builds.
   group: firmware-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
   build:
     name: 🏗️ Build image
-    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-24.04
     timeout-minutes: 360
     # Bound every step so a cold build cannot consume the cache-save window.
@@ -40,8 +31,6 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         timeout-minutes: 5
-        with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       - uses: extractions/setup-just@v4
         timeout-minutes: 5
         with:
@@ -131,7 +120,7 @@ jobs:
       - uses: actions/upload-artifact@v7
         timeout-minutes: 5
         with:
-          name: firmware-${{ github.event.workflow_run.head_sha || github.sha }}
+          name: firmware-${{ github.sha }}
           path: dist/firmware
           if-no-files-found: error
 

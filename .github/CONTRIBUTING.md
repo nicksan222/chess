@@ -12,23 +12,9 @@ mechanical design, documentation, and testing are welcome.
 
 ## Development
 
-The development container provides Rust, Ruff, Just, Blender, and KiCad 9. After
-opening the repository in the container, list available commands with:
-
-```sh
-just --list
-```
-
-Each application, crate, and hardware domain owns a local `justfile`. Use the
-root recipes for repository-wide validation:
-
-```sh
-just precommit  # checks without expensive renders
-just check      # complete validation and review artifact generation
-```
-
-See [`docs/development.md`](../docs/development.md) for package-specific commands
-and architecture details.
+Use the [development guide](../docs/development.md) for setup and validation
+commands, and `just --list` to discover recipes. Each application, crate and
+hardware domain owns its local `justfile`.
 
 ## Pull requests
 

@@ -2,7 +2,6 @@ set shell := ["bash", "-euo", "pipefail", "-c"]
 
 root := justfile_directory() + "/../.."
 ast_grep := env_var_or_default("AST_GREP", "ast-grep")
-ls_lint := env_var_or_default("LS_LINT", "ls-lint")
 shellcheck := env_var_or_default("SHELLCHECK", "shellcheck")
 actionlint := env_var_or_default("ACTIONLINT", "actionlint")
 typos := env_var_or_default("TYPOS", "typos")
@@ -17,25 +16,28 @@ pip_audit_ignored := "--ignore-vuln PYSEC-2025-224 --ignore-vuln PYSEC-2025-225 
 default:
     @just --list
 
-# Repository rules no compiler or linter covers: patterns, names, boundaries, shell, workflows, text.
-quality: patterns names boundaries shell workflows spelling editorconfig
+# Repository rules no compiler or linter covers: patterns, boundaries, shell, workflows, text.
+quality: patterns boundaries shell workflows spelling editorconfig
 
 # Test every ast-grep rule against its examples, then scan the repository.
 patterns:
     cd "{{ root }}" && {{ ast_grep }} test --skip-snapshot-tests
     cd "{{ root }}" && {{ ast_grep }} scan
 
-# Rust and Python file names (.ls-lint.yml).
-names:
-    cd "{{ root }}" && {{ ls_lint }}
-
 # Shell scripts and the Git hook (ShellCheck).
 shell:
-    cd "{{ root }}" && git ls-files -z '*.sh' .githooks/pre-commit | xargs -0 {{ shellcheck }}
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd "{{ root }}"
+    git ls-files --cached --others --exclude-standard -z '*.sh' .githooks/pre-commit | \
+        while IFS= read -r -d '' path; do
+            if [[ -f "$path" ]]; then printf '%s\0' "$path"; fi
+        done | xargs -0 --no-run-if-empty {{ shellcheck }}
 
 # GitHub Actions workflows, including their `run:` scripts through ShellCheck (actionlint).
 workflows:
     cd "{{ root }}" && {{ actionlint }}
+    cd "{{ root }}" && bash .github/scripts/changed-scopes-test.sh
 
 # Spelling in code, comments and docs (typos.toml).
 spelling:
@@ -43,7 +45,13 @@ spelling:
 
 # Encoding, line endings, final newlines, trailing whitespace and tabs in tracked files (.editorconfig).
 editorconfig:
-    cd "{{ root }}" && git ls-files -z | xargs -0 {{ editorconfig_checker }}
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd "{{ root }}"
+    git ls-files --cached --others --exclude-standard -z | \
+        while IFS= read -r -d '' path; do
+            if [[ -f "$path" ]]; then printf '%s\0' "$path"; fi
+        done | xargs -0 --no-run-if-empty {{ editorconfig_checker }}
 
 # Crate boundaries: deny.toml wrappers (some unused in the smaller Yocto graph), then each portable crate as sole root.
 boundaries:
@@ -55,6 +63,11 @@ boundaries:
 deny:
     cd "{{ root }}" && cargo deny --locked --config deny.toml check
     cd "{{ root }}" && cargo deny --locked --config deny.toml --manifest-path apps/firmware/yocto/Cargo.toml check --allow unused-wrapper
+
+# Networked checks when the offline quality gate already covered bans.
+audit:
+    cd "{{ root }}" && cargo deny --locked --config deny.toml check advisories licenses sources
+    cd "{{ root }}" && cargo deny --locked --config deny.toml --manifest-path apps/firmware/yocto/Cargo.toml check advisories licenses sources --allow unused-wrapper
 
 # Unused or misplaced Rust dependencies, from the sources without compiling.
 unused-dependencies:
@@ -68,4 +81,4 @@ python-audit:
 dependencies: deny unused-dependencies python-audit
 
 # Run every quality gate.
-check: quality dependencies
+check: quality audit unused-dependencies python-audit

@@ -1,0 +1,4 @@
+# Adapter for .agents/roles/qa.md; edit the shared role, not this file.
+name = "qa"
+description = "Verify acceptance criteria using evidence appropriate to the change."
+developer_instructions = "Read `AGENTS.md` and `.agents/roles/qa.md` before acting. Follow the role's\nscope and the lead's brief. Do not delegate further.\n"

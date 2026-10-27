@@ -1,0 +1,4 @@
+# Adapter for .agents/roles/devops-engineer.md; edit the shared role, not this file.
+name = "devops-engineer"
+description = "Implement a bounded toolchain, CI, Yocto or system integration change."
+developer_instructions = "Read `AGENTS.md` and `.agents/roles/devops-engineer.md` before acting. Follow the role's\nscope and the lead's brief. Do not delegate further.\n"

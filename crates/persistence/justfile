@@ -9,7 +9,6 @@ default:
 # Format-check, type-check, lint, and document this package.
 quality:
     cd "{{ root }}" && cargo fmt --check --package "{{ package }}"
-    cd "{{ root }}" && cargo check --package "{{ package }}" --all-targets --all-features
     cd "{{ root }}" && cargo clippy --package "{{ package }}" --all-targets --all-features -- -D warnings
     cd "{{ root }}" && RUSTDOCFLAGS='-D warnings' cargo doc --package "{{ package }}" --no-deps --all-features
 

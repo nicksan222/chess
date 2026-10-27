@@ -8,22 +8,10 @@
     }
   },
   "features": {
-    "ghcr.io/devcontainers/features/node:1": {
-      "version": "22"
-    },
     "ghcr.io/devcontainers/features/docker-in-docker:4": {}
   },
   "remoteUser": "vscode",
   "updateRemoteUserUID": true,
-  "mounts": [
-    "source=chess-claude,target=/home/vscode/.claude,type=volume",
-    "source=chess-codex,target=/home/vscode/.codex,type=volume"
-  ],
-  "remoteEnv": {
-    "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY}",
-    "CLAUDE_CODE_OAUTH_TOKEN": "${localEnv:CLAUDE_CODE_OAUTH_TOKEN}",
-    "OPENAI_API_KEY": "${localEnv:OPENAI_API_KEY}"
-  },
   "capAdd": [
     "SYS_PTRACE"
   ],
@@ -38,7 +26,6 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "anthropic.claude-code",
         "charliermarsh.ruff",
         "DavidAnson.vscode-markdownlint",
         "fill-labs.dependi",
@@ -97,10 +84,7 @@
           "editor.formatOnSave": true
         },
         "python.testing.pytestEnabled": true,
-        "python.testing.unittestEnabled": false,
-        "python.testing.pytestArgs": [
-          "hardware/pcb/board/tests"
-        ]
+        "python.testing.unittestEnabled": false
       }
     }
   }

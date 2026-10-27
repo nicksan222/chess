@@ -1,0 +1,4 @@
+# Adapter for .agents/roles/developer.md; edit the shared role, not this file.
+name = "developer"
+description = "Implement and test a bounded portable Rust crate change."
+developer_instructions = "Read `AGENTS.md` and `.agents/roles/developer.md` before acting. Follow the role's\nscope and the lead's brief. Do not delegate further.\n"

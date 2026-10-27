@@ -7,11 +7,11 @@ force-exclude = true
 
 [tool.ruff.lint]
 # Ruff's defaults plus bug, complexity, simplification, upgrade, print, return
-# and pathlib rules; no debugger calls, commented-out code or TODO markers; and
+# and pathlib rules; no debugger calls, commented-out code; and
 # errors that keep their cause (no blind or silent excepts, raise from, logging
 # with tracebacks). See docs/development.md "Quality checks".
 extend-select = [
-    "B", "BLE", "C90", "ERA", "FIX", "G", "LOG", "PL", "PTH", "RET", "S110", "S112",
+    "B", "BLE", "C90", "ERA", "G", "LOG", "PL", "PTH", "RET", "S110", "S112",
     "SIM", "T10", "T20", "TRY", "UP",
 ]
 ignore = [

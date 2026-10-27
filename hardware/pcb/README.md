@@ -51,7 +51,8 @@ The models are ideal: magnetic margins, sensor sampling delay, I2C, firmware
 debounce and electrical behavior outside the sensing/button circuits remain untested.
 
 ```sh
-just --justfile hardware/pcb/justfile check          # lint, types, harness/catalog checks
+just --justfile hardware/pcb/justfile quality        # lint and types only
+just --justfile hardware/pcb/justfile check          # quality, harness/catalog and electrical tests
 just --justfile hardware/pcb/justfile review         # check, then generate authoring output
 just --justfile hardware/pcb/justfile harness-tests
 just --justfile hardware/pcb/justfile component-tests

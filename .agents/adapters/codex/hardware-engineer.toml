@@ -1,0 +1,4 @@
+# Adapter for .agents/roles/hardware-engineer.md; edit the shared role, not this file.
+name = "hardware-engineer"
+description = "Implement or analyze a bounded electrical, PCB or power change."
+developer_instructions = "Read `AGENTS.md` and `.agents/roles/hardware-engineer.md` before acting. Follow the role's\nscope and the lead's brief. Do not delegate further.\n"

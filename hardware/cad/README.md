@@ -107,9 +107,8 @@ rendering. Boolean batches require disjoint cutters, and bevel radii must stay
 below half the thinnest dimension: these prevent silent invalid geometry.
 Materials are presentation choices rather than manufacturing specifications.
 
-The pinned Blender toolchain uses a private Xvfb display when available. The
-`setup` recipe can download a checksum-verified build into `.cache` outside the
-container; `BLENDER_BIN` selects an existing installation. Ruff and strict
+The pinned Blender toolchain uses a private Xvfb display when available. Use the development container, or set `BLENDER_BIN` to an existing executable.
+Tool downloads and version pins belong to the container. Ruff and strict
 Basedpyright use Blender stubs; normal declarations and checks run without Blender.
 
 Both printed parts exceed desktop printer beds and are intended for an FDM service.

@@ -12,6 +12,7 @@ class ReviewPipelineTest(unittest.TestCase):
         board = Board()
         with (
             patch("sys.argv", ["pcb", "review"]),
+            patch("pcb.__main__.quality"),
             patch("pcb.__main__.Board", return_value=board),
             patch("pcb.__main__.check") as check,
             patch("pcb.__main__.generate") as generate,
@@ -24,6 +25,7 @@ class ReviewPipelineTest(unittest.TestCase):
         board = Board()
         with (
             patch("sys.argv", ["pcb", "check"]),
+            patch("pcb.__main__.quality"),
             patch("pcb.__main__.Board", return_value=board),
             patch("pcb.__main__.check") as check,
             patch("pcb.__main__.generate") as generate,
@@ -35,10 +37,37 @@ class ReviewPipelineTest(unittest.TestCase):
     def test_failed_preliminary_check_prevents_generation(self) -> None:
         with (
             patch("sys.argv", ["pcb", "review"]),
+            patch("pcb.__main__.quality"),
             patch("pcb.__main__.Board"),
             patch("pcb.__main__.check", side_effect=ValueError("failed")),
             patch("pcb.__main__.generate") as generate,
             self.assertRaisesRegex(ValueError, "failed"),
         ):
             main()
+        generate.assert_not_called()
+
+    def test_quality_does_not_construct_or_test_board(self) -> None:
+        with (
+            patch("sys.argv", ["pcb", "quality"]),
+            patch("pcb.__main__.quality") as quality,
+            patch("pcb.__main__.Board") as board,
+            patch("pcb.__main__.check") as check,
+            patch("pcb.__main__.generate") as generate,
+        ):
+            main()
+        quality.assert_called_once_with()
+        board.assert_not_called()
+        check.assert_not_called()
+        generate.assert_not_called()
+
+    def test_failed_quality_prevents_checks_and_generation(self) -> None:
+        with (
+            patch("sys.argv", ["pcb", "review"]),
+            patch("pcb.__main__.quality", side_effect=ValueError("lint failed")),
+            patch("pcb.__main__.check") as check,
+            patch("pcb.__main__.generate") as generate,
+            self.assertRaisesRegex(ValueError, "lint failed"),
+        ):
+            main()
+        check.assert_not_called()
         generate.assert_not_called()
