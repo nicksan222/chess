@@ -62,7 +62,7 @@ jobs:
           echo "package=${package,,}" >> "$GITHUB_OUTPUT"
           echo "registry=ghcr.io/${GITHUB_REPOSITORY,,}/yocto-cache" >> "$GITHUB_OUTPUT"
       - id: cache-tools
-        uses: oras-project/setup-oras@v1
+        uses: oras-project/setup-oras@v2
         timeout-minutes: 5
         continue-on-error: true
         with:
